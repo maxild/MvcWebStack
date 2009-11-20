@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc", "Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj", "{1C61E0E9-B998-4894-9DA9-21561F341FE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc", "app\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj", "{1C61E0E9-B998-4894-9DA9-21561F341FE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.UnitTests", "Maxfire.Web.Mvc.UnitTests\Maxfire.Web.Mvc.UnitTests.csproj", "{86D429DF-D70E-45CD-B157-59A0C47FAD96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.UnitTests", "test\Maxfire.Web.Mvc.UnitTests\Maxfire.Web.Mvc.UnitTests.csproj", "{86D429DF-D70E-45CD-B157-59A0C47FAD96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons", "Maxfire.TestCommons\Maxfire.TestCommons.csproj", "{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons", "app\Maxfire.TestCommons\Maxfire.TestCommons.csproj", "{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons.UnitTests", "Maxfire.TestCommons.UnitTests\Maxfire.TestCommons.UnitTests.csproj", "{5BB75E5A-E4E1-4FF4-8291-F93AB692B174}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons.UnitTests", "test\Maxfire.TestCommons.UnitTests\Maxfire.TestCommons.UnitTests.csproj", "{5BB75E5A-E4E1-4FF4-8291-F93AB692B174}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mvc", "Mvc", "{D67CC533-7E7A-4B1D-AE36-296ADAEE7AB4}"
 EndProject
@@ -15,15 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NHibernate", "NHibernate", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bdd", "Bdd", "{2A36AD1B-8538-4B3F-8A2E-DD7808E872C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.NHibernate", "Maxfire.NHibernate\Maxfire.NHibernate.csproj", "{CB434274-86A0-4211-98A4-8B60C69A2174}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.NHibernate", "app\Maxfire.NHibernate\Maxfire.NHibernate.csproj", "{CB434274-86A0-4211-98A4-8B60C69A2174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.NHibernate.UnitTests", "Maxfire.NHibernate.UnitTests\Maxfire.NHibernate.UnitTests.csproj", "{DAF1C46B-E731-4E96-997A-8F111E7FE50E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.NHibernate.UnitTests", "test\Maxfire.NHibernate.UnitTests\Maxfire.NHibernate.UnitTests.csproj", "{DAF1C46B-E731-4E96-997A-8F111E7FE50E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{36CFDA1F-AD39-443E-AAA6-B3DA58300660}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core", "Maxfire.Core\Maxfire.Core.csproj", "{AF0C4791-DE9C-4353-B344-084E9B0C1770}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core", "app\Maxfire.Core\Maxfire.Core.csproj", "{AF0C4791-DE9C-4353-B344-084E9B0C1770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core.UnitTests", "Maxfire.Core.UnitTests\Maxfire.Core.UnitTests.csproj", "{B3335CA1-0B7F-4161-948D-11826EF90381}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core.UnitTests", "test\Maxfire.Core.UnitTests\Maxfire.Core.UnitTests.csproj", "{B3335CA1-0B7F-4161-948D-11826EF90381}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
