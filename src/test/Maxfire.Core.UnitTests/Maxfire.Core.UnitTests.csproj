@@ -39,6 +39,12 @@
       <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

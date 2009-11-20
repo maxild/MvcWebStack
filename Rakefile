@@ -44,7 +44,8 @@ namespace :build do
 		:fxcop, 
 		:simian, 
 		:run_tests, 
-		:coverage_report
+		:coverage_report,
+		:copy_output_assemblies
 	]
 	
 	desc "Before Commit Build"
@@ -111,10 +112,13 @@ namespace :build do
 	
 	test_task_names = []
 	coverage_results_filenames = []
+	build_assemblies = []
 	
 	FileList["src/test/**/bin/#{CONFIGURATION}/#{PRODUCT_NS}.*.UnitTests.dll"].each do |test_assembly|
 		# get the name of the assembly without extension (Maxfire.Web.Mvc.UnitTests)
 		test_assembly_name =  File.basename(test_assembly).ext
+		# Find the corresponding production asssembly (Maxfire.Web.Mvc.dll)
+		build_assemblies << test_assembly.slice(0, test_assembly.size - '.UnitTests.dll'.size) + '.dll'
 		# slice away the Maxfire. prefix and the .UnitTests postfix.
 		name = test_assembly_name.slice(PRODUCT_NS.size + 1, test_assembly_name.size - (PRODUCT_NS.size + 1 + '.UnitTests'.size))
 		# remove any dots
@@ -148,6 +152,10 @@ namespace :build do
 		ncover_explorer.results_folder = ARCHIVE[:results]
 		ncover_explorer.xml_results_filename = 'MaxfireCoverageReport.xml'
 		ncover_explorer.html_results_filename = 'MaxfireCoverageReport.html'
+	end
+	
+	task :copy_output_assemblies => :run_tests do
+		build_assemblies.each { |src| cp src, ARCHIVE[:build_output] }
 	end
 	
 end

@@ -39,6 +39,12 @@
       <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.NHibernate\Maxfire.NHibernate.csproj">
+      <Project>{CB434274-86A0-4211-98A4-8B60C69A2174}</Project>
+      <Name>Maxfire.NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
