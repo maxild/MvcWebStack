@@ -8,7 +8,7 @@ require 'tools/rake/tasks'
 ROOT = File.dirname(__FILE__)
 COMPANY = 'BRFKredit a/s'
 PRODUCT_NS = 'Maxfire'
-PRODUCT_DESC = 'Maxfire Commons Library'
+PRODUCT_DESC = 'Maxfire Webstack Libraries'
 PRODUCT_VERSION = '0.1'
 COPYRIGHT = 'Copyright 2009 Morten Maxild. All rights reserved.';
 CONFIGURATION = 'debug'
@@ -17,12 +17,8 @@ SOLUTION = 'Maxfire.sln'
 ARCHIVE = {
 	:root => 'archive',
 	:build => 'archive/build',
-	:build_output => 'archive/build/' + CONFIGURATION,
-	:results => 'archive/results',
-	:publish => 'archive/publish',
-	:tools => 'archive/publish/tools',
-	:latestpackage => 'archive/latestpackage',
-	:packages => 'archive/packages'
+	:build_output => 'archive/build/' + CONFIGURATION, # TODO: Copy to build output folder 
+	:results => 'archive/results'
 }
 ARCHIVE.each { |k, v| ARCHIVE[k] = File.join(ROOT, v) }
 
@@ -47,8 +43,7 @@ namespace :build do
 		:compile, 
 		:fxcop, 
 		:simian, 
-		:run_unit_tests, 
-		:unit_test_coverage_report,
+		:run_tests, 
 		:coverage_report
 	]
 	
@@ -101,7 +96,7 @@ namespace :build do
 	Rake::FxCopTask.new(:fxcop => :compile) do |fxcop|
 		fxcop.tool_path = File.join(ROOT, 'tools/fxcop')
 		fxcop.rich_console_output = false
-		fxcop.assemblies = FileList["src/app/bin/**/#{PRODUCT_NS}.*.dll"]
+		fxcop.assemblies = FileList["src/app/**/bin/#{CONFIGURATION}/#{PRODUCT_NS}.*.dll"]
 		fxcop.results_file = rf('FxCopReport.xml')
 		fxcop.assembly_search_path = "#{ARCHIVE[:build_output]}"
 	end
@@ -114,52 +109,45 @@ namespace :build do
 		simian.stylesheet = File.join(simian_path, 'simian.xsl')
 	end
 	
-	desc "Run unit tests with coverage"
-	Rake::XUnitTask.new(:run_unit_tests => :compile) do |xunit|
-		# todo: make test_tool_path and coverage_tool_path
-		# todo: Make api like xunit.test.tool_path and xunit.coverage.tool_path etc..
-		# todo: make UnitTestRunner independent of NCoverTask
-		xunit.tool_path = File.join(ROOT, 'tools')
-		xunit.test_assembly = FileList["src/test/UnitTests/**/*.UnitTests.dll"]
-		xunit.results_folder = ARCHIVE[:results]
-		xunit.test_results_filename = 'UnitTestResults.xml'
-		xunit.test_stylesheet = File.join(ROOT, 'tools', 'xunit', 'xUnitSummary.xsl')
-		xunit.calculate_coverage = true
-		xunit.coverage_results_filename = 'UnitTestCoverage.xml'
-		xunit.coverage_log_filename = 'UnitTestCoverage.log'
-		xunit.coverage_assemblies = FileList["src/test/UnitTests/**/#{PRODUCT_NS}*.dll"].exclude(/.*Tests.dll$/)
+	test_task_names = []
+	coverage_results_filenames = []
+	
+	FileList["src/test/**/bin/#{CONFIGURATION}/#{PRODUCT_NS}.*.UnitTests.dll"].each do |test_assembly|
+		# get the name of the assembly without extension (Maxfire.Web.Mvc.UnitTests)
+		test_assembly_name =  File.basename(test_assembly).ext
+		# slice away the Maxfire. prefix and the .UnitTests postfix.
+		name = test_assembly_name.slice(PRODUCT_NS.size + 1, test_assembly_name.size - (PRODUCT_NS.size + 1 + '.UnitTests'.size))
+		# remove any dots
+		name.gsub!(/[\.]/,'')
+		# Create the dynamic task name (run_WebMvc_tests)
+		task_name = "run_#{name}_tests"
+		test_task_names << task_name
+		desc "Run tests in #{test_assembly_name} with coverage"
+		Rake::XUnitTask.new(task_name => :compile) do |xunit|
+			xunit.tool_path = File.join(ROOT, 'tools')
+			xunit.test_assembly = test_assembly
+			xunit.results_folder = ARCHIVE[:results]
+			xunit.test_results_filename = "#{name}UnitTestResults.xml"
+			xunit.test_stylesheet = File.join(ROOT, 'tools', 'xunit', 'xUnitSummary.xsl')
+			xunit.calculate_coverage = true
+			coverage_results_filenames << xunit.coverage_results_filename = "#{name}UnitTestCoverage.xml"
+			xunit.coverage_log_filename = "#{name}UnitTestCoverage.log"
+			xunit.coverage_assemblies = FileList["#{File.dirname(test_assembly)}/#{PRODUCT_NS}*.dll"].exclude(/.*Tests.dll$/)
+		end
 	end
 	
-	Rake::NCoverExplorerTask.new(:merge_coverage => [:run_unit_tests, :run_integration_tests]) do |ncover_explorer|
-		ncover_explorer.flash_message = "ncoverexplorer: merging coverage files"
-		ncover_explorer.tool_path = File.join(ROOT, 'tools/ncover.explorer')
-		ncover_explorer.coverage_files << rf('UnitTestCoverage.xml')
-		ncover_explorer.coverage_files << rf('IntegrationTestCoverage.xml')
-		ncover_explorer.project = PRODUCT_DESC
-		ncover_explorer.results_folder = ARCHIVE[:results]
-		ncover_explorer.merged_results_filename = 'Coverage.xml'
-	end
+	desc "Run all the unit tests"
+	task :run_tests => test_task_names
 	
 	desc "Create unit test coverage report"
-	Rake::NCoverExplorerTask.new(:unit_test_coverage_report => :run_unit_tests) do |ncover_explorer|
+	Rake::NCoverExplorerTask.new(:coverage_report => :run_tests) do |ncover_explorer|
 		ncover_explorer.flash_message = "ncoverexplorer: generating unit test coverage report"
 		ncover_explorer.tool_path = File.join(ROOT, 'tools/ncover.explorer')
-		ncover_explorer.coverage_files << rf('UnitTestCoverage.xml')
+		coverage_results_filenames.each { |coverage_result| ncover_explorer.coverage_files << rf(coverage_result) }
 		ncover_explorer.project = PRODUCT_DESC
 		ncover_explorer.results_folder = ARCHIVE[:results]
-		ncover_explorer.xml_results_filename = 'UnitTestCoverageReport.xml'
-		ncover_explorer.html_results_filename = 'UnitTestCoverageReport.html'
-	end
-	
-	desc "Create overall coverage report"
-	Rake::NCoverExplorerTask.new(:coverage_report => :merge_coverage) do |ncover_explorer|
-		ncover_explorer.flash_message = "ncoverexplorer: generating coverage report"
-		ncover_explorer.tool_path = File.join(ROOT, 'tools/ncover.explorer')
-		ncover_explorer.coverage_files << rf('Coverage.xml')
-		ncover_explorer.project = PRODUCT_DESC
-		ncover_explorer.results_folder = ARCHIVE[:results]
-		ncover_explorer.xml_results_filename = 'CoverageReport.xml'
-		ncover_explorer.html_results_filename = 'CoverageReport.html'
+		ncover_explorer.xml_results_filename = 'MaxfireCoverageReport.xml'
+		ncover_explorer.html_results_filename = 'MaxfireCoverageReport.html'
 	end
 	
 end
