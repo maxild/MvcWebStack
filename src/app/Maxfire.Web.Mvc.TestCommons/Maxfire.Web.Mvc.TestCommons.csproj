@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1C61E0E9-B998-4894-9DA9-21561F341FE1}</ProjectGuid>
+    <ProjectGuid>{34CF0F0F-D7D4-4F77-B73C-02CF89B50FC7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Maxfire.Web.Mvc</RootNamespace>
-    <AssemblyName>Maxfire.Web.Mvc</AssemblyName>
+    <RootNamespace>Maxfire.Web.Mvc.TestCommons</RootNamespace>
+    <AssemblyName>Maxfire.Web.Mvc.TestCommons</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,46 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CastleModelValidator.cs" />
-    <Compile Include="CastleModelValidatorProvider.cs" />
-    <Compile Include="MappingConventions.cs" />
-    <Compile Include="OpinionatedMetadataProvider.cs" />
-    <Compile Include="OpinionatedValidatorProvider.cs" />
+    <Compile Include="AssertExtensions\ActionResultExtensions.cs" />
+    <Compile Include="AssertExtensions\ModelStateAssertExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeDescriptorHelper.cs" />
-    <Compile Include="ValidationModelBinder.cs" />
-    <Compile Include="Validators\BaseValidationAttribute.cs" />
-    <Compile Include="Validators\BaseValidator.cs" />
-    <Compile Include="Validators\Extensions\ValidatorExtensions.cs" />
-    <Compile Include="Validators\LabeledRegexValidatorAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateBooleanAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateCollectionNotEmptyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateDateAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateDecimalAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateEnumAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateEnumerationAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateLengthAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateMaxLengthAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateMoneyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateNonEmptyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateNonNegativeIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidatePositiveIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
-    <Compile Include="Validators\ValidationResult.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\castle\Castle.Components.Validator.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\aspnetmvc2\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit, Version=1.5.0.1479, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

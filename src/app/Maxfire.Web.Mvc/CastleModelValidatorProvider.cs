@@ -5,70 +5,27 @@ using Castle.Components.Validator;
 
 namespace Maxfire.Web.Mvc
 {
-	public class CastleModelValidatorProvider
-	{
-		
-	}
-
-	public class CastleModelValidator : ModelValidator
+	public class CastleModelValidatorProvider : OpinionatedValidatorProvider
 	{
 		private readonly IValidatorRunner _validatorRunner;
 
-		public CastleModelValidator(ModelMetadata metadata, ControllerContext controllerContext, IValidatorRunner validatorRunner) : base(metadata, controllerContext)
+		public CastleModelValidatorProvider(IValidatorRunner validatorRunner)
 		{
 			_validatorRunner = validatorRunner;
 		}
 
-		public override IEnumerable<ModelValidationResult> Validate(object container)
+		protected override IEnumerable<ModelValidator> GetValidators(ModelMetadata metadata, ControllerContext context, IEnumerable<Attribute> attributes)
 		{
-			if (!_validatorRunner.IsValid(container))
+			if (metadata == null)
 			{
-				var errorSummary = _validatorRunner.GetErrorSummary(container);
-				foreach (string propertyName in errorSummary.InvalidProperties)
-				{
-					foreach (var errorMessage in errorSummary.GetErrorsForProperty(propertyName))
-					{
-						yield return new ModelValidationResult
-						             	{
-						             		MemberName = propertyName,
-						             		Message = errorMessage
-						             	};
-					}
-				}
+				throw new ArgumentNullException("metadata");
 			}
-		}
-
-		//public override IEnumerable<ModelClientValidationRule> GetClientValidationRules()
-		//{
-		//    // Todo: Instead of returning empty rule set, do something
-		//    return base.GetClientValidationRules();
-		//}
-
-		public IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input)
-		{
-			Dictionary<string, string[]> result = new Dictionary<string, string[]>();
-			if (!_validatorRunner.IsValid(input))
+			if (context == null)
 			{
-				ErrorSummary summary = _validatorRunner.GetErrorSummary(input);
-				foreach (string propertyName in summary.InvalidProperties)
-				{
-					string[] errorsForProperty = summary.GetErrorsForProperty(propertyName);
-
-					List<string> errorMessages = new List<string>();
-					foreach (var errorMessage in errorsForProperty)
-					{
-						errorMessages.Add(errorMessage);
-					}
-
-					result.Add(propertyName, errorMessages.ToArray());
-				}
+				throw new ArgumentNullException("context");
 			}
-			return result;
-		}
-	}
 
-	public interface IModelValidator
-	{
-		IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input);
+			yield return new CastleModelValidator(metadata, context, _validatorRunner);
+		}
 	}
 }

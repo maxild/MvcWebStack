@@ -41,6 +41,7 @@
     <Compile Include="AssertExtensions\DictionaryAssertExtensions.cs" />
     <Compile Include="AssertExtensions\ObjectAssertExtensions.cs" />
     <Compile Include="AssertExtensions\StringAssertionExtensions.cs" />
+    <Compile Include="CurrentCultureScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spec.cs" />
     <Compile Include="SpecBase.cs" />
