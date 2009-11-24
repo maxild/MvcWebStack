@@ -40,6 +40,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
+      <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
+      <Name>Maxfire.TestCommons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">
       <Project>{1C61E0E9-B998-4894-9DA9-21561F341FE1}</Project>
       <Name>Maxfire.Web.Mvc</Name>

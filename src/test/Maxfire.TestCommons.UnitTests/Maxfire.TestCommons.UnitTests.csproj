@@ -32,14 +32,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\tools\rhino.mocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="xunit, Version=1.5.0.1479, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
       <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
       <Name>Maxfire.TestCommons</Name>
