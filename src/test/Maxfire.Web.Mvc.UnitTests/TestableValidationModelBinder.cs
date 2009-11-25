@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Castle.Components.Validator;
@@ -19,17 +20,26 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 		public TestableValidationModelBinder(TModel model)
 		{
+			MetadataProvider = new DisplayNameMetadataProvider();
 			RequestParams = new NameValueCollection();
 			ModelState = new ModelStateDictionary();
 			_context = new ModelBindingContext
 						{
-							ModelMetadata = TestableMetadataProvider.Instance.GetMetadataForType(() => model, typeof(TModel)),
+							ModelMetadata = MetadataProvider.GetMetadataForType(() => model, typeof(TModel)),
 							ModelState = ModelState,
 							FallbackToEmptyPrefix = true
 						};
 			// Register this as the default binder without any side-effects (i.e. without using the Binders registry)
 			Binders = new ModelBinderDictionary { DefaultBinder = this };
 		}
+
+		protected override ModelMetadata GetMetadataForType(Func<object> modelAccessor, Type modelType)
+		{
+			// We are not going to use the global singleton ModelMetadataProviders.Current during testing
+			return MetadataProvider.GetMetadataForType(modelAccessor, modelType);
+		}
+
+		public ModelMetadataProvider MetadataProvider { get; set; }
 
 		public NameValueCollection RequestParams { get; set; }
 
@@ -132,29 +142,19 @@ namespace Maxfire.Web.Mvc.UnitTests
 			}
 		}
 
-		class TestableMetadataProvider : OpinionatedMetadataProvider
+		class DisplayNameMetadataProvider : OpinionatedMetadataProvider
 		{
-			private static TestableMetadataProvider _singleton;
-
-			private TestableMetadataProvider()
-			{
-			}
-
 			protected override ModelMetadata CreateMetadata(IEnumerable<Attribute> attributes, Type containerType, Func<object> modelAccessor, Type modelType, string propertyName)
 			{
-				return new TestableModelMetadata(this, containerType, modelAccessor, modelType, propertyName);
-			}
+				var metadata = new TestableModelMetadata(this, containerType, modelAccessor, modelType, propertyName);
 
-			public static TestableMetadataProvider Instance
-			{
-				get
+				var displayNameAttribute = attributes.OfType<DisplayNameAttribute>().FirstOrDefault();
+				if (displayNameAttribute != null)
 				{
-					if (_singleton == null)
-					{
-						_singleton = new TestableMetadataProvider();
-					}
-					return _singleton;
+					metadata.DisplayName = displayNameAttribute.DisplayName;
 				}
+
+				return metadata;
 			}
 		}
 

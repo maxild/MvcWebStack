@@ -12,7 +12,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 	[UsedImplicitly]
 	public partial class ValidationModelBinderSpecs
 	{
-		[UsedImplicitly]
 		public class Regressions
 		{
 			class FooImmutableList
@@ -22,8 +21,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 					Beregnere = new Foo[] { };
 				}
 
-				public long Id { get; [UsedImplicitly] set; }
-				public Foo[] Beregnere { get; [UsedImplicitly] set; }
+				public long Id { get; set; }
+				public Foo[] Beregnere { get; set; }
 			}
 
 			class FooList
@@ -33,18 +32,17 @@ namespace Maxfire.Web.Mvc.UnitTests
 					Beregnere = new List<Foo>();
 				}
 
-				public long Id { get; [UsedImplicitly] set; }
+				public long Id { get; set; }
 				public IList<Foo> Beregnere { get; private set; }
 			}
 
-			[UsedImplicitly]
 			class Foo
 			{
-				public string DomusGebyrType { get; [UsedImplicitly] set; }
-				public string Beloeb { get; [UsedImplicitly] set; }
-				public string Sats { get; [UsedImplicitly] set; }
-				public string SatsGrundlag { get; [UsedImplicitly] set; }
-				public bool Apply { get; [UsedImplicitly] set; }
+				public string DomusGebyrType { get; set; }
+				public string Beloeb { get; set; }
+				public string Sats { get; set; }
+				public string SatsGrundlag { get; set; }
+				public bool Apply { get; set; }
 			}
 
 			private readonly NameValueCollection _requestParams;
@@ -140,8 +138,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				priser.Beregnere[0].Apply.ShouldBeTrue();
 			}
 
-			[UsedImplicitly]
-			class DictionaryBar
+			class DictionaryOfBars
 			{
 				private readonly IDictionary<int, Bar> _bars = new Dictionary<int, Bar>();
 
@@ -151,8 +148,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			}
 
-			[UsedImplicitly]
-			class ListBar
+			class ListOfBars
 			{
 				private readonly IList<Bar> _bars = new List<Bar>();
 
@@ -162,18 +158,20 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			}
 
-			[UsedImplicitly]
 			class Bar
 			{
-				public int Age { get; [UsedImplicitly] set; }
+				public int Age { get; set; }
 			}
 
 			[Fact]
 			public void CanHandleDictionary()
 			{
+				// This is is testing the changes I have made to the DefaultModelBinder 
+				// to support dictionaries with simple keys. 
+
 				var requestParams = new NameValueCollection { { "Bars[4].Age", "39" } };
 
-				var binder = new TestableValidationModelBinder<DictionaryBar>
+				var binder = new TestableValidationModelBinder<DictionaryOfBars>
 				             	{
 				             		RequestParams = requestParams
 				             	};
@@ -184,9 +182,13 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Fact]
 			public void CanHandleList()
 			{
+				// This is testing the changes I have made to DefaultModelBinder
+				// to support lists with arbitrary indices (possibly with 'holes' 
+				// in the indices)
+
 				var requestParams = new NameValueCollection { { "Bars[Morten].Age", "39" } };
 
-				var binder = new TestableValidationModelBinder<ListBar>
+				var binder = new TestableValidationModelBinder<ListOfBars>
 				             	{
 				             		RequestParams = requestParams
 				             	};
@@ -194,26 +196,28 @@ namespace Maxfire.Web.Mvc.UnitTests
 				binder.BindModel().Bars[0].Age.ShouldEqual(39);
 			}
 
-			[UsedImplicitly]
 			class InputModel
 			{
-				private readonly IDictionary<Kategori, IList<SubInputModel>> _models = new Dictionary<Kategori, IList<SubInputModel>>();
+				private readonly IDictionary<FooKategori, IList<SubInputModel>> _models = new Dictionary<FooKategori, IList<SubInputModel>>();
 
-				public IDictionary<Kategori, IList<SubInputModel>> Models
+				public IDictionary<FooKategori, IList<SubInputModel>> Models
 				{
 					get { return _models; }
 				}
 			}
 
-			[UsedImplicitly]
+			
 			class SubInputModel
 			{
-				public string Tekst { get; [UsedImplicitly] set; }
+				public string Tekst { get;  set; }
 			}
 
 			[Fact]
 			public void CanHandleHashedInputModel()
 			{
+				// This is is testing the changes I have made to the DefaultModelBinder 
+				// to support dictionaries with simple keys. 
+
 				var requestParams = new NameValueCollection
 				                    	{
 				                    		{ "Models[Transport][0].Tekst", "TransportTekst1" },
@@ -231,17 +235,20 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 				var model = binder.BindModel();
 
-				model.Models[Kategori.Transport][0].Tekst.ShouldEqual("TransportTekst1");
-				model.Models[Kategori.Transport][1].Tekst.ShouldEqual("TransportTekst2");
-				model.Models[Kategori.Transport][2].Tekst.ShouldEqual("TransportTekst3");
-				model.Models[Kategori.Bolig][0].Tekst.ShouldEqual("BoligTekst1");
-				model.Models[Kategori.Bolig][1].Tekst.ShouldEqual("BoligTekst2");
-				model.Models[Kategori.Bolig][2].Tekst.ShouldEqual("BoligTekst3");
+				model.Models[FooKategori.Transport][0].Tekst.ShouldEqual("TransportTekst1");
+				model.Models[FooKategori.Transport][1].Tekst.ShouldEqual("TransportTekst2");
+				model.Models[FooKategori.Transport][2].Tekst.ShouldEqual("TransportTekst3");
+				model.Models[FooKategori.Bolig][0].Tekst.ShouldEqual("BoligTekst1");
+				model.Models[FooKategori.Bolig][1].Tekst.ShouldEqual("BoligTekst2");
+				model.Models[FooKategori.Bolig][2].Tekst.ShouldEqual("BoligTekst3");
 			}
 
 			[Fact]
 			public void CanHandleHashedInputModelWhenUsingEnumerationValues()
 			{
+				// This is is testing the changes I have made to the DefaultModelBinder 
+				// to support dictionaries with simple keys. 
+
 				var requestParams = new NameValueCollection { { "Models[1][0].Tekst", "Tekst" } };
 
 				var binder = new TestableValidationModelBinder<InputModel>
@@ -249,17 +256,17 @@ namespace Maxfire.Web.Mvc.UnitTests
 				             		RequestParams = requestParams
 				             	};
 
-				binder.BindModel().Models[Kategori.Transport][0].Tekst.ShouldEqual("Tekst");
+				binder.BindModel().Models[FooKategori.Transport][0].Tekst.ShouldEqual("Tekst");
 			}
 
-			[UsedImplicitly]
+			
 			class ComplexInputModel
 			{
-				private readonly IDictionary<Kategori, IList<SubInputModel>> _models = new Dictionary<Kategori, IList<SubInputModel>>();
+				private readonly IDictionary<FooKategori, IList<SubInputModel>> _models = new Dictionary<FooKategori, IList<SubInputModel>>();
 
-				public string Name { get; [UsedImplicitly] set; }
+				public string Name { get;  set; }
 
-				public IDictionary<Kategori, IList<SubInputModel>> Models
+				public IDictionary<FooKategori, IList<SubInputModel>> Models
 				{
 					get { return _models; }
 				}
@@ -286,13 +293,13 @@ namespace Maxfire.Web.Mvc.UnitTests
 				var input = binder.BindModel();
 
 				input.Name.ShouldEqual("Name1");
-				input.Models[Kategori.Transport].Count.ShouldEqual(3);
-				input.Models[Kategori.Transport][0].Tekst.ShouldEqual("TransportTekst1");
-				input.Models[Kategori.Transport][1].Tekst.ShouldEqual("TransportTekst2");
-				input.Models[Kategori.Transport][2].Tekst.ShouldEqual("TransportTekst3");
-				input.Models[Kategori.Bolig].Count.ShouldEqual(2);
-				input.Models[Kategori.Bolig][0].Tekst.ShouldEqual("BoligTekst1");
-				input.Models[Kategori.Bolig][1].Tekst.ShouldEqual("BoligTekst2");
+				input.Models[FooKategori.Transport].Count.ShouldEqual(3);
+				input.Models[FooKategori.Transport][0].Tekst.ShouldEqual("TransportTekst1");
+				input.Models[FooKategori.Transport][1].Tekst.ShouldEqual("TransportTekst2");
+				input.Models[FooKategori.Transport][2].Tekst.ShouldEqual("TransportTekst3");
+				input.Models[FooKategori.Bolig].Count.ShouldEqual(2);
+				input.Models[FooKategori.Bolig][0].Tekst.ShouldEqual("BoligTekst1");
+				input.Models[FooKategori.Bolig][1].Tekst.ShouldEqual("BoligTekst2");
 			}
 		}
 	}

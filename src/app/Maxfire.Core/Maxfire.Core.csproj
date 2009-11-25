@@ -45,6 +45,7 @@
     <Compile Include="EnumerationConverter.cs" />
     <Compile Include="Extensions\BasicExtensions.cs" />
     <Compile Include="Extensions\PrimitiveExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
     <Compile Include="NullOp.cs" />
     <Compile Include="Operator.cs" />

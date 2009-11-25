@@ -525,10 +525,10 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 				binder.RequestParams["bool.myBool"] = "true,false";
 
-				// We use invariant culture incase a language specific resource with key 'PropertyValueInvalid' has been added
 				BoolClass boolClass;
 				using (new CurrentCultureScope(""))
 				{
+					// We use invariant culture in case a language specific resource with key 'PropertyValueInvalid' has been added.
 					boolClass = binder.BindModel();
 				}
 

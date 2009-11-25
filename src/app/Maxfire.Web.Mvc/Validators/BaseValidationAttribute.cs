@@ -24,7 +24,7 @@ namespace Maxfire.Web.Mvc.Validators
 		/// User can set this like [Required(ErrorMessage="...")] to override the default message
 		/// </summary>
 		public new string ErrorMessage { get; set; }
-		
+
 		public override IValidator Build()
 		{
 			IValidator validator = _thunk();

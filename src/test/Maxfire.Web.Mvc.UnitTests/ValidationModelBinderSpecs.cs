@@ -12,14 +12,14 @@ namespace Maxfire.Web.Mvc.UnitTests
 {
 	public partial class ValidationModelBinderSpecs
 	{
-		[TypeConverter(typeof(EnumerationConverter<Kategori>))]
-		public class Kategori : Enumeration
+		[TypeConverter(typeof(EnumerationConverter<FooKategori>))]
+		class FooKategori : Enumeration
 		{
-			public static readonly Kategori Transport = new Kategori(1, "Transport", "Transport");
-			public static readonly Kategori Bolig = new Kategori(2, "Bolig", "Bolig");
+			public static readonly FooKategori Transport = new FooKategori(1, "Transport");
+			public static readonly FooKategori Bolig = new FooKategori(2, "Bolig");
 			
-			private Kategori(int id, string name, string text)
-				: base(id, name, text)
+			private FooKategori(int id, string name)
+				: base(id, name, name)
 			{
 			}
 		}
@@ -32,12 +32,12 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 		class DictionaryOfListInputModel
 		{
-			private readonly IDictionary<Kategori, IList<SubInputModel>> _childs = new Dictionary<Kategori, IList<SubInputModel>>();
+			private readonly IDictionary<FooKategori, IList<SubInputModel>> _childs = new Dictionary<FooKategori, IList<SubInputModel>>();
 
 			[LabeledValidateNonEmpty(ErrorMessage = "Feltet {0} er et krav.")]
 			public string ParentProperty { get; set; }
 
-			public IDictionary<Kategori, IList<SubInputModel>> Childs
+			public IDictionary<FooKategori, IList<SubInputModel>> Childs
 			{
 				get { return _childs; }
 			}
@@ -77,9 +77,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Specification]
 			public void ShouldInvalidateRootNameProperty()
 			{
-				// Note: This test fails because we cannot control which MetadataProvider is used. We want to use
-				// our TestableModelMetadata, because it will crate the CastleModelValidator, but MVC somehow uses
-				// ModelMetadataProviders.Current (a global variable yack!!!!!). Find out where and remedy!!!!
 				Sut.ModelState.ShouldContain<DictionaryOfListInputModel>(x => x.ParentProperty)
 					.WithAttemptedValue("")
 					.AndErrorMessage("Feltet ParentProperty er et krav.");
@@ -88,7 +85,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Specification]
 			public void ShouldInvalidateChildTekstProperty()
 			{
-				Sut.ModelState.ShouldContain<DictionaryOfListInputModel>(x => x.Childs[Kategori.Transport][0].ChildProperty)
+				Sut.ModelState.ShouldContain<DictionaryOfListInputModel>(x => x.Childs[FooKategori.Transport][0].ChildProperty)
 					.WithAttemptedValue("")
 					.AndErrorMessage("Feltet ChildProperty er et krav.");
 			}

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Castle.Components.Validator;
 using Maxfire.Core.Reflection;
+using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Validators;
 using Xunit;
@@ -18,6 +19,46 @@ namespace Maxfire.Web.Mvc.UnitTests
 	[UsedImplicitly]
 	public class ValidationModelBinderTester : IDisposable
 	{
+		class Order
+		{
+			[LabeledValidateInteger]
+			public int Id { get; set; }
+
+			public Address Address { get; set; }
+
+			public Orderline[] Orderlines { get; set; }
+
+			public override string ToString()
+			{
+				return "Order with id = " + Id;
+			}
+		}
+
+		class Address
+		{
+			[DisplayName("PostNr"), LabeledValidateLength(4, ExecutionOrder = 1), LabeledValidateInteger(ExecutionOrder = 2)]
+			public string PostalCode { get; set; }
+
+			public override string ToString()
+			{
+				return "Address with postalcode = " + PostalCode;
+			}
+		}
+
+		class Orderline
+		{
+			[DisplayName("Pris"), LabeledValidateMoney]
+			public decimal Price { get; set; }
+
+			[DisplayName("Antal"), LabeledValidateInteger]
+			public int Qty { get; set; }
+
+			public override string ToString()
+			{
+				return "OrderLine with (Qty, Price) = (" + Qty + ", " + Price + ")";
+			}
+		}
+
 		public ValidationModelBinderTester()
 		{
 			string appPath = Path.GetDirectoryName(Assembly.GetAssembly(typeof(ValidationModelBinderTester)).CodeBase);
@@ -103,14 +144,19 @@ namespace Maxfire.Web.Mvc.UnitTests
 			                       	};
 
 			// Act
-			var order = binder.BindModel();
+			Order order;
+			using (new CurrentCultureScope(""))
+			{
+				// We use invariant culture in case a language specific resource with key 'PropertyValueInvalid' has been added.
+				order = binder.BindModel();
+			}
 
 			// Assert
 			binder.IsInputValid.ShouldBeFalse();
 
 			binder.IsInputValidFor(x => x.Id).ShouldBeFalse();
 			binder.GetModelErrorsFor(x => x.Id).Count.ShouldEqual(1);
-			binder.GetModelErrorsFor(x => x.Id)[0].ErrorMessage.ShouldEqual("Værdien 'not_number' er ikke valid for feltet Id.");
+			binder.GetModelErrorsFor(x => x.Id)[0].ErrorMessage.ShouldEqual("The value 'not_number' is not valid for Id.");
 			
 			binder.IsInputValidFor(x => x.Address.PostalCode).ShouldBeFalse();
 			binder.GetModelErrorsFor(x => x.Address.PostalCode).Count.ShouldEqual(2);
@@ -119,18 +165,18 @@ namespace Maxfire.Web.Mvc.UnitTests
 			
 			binder.IsInputValidFor(x => x.Orderlines[0].Price).ShouldBeFalse();
 			binder.GetModelErrorsFor(x => x.Orderlines[0].Price).Count.ShouldEqual(1);
-			binder.GetModelErrorsFor(x => x.Orderlines[0].Price)[0].ErrorMessage.ShouldEqual("Værdien 'invalid_format' er ikke valid for feltet Pris.");
+			binder.GetModelErrorsFor(x => x.Orderlines[0].Price)[0].ErrorMessage.ShouldEqual("The value 'invalid_format' is not valid for Pris.");
 			
 			binder.IsInputValidFor(x => x.Orderlines[0].Qty).ShouldBeFalse();
 			binder.GetModelErrorsFor(x => x.Orderlines[0].Qty).Count.ShouldEqual(1);
-			binder.GetModelErrorsFor(x => x.Orderlines[0].Qty)[0].ErrorMessage.ShouldEqual("Værdien 'invalid_format' er ikke valid for feltet Antal.");
+			binder.GetModelErrorsFor(x => x.Orderlines[0].Qty)[0].ErrorMessage.ShouldEqual("The value 'invalid_format' is not valid for Antal.");
 			
 			binder.IsInputValidFor(x => x.Orderlines[1].Price).ShouldBeTrue();
 			binder.GetModelErrorsFor(x => x.Orderlines[1].Price).Count.ShouldEqual(0);
 			
 			binder.IsInputValidFor(x => x.Orderlines[1].Qty).ShouldBeFalse();
 			binder.GetModelErrorsFor(x => x.Orderlines[1].Qty).Count.ShouldEqual(1);
-			binder.GetModelErrorsFor(x => x.Orderlines[1].Qty)[0].ErrorMessage.ShouldEqual("Værdien '2.5' er ikke valid for feltet Antal.");
+			binder.GetModelErrorsFor(x => x.Orderlines[1].Qty)[0].ErrorMessage.ShouldEqual("The value '2.5' is not valid for Antal.");
 			
 			// Values are default (if format exception), or attempted (if no format exception)
 			order.ShouldNotBeNull();
@@ -193,46 +239,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Assert.True(t2.IsGenericType);
 			Assert.False(t2.IsGenericTypeDefinition);
 			
-		}
-
-		class Order
-		{
-			[LabeledValidateInteger]
-			public int Id { get; set; }
-
-			public Address Address { get; set; }
-
-			public Orderline[] Orderlines { get; set; }
-
-			public override string ToString()
-			{
-				return "Order with id = " + Id;
-			}
-		}
-
-		class Address
-		{
-			[DisplayName( "PostNr"), LabeledValidateLength(4, ExecutionOrder = 1), LabeledValidateInteger(ExecutionOrder = 2)]
-			public string PostalCode { get; set; }
-
-			public override string ToString()
-			{
-				return "Address with postalcode = " + PostalCode;
-			}
-		}
-
-		class Orderline
-		{
-			[DisplayName("Pris"), LabeledValidateMoney]
-			public decimal Price { get; set; }
-
-			[DisplayName("Antal"), LabeledValidateInteger]
-			public int Qty { get; set; }
-
-			public override string ToString()
-			{
-				return "OrderLine with (Qty, Price) = (" + Qty + ", " + Price + ")";
-			}
 		}
 	}
 }

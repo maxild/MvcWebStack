@@ -9,6 +9,7 @@ namespace Maxfire.Web.Mvc
 {
 	public class CastleModelValidator : ModelValidator
 	{
+		// Todo: Maybe write custom runner => use IValidationRegistry and nothing else (see performer in castle)
 		private readonly IValidatorRunner _validatorRunner;
 
 		public CastleModelValidator(ModelMetadata metadata, ControllerContext controllerContext, IValidatorRunner validatorRunner) : base(metadata, controllerContext)
@@ -18,7 +19,9 @@ namespace Maxfire.Web.Mvc
 
 		public override IEnumerable<ModelValidationResult> Validate(object container)
 		{
-			if (!_validatorRunner.IsValid(container))
+			// Todo: Why do we need container argument?
+			// Todo: Should we use 'container' or 'Metadata.Model'???
+			if (!_validatorRunner.IsValid(Metadata.Model))
 			{
 				var errorSummary = _validatorRunner.GetErrorSummary(container);
 				foreach (string propertyName in errorSummary.InvalidProperties)
