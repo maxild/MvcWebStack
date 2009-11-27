@@ -1,4 +1,4 @@
-using Castle.Components.Validator;
+using System;
 using Maxfire.Web.Mvc.Validators.Extensions;
 
 namespace Maxfire.Web.Mvc.Validators
@@ -12,12 +12,17 @@ namespace Maxfire.Web.Mvc.Validators
 		{
 		}
 
-		class LabeledNonEmptyValidator : AbstractValidator
+		class LabeledNonEmptyValidator : BaseValidator
 		{
 			public override bool IsValid(object instance, object fieldValue)
 			{
 				var result = fieldValue.IsTrimmedNotEmpty();
 				return result;
+			}
+
+			public override bool IsValidCore(string fieldValue)
+			{
+				throw new NotImplementedException("This method is not called, because of the IsValid override.");
 			}
 
 			public override bool SupportsBrowserValidation

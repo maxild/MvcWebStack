@@ -46,5 +46,10 @@ namespace Maxfire.Core.Reflection
 			string displayName = displayNameAttribute != null ? displayNameAttribute.DisplayName: descriptor.Name;
 			return displayName;
 		}
+
+		public static string GetDisplayName<TModel>(this Expression<Func<TModel, object>> propertyExpression)
+		{
+			return ExpressionHelper.GetProperty(propertyExpression).GetDisplayName();
+		}
 	}
 }

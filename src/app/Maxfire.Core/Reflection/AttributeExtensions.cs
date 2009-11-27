@@ -7,9 +7,14 @@ namespace Maxfire.Core.Reflection
 {
 	public static class AttributeExtensions
 	{
-		public static bool HasCustomAttribute<T>(this ICustomAttributeProvider member) where T : Attribute
+		public static bool HasSingleCustomAttribute<T>(this ICustomAttributeProvider member) where T : Attribute
 		{
-			return member.GetCustomAttributes(typeof(T), false).Length == 1;
+			return member.HasSingleCustomAttribute<T>(false);
+		}
+
+		public static bool HasSingleCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit) where T : Attribute
+		{
+			return member.GetCustomAttributes(typeof(T), inherit).Length == 1;
 		}
 
 		public static bool HasCustomAttribute<T>(this Type type)

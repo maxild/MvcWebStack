@@ -1,5 +1,6 @@
 using System;
 using Castle.Components.Validator;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Web.Mvc.Validators
 {
@@ -7,30 +8,33 @@ namespace Maxfire.Web.Mvc.Validators
 	{
 		private const string DEFAULT_ERROR_MESSAGE = "Feltet '{0}' er ikke validt.";
 
-		private readonly Func<IValidator> _thunk;
+		private readonly Func<BaseValidator> _thunk;
 
-		protected BaseValidationAttribute(Func<IValidator> thunk)
+		protected BaseValidationAttribute(Func<BaseValidator> thunk)
 			: this(thunk, DEFAULT_ERROR_MESSAGE)
 		{
 		}
 
-		protected BaseValidationAttribute(Func<IValidator> thunk, string defaultErrorMessage)
+		protected BaseValidationAttribute(Func<BaseValidator> thunk, string defaultErrorMessage)
 		{
 			_thunk = thunk;
-			ErrorMessage = defaultErrorMessage;
+			DefaultErrorMessage = defaultErrorMessage.IsNotEmpty() ? defaultErrorMessage : DEFAULT_ERROR_MESSAGE;
 		}
 
 		/// <summary>
 		/// User can set this like [Required(ErrorMessage="...")] to override the default message
 		/// </summary>
 		public new string ErrorMessage { get; set; }
+		
+		public string DefaultErrorMessage { get; set; }
 
 		public override IValidator Build()
 		{
-			IValidator validator = _thunk();
+			var validator = _thunk();
 			validator.RunWhen = RunWhen.Everytime;
 			validator.ExecutionOrder = ExecutionOrder;
 			validator.ErrorMessage = ErrorMessage;
+			validator.DefaultErrorMessage = DefaultErrorMessage;
 			return validator;
 		}
 	}

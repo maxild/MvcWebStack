@@ -34,8 +34,16 @@
     <Compile Include="AssertExtensions\ActionResultExtensions.cs" />
     <Compile Include="AssertExtensions\ModelStateAssertExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validators\ErrorMessageSpecs.cs" />
+    <Compile Include="Validators\RequiredTester.cs" />
+    <Compile Include="Validators\ValidatorSpec.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\castle\Castle.Components.Validator.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -52,6 +60,14 @@
     <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
+      <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
+      <Name>Maxfire.TestCommons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">
+      <Project>{1C61E0E9-B998-4894-9DA9-21561F341FE1}</Project>
+      <Name>Maxfire.Web.Mvc</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

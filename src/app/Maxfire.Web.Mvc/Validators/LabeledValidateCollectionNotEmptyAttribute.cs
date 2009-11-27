@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Castle.Components.Validator;
 using Maxfire.Core.Extensions;
@@ -13,7 +14,7 @@ namespace Maxfire.Web.Mvc.Validators
 		{
 		}
 
-		public class LabeledCollectionNotEmptyValidator : AbstractValidator
+		public class LabeledCollectionNotEmptyValidator : BaseValidator
 		{
 			public override bool IsValid(object instance, object fieldValue)
 			{
@@ -27,6 +28,11 @@ namespace Maxfire.Web.Mvc.Validators
 				collection.Each(item => count++);
 
 				return count != 0; 
+			}
+
+			public override bool IsValidCore(string fieldValue)
+			{
+				throw new NotImplementedException("This method is not called, because of the IsValid override.");
 			}
 
 			public override bool SupportsBrowserValidation

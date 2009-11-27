@@ -1,5 +1,4 @@
 using System;
-using Castle.Components.Validator;
 
 namespace Maxfire.Web.Mvc.Validators
 {
@@ -12,7 +11,7 @@ namespace Maxfire.Web.Mvc.Validators
 		{
 		}
 
-		protected LabeledValidateIntegerAttribute(Func<IValidator> thunk, string errorMessage) : base(thunk, errorMessage)
+		protected LabeledValidateIntegerAttribute(Func<BaseValidator> thunk, string errorMessage) : base(thunk, errorMessage)
 		{
 		}
 
