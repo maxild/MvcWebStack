@@ -2,7 +2,7 @@ using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Validators;
 using Xunit;
 
-namespace Maxfire.Web.Mvc.TestCommons.Validators
+namespace Maxfire.Web.Mvc.UnitTests.Validators
 {
 	public class ErrorMessageSpecs : ValidatorConstructor
 	{

@@ -24,11 +24,6 @@ namespace Maxfire.Web.Mvc.Validators
 			{
 				throw new NotImplementedException("This method is not called, because of the IsValid override.");
 			}
-
-			public override bool SupportsBrowserValidation
-			{
-				get { return false; }
-			}
 		}
 	}
 }

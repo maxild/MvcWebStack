@@ -38,6 +38,10 @@
     <Compile Include="ValidationModelBinderSpecs.PortedFromNameValueDeserializer.cs" />
     <Compile Include="ValidationModelBinderSpecs.Regressions.cs" />
     <Compile Include="ValidationModelBinderTester.cs" />
+    <Compile Include="Validators\ErrorMessageSpecs.cs" />
+    <Compile Include="Validators\RequiredTester.cs" />
+    <Compile Include="Validators\ValidatorConstructor.cs" />
+    <Compile Include="Validators\ValidatorSpec.cs" />
     <Compile Include="when_model_binding_to_lists.cs" />
   </ItemGroup>
   <ItemGroup>
