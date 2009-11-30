@@ -29,7 +29,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Validators
 
 			class Validator : BaseValidator
 			{
-				public override bool IsValidCore(string fieldValue)
+				protected override bool IsValidNonEmptyInput(string fieldValue)
 				{
 					return false;
 				}
@@ -45,7 +45,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Validators
 
 			class ValidatorWithBuildErrorMessage : BaseValidator
 			{
-				public override bool IsValidCore(string fieldValue)
+				protected override bool IsValidNonEmptyInput(string fieldValue)
 				{
 					return false;
 				}

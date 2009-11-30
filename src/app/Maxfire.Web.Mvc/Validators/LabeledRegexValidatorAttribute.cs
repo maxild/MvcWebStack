@@ -25,7 +25,7 @@ namespace Maxfire.Web.Mvc.Validators
 				_regex = new Regex(pattern, RegexOptions.Compiled);
 			}
 
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				return _regex.IsMatch(fieldValue);
 			}

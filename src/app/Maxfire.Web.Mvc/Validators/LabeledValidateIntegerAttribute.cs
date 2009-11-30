@@ -17,7 +17,7 @@ namespace Maxfire.Web.Mvc.Validators
 
 		protected class LabeledIntegerValidator : BaseValidator
 		{
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				bool valid = false;
 

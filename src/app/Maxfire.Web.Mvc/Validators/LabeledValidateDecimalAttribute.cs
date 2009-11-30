@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc.Validators
 		
 		public class LabeledDecimalValidator : BaseValidator
 		{
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				return Conventions.ValidateMachineDecimal(fieldValue);
 			}

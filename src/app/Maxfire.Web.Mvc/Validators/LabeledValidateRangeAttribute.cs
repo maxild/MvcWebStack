@@ -23,7 +23,7 @@ namespace Maxfire.Web.Mvc.Validators
 				_max = max;
 			}
 
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				bool valid = false;
 				

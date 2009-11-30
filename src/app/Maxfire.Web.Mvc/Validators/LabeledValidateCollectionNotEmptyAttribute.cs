@@ -30,7 +30,7 @@ namespace Maxfire.Web.Mvc.Validators
 				return count != 0; 
 			}
 
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				throw new NotImplementedException("This method is not called, because of the IsValid override.");
 			}

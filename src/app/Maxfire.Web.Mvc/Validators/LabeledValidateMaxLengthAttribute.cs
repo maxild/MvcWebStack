@@ -16,7 +16,7 @@ namespace Maxfire.Web.Mvc.Validators
 				_length = length;
 			}
 
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				return fieldValue.Length <= _length;
 			}

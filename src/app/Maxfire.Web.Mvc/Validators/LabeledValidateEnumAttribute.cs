@@ -20,7 +20,7 @@ namespace Maxfire.Web.Mvc.Validators
 				_enumType = enumType;
 			}
 			
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				return Conventions.ValidateEnumOfType(_enumType, fieldValue);
 			}

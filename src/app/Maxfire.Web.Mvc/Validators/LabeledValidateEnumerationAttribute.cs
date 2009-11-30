@@ -25,7 +25,7 @@ namespace Maxfire.Web.Mvc.Validators
 				_enumerationType = enumerationType;
 			}
 
-			public override bool IsValidCore(string fieldValue)
+			protected override bool IsValidNonEmptyInput(string fieldValue)
 			{
 				return Conventions.ValidateEnumerationOfType(_enumerationType, fieldValue);
 			}

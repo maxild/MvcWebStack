@@ -13,9 +13,6 @@ namespace Maxfire.Web.Mvc.Validators
 		{
 			base.Initialize(validationRegistry, property);
 
-			// Note: Don't use FriendlyName, because the Castle Validation Performer will register invalid properties using it
-			//FriendlyName = property.GetDisplayName();
-			
 			// Subclasses should be able to override ErrorMessage by overriding BuildErrorMessage() 
 			// unless the user has provided a non-empty ErrorMessage
 			if (ErrorMessage.IsEmpty())
@@ -30,7 +27,7 @@ namespace Maxfire.Web.Mvc.Validators
 			var typedCollection = fieldValue as IEnumerable<string>;
 			if (typedCollection != null)
 			{
-				return typedCollection.All(item => IsValidCore(item.ToTrimmedNullSafeString()));
+				return typedCollection.All(item => IsValidNonEmptyInput(item.ToTrimmedNullSafeString()));
 			}
 
 			if (fieldValue.IsTrimmedEmpty())
@@ -38,12 +35,12 @@ namespace Maxfire.Web.Mvc.Validators
 				return true;
 			}
 
-			return IsValidCore(fieldValue.ToTrimmedNullSafeString());
+			return IsValidNonEmptyInput(fieldValue.ToTrimmedNullSafeString());
 		}
 
-		public abstract bool IsValidCore(string fieldValue);
-		
-		public MappingConventions Conventions
+		protected abstract bool IsValidNonEmptyInput(string fieldValue);
+
+		protected MappingConventions Conventions
 		{
 			get { return new MappingConventions(); }
 		}
