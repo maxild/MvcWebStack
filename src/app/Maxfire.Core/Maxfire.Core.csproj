@@ -46,11 +46,14 @@
     <Compile Include="Extensions\BasicExtensions.cs" />
     <Compile Include="Extensions\PrimitiveExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="IRepository.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
     <Compile Include="NullOp.cs" />
     <Compile Include="Operator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AttributeExtensions.cs" />
+    <Compile Include="Reflection\DisplayNameExtensions.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\ExpressionHelper.cs" />
     <Compile Include="Reflection\ExpressionNameVisitor.cs" />

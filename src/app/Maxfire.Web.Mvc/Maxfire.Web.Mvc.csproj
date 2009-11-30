@@ -31,13 +31,98 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ActionFilterExtensions.cs" />
+    <Compile Include="CastleControllerFactory.cs" />
     <Compile Include="CastleModelValidator.cs" />
     <Compile Include="CastleModelValidatorProvider.cs" />
+    <Compile Include="ControllerExtensions.cs" />
+    <Compile Include="EditModelFor.cs" />
+    <Compile Include="EntityViewModel.cs" />
+    <Compile Include="FluentHtml\Behaviors\IBehavior.cs" />
+    <Compile Include="FluentHtml\Behaviors\IBehaviorMarker.cs" />
+    <Compile Include="FluentHtml\Behaviors\IMemberBehavior.cs" />
+    <Compile Include="FluentHtml\Behaviors\InputTypeBehavior.cs" />
+    <Compile Include="FluentHtml\Behaviors\ISupportsBehaviors.cs" />
+    <Compile Include="FluentHtml\Behaviors\ISupportsMaxLength.cs" />
+    <Compile Include="FluentHtml\Behaviors\ISupportsModelState.cs" />
+    <Compile Include="FluentHtml\Behaviors\LabelMemberBehavior.cs" />
+    <Compile Include="FluentHtml\Behaviors\RequiredMemberBehavior.cs" />
+    <Compile Include="FluentHtml\Behaviors\ValidationBehavior.cs" />
+    <Compile Include="FluentHtml\Elements\CheckBox.cs" />
+    <Compile Include="FluentHtml\Elements\CheckBoxList.cs" />
+    <Compile Include="FluentHtml\Elements\CheckBoxListBase.cs" />
+    <Compile Include="FluentHtml\Elements\Element.cs" />
+    <Compile Include="FluentHtml\Elements\FormElement.cs" />
+    <Compile Include="FluentHtml\Elements\Hidden.cs" />
+    <Compile Include="FluentHtml\Elements\Input.cs" />
+    <Compile Include="FluentHtml\Elements\Link.cs" />
+    <Compile Include="FluentHtml\Elements\Literal.cs" />
+    <Compile Include="FluentHtml\Elements\LiteralBase.cs" />
+    <Compile Include="FluentHtml\Elements\Method.cs" />
+    <Compile Include="FluentHtml\Elements\MultiSelect.cs" />
+    <Compile Include="FluentHtml\Elements\Option.cs" />
+    <Compile Include="FluentHtml\Elements\OptionsElementBase.cs" />
+    <Compile Include="FluentHtml\Elements\RadioButton.cs" />
+    <Compile Include="FluentHtml\Elements\RadioSet.cs" />
+    <Compile Include="FluentHtml\Elements\RadioSetBase.cs" />
+    <Compile Include="FluentHtml\Elements\Select.cs" />
+    <Compile Include="FluentHtml\Elements\SelectBase.cs" />
+    <Compile Include="FluentHtml\Elements\SubmitButton.cs" />
+    <Compile Include="FluentHtml\Elements\TextBox.cs" />
+    <Compile Include="FluentHtml\Elements\TextInput.cs" />
+    <Compile Include="FluentHtml\Elements\ValidationMessage.cs" />
+    <Compile Include="FluentHtml\Extensions\ElementExtensions.cs" />
+    <Compile Include="FluentHtml\Extensions\ExpressionExtensions.cs" />
+    <Compile Include="FluentHtml\Extensions\StringExtensions.cs" />
+    <Compile Include="FluentHtml\Extensions\TagBuilderExtensions.cs" />
+    <Compile Include="FluentHtml\Html\HtmlAttribute.cs" />
+    <Compile Include="FluentHtml\Html\HtmlCssClass.cs" />
+    <Compile Include="FluentHtml\Html\HtmlInputType.cs" />
+    <Compile Include="FluentHtml\Html\HtmlTag.cs" />
+    <Compile Include="FluentHtml\IElement.cs" />
+    <Compile Include="FluentHtml\ILabeledElement.cs" />
+    <Compile Include="FluentHtml\IMemberElement.cs" />
+    <Compile Include="FluentHtml\IViewModelContainer.cs" />
+    <Compile Include="FluentHtml\OpinionatedListSparkViewExtensions.cs" />
+    <Compile Include="FluentHtml\RestfulViewModelContainerExtensions.cs" />
+    <Compile Include="FluentHtml\TempDataContainerExtensions.cs" />
+    <Compile Include="FluentHtml\ViewModelContainerExtensions.cs" />
+    <Compile Include="IEntityViewModel.cs" />
+    <Compile Include="IModelUnflattener.cs" />
+    <Compile Include="IModelUpdater.cs" />
+    <Compile Include="IOpinionatedView.cs" />
+    <Compile Include="IResponseWriter.cs" />
+    <Compile Include="IRestfulController.cs" />
+    <Compile Include="IRestfulOpinionatedView.cs" />
+    <Compile Include="ITempDataContainer.cs" />
+    <Compile Include="ITextValuePair.cs" />
+    <Compile Include="IUrlHelper.cs" />
+    <Compile Include="IUrlResponseWriter.cs" />
+    <Compile Include="IViewContextContainer.cs" />
+    <Compile Include="JsonMessage.cs" />
+    <Compile Include="JsonNetResult.cs" />
     <Compile Include="MappingConventions.cs" />
+    <Compile Include="ModelStateExtensions.cs" />
+    <Compile Include="OpinionatedController.cs" />
+    <Compile Include="OpinionatedControllerActionInvoker.cs" />
+    <Compile Include="OpinionatedListSparkView.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
+    <Compile Include="OpinionatedResourceController.cs" />
+    <Compile Include="OpinionatedResourceSparkView.cs" />
+    <Compile Include="OpinionatedRestfulController.cs" />
+    <Compile Include="OpinionatedSparkView.cs" />
+    <Compile Include="OpinionatedSubordinateResourceController.cs" />
     <Compile Include="OpinionatedValidatorProvider.cs" />
+    <Compile Include="OptionsAdapter.cs" />
+    <Compile Include="OptionsTextValueAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteValueDictionaryExtensions.cs" />
+    <Compile Include="RouteValuesHelper.cs" />
+    <Compile Include="TextValuePair.cs" />
     <Compile Include="TypeDescriptorHelper.cs" />
+    <Compile Include="UrlBuilder.cs" />
+    <Compile Include="UrlHelperExtensions.cs" />
+    <Compile Include="ValidateInputModelAttribute.cs" />
     <Compile Include="ValidationModelBinder.cs" />
     <Compile Include="Validators\BaseValidationAttribute.cs" />
     <Compile Include="Validators\BaseValidator.cs" />
@@ -58,19 +143,55 @@
     <Compile Include="Validators\LabeledValidatePositiveIntegerAttribute.cs" />
     <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
+    <Compile Include="MicroKernelExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=0.4.0.140, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\automapper\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\castle\Castle.Components.Validator.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=1.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\castle\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.DynamicProxy2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\castle\Castle.DynamicProxy2.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.MicroKernel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\castle\Castle.MicroKernel.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Spark, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7f8549eed921a12c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\spark\Spark.dll</HintPath>
+    </Reference>
+    <Reference Include="Spark.Web.Mvc2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\spark\Spark.Web.Mvc2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\aspnetmvc2\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,5 @@
 using System;
-using System.ComponentModel;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Maxfire.Core.Reflection
 {
@@ -31,25 +28,6 @@ namespace Maxfire.Core.Reflection
 		{
 			//TODO: Is there a more certain way to determine if this is an indexed property?
 			return expression != null && expression.Method.Name == "get_Item" && expression.Arguments.Count == 1;
-		}
-
-		public static string GetDisplayName(this MemberInfo property)
-		{
-			var displayNameAttribute = property.GetCustomAttribute<DisplayNameAttribute>();
-			string displayName = displayNameAttribute != null ? displayNameAttribute.DisplayName: property.Name;
-			return displayName;
-		}
-
-		public static string GetDisplayName(this PropertyDescriptor descriptor)
-		{
-			var displayNameAttribute = descriptor.Attributes.OfType<DisplayNameAttribute>().FirstOrDefault();
-			string displayName = displayNameAttribute != null ? displayNameAttribute.DisplayName: descriptor.Name;
-			return displayName;
-		}
-
-		public static string GetDisplayName<TModel>(this Expression<Func<TModel, object>> propertyExpression)
-		{
-			return ExpressionHelper.GetProperty(propertyExpression).GetDisplayName();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Totalberegner.Model.Extensions
+namespace Maxfire.Core.Extensions
 {
 	public static class PrimitiveExtensions
 	{

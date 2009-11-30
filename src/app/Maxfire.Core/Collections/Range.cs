@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Totalberegner.Model.Extensions;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Core.Collections
 {

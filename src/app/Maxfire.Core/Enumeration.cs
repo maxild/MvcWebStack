@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Totalberegner.Model.Extensions;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Core
 {

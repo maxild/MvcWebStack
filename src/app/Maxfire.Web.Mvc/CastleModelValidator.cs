@@ -7,7 +7,7 @@ using Castle.Components.Validator;
 
 namespace Maxfire.Web.Mvc
 {
-	public class CastleModelValidator : ModelValidator
+	public class CastleModelValidator : ModelValidator, IFormValidator
 	{
 		// Todo: Maybe write custom runner => use IValidationRegistry and nothing else (see performer in castle)
 		private readonly IValidatorRunner _validatorRunner;
@@ -84,5 +84,10 @@ namespace Maxfire.Web.Mvc
 			}
 			return result;
 		}
+	}
+
+	public interface IFormValidator
+	{
+		IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input);
 	}
 }
