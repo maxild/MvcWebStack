@@ -11,19 +11,19 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledNonEmptyValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		class LabeledNonEmptyValidator : BaseValidator
+	public class LabeledNonEmptyValidator : BaseValidator
+	{
+		public override bool IsValid(object instance, object fieldValue)
 		{
-			public override bool IsValid(object instance, object fieldValue)
-			{
-				var result = fieldValue.IsTrimmedNotEmpty();
-				return result;
-			}
+			var result = fieldValue.IsTrimmedNotEmpty();
+			return result;
+		}
 
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				throw new NotImplementedException("This method is not called, because of the IsValid override.");
-			}
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			throw new NotImplementedException("This method is not called, because of the IsValid override.");
 		}
 	}
 }

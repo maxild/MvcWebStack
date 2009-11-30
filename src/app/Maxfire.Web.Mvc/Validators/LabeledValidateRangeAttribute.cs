@@ -9,37 +9,37 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledRangeValidator(min, max))
 		{
 		}
+	}
 
-		// Todo: Try use Range<T>
-		class LabeledRangeValidator : BaseValidator
+	// Todo: Try use Range<T>
+	public class LabeledRangeValidator : BaseValidator
+	{
+		private readonly int _min;
+		private readonly int _max;
+
+		// Todo: Add more ctors
+		public LabeledRangeValidator(int min, int max)
 		{
-			private readonly int _min;
-			private readonly int _max;
-			
-			// Todo: Add more ctors
-			public LabeledRangeValidator(int min, int max)
+			_min = min;
+			_max = max;
+		}
+
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			bool valid = false;
+
+			if (Conventions.ValidateInt32(fieldValue))
 			{
-				_min = min;
-				_max = max;
+				int intValue = Conventions.ParseInt32(fieldValue);
+				valid = intValue >= _min && intValue <= _max;
 			}
 
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				bool valid = false;
-				
-				if (Conventions.ValidateInt32(fieldValue))
-				{
-					int intValue = Conventions.ParseInt32(fieldValue);
-					valid = intValue >= _min && intValue <= _max;
-				}
+			return valid;
+		}
 
-				return valid;
-			}
-
-			protected override string BuildErrorMessage()
-			{
-				return "Feltet '{0}' tilhører ikke intervallet af mulige værdier "+_min+".."+_max+".";
-			}
+		protected override string BuildErrorMessage()
+		{
+			return "Feltet '{0}' tilhører ikke intervallet af mulige værdier " + _min + ".." + _max + ".";
 		}
 	}
 }

@@ -14,45 +14,45 @@ namespace Maxfire.Web.Mvc.Validators
 		protected LabeledValidateIntegerAttribute(Func<BaseValidator> thunk, string errorMessage) : base(thunk, errorMessage)
 		{
 		}
+	}
 
-		protected class LabeledIntegerValidator : BaseValidator
+	public class LabeledIntegerValidator : BaseValidator
+	{
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
-			protected override bool IsValidNonEmptyInput(string fieldValue)
+			bool valid = false;
+
+			if (Property != null && (Property.PropertyType == typeof(short) || Property.PropertyType == typeof(short?)))
 			{
-				bool valid = false;
-
-				if (Property != null && (Property.PropertyType == typeof(short) || Property.PropertyType == typeof(short?)))
+				var val = Conventions.TryValidateInt16(fieldValue);
+				if (val != null)
 				{
-					var val = Conventions.TryValidateInt16(fieldValue);
-					if (val != null)
-					{
-						valid = IsValidValue(val.Value);
-					}
+					valid = IsValidValue(val.Value);
 				}
-				else if (Property != null && (Property.PropertyType == typeof(long) || Property.PropertyType == typeof(long?)))
+			}
+			else if (Property != null && (Property.PropertyType == typeof(long) || Property.PropertyType == typeof(long?)))
+			{
+				var val = Conventions.TryValidateInt64(fieldValue);
+				if (val != null)
 				{
-					var val = Conventions.TryValidateInt64(fieldValue);
-					if (val != null)
-					{
-						valid = IsValidValue(val.Value);
-					}
+					valid = IsValidValue(val.Value);
 				}
-				else
+			}
+			else
+			{
+				var val = Conventions.TryValidateInt32(fieldValue);
+				if (val != null)
 				{
-					var val = Conventions.TryValidateInt32(fieldValue);
-					if (val != null)
-					{
-						valid = IsValidValue(val.Value);
-					}
+					valid = IsValidValue(val.Value);
 				}
-
-				return valid;
 			}
 
-			protected virtual bool IsValidValue(long value)
-			{
-				return true;
-			}
+			return valid;
+		}
+
+		protected virtual bool IsValidValue(long value)
+		{
+			return true;
 		}
 	}
 }

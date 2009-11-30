@@ -40,6 +40,7 @@
     <Compile Include="Collections\RangeIterator.cs" />
     <Compile Include="Collections\RangeIteratorSet.cs" />
     <Compile Include="Collections\ReverseComparer.cs" />
+    <Compile Include="ComponentModel\DisplayNameAttribute.cs" />
     <Compile Include="EntityEnumeration.cs" />
     <Compile Include="Enumeration.cs" />
     <Compile Include="EnumerationConverter.cs" />

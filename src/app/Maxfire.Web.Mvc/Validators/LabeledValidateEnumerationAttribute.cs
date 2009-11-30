@@ -11,24 +11,24 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new EnumerationValidator(enumerationType), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		class EnumerationValidator : BaseValidator
+	public class EnumerationValidator : BaseValidator
+	{
+		private readonly Type _enumerationType;
+
+		public EnumerationValidator(Type enumerationType)
 		{
-			private readonly Type _enumerationType;
-
-			public EnumerationValidator(Type enumerationType)
+			if (enumerationType.IsAssignableFrom(typeof(Enumeration)) || enumerationType.IsAbstract)
 			{
-				if (enumerationType.IsAssignableFrom(typeof(Enumeration)) || enumerationType.IsAbstract)
-				{
-					throw new ArgumentException("The argument is not a concrete Enumeration derived type.", "enumerationType");
-				}
-				_enumerationType = enumerationType;
+				throw new ArgumentException("The argument is not a concrete Enumeration derived type.", "enumerationType");
 			}
+			_enumerationType = enumerationType;
+		}
 
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateEnumerationOfType(_enumerationType, fieldValue);
-			}
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			return Conventions.ValidateEnumerationOfType(_enumerationType, fieldValue);
 		}
 	}
 }

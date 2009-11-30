@@ -13,32 +13,32 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledCollectionNotEmptyValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		public class LabeledCollectionNotEmptyValidator : BaseValidator
+	public class LabeledCollectionNotEmptyValidator : BaseValidator
+	{
+		public override bool IsValid(object instance, object fieldValue)
 		{
-			public override bool IsValid(object instance, object fieldValue)
+			var collection = fieldValue as IEnumerable;
+			if (collection == null)
 			{
-				var collection = fieldValue as IEnumerable;
-				if (collection == null)
-				{
-					return false;
-				}
-
-				int count = 0;
-				collection.Each(item => count++);
-
-				return count != 0; 
+				return false;
 			}
 
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				throw new NotImplementedException("This method is not called, because of the IsValid override.");
-			}
+			int count = 0;
+			collection.Each(item => count++);
 
-			public override bool SupportsBrowserValidation
-			{
-				get { return false; }
-			}
+			return count != 0;
+		}
+
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			throw new NotImplementedException("This method is not called, because of the IsValid override.");
+		}
+
+		public override bool SupportsBrowserValidation
+		{
+			get { return false; }
 		}
 	}
 }

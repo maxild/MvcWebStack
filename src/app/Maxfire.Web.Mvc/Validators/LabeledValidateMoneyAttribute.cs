@@ -8,13 +8,13 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledMoneyValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		public class LabeledMoneyValidator : BaseValidator
+	public class LabeledMoneyValidator : BaseValidator
+	{
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateMoney(fieldValue);
-			}
+			return Conventions.ValidateMoney(fieldValue);
 		}
 	}
 }

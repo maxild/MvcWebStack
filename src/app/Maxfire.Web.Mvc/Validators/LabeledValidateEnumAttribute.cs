@@ -10,20 +10,20 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledEnumValidator(enumType), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		public class LabeledEnumValidator : BaseValidator
+	public class LabeledEnumValidator : BaseValidator
+	{
+		private readonly Type _enumType;
+
+		public LabeledEnumValidator(Type enumType)
 		{
-			private readonly Type _enumType;
+			_enumType = enumType;
+		}
 
-			public LabeledEnumValidator(Type enumType)
-			{
-				_enumType = enumType;
-			}
-			
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateEnumOfType(_enumType, fieldValue);
-			}
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			return Conventions.ValidateEnumOfType(_enumType, fieldValue);
 		}
 	}
 }

@@ -15,40 +15,20 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledRegexValidator(pattern), errorMessage)
 		{
 		}
-
-		class LabeledRegexValidator : BaseValidator
-		{
-			private readonly Regex _regex;
-			
-			public LabeledRegexValidator(string pattern)
-			{
-				_regex = new Regex(pattern, RegexOptions.Compiled);
-			}
-
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return _regex.IsMatch(fieldValue);
-			}
-		}
 	}
 
-	public class LabeledValidatePostNrAttribute : LabeledRegexValidatorAttribute
+	public class LabeledRegexValidator : BaseValidator
 	{
-		private const string DEFAULT_ERROR_MESSAGE = "Feltet '{0}' indeholder ikke et validt postnummer. Benyt venligst fire heltal.";
+		private readonly Regex _regex;
 
-		public LabeledValidatePostNrAttribute()
-			: base("^[0-9]{4}$", DEFAULT_ERROR_MESSAGE)
+		public LabeledRegexValidator(string pattern)
 		{
+			_regex = new Regex(pattern, RegexOptions.Compiled);
 		}
-	}
 
-	public class LabeledValidateAarstalAttribute : LabeledRegexValidatorAttribute
-	{
-		private const string DEFAULT_ERROR_MESSAGE = "Feltet '{0}' indeholder ikke et validt årstal. Benyt venligst fire heltal.";
-
-		public LabeledValidateAarstalAttribute()
-			: base("^[0-9]{4}$", DEFAULT_ERROR_MESSAGE)
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
+			return _regex.IsMatch(fieldValue);
 		}
 	}
 }

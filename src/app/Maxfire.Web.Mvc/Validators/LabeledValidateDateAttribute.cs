@@ -8,13 +8,13 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledDateValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
-		
-		public class LabeledDateValidator : BaseValidator
+	}
+
+	public class LabeledDateValidator : BaseValidator
+	{
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateDate(fieldValue);
-			}
+			return Conventions.ValidateDate(fieldValue);
 		}
 	}
 }

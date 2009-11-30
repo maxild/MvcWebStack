@@ -83,13 +83,13 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void GetDisplayNameOfPropertyWithLabelAttribute()
+		public void GetDisplayNameOfPropertyWithDisplayNameAttribute()
 		{
 			Assert.Equal("Alder", ReflectionHelper.GetProperty<Foo>(x => x.Age).GetDisplayName());
 		}
 
 		[Fact]
-		public void GetDisplayNameOfPropertyWithoutLabelAttribute()
+		public void GetDisplayNameOfPropertyWithoutDisplayNameAttribute()
 		{
 			Assert.Equal("Name", ReflectionHelper.GetProperty<Foo>(x => x.Name).GetDisplayName());
 		}

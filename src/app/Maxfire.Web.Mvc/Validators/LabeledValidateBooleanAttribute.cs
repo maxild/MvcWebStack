@@ -8,13 +8,13 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledBooleanValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		public class LabeledBooleanValidator : BaseValidator
+	public class LabeledBooleanValidator : BaseValidator
+	{
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateBoolean(fieldValue);
-			}
+			return Conventions.ValidateBoolean(fieldValue);
 		}
 	}
 }

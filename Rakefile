@@ -155,7 +155,10 @@ namespace :build do
 	end
 	
 	task :copy_output_assemblies => :run_tests do
-		build_assemblies.each { |src| cp src, ARCHIVE[:build_output] }
+		build_assemblies.each do |src| 
+			cp src, ARCHIVE[:build_output] 
+			cp src.ext('pdb'), ARCHIVE[:build_output] 
+		end
 	end
 	
 end

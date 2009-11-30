@@ -6,26 +6,26 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledLengthValidator(length))
 		{
 		}
+	}
 
-		public class LabeledLengthValidator : BaseValidator
+	public class LabeledLengthValidator : BaseValidator
+	{
+		private readonly int _length;
+
+		public LabeledLengthValidator(int length)
 		{
-			private readonly int _length;
+			_length = length;
+		}
 
-			public LabeledLengthValidator(int length)
-			{
-				_length = length;
-			}
+		protected override bool IsValidNonEmptyInput(string fieldValue)
+		{
+			int length = fieldValue.Length;
+			return (length == _length);
+		}
 
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				int length = fieldValue.Length;
-				return (length == _length);
-			}
-
-			protected override string BuildErrorMessage()
-			{
-				return "Feltet '{0}' skal indeholde "+ _length +" karakterer.";
-			}
+		protected override string BuildErrorMessage()
+		{
+			return "Feltet '{0}' skal indeholde " + _length + " karakterer.";
 		}
 	}
 }

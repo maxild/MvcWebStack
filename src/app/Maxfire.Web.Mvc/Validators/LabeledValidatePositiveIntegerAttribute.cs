@@ -8,13 +8,13 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledPositiveIntegerValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
+	}
 
-		class LabeledPositiveIntegerValidator : LabeledIntegerValidator
+	public class LabeledPositiveIntegerValidator : LabeledIntegerValidator
+	{
+		protected override bool IsValidValue(long value)
 		{
-			protected override bool IsValidValue(long value)
-			{
-				return (value > 0);
-			}
+			return (value > 0);
 		}
 	}
 }

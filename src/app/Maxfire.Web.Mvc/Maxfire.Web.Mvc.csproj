@@ -38,6 +38,7 @@
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="EditModelFor.cs" />
     <Compile Include="EntityViewModel.cs" />
+    <Compile Include="EnumerationModelBinder.cs" />
     <Compile Include="FluentHtml\Behaviors\IBehavior.cs" />
     <Compile Include="FluentHtml\Behaviors\IBehaviorMarker.cs" />
     <Compile Include="FluentHtml\Behaviors\IMemberBehavior.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="RouteValuesHelper.cs" />
+    <Compile Include="SimpleModelBinder.cs" />
     <Compile Include="TextValuePair.cs" />
     <Compile Include="TypeDescriptorHelper.cs" />
     <Compile Include="UrlBuilder.cs" />
@@ -128,6 +130,7 @@
     <Compile Include="Validators\BaseValidator.cs" />
     <Compile Include="Validators\Extensions\ValidatorExtensions.cs" />
     <Compile Include="Validators\LabeledRegexValidatorAttribute.cs" />
+    <Compile Include="Validators\LabeledValidateAarstalAttribute.cs" />
     <Compile Include="Validators\LabeledValidateBooleanAttribute.cs" />
     <Compile Include="Validators\LabeledValidateCollectionNotEmptyAttribute.cs" />
     <Compile Include="Validators\LabeledValidateDateAttribute.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="Validators\LabeledValidateNonEmptyAttribute.cs" />
     <Compile Include="Validators\LabeledValidateNonNegativeIntegerAttribute.cs" />
     <Compile Include="Validators\LabeledValidatePositiveIntegerAttribute.cs" />
+    <Compile Include="Validators\LabeledValidatePostNrAttribute.cs" />
     <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
     <Compile Include="MicroKernelExtensions.cs" />

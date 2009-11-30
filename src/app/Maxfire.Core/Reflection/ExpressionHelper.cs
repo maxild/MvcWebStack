@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Maxfire.Core.Reflection
 {
-	public class ExpressionHelper
+	public static class ExpressionHelper
 	{
 		public static PropertyInfo GetProperty<TObject>(Expression<Func<TObject, object>> expression)
 		{

@@ -8,13 +8,13 @@ namespace Maxfire.Web.Mvc.Validators
 			: base(() => new LabeledDecimalValidator(), DEFAULT_ERROR_MESSAGE)
 		{
 		}
-		
-		public class LabeledDecimalValidator : BaseValidator
+	}
+
+	public class LabeledDecimalValidator : BaseValidator
+	{
+		protected override bool IsValidNonEmptyInput(string fieldValue)
 		{
-			protected override bool IsValidNonEmptyInput(string fieldValue)
-			{
-				return Conventions.ValidateMachineDecimal(fieldValue);
-			}
+			return Conventions.ValidateMachineDecimal(fieldValue);
 		}
 	}
 }

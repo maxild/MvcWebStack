@@ -4,10 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Castle.Components.Validator;
+using Maxfire.Core.Reflection;
 
 namespace Maxfire.Web.Mvc
 {
-	public class CastleModelValidator : ModelValidator, IFormValidator
+	public class CastleModelValidator : ModelValidator
 	{
 		// Todo: Maybe write custom runner => use IValidationRegistry and nothing else (see performer in castle)
 		private readonly IValidatorRunner _validatorRunner;
@@ -62,6 +63,21 @@ namespace Maxfire.Web.Mvc
 		//    // Todo: Instead of returning empty rule set, do something
 		//    return base.GetClientValidationRules();
 		//}
+	}
+
+	public interface IFormValidator
+	{
+		IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input);
+	}
+
+	public class CastleFormValidator : IFormValidator
+	{
+		private readonly IValidatorRunner _validatorRunner;
+
+		public CastleFormValidator(IValidatorRunner validatorRunner)
+		{
+			_validatorRunner = validatorRunner;
+		}
 
 		public IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input)
 		{
@@ -76,7 +92,9 @@ namespace Maxfire.Web.Mvc
 					List<string> errorMessages = new List<string>();
 					foreach (var errorMessage in errorsForProperty)
 					{
-						errorMessages.Add(errorMessage);
+						// HACK: We need to write our own validation performer to get to the property info
+						var displayName = typeof (TInputModel).GetProperty(propertyName).GetDisplayName();
+						errorMessages.Add(formatErrorMessage(errorMessage, displayName));
 					}
 
 					result.Add(propertyName, errorMessages.ToArray());
@@ -84,10 +102,10 @@ namespace Maxfire.Web.Mvc
 			}
 			return result;
 		}
-	}
 
-	public interface IFormValidator
-	{
-		IDictionary<string, string[]> GetValidationErrorsFor<TInputModel>(TInputModel input);
+		private static string formatErrorMessage(string errorMessage, string propertyName)
+		{
+			return string.Format(CultureInfo.CurrentCulture, errorMessage, propertyName);
+		}
 	}
 }

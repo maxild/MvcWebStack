@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using EnumDisplayNameAttribute = Maxfire.Core.ComponentModel.DisplayNameAttribute;
 
 namespace Maxfire.Core.Reflection
 {
@@ -11,15 +12,35 @@ namespace Maxfire.Core.Reflection
 		public static string GetDisplayName(this MemberInfo property)
 		{
 			var displayNameAttribute = property.GetCustomAttribute<DisplayNameAttribute>();
-			string displayName = displayNameAttribute != null ? displayNameAttribute.DisplayName : property.Name;
-			return displayName;
+			if (displayNameAttribute != null)
+			{
+				return displayNameAttribute.DisplayName;
+			}
+			
+			var enumDisplayNameAttribute = property.GetCustomAttribute<EnumDisplayNameAttribute>();
+			if (enumDisplayNameAttribute != null)
+			{
+				return enumDisplayNameAttribute.DisplayName;
+			}
+			
+			return property.Name;
 		}
 
 		public static string GetDisplayName(this PropertyDescriptor descriptor)
 		{
 			var displayNameAttribute = descriptor.Attributes.OfType<DisplayNameAttribute>().FirstOrDefault();
-			string displayName = displayNameAttribute != null ? displayNameAttribute.DisplayName : descriptor.Name;
-			return displayName;
+			if (displayNameAttribute != null)
+			{
+				return displayNameAttribute.DisplayName;
+			}
+
+			var enumDisplayNameAttribute = descriptor.Attributes.OfType<EnumDisplayNameAttribute>().FirstOrDefault();
+			if (enumDisplayNameAttribute != null)
+			{
+				return enumDisplayNameAttribute.DisplayName;
+			}
+
+			return descriptor.Name;
 		}
 
 		public static string GetDisplayName<TModel>(this Expression<Func<TModel, object>> propertyExpression)
@@ -52,7 +73,7 @@ namespace Maxfire.Core.Reflection
 				return null;
 			}
 
-			var displayNameAttribute = field.GetCustomAttribute<DisplayNameAttribute>();
+			var displayNameAttribute = field.GetCustomAttribute<EnumDisplayNameAttribute>();
 			if (displayNameAttribute != null)
 			{
 				displayName = displayNameAttribute.DisplayName;
