@@ -31,7 +31,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AbstractModelUpdater.cs" />
     <Compile Include="ActionFilterExtensions.cs" />
+    <Compile Include="AutoMapper\AbstractEnumerationFormatter.cs" />
+    <Compile Include="AutoMapper\BooleanJaNejFormatter.cs" />
+    <Compile Include="AutoMapper\BooleanTrueFalseFormatter.cs" />
+    <Compile Include="AutoMapper\ConventionsTypeConverter.cs" />
+    <Compile Include="AutoMapper\ConventionsValueFormatter.cs" />
+    <Compile Include="AutoMapper\ConventionsValueResolver.cs" />
+    <Compile Include="AutoMapper\DateFormatter.cs" />
+    <Compile Include="AutoMapper\DecimalFormatter.cs" />
+    <Compile Include="AutoMapper\EnumerationToNameFormatter.cs" />
+    <Compile Include="AutoMapper\EnumerationToTextFormatter.cs" />
+    <Compile Include="AutoMapper\EnumerationToValueFormatter.cs" />
+    <Compile Include="AutoMapper\EnumToTextFormatter.cs" />
+    <Compile Include="AutoMapper\EnumToValueFormatter.cs" />
+    <Compile Include="AutoMapper\HtmlEncodeFormatter.cs" />
+    <Compile Include="AutoMapper\IConventionsTypeConverter.cs" />
+    <Compile Include="AutoMapper\MachineDecimalFormatter.cs" />
+    <Compile Include="AutoMapper\ValueFormatter.cs" />
     <Compile Include="CastleControllerFactory.cs" />
     <Compile Include="CastleModelValidator.cs" />
     <Compile Include="CastleModelValidatorProvider.cs" />
@@ -104,6 +122,7 @@
     <Compile Include="JsonNetResult.cs" />
     <Compile Include="MappingConventions.cs" />
     <Compile Include="ModelStateExtensions.cs" />
+    <Compile Include="ModelUnflattener.cs" />
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedControllerActionInvoker.cs" />
     <Compile Include="OpinionatedListSparkView.cs" />
