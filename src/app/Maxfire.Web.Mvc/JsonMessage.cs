@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Web.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -38,16 +39,17 @@ namespace Maxfire.Web.Mvc
 
 		public static JsonNetResult JsonNetResult(object data)
 		{
-			return JsonNetResult(data, null, null, Formatting.None);
+			return JsonNetResult(data, null, null, JsonRequestBehavior.DenyGet, Formatting.None);
 		}
 
-		public static JsonNetResult JsonNetResult(object data, string contentType, Encoding contentEncoding, Formatting formatting)
+		public static JsonNetResult JsonNetResult(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior, Formatting formatting)
 		{
 			return new JsonNetResult
 			       	{
 			       		Data = data,
 			       		ContentType = contentType,
 			       		ContentEncoding = contentEncoding,
+						JsonRequestBehavior = behavior,
 			       		Formatting = formatting,
 			       		SerializerSettings = new JsonSerializerSettings { MappingResolver = new CamelCaseMappingResolver() }
 			       	};

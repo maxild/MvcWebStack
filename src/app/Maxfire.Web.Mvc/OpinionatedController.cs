@@ -46,14 +46,14 @@ namespace Maxfire.Web.Mvc
 			get { return ControllerContext.RequestContext.HttpContext.Request.ApplicationPath; }
 		}
 
-		protected override JsonResult Json(object data, string contentType, Encoding contentEncoding)
+		protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)
 		{
-			return Json(data, contentType, contentEncoding, Formatting.None);
+			return Json(data, contentType, contentEncoding, behavior, Formatting.None);
 		}
 
-		protected virtual JsonNetResult Json(object data, string contentType, Encoding contentEncoding, Formatting formatting)
+		protected virtual JsonNetResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior, Formatting formatting)
 		{
-			return JsonUtil.JsonNetResult(data, contentType, contentEncoding, formatting);
+			return JsonUtil.JsonNetResult(data, contentType, contentEncoding, behavior, formatting);
 		}
 
 		public bool IsAjaxRequest

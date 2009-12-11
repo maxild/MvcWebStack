@@ -19,11 +19,6 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 			return converted;
 		}
 
-		public static ViewResult AssertViewRendered(this ActionResult result)
-		{
-			return result.AssertResultIs<ViewResult>();
-		}
-
 		public static ViewResult ForView(this ViewResult result, string viewName)
 		{
 			if (result.ViewName != viewName)
@@ -33,27 +28,40 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 			return result;
 		}
 
+		public static TModel WithModel<TModel>(this JsonResult jsonResult)
+		{
+			return withModel<JsonResult, TModel>(jsonResult, result => result.Data);
+		}
+
 		public static TModel WithModel<TModel>(this ViewResult viewResult)
 		{
-			object actualModel = viewResult.ViewData.Model;
+			return withModel<ViewResult, TModel>(viewResult, result => result.ViewData.Model);
+		}
+
+		private static TModel withModel<TActionResult, TModel>(TActionResult result, Func<TActionResult, object> modelAccessor)
+		{
+			object actualModel = modelAccessor(result);
 			var expectedType = typeof(TModel);
 
 			if (actualModel == null && expectedType.IsValueType)
 			{
 				throw new ActionResultAssertionException(
 					string.Format("Expected model is a value type of type '{0}', but actual model is NULL.",
-					              expectedType.Name));
+								  expectedType.Name));
 			}
 
-			if (actualModel == null) return default(TModel);
+			if (actualModel == null)
+			{
+				return default(TModel);
+			}
 
 			if (!expectedType.IsAssignableFrom(actualModel.GetType()))
 			{
 				throw new ActionResultAssertionException(string.Format("Expected model type is '{0}', actual model type was '{1}'.",
-				                                                       expectedType.Name, actualModel.GetType().Name));
+																	   expectedType.Name, actualModel.GetType().Name));
 			}
 
-			return (TModel) actualModel;
+			return (TModel)actualModel;
 		}
 
 		public class ActionResultAssertionException : Exception

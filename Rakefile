@@ -115,9 +115,9 @@ namespace :build do
 	build_assemblies = []
 	
 	FileList["src/test/**/bin/#{CONFIGURATION}/#{PRODUCT_NS}.*.UnitTests.dll"].each do |test_assembly|
-		# get the name of the assembly without extension (Maxfire.Web.Mvc.UnitTests)
+		# get the name of the assembly without extension (e.g. Maxfire.Web.Mvc.UnitTests)
 		test_assembly_name =  File.basename(test_assembly).ext
-		# Find the corresponding production asssembly (Maxfire.Web.Mvc.dll)
+		# Find the corresponding production assembly (e.g. Maxfire.Web.Mvc.dll)
 		build_assemblies << test_assembly.slice(0, test_assembly.size - '.UnitTests.dll'.size) + '.dll'
 		# slice away the Maxfire. prefix and the .UnitTests postfix.
 		name = test_assembly_name.slice(PRODUCT_NS.size + 1, test_assembly_name.size - (PRODUCT_NS.size + 1 + '.UnitTests'.size))
@@ -154,6 +154,11 @@ namespace :build do
 		ncover_explorer.html_results_filename = 'MaxfireCoverageReport.html'
 	end
 	
+	# This 'hacky' technique of copying production assemblies to the build output folder
+	# relies on 'run unit tests' task. Each unit test project has to be setup satisfying
+	# the following rules:
+	#   1) A reference to xunit.dll
+	#   2) A reference to the corresponding production assembly under test (i.e A.UnitTests.dll references A.dll).
 	task :copy_output_assemblies => :run_tests do
 		build_assemblies.each do |src| 
 			cp src, ARCHIVE[:build_output] 
