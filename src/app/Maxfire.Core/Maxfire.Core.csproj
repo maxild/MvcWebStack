@@ -50,6 +50,7 @@
     <Compile Include="EnumerationConverter.cs" />
     <Compile Include="Extensions\BasicExtensions.cs" />
     <Compile Include="Extensions\PrimitiveExtensions.cs" />
+    <Compile Include="Extensions\ThrowGuardExtension.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IRepository.cs" />
