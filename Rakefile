@@ -170,6 +170,17 @@ end
 
 namespace :util do
 
+	desc "Force NCover and xUnit.net to run under WOW64 (x86 emulator that allows 32-bit Windows applications to run on 64-bit Windows"
+	task :ncover64 do
+		ncover_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'tools', 'ncover', 'NCover.Console.exe'))
+		xunit_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'tools', 'xunit', 'xunit.console.exe'))
+		working_dir = File.join("#{ENV['ProgramW6432']}", 'Microsoft SDKs', 'Windows', 'v7.0', 'bin')
+		cd working_dir do
+			sh "CorFlags.exe #{ncover_path} /32BIT+"
+			sh "CorFlags.exe #{xunit_path} /32BIT+"
+		end
+	end
+	
 	desc "Start Visual Studio"
 	task :ide do
 		working_folder = File.join(ROOT, 'src')

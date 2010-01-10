@@ -32,23 +32,23 @@ module Rake
 			fail "dest must be a directory" unless File.directory?(dest)
 			excl_regex = Regexp.new(exclude_pattern) if exclude_pattern
 			Dir.foreach(src) do |f|
-        next if f == "." || f == ".." || f == ".svn"
-    		current_src = File.join(src, f)
-    		current_dest = File.join(dest, f)
-        is_dir = File.directory?(current_src)
-    		if is_dir
-    			Dir.mkdir current_dest unless File.exists? current_dest
-  			else
-  				copy_file current_src, current_dest unless excl_regex and excl_regex.match(f)
+        		next if f == "." || f == ".." || f == ".svn"
+    			current_src = File.join(src, f)
+    			current_dest = File.join(dest, f)
+        		is_dir = File.directory?(current_src)
+    			if is_dir
+    				Dir.mkdir current_dest unless File.exists? current_dest
+  				else
+  					copy_file current_src, current_dest unless excl_regex and excl_regex.match(f)
 				end
-        cp_wo_svn(current_src, current_dest, exclude_pattern) if is_dir 
+        		cp_wo_svn(current_src, current_dest, exclude_pattern) if is_dir 
+    		end
     	end
-    end
-    
-    def cp_wo_svn(src, dest)
-    	TaskUtils::cp_wo_svn(src, dest)
-  	end
-  	
+	    
+	    def cp_wo_svn(src, dest)
+	    	TaskUtils::cp_wo_svn(src, dest)
+	  	end
+	  	
 		def self.flash(msg)
 			m = msg.upcase
 			line = "=" * m.length 
@@ -62,15 +62,24 @@ module Rake
 		end
 		
 		# both win32 and cygwin can live with a normalized path
-		def normalize(path)
-    	path.gsub(/\\/, '/')  
-    end
-    protected :normalize
-    
-    def nil_or_empty?(x)
+		def self.normalize(path)
+	    	path.gsub(/\\/, '/')
+	  	end
+	    
+	  	def normalize(path)
+	  		TaskUtils::normalize(path)
+		end
+	  	protected :normalize
+	    
+	  	def self.to_windows_path(path)
+	  		normalize(path).gsub(/\//, '\\')
+		end
+		
+	    def nil_or_empty?(x)
 			x.nil? || x.empty?
 		end
 		protected :nil_or_empty?
+	
 		# hack to find out if we are running inside IronRuby
 		# could also check if load_assembly method is supported 
 		def self.ir?
@@ -142,7 +151,7 @@ module Rake
 		def initialize(file)
 			TaskUtils::require_xml
 			execute_in do |ruby|
-					ruby.net { 
+				ruby.net { 
 					xpath_doc = System::Xml::XPath::XPathDocument.new(file)
 					@xpath_nav = xpath_doc.create_navigator
 				}
@@ -175,10 +184,10 @@ module Rake
 				}	
 				ruby.mri {
 					stylesheet_doc = LibXML::XML::Document.file(xslt_file)
-  				stylesheet = LibXSLT::XSLT::Stylesheet.new(stylesheet_doc)
-  				xml_doc = XML::Document.file(xml_file)
-  				html = stylesheet.apply(xml_doc)
-  				File.open(file, 'w') do |f|
+  					stylesheet = LibXSLT::XSLT::Stylesheet.new(stylesheet_doc)
+  					xml_doc = XML::Document.file(xml_file)
+  					html = stylesheet.apply(xml_doc)
+  					File.open(file, 'w') do |f|
 						f.puts html
 					end
 				}
