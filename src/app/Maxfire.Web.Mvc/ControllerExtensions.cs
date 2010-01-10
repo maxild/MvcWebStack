@@ -72,10 +72,7 @@ namespace Maxfire.Web.Mvc
 		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller, Expression<Action<TController>> action)
 			where TController : OpinionatedController
 		{
-			// When calling RedirectToAction from a controller super layer type this is necessary, because otherwise
-			// the name of the controller will be resolved as typeof(TController).Name, and the name of the super 
-			// layer type is no good.
-			string controllerName = controller.GetType().Name;
+			string controllerName = typeof(TController).Name;
 			if (controller.IsAjaxRequest)
 			{
 				string url = controller.UrlFor(action, controllerName);

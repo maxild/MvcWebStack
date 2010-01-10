@@ -6,8 +6,9 @@ using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedResourceControllerWithoutNewMethod<TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> 
+	public abstract class OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> 
 		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>, IResourceController<TInputModel, TId>
+		where TController : OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>, new()
 		where TModel : class, IEntity<TId>
 	{
@@ -34,7 +35,7 @@ namespace Maxfire.Web.Mvc
 			if (model == null)
 			{
 				FlashNotice(String.Format("Entitet med id '{0}' findes ikke.", id));
-				return this.RedirectToAction(x => x.Index());
+				return this.RedirectToAction<TController>(x => x.Index());
 			}
 			var showModel = Mapper.Map<TModel, TShowModel>(model);
 			return View(showModel);
@@ -47,7 +48,7 @@ namespace Maxfire.Web.Mvc
 			if (model == null)
 			{
 				FlashNotice("Entitet findes ikke.");
-				return this.RedirectToAction(x => x.Index());
+				return this.RedirectToAction<TController>(x => x.Index());
 			}
 			var editModel = getEditModelFor(model);
 			return EditViewFor(editModel);
@@ -63,7 +64,7 @@ namespace Maxfire.Web.Mvc
 			                    	{
 			                    		Repository.Save(model);
 			                    		FlashNotice("Entitet er blevet gemt.");
-			                    		return this.RedirectToAction(x => x.Show(model.Id));
+			                    		return this.RedirectToAction<TController>(x => x.Show(model.Id));
 			                    	});
 		}
 
@@ -77,7 +78,7 @@ namespace Maxfire.Web.Mvc
 			                    	{
 			                    		Repository.Save(model);
 			                    		FlashNotice("Entitet er blevet opdateret.");
-			                    		return this.RedirectToAction(x => x.Index());
+			                    		return this.RedirectToAction<TController>(x => x.Index());
 			                    	});
 		}
 
@@ -87,7 +88,7 @@ namespace Maxfire.Web.Mvc
 			TModel model = Repository.GetProxyById(id);
 			Repository.Delete(model);
 			FlashNotice("Entitet er blevet slettet.");
-			return this.RedirectToAction(x => x.Index());
+			return this.RedirectToAction<TController>(x => x.Index());
 		}
 
 		protected abstract TEditModel GetEditModelFor(TInputModel input);
@@ -105,7 +106,9 @@ namespace Maxfire.Web.Mvc
 		}
 	}
 
-	public abstract class OpinionatedResourceController<TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> : OpinionatedResourceControllerWithoutNewMethod<TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId>
+	public abstract class OpinionatedResourceController<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> 
+		: OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId>
+		where TController : OpinionatedResourceController<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>, new()
 		where TModel : class, IEntity<TId>
 	{

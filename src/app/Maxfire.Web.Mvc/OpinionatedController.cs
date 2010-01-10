@@ -58,7 +58,7 @@ namespace Maxfire.Web.Mvc
 
 		public bool IsAjaxRequest
 		{
-			get { return Request.IsAjaxRequest(); }
+			get { return Request != null ? Request.IsAjaxRequest() : false; }
 		}
 	}
 }
