@@ -29,6 +29,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons.UnitTests", "test\Maxfire.Web.Mvc.TestCommons.UnitTests\Maxfire.Web.Mvc.TestCommons.UnitTests.csproj", "{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonServiceLocator", "CommonServiceLocator", "{8E0318F9-C5DE-4179-92C5-F88FBF13B608}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.CommonServiceLocator.CastleAdapter.UnitTests", "test\Maxfire.CommonServiceLocator.CastleAdapter.UnitTests\Maxfire.CommonServiceLocator.CastleAdapter.UnitTests.csproj", "{B5B90B06-2BD1-49B5-987D-B5A9DC99E557}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.CommonServiceLocator.CastleAdapter", "app\Maxfire.CommonServiceLocator.CastleAdapter\Maxfire.CommonServiceLocator.CastleAdapter.csproj", "{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +81,14 @@ Global
 		{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,5 +104,7 @@ Global
 		{DAF1C46B-E731-4E96-997A-8F111E7FE50E} = {9AF0AC76-B59B-4CDB-895D-59CAC4F22ADB}
 		{AF0C4791-DE9C-4353-B344-084E9B0C1770} = {36CFDA1F-AD39-443E-AAA6-B3DA58300660}
 		{B3335CA1-0B7F-4161-948D-11826EF90381} = {36CFDA1F-AD39-443E-AAA6-B3DA58300660}
+		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557} = {8E0318F9-C5DE-4179-92C5-F88FBF13B608}
+		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6} = {8E0318F9-C5DE-4179-92C5-F88FBF13B608}
 	EndGlobalSection
 EndGlobal
