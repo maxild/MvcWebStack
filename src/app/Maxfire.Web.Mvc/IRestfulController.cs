@@ -2,7 +2,7 @@ using System.Web.Mvc;
 
 namespace Maxfire.Web.Mvc
 {
-	public interface IRestfulController<TInputModel, TId> 
+	public interface IRestfulController<TInputModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>
 	{
 		string BindingPrefix { get; }
@@ -11,6 +11,7 @@ namespace Maxfire.Web.Mvc
 		ActionResult Update(TInputModel input);
 	}
 
+	/*
 	public interface IResourceController<TInputModel, TId> : IRestfulController<TInputModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>
 	{
@@ -30,4 +31,5 @@ namespace Maxfire.Web.Mvc
 		ActionResult Edit(TId parentId, TId id);
 		ActionResult Destroy(TId parentId, TId id);
 	}
+	*/
 }

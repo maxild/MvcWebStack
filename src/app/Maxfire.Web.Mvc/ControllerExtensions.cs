@@ -18,36 +18,36 @@ namespace Maxfire.Web.Mvc
 			return !controller.ModelState.IsValid;
 		}
 
-		public static void AddModelErrorFor<TViewModel, TId>(this IRestfulController<TViewModel, TId> controller, Expression<Func<TViewModel, object>> modelProperty, string errorMessage)
-			where TViewModel : class, IEntityViewModel<TId>
+		public static void AddModelErrorFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty, string errorMessage)
+			where TInputModel : class, IEntityViewModel<TId>
 		{
 			string name = controller.getModelName(modelProperty);
 			controller.ModelState.AddModelError(name, errorMessage);
 		}
 
-		public static ModelState GetModelStateFor<TViewModel, TId>(this IRestfulController<TViewModel, TId> controller, Expression<Func<TViewModel, object>> modelProperty)
-			where TViewModel : class, IEntityViewModel<TId>
+		public static ModelState GetModelStateFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty)
+			where TInputModel : class, IEntityViewModel<TId>
 		{
 			string name = controller.getModelName(modelProperty);
 			ModelState modelState;
 			return controller.ModelState.TryGetValue(name, out modelState) ? modelState : null;
 		}
 
-		public static bool IsInputInvalidFor<TViewModel, TId>(this IRestfulController<TViewModel, TId> controller, Expression<Func<TViewModel, object>> expression)
-			where TViewModel: class, IEntityViewModel<TId>
+		public static bool IsInputInvalidFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> expression)
+			where TInputModel: class, IEntityViewModel<TId>
 		{
 			ModelState modelState = controller.GetModelStateFor(expression);
 			return (modelState != null && modelState.Errors != null && modelState.Errors.Count > 0);
 		}
 
-		public static bool IsInputValidFor<TViewModel, TId>(this IRestfulController<TViewModel, TId> controller, Expression<Func<TViewModel, object>> expression)
-			where TViewModel : class, IEntityViewModel<TId>
+		public static bool IsInputValidFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> expression)
+			where TInputModel : class, IEntityViewModel<TId>
 		{
 			return !controller.IsInputInvalidFor(expression);
 		}
 
-		private static string getModelName<TViewModel, TId>(this IRestfulController<TViewModel, TId> controller, Expression<Func<TViewModel, object>> modelProperty)
-			where TViewModel : class, IEntityViewModel<TId>
+		private static string getModelName<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty)
+			where TInputModel : class, IEntityViewModel<TId>
 		{
 			string name = modelProperty.GetNameFor();
 			if (controller.BindingPrefix.IsNotEmpty())

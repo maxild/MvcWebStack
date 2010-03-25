@@ -79,6 +79,7 @@ namespace Maxfire.Web.Mvc.Validators
 		}
 
 		public ValidationResult ValidationResult { get; private set; }
+
 		public override string Message
 		{
 			get

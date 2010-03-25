@@ -7,7 +7,7 @@ using Maxfire.Core;
 namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> 
-		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>, IResourceController<TInputModel, TId>
+		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>
 		where TController : OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>, new()
 		where TModel : class, IEntity<TId>

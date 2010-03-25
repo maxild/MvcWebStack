@@ -26,12 +26,13 @@ namespace Maxfire.Web.Mvc
 			
 			if (!input.IsTransient && _repository.GetById(input.Id) == null)
 			{
+				// This can happen if the resource have been destroyed by a different request/session.
 				validationResult = new ValidationResult();
 				validationResult.AddErrorFor<TInputModel>(x => x.Id,
 				                                               string.Format("Entitet med id '{0}' findes ikke.", input.Id));
 				return validationResult.GetAllErrors();
 			}
-
+			
 			validationResult = _modelUpdater.Validate(input);
 			var validationErrors = validationResult.GetAllErrors();
 			return validationErrors;

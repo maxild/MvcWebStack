@@ -4,7 +4,7 @@ using Maxfire.Core;
 namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedSubordinateResourceController<TInputModel, TViewModel, TShowModel, TEditModel, TParentModel, TModel, TId> 
-		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>, ISubordinateResourceController<TInputModel, TId>
+		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>, new()
 		where TModel : class, IEntity<TId>
 	{
