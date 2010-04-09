@@ -35,6 +35,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.CommonServiceLocato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.CommonServiceLocator.CastleAdapter", "app\Maxfire.CommonServiceLocator.CastleAdapter\Maxfire.CommonServiceLocator.CastleAdapter.csproj", "{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skat", "Skat", "{7C1BEFA4-1251-4683-B8DC-E88EE4929D39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Skat", "app\Maxfire.Skat\Maxfire.Skat.csproj", "{96028503-E4FA-4BFA-A88F-6307F43965D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Skat.UnitTests", "test\Maxfire.Skat.UnitTests\Maxfire.Skat.UnitTests.csproj", "{6EDAD16A-DCCE-46DB-83DC-A4033710F337}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +95,14 @@ Global
 		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96028503-E4FA-4BFA-A88F-6307F43965D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96028503-E4FA-4BFA-A88F-6307F43965D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96028503-E4FA-4BFA-A88F-6307F43965D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96028503-E4FA-4BFA-A88F-6307F43965D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EDAD16A-DCCE-46DB-83DC-A4033710F337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EDAD16A-DCCE-46DB-83DC-A4033710F337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EDAD16A-DCCE-46DB-83DC-A4033710F337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EDAD16A-DCCE-46DB-83DC-A4033710F337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,5 +120,7 @@ Global
 		{B3335CA1-0B7F-4161-948D-11826EF90381} = {36CFDA1F-AD39-443E-AAA6-B3DA58300660}
 		{B5B90B06-2BD1-49B5-987D-B5A9DC99E557} = {8E0318F9-C5DE-4179-92C5-F88FBF13B608}
 		{8EC4D673-EF55-49C2-8757-2DCEFA59B2A6} = {8E0318F9-C5DE-4179-92C5-F88FBF13B608}
+		{96028503-E4FA-4BFA-A88F-6307F43965D6} = {7C1BEFA4-1251-4683-B8DC-E88EE4929D39}
+		{6EDAD16A-DCCE-46DB-83DC-A4033710F337} = {7C1BEFA4-1251-4683-B8DC-E88EE4929D39}
 	EndGlobalSection
 EndGlobal
