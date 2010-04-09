@@ -37,7 +37,9 @@
     <Compile Include="Pensionsbidrag.cs" />
     <Compile Include="PersonligIndkomst.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Skatteberegner.cs" />
     <Compile Include="SkatteberegningInput.cs" />
+    <Compile Include="SkatteberegningResult.cs" />
     <Compile Include="Skattesatser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
