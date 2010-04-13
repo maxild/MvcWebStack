@@ -12,7 +12,7 @@ PRODUCT_DESC = 'Maxfire Webstack Libraries'
 PRODUCT_VERSION = '0.1'
 COPYRIGHT = 'Copyright 2009 Morten Maxild. All rights reserved.';
 CONFIGURATION = 'debug'
-SOLUTION = 'Maxfire.sln'
+SOLUTION = 'Maxfire-vs2008.sln'
 
 ARCHIVE = {
 	:root => 'archive',
