@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Practices.ServiceLocation;
 using Castle.MicroKernel;
+using Microsoft.Practices.ServiceLocation;
 
 namespace Maxfire.CommonServiceLocator.CastleAdapter
 {
