@@ -64,18 +64,18 @@ module Rake
 		# both win32 and cygwin can live with a normalized path
 		def self.normalize(path)
 	    	path.gsub(/\\/, '/')
-	  	end
+	  end
 	    
-	  	def normalize(path)
-	  		TaskUtils::normalize(path)
+	  def normalize(path)
+	  	TaskUtils::normalize(path)
 		end
 	  	protected :normalize
 	    
-	  	def self.to_windows_path(path)
-	  		normalize(path).gsub(/\//, '\\')
+	  def self.to_windows_path(path)
+	  	normalize(path).gsub(/\//, '\\')
 		end
 		
-	    def nil_or_empty?(x)
+	  def nil_or_empty?(x)
 			x.nil? || x.empty?
 		end
 		protected :nil_or_empty?
@@ -94,12 +94,10 @@ module Rake
 		
 		def self.require_xml
 			if ir?
-				# IronRuby: Use .NET Framework to work with XML
 				require 'mscorlib'
 				require 'System'
-				require 'System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'		
+				require 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
 			else
-				# MRI: Use ruby-libxml and ruby-libxslt gems to work with XML
 				require 'xml'
 				require 'libxslt'
 			end
@@ -357,21 +355,31 @@ using System.Runtime.InteropServices;
 	class MsBuildTask < ToolTask
 		remove_tool_attr # hide command_line attribute, and make tool_name readonly
 		private :tool_path= # also make tool_path readonly
-		attr_accessor :verbosity_level, :project, :toolsversion, :targets, :properties 
+		attr_accessor :verbosity_level, :project, :targets, :properties
+		attr_accessor :target_framework_version, :tools_version
 		def init
 			super
-			@tool_name = 'msbuild.exe'
-			@tool_path = File.join('c:', 'windows', 'Microsoft.NET', 'Framework', 'v3.5')
+			@tool_name = 'MSBuild.exe'
 			@properties = Hash.new
-			@toolsversion = '3.5'
 			@targets = []
+			# Default values are MSBuild v4, .NET FX 4 and minimal logging
+			@tools_version = '4.0'
+			@target_framework_version = 'v4.0'
 			@verbosity_level = 'minimal'
+		end
+		def tool_path
+			require 'win32/registry'
+			hklm = ::Win32::Registry::HKEY_LOCAL_MACHINE
+			hklm.open("Software\\Microsoft\\MSBuild\\ToolsVersions\\#{@tools_version}") do |reg|
+    		return reg['MSBuildToolsPath']
+			end
 		end
 		def tool_args
 			raise "No project has been passed to MsBuild" if nil_or_empty?(@project)
 			flash "compiling #{File.basename(@project)}"
 			args  = "#{project} /maxcpucount"
-			args += " /toolsversion:#{@toolsversion}"
+			args += " /ToolsVersion:#{@tools_version}"
+			args += " /property:TargetFrameworkVersion=#{@target_framework_version}"
 			args += " /verbosity:#{@verbosity_level}"
 			if @targets.nil? || @targets.empty?
 				args += " /target:Build" 

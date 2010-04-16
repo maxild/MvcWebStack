@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'tools/rake/tasks'
-#require 'find'
-#require 'zip/zip'
-#require 'zip/zipfilesystem'
 
 ROOT = File.dirname(__FILE__)
 COMPANY = 'BRFKredit a/s'
@@ -12,7 +9,7 @@ PRODUCT_DESC = 'Maxfire Webstack Libraries'
 PRODUCT_VERSION = '0.1'
 COPYRIGHT = 'Copyright 2009 Morten Maxild. All rights reserved.';
 CONFIGURATION = 'debug'
-SOLUTION = 'Maxfire-vs2008.sln'
+SOLUTION = 'Maxfire-vs2010.sln'
 
 ARCHIVE = {
 	:root => 'archive',
@@ -83,6 +80,8 @@ namespace :build do
 	
 	desc "Compile all code"
 	Rake::MsBuildTask.new(:compile => [:init, :version]) do |msbuild|
+		msbuild.tools_version = '4.0'
+		msbuild.target_framework_version = 'v3.5'
 		msbuild.project = File.join('src', SOLUTION)
 		msbuild.targets << 'Clean'
 		msbuild.targets << 'Build'
