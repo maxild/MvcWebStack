@@ -35,8 +35,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Beloebsgraenser.cs" />
+    <Compile Include="Bundskat.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Indkomster.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />
+    <Compile Include="ModregningPair.cs" />
     <Compile Include="Pensionsbidrag.cs" />
     <Compile Include="PersonligIndkomst.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -44,6 +48,7 @@
     <Compile Include="SkatteberegningInput.cs" />
     <Compile Include="SkatteberegningResult.cs" />
     <Compile Include="Skattesatser.cs" />
+    <Compile Include="Topskat.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
