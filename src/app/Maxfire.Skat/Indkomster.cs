@@ -10,7 +10,8 @@
 		public decimal NettoKapitalIndkomst { get; set; }
 		
 		/// <summary>
-		/// // Det beløb, der ikke gives fradrag for i topskatten
+		/// De personlige indkomst fradragne og ikke medregnede beløb omfattet 
+		/// af beløbsgrænsen i pensionsbeskatningslovens § 16, stk. 1.
 		/// </summary>
 		public decimal KapitalPensionsindskud { get; set; }
 	}

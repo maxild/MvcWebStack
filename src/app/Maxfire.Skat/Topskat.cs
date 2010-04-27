@@ -68,7 +68,9 @@ namespace Maxfire.Skat
 
 				return grundlag.AsIndividual();
 			}
-			
+
+			var second = input.Second();
+
 			// Note: grundlagene ved gifte er mere komplicerede
 			// 1) grundlag uden nettokapitalindkomst
 			// 2) grundlag med nettokapitalindkomst
@@ -86,7 +88,7 @@ namespace Maxfire.Skat
 	{
 		public IList<decimal> BeregnSkat(IList<Indkomster> input)
 		{
-			TopskatGrundlagBeregner topskatGrundlagBeregner = new TopskatGrundlagBeregner();
+			var topskatGrundlagBeregner = new TopskatGrundlagBeregner();
 
 			if (input.IsIndividual())
 			{
@@ -101,12 +103,12 @@ namespace Maxfire.Skat
 			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger et bundfradrag på 190.000 kr. 
 			var grundlagUdenNettokapitalindkomst = topskatGrundlagBeregner.BeregnGrundlagUdenNettokapitalindkomst(input);
 
-			//decimal topskat1 = grundlagUdenNettokapitalindkomst * Constants.Topskattesats;
+			var first = input.First(); var second = input.Second();
 
+			//decimal topskat1 = grundlagUdenNettokapitalindkomst * Constants.Topskattesats;
 
 			// TODO
 			return null;
 		}
 	}
-
 }
