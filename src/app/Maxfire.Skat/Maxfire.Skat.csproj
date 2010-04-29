@@ -41,7 +41,6 @@
     <Compile Include="ValueTupple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />
-    <Compile Include="ModregningPair.cs" />
     <Compile Include="Pensionsbidrag.cs" />
     <Compile Include="PersonligIndkomst.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

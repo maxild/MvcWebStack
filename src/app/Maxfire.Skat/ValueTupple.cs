@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
 {
-	public class ValueTupple<T> : IEnumerable<T>
+	public class ValueTupple<T> : IEnumerable<T>, IEquatable<ValueTupple<T>>
 	{
 		private readonly IList<T> _list;
 
@@ -28,6 +29,57 @@ namespace Maxfire.Skat
 				throw new ArgumentException("The list must contain either one or two elements");
 			}
 			_list = list;
+		}
+
+		public override string ToString()
+		{
+			return "(" + string.Join(", ", _list.Select(x => x.ToString()).ToArray()) + ")";
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = 1;
+				for (int i = 0; i < Size; i++)
+				{
+					hashCode = (hashCode * 397) ^ this[i].GetHashCode();
+				}
+				return hashCode;
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as ValueTupple<T>);
+		}
+
+		public bool Equals(ValueTupple<T> other)
+		{
+			if (other == null)
+			{
+				return false;
+			}
+
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+
+			if (Size != other.Size)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < Size; i++)
+			{
+				if (false == this[i].Equals(other[i]))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		public T this[int index]

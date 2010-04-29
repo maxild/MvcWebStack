@@ -417,6 +417,16 @@ namespace Maxfire.Core
 			get { return x => lessThanOrEqual(x, Zero); }
 		}
 
+		public static Func<T, T, T> Max
+		{
+			get { return (x, y) => GreaterThanOrEqual(x, y) ? x : y; }
+		}
+
+		public static Func<T, T, T> Min
+		{
+			get { return (x, y) => LessThanOrEqual(x, y) ? x : y; }
+		}
+
 		public static Func<T, int> Sign
 		{
 			get

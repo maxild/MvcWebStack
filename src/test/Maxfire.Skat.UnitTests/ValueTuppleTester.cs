@@ -6,37 +6,79 @@ namespace Maxfire.Skat.UnitTests
 	public class ValueTuppleTester
 	{
 		[Fact]
-		public void Modregning_FuldOverfoersel()
+		public void DifferentSign_SizeEqualsOne_ReturnsFalse()
+		{
+			new ValueTupple<decimal>(1).DifferentSign().ShouldBeFalse();
+		}
+
+		[Fact]
+		public void DifferentSign_BothPositive_ReturnsFalse()
+		{
+			new ValueTupple<decimal>(1, 1).DifferentSign().ShouldBeFalse();
+		}
+
+		[Fact]
+		public void DifferentSign_BothNegative_ReturnsFalse()
+		{
+			new ValueTupple<decimal>(-1, -1).DifferentSign().ShouldBeFalse();
+		}
+
+		[Fact]
+		public void DifferentSign_OneZero_ReturnsFalse()
+		{
+			new ValueTupple<decimal>(0, 1).DifferentSign().ShouldBeFalse();
+			new ValueTupple<decimal>(1, 0).DifferentSign().ShouldBeFalse();
+		}
+
+		[Fact]
+		public void DifferentSign_BothZero_ReturnsFalse()
+		{
+			new ValueTupple<decimal>(0, 0).DifferentSign().ShouldBeFalse();
+		}
+
+		[Fact]
+		public void DifferentSign_PositiveAndNegative_ReturnsTrue()
+		{
+			new ValueTupple<decimal>(1, -1).DifferentSign().ShouldBeTrue();
+			new ValueTupple<decimal>(-1, 1).DifferentSign().ShouldBeTrue();
+		}
+
+		[Fact]
+		public void NedbringPositivtMedEvtNegativt_FuldOverfoersel()
 		{
 			var tupple = new ValueTupple<decimal>(-3, 2);
 
-			var modregnet = tupple.Modregn();
+			var modregnet = tupple.NedbringPositivtMedEvtNegativt();
 
-			modregnet[0].ShouldEqual(0);
+			modregnet[0].ShouldEqual(-1);
 			modregnet[1].ShouldEqual(0);
 		}
 
 		[Fact]
-		public void Modregning_DelvisOverfoersel()
+		public void NedbringPositivtMedEvtNegativt_DelvisOverfoersel()
 		{
 			var tupple = new ValueTupple<decimal>(-1, 2);
 
-			var modregnet = tupple.Modregn();
+			var modregnet = tupple.NedbringPositivtMedEvtNegativt();
 
 			modregnet[0].ShouldEqual(0);
 			modregnet[1].ShouldEqual(1);
 		}
 
-
 		[Fact]
-		public void Modregning_IngenOverfoersel()
+		public void NedbringPositivtMedEvtNegativt_IngenOverfoersel()
 		{
-			var tupple = new ValueTupple<decimal>(-1, 2);
+			var tupple = new ValueTupple<decimal>(1, 2);
+			tupple.NedbringPositivtMedEvtNegativt().ShouldEqual(tupple);
 
-			var modregnet = tupple.Modregn();
+			tupple = new ValueTupple<decimal>(-1, -2);
+			tupple.NedbringPositivtMedEvtNegativt().ShouldEqual(tupple);
 
-			modregnet[0].ShouldEqual(0);
-			modregnet[1].ShouldEqual(1);
+			tupple = new ValueTupple<decimal>(0, 2);
+			tupple.NedbringPositivtMedEvtNegativt().ShouldEqual(tupple);
+
+			tupple = new ValueTupple<decimal>(2, 0);
+			tupple.NedbringPositivtMedEvtNegativt().ShouldEqual(tupple);
 		}
 
 		[Fact]

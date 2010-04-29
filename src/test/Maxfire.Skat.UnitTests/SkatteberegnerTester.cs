@@ -7,7 +7,6 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void Test()
 		{
-			// TODO
 		}
 	}
 }

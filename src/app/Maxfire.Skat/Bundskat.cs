@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using System.Linq;
+
+namespace Maxfire.Skat
 {
 	/// <summary>
 	/// §6, stk 1: Bundskattegrundlaget er den personlige indkomst med tillæg af positiv nettokapitalindkomst. 
@@ -10,23 +12,14 @@
 	{
 		public ValueTupple<decimal> BeregnGrundlag(ValueTupple<Indkomster> input)
 		{
-			var first = input.First();
-				
-			if (input.IsIndividual())
-			{
-				return (first.PersonligIndkomst + first.NettoKapitalIndkomst.NonNegative()).AsIndividual();
-			}
+			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
+			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomst);
 
-			var second = input.Second();
-
-			// §6, stk 3: Hvis en gift person har negativ kapitalindkomst, modregnes dette beløb 
+			// §6, stk 3: Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb 
 			// i den anden ægtefælles positive kapitalindkomst inden beregning af bundskatten.
-			var samletNettoKapitalIndkomst = new ModregningPair(first.NettoKapitalIndkomst, second.NettoKapitalIndkomst);
+			var samletNettoKapitalIndkomst = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
-			decimal firstGrundlag = first.PersonligIndkomst + samletNettoKapitalIndkomst.First;
-			decimal secondGrundlag = second.PersonligIndkomst + samletNettoKapitalIndkomst.Second;
-
-			return firstGrundlag.AsMarried(secondGrundlag);			
+			return personligIndkomst + (+samletNettoKapitalIndkomst);
 		}
 	}
 }

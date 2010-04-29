@@ -96,10 +96,10 @@ namespace Maxfire.Skat
 				- arbejdsmarkedsBidrag;
 
 			// Beregn kapital indkomst
-			decimal kapitalIndkomst;
+			//decimal kapitalIndkomst;
 
 			// Beregn skattepligtig indkomst (TODO: Med ægtefælle overførsel)
-			decimal skattepligtigIndkomst;
+			//decimal skattepligtigIndkomst;
 
 			//
 			// 2: Ejendomsværdiskat (springes over, da den kan insættes hvorsomhelst)

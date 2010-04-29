@@ -7,34 +7,14 @@ namespace Maxfire.Skat
 {
 	public static class ValueTuppleExtensions
 	{
-		public static T First<T>(this ValueTupple<T> tupple)
-		{
-			return tupple[0];
-		}
-		
-		public static T Second<T>(this ValueTupple<T> tupple)
-		{
-			return tupple[1];
-		}
-		
-		public static bool IsIndividual<T>(this ValueTupple<T> list)
-		{
-			return list.Size == 1;
-		}
-
-		public static bool AreMarried<T>(this ValueTupple<T> list)
-		{
-			return list.Size == 2;
-		}
-
-		public static ValueTupple<T> AsIndividual<T>(this T value)
+		public static ValueTupple<T> ToTupple<T>(this T value)
 		{
 			return new ValueTupple<T>(value);
 		}
 
-		public static ValueTupple<T> AsMarried<T>(this T value, T other)
+		public static ValueTupple<T> ToTupple<T>(this T first, T second)
 		{
-			return new ValueTupple<T>(value, other);
+			return new ValueTupple<T>(first, second);
 		}
 
 		public static ValueTupple<T> ToTupple<T>(this IEnumerable<T> coll)
@@ -66,24 +46,33 @@ namespace Maxfire.Skat
 			return Operator<T>.Sign(tupple[0]) * Operator<T>.Sign(tupple[1]) == -1;
 		}
 
-		public static ValueTupple<T> Modregn<T>(this ValueTupple<T> tupple)
+		/// <summary>
+		/// Hvis tupple består af to elementer med forskelligt fortegn, så nedbringes det positive element
+		/// med størrelsen af det negative element, dog under hensyn til at det nedbragte element ikke må 
+		/// blive negativt.
+		/// </summary>
+		public static ValueTupple<T> NedbringPositivtMedEvtNegativt<T>(this ValueTupple<T> tupple)
 		{
 			if (tupple.DifferentSign() == false)
 			{
 				return tupple;
 			}
 
+			T first, second;
 			if (Operator<T>.LessThanZero(tupple[0]))
 			{
-				
+				T delta = Operator<T>.Min(Operator<T>.Negate(tupple[0]), tupple[1]);
+				first = Operator<T>.Add(tupple[0], delta);
+				second = Operator<T>.Subtract(tupple[1], delta);
 			}
 			else
 			{
-				
+				T delta = Operator<T>.Min(tupple[0], Operator<T>.Negate(tupple[1]));
+				first = Operator<T>.Subtract(tupple[0], delta);
+				second = Operator<T>.Add(tupple[1], delta);
 			}
 
-			// TODO
-			return new ValueTupple<T>(default(T));
+			return new ValueTupple<T>(first, second);
 		}
 	}
 }
