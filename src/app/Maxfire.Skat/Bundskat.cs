@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
 	/// <summary>
 	/// §6, stk 1: Bundskattegrundlaget er den personlige indkomst med tillæg af positiv nettokapitalindkomst. 
@@ -10,7 +8,7 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class BundskatGrundlagBeregner
 	{
-		public IList<decimal> BeregnGrundlag(IList<Indkomster> input)
+		public ValueTupple<decimal> BeregnGrundlag(ValueTupple<Indkomster> input)
 		{
 			var first = input.First();
 				

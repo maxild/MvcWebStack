@@ -396,6 +396,47 @@ namespace Maxfire.Core
 		/// </summary>
 		public static Func<T, T, bool> LessThanOrEqual { get { return lessThanOrEqual; } }
 
+
+		public static Func<T, bool> GreaterThanZero
+		{
+			get { return x => greaterThan(x, Zero); }
+		}
+		
+		public static Func<T, bool> LessThanZero
+		{
+			get { return x => lessThan(x, Zero); }
+		}
+	
+		public static Func<T, bool> GreaterThanOrEqualToZero
+		{
+			get { return x => greaterThanOrEqual(x, Zero); }
+		}
+
+		public static Func<T, bool> LessThanOrEqualToZero
+		{
+			get { return x => lessThanOrEqual(x, Zero); }
+		}
+
+		public static Func<T, int> Sign
+		{
+			get
+			{
+				return x =>
+				       	{
+				       		T zero = Zero;
+							if (GreaterThan(x, zero))
+							{
+								return 1;
+							}
+							if (LessThan(x, zero))
+							{
+								return -1;
+							}
+				       		return 0;
+				       	};
+			}
+		}
+
 		static Operator()
 		{
 			add = ExpressionHelper.CreateExpression<T, T, T>(Expression.Add);

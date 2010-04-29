@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Maxfire.Skat
 {
@@ -10,76 +9,6 @@ namespace Maxfire.Skat
 	//      Count == 2: beregning af gifte personer (ægtefæller med sambeskatning)
 	// Beregning af to ugifte personer kan laves via facade API
 	//
-
-	public static class ListExtensions // TODO: Maybe use types for input etc instead of unconditioned T
-	{
-		public static T First<T>(this IList<T> list)
-		{
-			return list[0];
-		}
-		
-		public static T FirstOrDefault<T>(this IList<T> list)
-		{
-			return list.Count > 0 ? list[0] : default(T);
-		}
-
-		public static int IndexOf<T>(this IList<T> list, Func<T, bool> predicate)
-		{
-			for (int i = 0; i < list.Count; i++)
-			{
-				if (predicate(list[i]))
-				{
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		public static T Second<T>(this IList<T> list)
-		{
-			return list[1];
-		}
-		
-		public static T SecondOrDefault<T>(this IList<T> list)
-		{
-			return list.Count > 1 ? list[1] : default(T);
-		}
-
-		public static bool IsIndividualOrAreMarried<T>(this IList<T> list)
-		{
-			return list.Count == 1 && list.Count == 2;
-		}
-
-		public static bool IsIndividual<T>(this IList<T> list)
-		{
-			return list.Count == 1;
-		}
-
-		public static bool AreMarried<T>(this IList<T> list)
-		{
-			return list.Count == 2;
-		}
-
-		public static IList<T> AsIndividual<T>(this T value)
-		{
-			return new List<T> {value};
-		}
-
-		public static IList<T> AsMarried<T>(this T value, T other)
-		{
-			return new List<T> { value, other };
-		}
-
-		public static T PartnerOf<T>(this IList<T> list, T partner)
-		{
-			int i = list.IndexOf(partner);
-			if (i == 0 || i == 1)
-			{
-				return list[i == 0 ? 1 : 0];
-			}
-			return default(T);
-		}
-	}
 
 	public static class DecimalExtensions
 	{

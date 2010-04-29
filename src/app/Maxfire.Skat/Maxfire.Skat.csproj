@@ -38,6 +38,7 @@
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Indkomster.cs" />
+    <Compile Include="ValueTupple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />
     <Compile Include="ModregningPair.cs" />
@@ -49,6 +50,13 @@
     <Compile Include="SkatteberegningResult.cs" />
     <Compile Include="Skattesatser.cs" />
     <Compile Include="Topskat.cs" />
+    <Compile Include="ValueTuppleExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
 {
@@ -13,18 +15,26 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class TopskatGrundlagBeregner
 	{
-		public IList<decimal> BeregnGrundlagUdenNettokapitalindkomst(IList<Indkomster> input)
+		public ValueTupple<decimal> BeregnGrundlagUdenNettokapitalindkomst(ValueTupple<Indkomster> input)
 		{
-			return input.Select(x => x.PersonligIndkomst + x.KapitalPensionsindskud).ToList();
+			return input.Select(x => x.PersonligIndkomst + x.KapitalPensionsindskud).ToTupple();
 		}
 
-		public IList<decimal> BeregnBundfradragForPositivKapitalIndkomst(IList<Indkomster> input)
+		public ValueTupple<decimal> BeregnPositivKapitalIndkomst(ValueTupple<Indkomster> input)
+		{			
+			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomst);
+			var bundfradrag = BeregnBundfradragForPositivKapitalIndkomst(input);
+			var nettokapitalindkomstTilBeskatning = nettokapitalindkomst - bundfradrag;
+			// Overfør
+
+			return +nettokapitalindkomstTilBeskatning;
+		}
+
+		public ValueTupple<decimal> BeregnBundfradragForPositivKapitalIndkomst(ValueTupple<Indkomster> input)
 		{
-			const decimal bundfradragPositivkapitalIndkomst = 40000; // 2010 niveau
-			
 			if (input.IsIndividual())
 			{
-				return bundfradragPositivkapitalIndkomst.AsIndividual();
+				return Constants.BundfradragPositivKapitalIndkomst.AsIndividual();
 			}
 
 			// §7, stk 3: Uudnyttet bundfradrag (grundbeløb på 40.000 kr, 2010) kan 
@@ -32,30 +42,30 @@ namespace Maxfire.Skat
 			var first = input.First(); var second = input.Second();
 			
 			// Hvis begge benytter bundfradraget fuldt ud kan der ikke ske overførsel
-			if (first.NettoKapitalIndkomst >= bundfradragPositivkapitalIndkomst 
-			    && second.NettoKapitalIndkomst >= bundfradragPositivkapitalIndkomst)
+			if (first.NettoKapitalIndkomst >= Constants.BundfradragPositivKapitalIndkomst
+				&& second.NettoKapitalIndkomst >= Constants.BundfradragPositivKapitalIndkomst)
 			{
-				return bundfradragPositivkapitalIndkomst.AsMarried(bundfradragPositivkapitalIndkomst);
+				return Constants.BundfradragPositivKapitalIndkomst.AsMarried(Constants.BundfradragPositivKapitalIndkomst);
 			}
 
 			// Der er uudnyttet bundfradrag hos mindst en ægtefælle, men kan det udnyttes hos den anden ægtefælle
-			var overfoeresTil = input.FirstOrDefault(x => x.NettoKapitalIndkomst >= bundfradragPositivkapitalIndkomst);
+			var overfoeresTil = input.FirstOrDefault(x => x.NettoKapitalIndkomst >= Constants.BundfradragPositivKapitalIndkomst);
 			if (overfoeresTil != null)
 			{
 				var overfoeresFra = input.PartnerOf(overfoeresTil);
 				
 				decimal fraBundfradrag = overfoeresFra.NettoKapitalIndkomst.NonNegative();
-				decimal tilBundfradrag = 2 * bundfradragPositivkapitalIndkomst - fraBundfradrag;
+				decimal tilBundfradrag = 2 * Constants.BundfradragPositivKapitalIndkomst - fraBundfradrag;
 
 				return input.IndexOf(overfoeresTil) == 0 ? tilBundfradrag.AsMarried(fraBundfradrag) : 
-				                                                                                    	fraBundfradrag.AsMarried(tilBundfradrag);
+					fraBundfradrag.AsMarried(tilBundfradrag);
 			}
 
 			// Begge ægtefæller har et uudnyttet bundfradrag, så ingen overførsel
-			return bundfradragPositivkapitalIndkomst.AsMarried(bundfradragPositivkapitalIndkomst);
+			return Constants.BundfradragPositivKapitalIndkomst.AsMarried(Constants.BundfradragPositivKapitalIndkomst);
 		}
 
-		public IList<decimal> BeregnGrundlag(IList<Indkomster> input)
+		public ValueTupple<decimal> BeregnGrundlag(ValueTupple<Indkomster> input)
 		{
 			var first = input.First();
 
@@ -77,6 +87,9 @@ namespace Maxfire.Skat
 
 			// OBS: TFS beregner nogle grundlag til brug ved beregning af kompensation
 
+
+
+
 			return null;
 		}
 	}
@@ -86,26 +99,40 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class TopskatBeregner
 	{
-		public IList<decimal> BeregnSkat(IList<Indkomster> input)
+		public ValueTupple<decimal> BeregnSkat(ValueTupple<Indkomster> indkomster)
 		{
 			var topskatGrundlagBeregner = new TopskatGrundlagBeregner();
 
-			if (input.IsIndividual())
+			if (indkomster.IsIndividual())
 			{
-				var grundlag = topskatGrundlagBeregner.BeregnGrundlag(input);
-				decimal topskat = grundlag.First() * Constants.Topskattesats;
-				// Note: Jeg forstår ikke TFS's beregning af 'nedsættelse på kapitalindkomst' 
-				return topskat.AsIndividual();
+				var grundlag = topskatGrundlagBeregner.BeregnGrundlag(indkomster);
+				var topskat = Constants.Topskattesats * grundlag;
+				// Note: L 112 og 'nedsættelse på kapitalindkomst' er skippet 
+				return topskat;
 			}
 
 			// §7, stk 4: For hver ægtefælle beregnes skat med 15 pct. af vedkommendes personlige indkomst 
 			// med tillæg af heri fradragne og ikke medregnede beløb omfattet af beløbsgrænsen i 
-			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger et bundfradrag på 190.000 kr. 
-			var grundlagUdenNettokapitalindkomst = topskatGrundlagBeregner.BeregnGrundlagUdenNettokapitalindkomst(input);
+			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger topskattegrænsen 
+			var grundlagUdenNettokapitalindkomst = topskatGrundlagBeregner.BeregnGrundlagUdenNettokapitalindkomst(indkomster);
+			var topskatStk4 = Constants.Topskattesats * grundlagUdenNettokapitalindkomst;
 
-			var first = input.First(); var second = input.Second();
+			// §7, stk 5: Der beregnes tillige skat af ægtefællernes samlede positive nettokapitalindkomst. Til 
+			// dette formål beregnes en skat hos den af ægtefællerne, der har det højeste beregningsgrundlag 
+			// efter stk. 4. Skatten beregnes med 15 pct. af denne ægtefælles beregningsgrundlag efter stk. 4 
+			// med tillæg af ægtefællernes samlede positive nettokapitalindkomst. Skatten beregnes dog kun i 
+			// det omfang, det samlede beløb overstiger topskattegrænsen. 
+			var positivKapitalIndkomst = topskatGrundlagBeregner.BeregnPositivKapitalIndkomst(indkomster);
+			var samletPositivKapitalIndkomst = positivKapitalIndkomst.Sum();
 
-			//decimal topskat1 = grundlagUdenNettokapitalindkomst * Constants.Topskattesats;
+			if (samletPositivKapitalIndkomst > 0)
+			{
+				
+			}
+			else
+			{
+				// TODO: Gør som individuelt her pga sambeskatning, altså ingen beskatning af kapital indkomst for nogen af ægtefællerne
+			}
 
 			// TODO
 			return null;
