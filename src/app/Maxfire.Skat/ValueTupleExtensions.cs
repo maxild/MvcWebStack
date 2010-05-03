@@ -74,5 +74,15 @@ namespace Maxfire.Skat
 
 			return new ValueTuple<T>(first, second);
 		}
+
+		public static ValueTuple<decimal> RoundMoney(this ValueTuple<decimal> tuple)
+		{
+			IList<decimal> list = new List<decimal>(tuple.Size);
+			for (int i = 0; i < tuple.Size; i++)
+			{
+				list.Add(Math.Round(tuple[i], 2, MidpointRounding.ToEven));
+			}
+			return new ValueTuple<decimal>(list);
+		}
 	}
 }

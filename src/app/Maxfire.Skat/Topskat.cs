@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
 {
@@ -16,24 +13,32 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class TopskatGrundlagBeregner
 	{
-		public ValueTuple<decimal> BeregnNettoKapitalIndkomstTilBeskatning(ValueTuple<Indkomster> input)
+		/// <summary>
+		/// Beregn den del af nettokapitalindkomsten, der overstiger det grundbeløb, som angiver 
+		/// bundfradraget for positiv nettokapitalindkomst.
+		/// </summary>
+		public ValueTuple<decimal> BeregnNettoKapitalIndkomstTilBeskatning(ValueTuple<PersonligeBeloeb> input)
 		{			
-			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomst);
 			var bundfradrag = BeregnBundfradragForPositivKapitalIndkomst(input);
+			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomst);
 			var nettokapitalindkomstTilBeskatning = nettokapitalindkomst - bundfradrag;
 			return nettokapitalindkomstTilBeskatning;
 		}
 
-		public ValueTuple<decimal> BeregnBundfradragForPositivKapitalIndkomst(ValueTuple<Indkomster> input)
+		/// <summary>
+		/// Beregn størrelsen af hver persons bundfradrag for positiv nettokapitalindkomst under 
+		/// hensyntagen til reglerne om overførsel af ikke-udnyttet bundfradreg mellem ægtefæller.
+		/// </summary>
+		public ValueTuple<decimal> BeregnBundfradragForPositivKapitalIndkomst(ValueTuple<PersonligeBeloeb> input)
 		{
 			if (input.Size == 1)
 			{
 				return Constants.BundfradragPositivKapitalIndkomst.ToTuple();
 			}
 
-			// §7, stk 3: Uudnyttet bundfradrag (grundbeløb på 40.000 kr, 2010) kan 
+			// §7, stk 3: ikke-udnyttet bundfradrag (grundbeløb på 40.000 kr, 2010) kan 
 			// overføres mellem ægtefæller (sambeskating af ægtefæller).
-			Func<Indkomster, bool> fuldUdnyttelseAfBundfradrag = x => 
+			Func<PersonligeBeloeb, bool> fuldUdnyttelseAfBundfradrag = x => 
 				x.NettoKapitalIndkomst >= Constants.BundfradragPositivKapitalIndkomst;
 
 
@@ -60,31 +65,6 @@ namespace Maxfire.Skat
 			// Begge ægtefæller har et uudnyttet bundfradrag, så ingen overførsel
 			return Constants.BundfradragPositivKapitalIndkomst.ToTuple(Constants.BundfradragPositivKapitalIndkomst);
 		}
-
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<Indkomster> input)
-		{
-			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
-			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomst);
-			var kapitalPensionsindskud = input.Map(x => x.KapitalPensionsindskud);
-
-			if (input.Size == 1)
-			{
-				var kapitalIndkomstTilSkat = +(nettokapitalindkomst - Constants.BundfradragPositivKapitalIndkomst);
-
-				var grundlag = +(personligIndkomst + kapitalIndkomstTilSkat
-				                 + kapitalPensionsindskud - Constants.TopskatBeloebsgraense);
-
-				return grundlag;
-			}
-
-			// Note: grundlagene ved gifte er mere komplicerede
-			// 1) grundlag uden nettokapitalindkomst
-			// 2) grundlag med nettokapitalindkomst
-
-			// OBS: TFS beregner nogle grundlag til brug ved beregning af kompensation
-
-			return null;
-		}
 	}
 
 	/// <summary>
@@ -92,26 +72,40 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class TopskatBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<Indkomster> indkomster)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
 		{
+			ValueTuple<decimal> topskat;
 			var topskatGrundlagBeregner = new TopskatGrundlagBeregner();
 
-			if (indkomster.Size == 1)
-			{
-				var grundlag = topskatGrundlagBeregner.BeregnGrundlag(indkomster);
-				var topskat = Constants.Topskattesats * grundlag;
-				// Note: L 112 og 'nedsættelse på kapitalindkomst' er skippet 
-				return topskat;
-			}
-
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomst);
+			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomst);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskud);
 
+			// TODO: Er dette ikke samme algoritme uanset Size
+			if (indkomster.Size == 1)
+			{
+				// Beregningsgrundlaget for topskatten for en enlig person opgøres efter PSL § 7, stk. 1, 
+				// som den personlige indkomst med tillæg af heri fradragne og ikke medregnede beløb omfattet 
+				// af beløbsgrænsen i PBL § 16, stk. 1, og med tillæg af positiv nettokapitalindkomst. 
+				// PBL § 16, stk. 1, omhandler indskud til kapitalpensionsordninger, kapitalforsikring og 
+				// bidrag til supplerende engangsydelser fra pensionskasser. Fra og med indkomståret 2010 beregnes 
+				// topskat af kapitalindkomst kun af kapitalindkomst ud over 40.000 kr. (2010) - for ægtefæller 
+				// 80.000 kr. (2010), jf. Forårspakke 2.0.
+				var kapitalIndkomstTilSkat = +(nettokapitalindkomst - Constants.BundfradragPositivKapitalIndkomst);
+
+				var grundlag = +(personligIndkomst + kapitalIndkomstTilSkat
+								 + kapitalPensionsindskud - Constants.TopskatBeloebsgraense);
+
+				topskat = Constants.Topskattesats * grundlag;
+				// Note: L 112 og 'nedsættelse på kapitalindkomst' er skippet
+				return topskat;
+			}
+			
 			// §7, stk 4: For hver ægtefælle beregnes skat med 15 pct. af vedkommendes personlige indkomst 
 			// med tillæg af heri fradragne og ikke medregnede beløb omfattet af beløbsgrænsen i 
 			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger topskattegrænsen 
-			var grundlagUdenNettokapitalindkomst = personligIndkomst + kapitalPensionsindskud;
-			var topskatStk4 = Constants.Topskattesats * grundlagUdenNettokapitalindkomst;
+			var grundlagUdenNettokapitalindkomst = personligIndkomst + kapitalPensionsindskud - Constants.TopskatBeloebsgraense;
+			var topskatUdenPositivNettoKapitalIndkomst = Constants.Topskattesats * grundlagUdenNettokapitalindkomst;
 
 			// §7, stk 5: Der beregnes tillige skat af ægtefællernes samlede positive nettokapitalindkomst. Til 
 			// dette formål beregnes en skat hos den af ægtefællerne, der har det højeste beregningsgrundlag 
@@ -123,27 +117,45 @@ namespace Maxfire.Skat
 
 			if (samletNettoKapitalIndkomstTilBeskatning <= 0)
 			{
-				// TODO: Gør som individuelt her pga sambeskatning, altså ingen beskatning af kapital indkomst for nogen af ægtefællerne
-			
+				topskat = +topskatUdenPositivNettoKapitalIndkomst;
 			}
 			else
 			{
-				nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.NedbringPositivtMedEvtNegativt();
+				var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.NedbringPositivtMedEvtNegativt();
 
-				// TODO
-				var max  = grundlagUdenNettokapitalindkomst.Max();
+				int indexOfMaxGrundlag;
 				if (grundlagUdenNettokapitalindkomst[0] > grundlagUdenNettokapitalindkomst[1])
 				{
-					
+					indexOfMaxGrundlag = 0;
+				} 
+				else if (grundlagUdenNettokapitalindkomst[0] < grundlagUdenNettokapitalindkomst[1])
+				{
+					indexOfMaxGrundlag = 1;
 				}
 				else
 				{
-					
+					// Hvis ægtefællernes beregningsgrundlag er lige store anses den af ægtefællerne, som har 
+					// de største udgifter af den art, der fradrages ved opgørelsen af den skattepligtige indkomst, 
+					// men ikke ved opgørelsen af personlig indkomst og kapitalindkomst (ligningsmæssige fradrag), 
+					// for at have det højeste beregningsgrundlag efter pkt. A.
+					indexOfMaxGrundlag = indkomster[0].LigningsmaesigeFradrag > indkomster[1].LigningsmaesigeFradrag ? 0 : 1;
 				}
+
+				decimal topskatInklSamletPositivNettoKapitalIndkomst
+					= Constants.Topskattesats * (grundlagUdenNettokapitalindkomst[indexOfMaxGrundlag] + samletNettoKapitalIndkomstTilBeskatning);
+
+				// §7, Stk. 6: Forskellen mellem skatten efter stk. 5 og skatten efter stk. 4
+				// for den ægtefælle, der har det højeste beregningsgrundlag efter stk. 4,
+				// udgør skatten af ægtefællernes samlede positive nettokapitalindkomst.
+				decimal samletTopskatAfPositivNettoKapitalIndkomst
+					= topskatInklSamletPositivNettoKapitalIndkomst - topskatUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag];
+
+				var fordelingsnoegle = positivNettoKapitalIndkomstTilBeskatning / samletNettoKapitalIndkomstTilBeskatning;
+
+				topskat = +topskatUdenPositivNettoKapitalIndkomst + fordelingsnoegle * samletTopskatAfPositivNettoKapitalIndkomst;
 			}
 
-			// TODO
-			return null;
+			return topskat.RoundMoney();
 		}
 	}
 }

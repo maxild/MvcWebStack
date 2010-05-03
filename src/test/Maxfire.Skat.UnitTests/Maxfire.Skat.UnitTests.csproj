@@ -44,6 +44,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BundskatBeregnerTester.cs" />
+    <Compile Include="KirkeskatBeregnerTester.cs" />
+    <Compile Include="KommuneskatBeregnerTester.cs" />
+    <Compile Include="SundhedsbidragBeregnerTester.cs" />
+    <Compile Include="TopskatBeregnerTester.cs" />
     <Compile Include="ValueTupleTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkatteberegnerTester.cs" />

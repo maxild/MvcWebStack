@@ -128,6 +128,22 @@ namespace Maxfire.Skat
 			return total;
 		}
 
+		public ValueTuple<T> Clone()
+		{
+			var list = new List<T>(Size);
+			for (int i = 0; i < Size; i++)
+			{
+				var item = _list[i];
+				var cloneable = item as ICloneable;
+				if (cloneable != null)
+				{
+					item = (T)cloneable.Clone();
+				}
+				list.Add(item);
+			}
+			return new ValueTuple<T>(list);
+		}
+
 		public IEnumerator<T> GetEnumerator()
 		{
 			return _list.GetEnumerator();
