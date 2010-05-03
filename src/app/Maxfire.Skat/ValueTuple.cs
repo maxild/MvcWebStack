@@ -7,21 +7,28 @@ using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
 {
-	public class ValueTupple<T> : IEnumerable<T>, IEquatable<ValueTupple<T>>
+	/// <summary>
+	/// In mathematics and computer science a tuple represents the notion of an ordered list of 
+	/// elements. In set theory, an (ordered) n-tuple is a sequence (or ordered list) of n elements, 
+	/// where n is a positive integer. There is also one 0-tuple, an empty sequence. An n-tuple is 
+	/// defined inductively using the construction of an ordered pair.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class ValueTuple<T> : IEnumerable<T>, IEquatable<ValueTuple<T>>
 	{
 		private readonly IList<T> _list;
 
-		public ValueTupple(T first)
+		public ValueTuple(T first)
 		{
 			_list = new List<T> { first };
 		}
 
-		public ValueTupple(T first, T second)
+		public ValueTuple(T first, T second)
 		{
 			_list = new List<T> { first, second };
 		}
 
-		public ValueTupple(IList<T> list)
+		public ValueTuple(IList<T> list)
 		{
 			list.ThrowIfNull("list");
 			if (list.Count != 1 && list.Count != 2)
@@ -31,6 +38,10 @@ namespace Maxfire.Skat
 			_list = list;
 		}
 
+		/// <summary>
+		/// Tuples are usually written by listing the elements within parentheses '( )' and 
+		/// separated by commas; for example, (2, 7, 4, 1, 7) denotes a 5-tuple.
+		/// </summary>
 		public override string ToString()
 		{
 			return "(" + string.Join(", ", _list.Select(x => x.ToString()).ToArray()) + ")";
@@ -51,10 +62,10 @@ namespace Maxfire.Skat
 
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as ValueTupple<T>);
+			return Equals(obj as ValueTuple<T>);
 		}
 
-		public bool Equals(ValueTupple<T> other)
+		public bool Equals(ValueTuple<T> other)
 		{
 			if (other == null)
 			{
@@ -130,9 +141,9 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// The unary plus (+) operator is overloaded to mean NonNegative.
 		/// </summary>
-		public static ValueTupple<T> operator +(ValueTupple<T> tupple)
+		public static ValueTuple<T> operator +(ValueTuple<T> tuple)
 		{
-			return unaryOp(tupple, x =>
+			return unaryOp(tuple, x =>
 			                       	{
 			                       		T zero = Operator<T>.Zero;
 			                       		if (Operator<T>.LessThan(x, zero))
@@ -143,87 +154,87 @@ namespace Maxfire.Skat
 			                       	});
 		}
 
-		public static ValueTupple<T> operator -(ValueTupple<T> tupple)
+		public static ValueTuple<T> operator -(ValueTuple<T> tuple)
 		{
-			return unaryOp(tupple, Operator<T>.Negate);
+			return unaryOp(tuple, Operator<T>.Negate);
 		}
 
-		private static ValueTupple<T> unaryOp(ValueTupple<T> tupple, Func<T, T> op)
+		private static ValueTuple<T> unaryOp(ValueTuple<T> tuple, Func<T, T> op)
 		{
-			var list = new List<T>(tupple.Size);
-			for (int i = 0; i < tupple.Size; i++)
+			var list = new List<T>(tuple.Size);
+			for (int i = 0; i < tuple.Size; i++)
 			{
-				list.Add(op(tupple[i]));
+				list.Add(op(tuple[i]));
 			}
 
-			return new ValueTupple<T>(list);
+			return new ValueTuple<T>(list);
 		}
 
-		public static ValueTupple<T> operator +(ValueTupple<T> lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator +(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Add);
 		}
 
-		public static ValueTupple<T> operator +(T lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator +(T lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Add);
 		}
 
-		public static ValueTupple<T> operator +(ValueTupple<T> lhs, T rhs)
+		public static ValueTuple<T> operator +(ValueTuple<T> lhs, T rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Add);
 		}
 
-		public static ValueTupple<T> operator -(ValueTupple<T> lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator -(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Subtract);
 		}
 		
-		public static ValueTupple<T> operator -(T lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator -(T lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Subtract);
 		}
 
-		public static ValueTupple<T> operator -(ValueTupple<T> lhs, T rhs)
+		public static ValueTuple<T> operator -(ValueTuple<T> lhs, T rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Subtract);
 		}
 
-		public static ValueTupple<T> operator *(ValueTupple<T> lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator *(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Multiply);
 		}
 
-		public static ValueTupple<T> operator *(T lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator *(T lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Multiply);
 		}
 
-		public static ValueTupple<T> operator *(ValueTupple<T> lhs, T rhs)
+		public static ValueTuple<T> operator *(ValueTuple<T> lhs, T rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Multiply);
 		}
 		
-		public static ValueTupple<T> operator /(ValueTupple<T> lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator /(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Divide);
 		}
 
-		public static ValueTupple<T> operator /(T lhs, ValueTupple<T> rhs)
+		public static ValueTuple<T> operator /(T lhs, ValueTuple<T> rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Divide);
 		}
 
-		public static ValueTupple<T> operator /(ValueTupple<T> lhs, T rhs)
+		public static ValueTuple<T> operator /(ValueTuple<T> lhs, T rhs)
 		{
 			return binaryOp(lhs, rhs, Operator<T>.Divide);
 		}
 
-		private static ValueTupple<T> binaryOp(ValueTupple<T> lhs, ValueTupple<T> rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, ValueTuple<T> rhs, Func<T, T, T> op)
 		{
 			if (lhs.Size != rhs.Size)
 			{
-				throw new ArgumentException("Cannot add tupples of different size.");
+				throw new ArgumentException("Cannot add tuples of different size.");
 			}
 
 			var list = new List<T>(lhs.Size);
@@ -232,10 +243,10 @@ namespace Maxfire.Skat
 				list.Add(op(lhs[i], rhs[i]));
 			}
 
-			return new ValueTupple<T>(list);
+			return new ValueTuple<T>(list);
 		}
 
-		private static ValueTupple<T> binaryOp(T lhs, ValueTupple<T> rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(T lhs, ValueTuple<T> rhs, Func<T, T, T> op)
 		{
 			var list = new List<T>(rhs.Size);
 			for (int i = 0; i < rhs.Size; i++)
@@ -243,10 +254,10 @@ namespace Maxfire.Skat
 				list.Add(op(lhs, rhs[i]));
 			}
 
-			return new ValueTupple<T>(list);
+			return new ValueTuple<T>(list);
 		}
 
-		private static ValueTupple<T> binaryOp(ValueTupple<T> lhs, T rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, T rhs, Func<T, T, T> op)
 		{
 			var list = new List<T>(lhs.Size);
 			for (int i = 0; i < lhs.Size; i++)
@@ -254,7 +265,7 @@ namespace Maxfire.Skat
 				list.Add(op(lhs[i], rhs));
 			}
 
-			return new ValueTupple<T>(list);
+			return new ValueTuple<T>(list);
 		}
 	}
 }

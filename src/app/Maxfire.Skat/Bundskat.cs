@@ -10,7 +10,7 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class BundskatGrundlagBeregner
 	{
-		public ValueTupple<decimal> BeregnGrundlag(ValueTupple<Indkomster> input)
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<Indkomster> input)
 		{
 			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
 			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomst);

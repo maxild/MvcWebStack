@@ -38,7 +38,7 @@
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Indkomster.cs" />
-    <Compile Include="ValueTupple.cs" />
+    <Compile Include="ValueTuple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />
     <Compile Include="Pensionsbidrag.cs" />
@@ -49,7 +49,7 @@
     <Compile Include="SkatteberegningResult.cs" />
     <Compile Include="Skattesatser.cs" />
     <Compile Include="Topskat.cs" />
-    <Compile Include="ValueTuppleExtensions.cs" />
+    <Compile Include="ValueTupleExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
