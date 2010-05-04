@@ -94,7 +94,7 @@ namespace Maxfire.Skat
 				var kapitalIndkomstTilSkat = +(nettokapitalindkomst - Constants.BundfradragPositivKapitalIndkomst);
 
 				var grundlag = +(personligIndkomst + kapitalIndkomstTilSkat
-								 + kapitalPensionsindskud - Constants.TopskatBeloebsgraense);
+								 + kapitalPensionsindskud - Constants.TopskatBundfradrag);
 
 				topskat = Constants.Topskattesats * grundlag;
 				// Note: L 112 og 'nedsættelse på kapitalindkomst' er skippet
@@ -104,7 +104,7 @@ namespace Maxfire.Skat
 			// §7, stk 4: For hver ægtefælle beregnes skat med 15 pct. af vedkommendes personlige indkomst 
 			// med tillæg af heri fradragne og ikke medregnede beløb omfattet af beløbsgrænsen i 
 			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger topskattegrænsen 
-			var grundlagUdenNettokapitalindkomst = personligIndkomst + kapitalPensionsindskud - Constants.TopskatBeloebsgraense;
+			var grundlagUdenNettokapitalindkomst = personligIndkomst + kapitalPensionsindskud - Constants.TopskatBundfradrag;
 			var topskatUdenPositivNettoKapitalIndkomst = Constants.Topskattesats * grundlagUdenNettokapitalindkomst;
 
 			// §7, stk 5: Der beregnes tillige skat af ægtefællernes samlede positive nettokapitalindkomst. Til 

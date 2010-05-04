@@ -5,9 +5,11 @@
 	/// </summary>
 	public class PersonligeBeloeb
 	{
+		public decimal AMIndkomst { get; set; }
+
 		public decimal PersonligIndkomst { get; set; }
 
-		public decimal SkattepligtigIndkomst { get; set; }
+		public decimal SkattepligtigIndkomst { get { return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaesigeFradrag; } }
 
 		public decimal NettoKapitalIndkomst { get; set; }
 

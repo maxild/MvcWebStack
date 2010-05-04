@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
 	/// <summary>
 	/// §6, stk 1: Bundskattegrundlaget er den personlige indkomst med tillæg af positiv nettokapitalindkomst. 
@@ -20,6 +18,25 @@ namespace Maxfire.Skat
 			var samletNettoKapitalIndkomst = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
 			return personligIndkomst + (+samletNettoKapitalIndkomst);
+		}
+	}
+
+	public class BundskatBeregner
+	{
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		{
+			var grundlagBeregner = new BundskatGrundlagBeregner();
+			var grundlag = grundlagBeregner.BeregnGrundlag(indkomster);
+			return Constants.Bundskattesats * grundlag;
+		}
+	}
+
+	public class AMBidragBegner
+	{
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		{
+			var amIndkomst = indkomster.Map(x => x.AMIndkomst);
+			return Constants.AMBidragsats * amIndkomst;
 		}
 	}
 }

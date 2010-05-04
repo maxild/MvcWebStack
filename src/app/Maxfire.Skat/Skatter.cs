@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
 	// TODO: make this type immutable
 	public class Skatter
@@ -9,8 +7,14 @@ namespace Maxfire.Skat
 		public decimal Kommuneskat { get; set; }
 		public decimal Sundhedsbidrag { get; set; }
 		public decimal Bundskat { get; set; }
+		public decimal Mellemskat { get; set; }
 		public decimal Topskat { get; set; }
 		
+		public decimal KommunalIndkomstskatOgKirkeskat
+		{
+			get { return Kommuneskat + Kirkeskat; }
+		}
+
 		/// <summary>
 		/// Kun den del angivet ved PSL § 8a, stk. 2, der angiver den del af skat af aktieindkomst, der
 		/// overstiger progressionsgrænsen, og ikke allerede er betalt som kildeskat (A-skat). Dermed 
@@ -18,41 +22,38 @@ namespace Maxfire.Skat
 		/// </summary>
 		public decimal SkatAfAktieindkomst { get; set; }
 
-		public Skatter ModregnNegativSkattepligtigIndkomst(decimal skattevaerdiAfUnderskud)
+		public ModregnResult ModregnNegativSkattepligtigIndkomst(decimal skattevaerdiAfUnderskud)
 		{
 			if (skattevaerdiAfUnderskud >= 0)
 			{
 				// Intet underskud, ingen grund til at modregne i skatterne
-				return this;
+				return new ModregnResult(this, skattevaerdiAfUnderskud);
 			}
 
-			// Følgende skatter bliver nedbragt i nævnte rækkefølge
+			// Følgende skatter (statsskatter der beregnes af skattepligtig indkomst) 
+			// bliver nedbragt med skatteværdien i nævnte rækkefølge
 			decimal modregnetBundskat = Bundskat;
 			decimal modregnetTopskat = Topskat;
 			decimal modregnetSkatAfAktieindkomst = SkatAfAktieindkomst;
 
-			modregnetBundskat += skattevaerdiAfUnderskud;
+			decimal underskud = modregnetBundskat += skattevaerdiAfUnderskud;
 			if (modregnetBundskat < 0)
 			{
-				modregnetTopskat += modregnetBundskat;
+				underskud = modregnetTopskat += modregnetBundskat;
 				modregnetBundskat = 0;
 				if (modregnetTopskat < 0)
 				{
-					modregnetSkatAfAktieindkomst += modregnetTopskat;
-					modregnetTopskat = 0;
+					underskud = modregnetSkatAfAktieindkomst += modregnetTopskat;
+					modregnetTopskat = 0; 
 					if (modregnetSkatAfAktieindkomst < 0)
 					{
-						// TODO: Hvis der efter modregningen er en overskydende negativ skatteværdi, omregnes 
-						// denne til negativ skattepligtig indkomst, der fremføres til fradrag i den skattepligtige 
-						// indkomst for de følgende indkomstår.
-						decimal sats = 0; // Todo: Både skatteværdi, sats og underskud skal kendes
-						decimal negativSkattepligtigIndkomstFradrag = modregnetSkatAfAktieindkomst / sats;
+						underskud = modregnetSkatAfAktieindkomst;
 						modregnetSkatAfAktieindkomst = 0;
 					}
 				}
 			}
 
-			return new Skatter
+			var modregnedeSkatter = new Skatter
 			{
 				Kirkeskat = Kirkeskat,
 				Kommuneskat = Kommuneskat,
@@ -61,6 +62,8 @@ namespace Maxfire.Skat
 				Topskat = modregnetTopskat,
 				SkatAfAktieindkomst = modregnetSkatAfAktieindkomst
 			};
+
+			return new ModregnResult(modregnedeSkatter, underskud);
 		}
 
 		public Skatter ModregnNegativPersonligIndkomst(decimal underskud)
@@ -68,5 +71,17 @@ namespace Maxfire.Skat
 			// TODO
 			return this;
 		}
+	}
+
+	public class ModregnResult
+	{
+		public ModregnResult(Skatter modregnedeSkatter, decimal underskud)
+		{
+			ModregnedeSkatter = modregnedeSkatter;
+			Underskud = underskud;
+		}
+
+		public Skatter ModregnedeSkatter { get; private set; }
+		public decimal Underskud { get; private set; }
 	}
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Maxfire.Skat
 {
 	/// <summary>
@@ -19,18 +21,77 @@ namespace Maxfire.Skat
 			var kirkeskattesats = kommunaleSatser.Map(x => x.Kirkeskattesats);
 			var kommuneskattesats = kommunaleSatser.Map(x => x.Kommuneskattesats);
 
-			var sats = kirkeskattesats + kommuneskattesats + Constants.SundhedsbidragSats;
+			var sats = kirkeskattesats + kommuneskattesats + Constants.Sundhedsbidragsats;
 			var skattevaerdiAfUnderskud = skattepligtigIndkomst * sats;
+
+			ValueTuple<Skatter> result = null;
 
 			// PSL §13, stk 1:
 			if (indkomster.Size == 1)
 			{
-				var modregnedeSkatter = skatter[0].ModregnNegativSkattepligtigIndkomst(skattevaerdiAfUnderskud[0]);
-				return modregnedeSkatter.ToTuple();
+				var modregnResult = skatter[0].ModregnNegativSkattepligtigIndkomst(skattevaerdiAfUnderskud[0]);
+				result = modregnResult.ModregnedeSkatter.ToTuple();
 			}
 
 			// PSL §13, stk 2: Gifte
-			return null;
+
+			// Modregning i egne skatter
+
+			// Hvis der er overskydende skatteværdi tilbage, så omregn underskud til skatteværdi og Modregning i ægtefælles skattepligtige indkomst
+
+			// Modregn ægtefælles egne skatter
+
+			return result;
+		}
+	}
+
+	public class PersonFradragBeregner
+	{
+		public ValueTuple<Skatter> Beregn(ValueTuple<PersonligeBeloeb> indkomster,
+			ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		{
+			var skattevaerdier = BeregnSkattevaerdier(kommunaleSatser);
+
+			// Sundhedsbidraget
+
+				// Hvis ikke-udnyttet skatteværdi => fradrag i bundskat, topskat og skat af aktieindkomst (lav generel rutine)
+
+			// Bundskat
+
+				// Hvis ikke-udnyttet skatteværdi => fradrag i sundhedsbidrag, topskat og skat af aktieindkomst (lav generel rutine)
+
+			ValueTuple<Skatter> modregnedeSkatter = null;
+
+			return modregnedeSkatter;
+		}
+
+		/// <summary>
+		/// Beregn skatteværdier af personfradraget for kommuneskat, kirkeskat, bundskat og sunhedsbidrag.
+		/// </summary>
+		/// <returns></returns>
+		public ValueTuple<Skatter> BeregnSkattevaerdier(ValueTuple<KommunaleSatser> kommunaleSatser)
+		{
+			var kommuneskattesats = kommunaleSatser.Map(x => x.Kommuneskattesats);
+			var kirkeskattesats = kommunaleSatser.Map(x => x.Kirkeskattesats);
+			
+			decimal skattevaerdiBundskat = Constants.Bundskattesats * Constants.PersonFradrag;
+			decimal skattevaerdiSundhedsbidrag = Constants.Sundhedsbidragsats * Constants.PersonFradrag;
+			var skattevaerdiKommuneskat = kommuneskattesats * Constants.PersonFradrag;
+			var skattevaerdiKirkeskat = kirkeskattesats * Constants.PersonFradrag;
+
+			var list = new List<Skatter>(kommunaleSatser.Size);
+			for (int i = 0; i < kommunaleSatser.Size; i++)
+			{
+				list.Add(new Skatter
+				         	{
+				         		Bundskat = skattevaerdiBundskat,
+				         		Sundhedsbidrag = skattevaerdiSundhedsbidrag,
+				         		Kommuneskat = skattevaerdiKommuneskat[i],
+				         		Kirkeskat = skattevaerdiKirkeskat[i]
+				         	});
+			}
+
+			return new ValueTuple<Skatter>(list);
 		}
 	}
 }

@@ -38,6 +38,7 @@
     <Compile Include="Beloebsgraenser.cs" />
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Mellemskat.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
     <Compile Include="Skatter.cs" />

@@ -11,7 +11,7 @@ namespace Maxfire.Skat.UnitTests
 			var personligeBeloeb = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
 					{
-						SkattepligtigIndkomst = 100
+						PersonligIndkomst = 100
 					}
 				);
 

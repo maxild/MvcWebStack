@@ -8,12 +8,12 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void BeregnSkat()
 		{
-			Constants.SundhedsbidragSats = 0.08m;
+			Constants.Sundhedsbidragsats = 0.08m;
 
 			var personligeBeloeb = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
 				{
-					SkattepligtigIndkomst = 100
+					PersonligIndkomst = 100
 				}
 			);
 
