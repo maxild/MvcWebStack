@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AktieindkomstSkat.cs" />
+    <Compile Include="AMBidragBeregner.cs" />
     <Compile Include="Beloebsgraenser.cs" />
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />

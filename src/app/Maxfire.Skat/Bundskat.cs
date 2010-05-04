@@ -8,6 +8,9 @@
 	/// </remarks>
 	public class BundskatGrundlagBeregner
 	{
+		/// <summary>
+		/// Beregn bundskattegrundlaget under hensyn til evt. modregnet negativ  negativ nettokapitalindkomst.
+		/// </summary>
 		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> input)
 		{
 			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
@@ -15,9 +18,9 @@
 
 			// §6, stk 3: Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb 
 			// i den anden ægtefælles positive kapitalindkomst inden beregning af bundskatten.
-			var samletNettoKapitalIndkomst = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
+			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
-			return personligIndkomst + (+samletNettoKapitalIndkomst);
+			return personligIndkomst + (+nettoKapitalIndkomstEfterModregning);
 		}
 	}
 
@@ -28,15 +31,6 @@
 			var grundlagBeregner = new BundskatGrundlagBeregner();
 			var grundlag = grundlagBeregner.BeregnGrundlag(indkomster);
 			return Constants.Bundskattesats * grundlag;
-		}
-	}
-
-	public class AMBidragBegner
-	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
-		{
-			var amIndkomst = indkomster.Map(x => x.AMIndkomst);
-			return Constants.AMBidragsats * amIndkomst;
 		}
 	}
 }

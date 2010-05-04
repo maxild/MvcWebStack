@@ -75,6 +75,32 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(first, second);
 		}
 
+		/// <summary>
+		/// Hvis tuple består af to elementer hvor det ene element er mindre end bundfradraget og det andet element
+		/// er større end bundfradraget, så er det muligt at overføre det uudnyttede bundfradrag fra den ene ægtefælle
+		/// til den anden ægtefælle, idet sidsnævnte ægtefælle kan have glæde af at udnytte dette ekstra overførte 
+		/// bundfradrag.
+		/// </summary>
+		/// <remarks>
+		/// Dette princip bliver benyttet ved beregning af mellemskattegrundlaget og topskattegrundlaget.
+		/// </remarks>
+		public static ValueTuple<decimal> NedbringMedUdnyttetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		{
+			var nettoGrundlag = bruttoGrundlag - bundfradrag;
+			var modregnetNettoGrundlag = nettoGrundlag.NedbringPositivtMedEvtNegativt();
+			return modregnetNettoGrundlag;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public static ValueTuple<decimal> BeregnUdnyttetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		{
+			var modregnetNettoGundlag = bruttoGrundlag.NedbringMedUdnyttetBundfradrag(bundfradrag);
+			var overfoertBundfradrag = bruttoGrundlag - modregnetNettoGundlag;
+			return overfoertBundfradrag;
+		}
+
 		public static ValueTuple<decimal> RoundMoney(this ValueTuple<decimal> tuple)
 		{
 			IList<decimal> list = new List<decimal>(tuple.Size);
@@ -83,12 +109,6 @@ namespace Maxfire.Skat
 				list.Add(Math.Round(tuple[i], 2, MidpointRounding.ToEven));
 			}
 			return new ValueTuple<decimal>(list);
-		}
-
-		public static ValueTuple<decimal> OverfoerIkkeUdnyttetBundfradrag(this ValueTuple<decimal> tuple, decimal bundfradrag)
-		{
-			// Er der nogen negative elementer
-			return tuple;
 		}
 	}
 }

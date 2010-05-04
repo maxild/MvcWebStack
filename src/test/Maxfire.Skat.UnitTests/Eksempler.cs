@@ -9,6 +9,30 @@ namespace Maxfire.Skat.UnitTests
 	/// </summary>
 	public class Eksempler
 	{
+
+
+		[Fact]
+		public void Eksempel_2_Bundskattegrundlag_Gifte()
+		{
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 100000,
+					NettoKapitalIndkomst = -50000,
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 400000,
+					NettoKapitalIndkomst = 60000
+				});
+
+			var bundskatGrundlagBeregner = new BundskatGrundlagBeregner();
+			var bundskatGrundlag = bundskatGrundlagBeregner.BeregnGrundlag(indkomster);
+
+			bundskatGrundlag[0].ShouldEqual(100000);
+			bundskatGrundlag[1].ShouldEqual(410000);
+		}
+
 		[Fact]
 		public void Eksempel_3_Mellemskattegrundlag_Gifte()
 		{
@@ -25,14 +49,21 @@ namespace Maxfire.Skat.UnitTests
 				});
 
 			var mellemskatGrundlagBeregner = new MellemskatGrundlagBeregner();
+
+			var grundlagFoerBundfradrag = mellemskatGrundlagBeregner.BeregnBruttoGrundlag(indkomster);
+			var udnyttetBundfradrag = mellemskatGrundlagBeregner.BeregnUdnyttetBundfradrag(indkomster);
 			var grundlag = mellemskatGrundlagBeregner.BeregnGrundlag(indkomster);
 
+			grundlagFoerBundfradrag[0].ShouldEqual(100000);
+			grundlagFoerBundfradrag[1].ShouldEqual(630000);
+			udnyttetBundfradrag[0].ShouldEqual(100000);
+			udnyttetBundfradrag[1].ShouldEqual(594400);
 			grundlag[0].ShouldEqual(0);
 			grundlag[1].ShouldEqual(35600);
 		}
 
 		[Fact]
-		public void Eksempel_4_Topskattegrundlag()
+		public void Eksempel_4_Topskattegrundlag_Gifte()
 		{
 			
 		}
@@ -148,7 +179,6 @@ namespace Maxfire.Skat.UnitTests
 				.RoundMoney().ShouldEqual(12025.60m);
 			skatter[1].KommunalIndkomstskatOgKirkeskat
 				.RoundMoney().ShouldEqual(36512.72m);
-
 		}
 
 		[Fact] 
