@@ -117,10 +117,12 @@ namespace Maxfire.Skat
 
 			if (samletNettoKapitalIndkomstTilBeskatning <= 0)
 			{
+				// Det andet led udgår
 				topskat = +topskatUdenPositivNettoKapitalIndkomst;
 			}
 			else
 			{
+				// Det andet led af topskatten mht positiv nettokapitalindkomst beregnes
 				var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.NedbringPositivtMedEvtNegativt();
 
 				int indexOfMaxGrundlag;

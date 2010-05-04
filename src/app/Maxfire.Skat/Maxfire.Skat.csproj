@@ -41,6 +41,7 @@
     <Compile Include="Mellemskat.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
+    <Compile Include="SkatBeregner.cs" />
     <Compile Include="Skatter.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
     <Compile Include="UnderskudsmodregningBeregner.cs" />

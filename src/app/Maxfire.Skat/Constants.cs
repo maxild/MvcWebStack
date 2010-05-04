@@ -76,5 +76,16 @@
 			get { return _topSkattesats ?? TOP_SKATTESATS; }
 			set { _topSkattesats = value; }
 		}
+
+		public static void Brug2009Vaerdier()
+		{
+			BundfradragPositivKapitalIndkomst = 0;
+			Bundskattesats = 0.0504m;
+			Mellemskattesats = 0.06m;
+			Topskattesats = 0.15m;
+			Sundhedsbidragsats = 0.08m;
+			MellemskatBundfradrag = 347200;
+			TopskatBundfradrag = 347200;
+		}
 	}
 }

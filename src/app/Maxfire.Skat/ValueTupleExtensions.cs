@@ -84,5 +84,11 @@ namespace Maxfire.Skat
 			}
 			return new ValueTuple<decimal>(list);
 		}
+
+		public static ValueTuple<decimal> OverfoerIkkeUdnyttetBundfradrag(this ValueTuple<decimal> tuple, decimal bundfradrag)
+		{
+			// Er der nogen negative elementer
+			return tuple;
+		}
 	}
 }

@@ -108,6 +108,18 @@ namespace Maxfire.Skat
 			return _list.IndexOf(value);
 		}
 
+		public int IndexOf(Func<T, bool> predicate)
+		{
+			for (int i = 0; i < Size; i++)
+			{
+				if (predicate(this[i]))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
 		public T PartnerOf(T partner)
 		{
 			int i = _list.IndexOf(partner);
@@ -188,7 +200,7 @@ namespace Maxfire.Skat
 
 		public static ValueTuple<T> operator +(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
-			return binaryOp(lhs, rhs, Operator<T>.Add);
+			return binaryOp(lhs, rhs, Operator<T>.Add, "add");
 		}
 
 		public static ValueTuple<T> operator +(T lhs, ValueTuple<T> rhs)
@@ -203,7 +215,7 @@ namespace Maxfire.Skat
 
 		public static ValueTuple<T> operator -(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
-			return binaryOp(lhs, rhs, Operator<T>.Subtract);
+			return binaryOp(lhs, rhs, Operator<T>.Subtract, "subtract");
 		}
 		
 		public static ValueTuple<T> operator -(T lhs, ValueTuple<T> rhs)
@@ -218,7 +230,7 @@ namespace Maxfire.Skat
 
 		public static ValueTuple<T> operator *(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
-			return binaryOp(lhs, rhs, Operator<T>.Multiply);
+			return binaryOp(lhs, rhs, Operator<T>.Multiply, "multiply");
 		}
 
 		public static ValueTuple<T> operator *(T lhs, ValueTuple<T> rhs)
@@ -233,7 +245,7 @@ namespace Maxfire.Skat
 		
 		public static ValueTuple<T> operator /(ValueTuple<T> lhs, ValueTuple<T> rhs)
 		{
-			return binaryOp(lhs, rhs, Operator<T>.Divide);
+			return binaryOp(lhs, rhs, Operator<T>.Divide, "divide");
 		}
 
 		public static ValueTuple<T> operator /(T lhs, ValueTuple<T> rhs)
@@ -246,11 +258,11 @@ namespace Maxfire.Skat
 			return binaryOp(lhs, rhs, Operator<T>.Divide);
 		}
 
-		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, ValueTuple<T> rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, ValueTuple<T> rhs, Func<T, T, T> op, string s)
 		{
 			if (lhs.Size != rhs.Size)
 			{
-				throw new ArgumentException("Cannot add tuples of different size.");
+				throw new ArgumentException(string.Format("Cannot {0} tuples of different size.", s));
 			}
 
 			var list = new List<T>(lhs.Size);
