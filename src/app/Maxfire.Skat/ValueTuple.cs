@@ -28,12 +28,25 @@ namespace Maxfire.Skat
 			_list = new List<T> { first, second };
 		}
 
+		public ValueTuple(int size, Func<T> creator)
+		{
+			if (size != 1 && size != 2)
+			{
+				throw new ArgumentException("A ValueTuple must contain either one or two elements");
+			}
+			_list = new List<T>(size);
+			for (int i = 0; i < size; i++)
+			{
+				_list.Add(creator());
+			}
+		}
+
 		public ValueTuple(IList<T> list)
 		{
 			list.ThrowIfNull("list");
 			if (list.Count != 1 && list.Count != 2)
 			{
-				throw new ArgumentException("The list must contain either one or two elements");
+				throw new ArgumentException("A ValueTuple must contain either one or two elements");
 			}
 			_list = list;
 		}

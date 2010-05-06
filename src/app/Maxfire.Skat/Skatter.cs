@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using System;
+
+namespace Maxfire.Skat
 {
 	// TODO: make this type immutable, but keep it working with Accessor logic
 	public class Skatter
@@ -25,6 +27,11 @@
 		public Skatter Clone()
 		{
 			return (Skatter)MemberwiseClone();
+		}
+
+		public decimal Sum()
+		{
+			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat + KommunalIndkomstskatOgKirkeskat;
 		}
 	}
 }

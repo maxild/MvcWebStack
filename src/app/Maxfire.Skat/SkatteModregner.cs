@@ -1,5 +1,6 @@
 ﻿using System;
 using Maxfire.Core;
+using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
@@ -22,7 +23,17 @@ namespace Maxfire.Skat
 
 		public SkatteModregner(params Accessor<Skatter, decimal>[] skatteAccessors)
 		{
+			skatteAccessors.ThrowIfNull("skatteAccessors");
+			if (skatteAccessors.Length == 0)
+			{
+				throw new ArgumentException("At least one skatteAccessor must be given.");
+			}
 			_skatteAccessors = skatteAccessors;
+		}
+
+		public Accessor<Skatter, decimal> First()
+		{
+			return _skatteAccessors[0];
 		}
 
 		public ModregnResult Modregn(Skatter skatter, decimal skattevaerdi)
