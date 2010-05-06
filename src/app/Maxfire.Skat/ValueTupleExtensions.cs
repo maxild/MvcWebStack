@@ -76,15 +76,16 @@ namespace Maxfire.Skat
 		}
 
 		/// <summary>
-		/// Hvis tuple består af to elementer hvor det ene element er mindre end bundfradraget og det andet element
-		/// er større end bundfradraget, så er det muligt at overføre det uudnyttede bundfradrag fra den ene ægtefælle
-		/// til den anden ægtefælle, idet sidsnævnte ægtefælle kan have glæde af at udnytte dette ekstra overførte 
-		/// bundfradrag.
+		/// Hvis tuple (bruttoGrundlag) består af to elementer, hvor det ene element er mindre end bundfradraget, og 
+		/// det andet element er større end bundfradraget, så er det muligt at overføre det uudnyttede bundfradrag 
+		/// fra den ene ægtefælle til den anden ægtefælle. Metoden returnerer det modregnede nettogrundlag, hvor 
+		/// bruttogrundlaget er nedbragt med ægtefællernes 'sambeskattede' bundfradrag, efter der evt. er sket overførsel 
+		/// af bundfradrag mellem ægtefællerne.
 		/// </summary>
 		/// <remarks>
 		/// Dette princip bliver benyttet ved beregning af mellemskattegrundlaget og topskattegrundlaget.
 		/// </remarks>
-		public static ValueTuple<decimal> NedbringMedUdnyttetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		public static ValueTuple<decimal> NedbringMedSambeskattetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
 		{
 			var nettoGrundlag = bruttoGrundlag - bundfradrag;
 			var modregnetNettoGrundlag = nettoGrundlag.NedbringPositivtMedEvtNegativt();
@@ -92,11 +93,17 @@ namespace Maxfire.Skat
 		}
 
 		/// <summary>
-		/// 
+		/// Hvis tuple (bruttoGrundlag) består af to elementer, hvor det ene element er mindre end bundfradraget, og 
+		/// det andet element er større end bundfradraget, så er det muligt at overføre det uudnyttede bundfradrag 
+		/// fra den ene ægtefælle til den anden ægtefælle. Metoden returnerer det 'effektive' bundfradrag, der summer 
+		/// til personernes samlede bundfradrag, men hvor sådan overførsel har fundet sted.
 		/// </summary>
-		public static ValueTuple<decimal> BeregnUdnyttetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		/// <remarks>
+		/// Dette princip bliver benyttet ved beregning af mellemskattegrundlaget og topskattegrundlaget.
+		/// </remarks>
+		public static ValueTuple<decimal> BeregnSambeskattetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
 		{
-			var modregnetNettoGundlag = bruttoGrundlag.NedbringMedUdnyttetBundfradrag(bundfradrag);
+			var modregnetNettoGundlag = bruttoGrundlag.NedbringMedSambeskattetBundfradrag(bundfradrag);
 			var overfoertBundfradrag = bruttoGrundlag - modregnetNettoGundlag;
 			return overfoertBundfradrag;
 		}

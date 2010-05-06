@@ -23,16 +23,16 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn det udnyttede bundfradrag efter at der er sket overførsel af bundfradrag mellem ægtefæller.
 		/// </summary>
-		public ValueTuple<decimal> BeregnUdnyttetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnSambeskattetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster)
 		{
 			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			return bruttoGrundlag.BeregnUdnyttetBundfradrag(Constants.MellemskatBundfradrag);
+			return bruttoGrundlag.BeregnSambeskattetBundfradrag(Constants.MellemskatBundfradrag);
 		}
 
 		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster)
 		{
 			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			var udnyttetBundfradrag = BeregnUdnyttetBundfradrag(indkomster);
+			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster);
 			return +(bruttoGrundlag - udnyttetBundfradrag);
 		}
 	}

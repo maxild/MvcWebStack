@@ -82,6 +82,76 @@ namespace Maxfire.Skat.UnitTests
 		}
 
 		[Fact]
+		public void BeregnSambeskattetBundfradrag_OverfoerselHvorBundfradragErForLille()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(1000, 500);
+			var udnyttetBundfradrag = bruttoGrundlag.BeregnSambeskattetBundfradrag(600);
+
+			udnyttetBundfradrag[0].ShouldEqual(700);
+			udnyttetBundfradrag[1].ShouldEqual(500);
+		}
+
+		[Fact]
+		public void BeregnSambeskattetBundfradrag_OverfoerselHvorBundfradragErTilpasStort()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(1000, 500);
+			var udnyttetBundfradrag = bruttoGrundlag.BeregnSambeskattetBundfradrag(750);
+
+			udnyttetBundfradrag[0].ShouldEqual(1000);
+			udnyttetBundfradrag[1].ShouldEqual(500);
+		}
+
+		[Fact]
+		public void BeregnSambeskattetBundfradrag_OverfoerselHvorBundfradragErRigeligStort()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(1000, 500);
+			var udnyttetBundfradrag = bruttoGrundlag.BeregnSambeskattetBundfradrag(900);
+
+			udnyttetBundfradrag[0].ShouldEqual(1000);
+			udnyttetBundfradrag[1].ShouldEqual(800);
+		}
+
+		[Fact]
+		public void BeregnSambeskattetBundfradrag_IngenOverfoersel()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(1000, 500);
+			var udnyttetBundfradrag = bruttoGrundlag.BeregnSambeskattetBundfradrag(400);
+
+			udnyttetBundfradrag[0].ShouldEqual(400);
+			udnyttetBundfradrag[1].ShouldEqual(400);
+		}
+
+		[Fact]
+		public void NedbringMedSambeskattetBundfradrag_OverfoerselHvorBundfradragErTilpasStort()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(200, 100);
+			var grundlag = bruttoGrundlag.NedbringMedSambeskattetBundfradrag(150);
+
+			grundlag[0].ShouldEqual(0);
+			grundlag[1].ShouldEqual(0);
+		}
+
+		[Fact]
+		public void NedbringMedSambeskattetBundfradrag_OverfoerselHvorBundfradragErForLille()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(200, 100);
+			var grundlag = bruttoGrundlag.NedbringMedSambeskattetBundfradrag(125);
+
+			grundlag[0].ShouldEqual(50);
+			grundlag[1].ShouldEqual(0);
+		}
+
+		[Fact]
+		public void NedbringMedSambeskattetBundfradrag_OverfoerselHvorBundfradragErForStort()
+		{
+			var bruttoGrundlag = new ValueTuple<decimal>(200, 100);
+			var grundlag = bruttoGrundlag.NedbringMedSambeskattetBundfradrag(175);
+
+			grundlag[0].ShouldEqual(0);
+			grundlag[1].ShouldEqual(-50);
+		}
+
+		[Fact]
 		public void CanAddDecimals()
 		{
 			var lhs = new ValueTuple<decimal>(1, 2);

@@ -9,8 +9,6 @@ namespace Maxfire.Skat.UnitTests
 	/// </summary>
 	public class Eksempler
 	{
-
-
 		[Fact]
 		public void Eksempel_2_Bundskattegrundlag_Gifte()
 		{
@@ -51,7 +49,7 @@ namespace Maxfire.Skat.UnitTests
 			var mellemskatGrundlagBeregner = new MellemskatGrundlagBeregner();
 
 			var grundlagFoerBundfradrag = mellemskatGrundlagBeregner.BeregnBruttoGrundlag(indkomster);
-			var udnyttetBundfradrag = mellemskatGrundlagBeregner.BeregnUdnyttetBundfradrag(indkomster);
+			var udnyttetBundfradrag = mellemskatGrundlagBeregner.BeregnSambeskattetBundfradrag(indkomster);
 			var grundlag = mellemskatGrundlagBeregner.BeregnGrundlag(indkomster);
 
 			grundlagFoerBundfradrag[0].ShouldEqual(100000);
