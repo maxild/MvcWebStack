@@ -47,6 +47,8 @@ namespace Maxfire.Skat
 
 				// Hvis ikke-udnyttet skatteværdi => fradrag i bundskat, topskat og skat af aktieindkomst (lav generel rutine)
 
+
+
 			// Bundskat
 
 				// Hvis ikke-udnyttet skatteværdi => fradrag i sundhedsbidrag, topskat og skat af aktieindkomst (lav generel rutine)

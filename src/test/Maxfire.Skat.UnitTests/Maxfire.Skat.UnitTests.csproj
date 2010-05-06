@@ -49,6 +49,7 @@
     <Compile Include="Eksempler.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
+    <Compile Include="SkatteModregnerTester.cs" />
     <Compile Include="SundhedsbidragBeregnerTester.cs" />
     <Compile Include="TopskatBeregnerTester.cs" />
     <Compile Include="UnderskudsmodregningBeregnerTester.cs" />

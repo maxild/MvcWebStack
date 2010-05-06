@@ -1,3 +1,5 @@
+using Maxfire.Core.Reflection;
+
 namespace Maxfire.Skat
 {
 	/// <summary>
@@ -8,6 +10,14 @@ namespace Maxfire.Skat
 	//TODO: Ingen fremførte underskud mellem indkomst år, hverken værdi fra forrige år, eller overførsel til kommende skatteår.
 	public class UnderskudsmodregningBeregner
 	{
+		public static SkatteModregner GetSkattepligtigIndkomstUnderskudModregner()
+		{
+			return new SkatteModregner(
+				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
+				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
+				IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst));
+		}
+
 		// Omregning af underskud til skatteværdi, og vice versa, sker.....
 		public ValueTuple<Skatter> Beregn(ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
@@ -27,7 +37,7 @@ namespace Maxfire.Skat
 			// PSL §13, stk 1:
 			if (indkomster.Size == 1)
 			{
-				var modregnResult = skatter[0].ModregnNegativSkattepligtigIndkomst(skattevaerdiAfUnderskud[0]);
+				var modregnResult = GetSkattepligtigIndkomstUnderskudModregner().Modregn(skatter[0], skattevaerdiAfUnderskud[0]);
 				result = modregnResult.ModregnedeSkatter.ToTuple();
 			}
 

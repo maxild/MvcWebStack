@@ -1,6 +1,6 @@
 ﻿namespace Maxfire.Skat
 {
-	// TODO: make this type immutable
+	// TODO: make this type immutable, but keep it working with Accessor logic
 	public class Skatter
 	{
 		public decimal Kirkeskat { get; set; }
@@ -22,66 +22,9 @@
 		/// </summary>
 		public decimal SkatAfAktieindkomst { get; set; }
 
-		public ModregnResult ModregnNegativSkattepligtigIndkomst(decimal skattevaerdiAfUnderskud)
+		public Skatter Clone()
 		{
-			if (skattevaerdiAfUnderskud >= 0)
-			{
-				// Intet underskud, ingen grund til at modregne i skatterne
-				return new ModregnResult(this, skattevaerdiAfUnderskud);
-			}
-
-			// Følgende skatter (statsskatter der beregnes af skattepligtig indkomst) 
-			// bliver nedbragt med skatteværdien i nævnte rækkefølge
-			decimal modregnetBundskat = Bundskat;
-			decimal modregnetTopskat = Topskat;
-			decimal modregnetSkatAfAktieindkomst = SkatAfAktieindkomst;
-
-			decimal underskud = modregnetBundskat += skattevaerdiAfUnderskud;
-			if (modregnetBundskat < 0)
-			{
-				underskud = modregnetTopskat += modregnetBundskat;
-				modregnetBundskat = 0;
-				if (modregnetTopskat < 0)
-				{
-					underskud = modregnetSkatAfAktieindkomst += modregnetTopskat;
-					modregnetTopskat = 0; 
-					if (modregnetSkatAfAktieindkomst < 0)
-					{
-						underskud = modregnetSkatAfAktieindkomst;
-						modregnetSkatAfAktieindkomst = 0;
-					}
-				}
-			}
-
-			var modregnedeSkatter = new Skatter
-			{
-				Kirkeskat = Kirkeskat,
-				Kommuneskat = Kommuneskat,
-				Sundhedsbidrag = Sundhedsbidrag,
-				Bundskat = modregnetBundskat,
-				Topskat = modregnetTopskat,
-				SkatAfAktieindkomst = modregnetSkatAfAktieindkomst
-			};
-
-			return new ModregnResult(modregnedeSkatter, underskud);
+			return (Skatter)MemberwiseClone();
 		}
-
-		public Skatter ModregnNegativPersonligIndkomst(decimal underskud)
-		{
-			// TODO
-			return this;
-		}
-	}
-
-	public class ModregnResult
-	{
-		public ModregnResult(Skatter modregnedeSkatter, decimal underskud)
-		{
-			ModregnedeSkatter = modregnedeSkatter;
-			Underskud = underskud;
-		}
-
-		public Skatter ModregnedeSkatter { get; private set; }
-		public decimal Underskud { get; private set; }
 	}
 }

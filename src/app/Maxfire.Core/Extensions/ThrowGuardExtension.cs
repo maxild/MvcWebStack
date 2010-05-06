@@ -33,5 +33,15 @@ namespace Maxfire.Core.Extensions
 				throw new ArgumentOutOfRangeException(name, data, "The argument cannot be less than or equal to zero.");
 			}
 		}
+
+		public static void ThrowIfLessThanZero<T>(this T data, string name)
+			where T : IComparable<T>
+		{
+			T zero = default(T);
+			if (data.CompareTo(zero) < 0)
+			{
+				throw new ArgumentOutOfRangeException(name, data, "The argument cannot be less than or equal to zero.");
+			}
+		}
 	}
 }
