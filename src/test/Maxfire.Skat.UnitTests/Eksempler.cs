@@ -63,7 +63,36 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void Eksempel_4_Topskattegrundlag_Gifte()
 		{
-			
+			Constants.Brug2009Vaerdier();
+
+			const decimal indskudPaaPrivatTegnetKapitalPension = 32000;
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 368000 - indskudPaaPrivatTegnetKapitalPension,
+					NettoKapitalIndkomst = 28500,
+					KapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension,
+					LigningsmaesigeFradrag = 15000
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 92000,
+					NettoKapitalIndkomst = 18500,
+					LigningsmaesigeFradrag = 8000
+				});
+
+			var topskatBeregner = new TopskatBeregner();
+			var topskat = topskatBeregner.BeregnSkat(indkomster);
+
+			topskat[0].ShouldEqual(7395);
+			topskat[1].ShouldEqual(2775);
+		}
+
+		[Fact]
+		public void Eksempel_5_SkatAfAktieindkomst()
+		{
+			// TODO
 		}
 
 		[Fact]
@@ -73,12 +102,7 @@ namespace Maxfire.Skat.UnitTests
 
 			// Note: Indkomstopgørelsen mangler
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
-				new KommunaleSatser
-					{
-						Kommuneskattesats = 0.237m,
-						Kirkeskattesats = 0.0059m
-				});
+			ValueTuple<KommunaleSatser> kommunaleSatser = getKommunaleSatserForUgift();
 
 			var indkomster = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
@@ -107,8 +131,8 @@ namespace Maxfire.Skat.UnitTests
 				.RoundMoney().ShouldEqual(83143.46m);
 
 			// Beregning af skatteværdier af personfradrag
-			var personFradragBeregner = new PersonFradragBeregner();
-			var skattevaerdier = personFradragBeregner.BeregnSkattevaerdier(kommunaleSatser);
+			var personFradragBeregner = new PersonfradragBeregner();
+			var skattevaerdier = personFradragBeregner.BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
 
 			skattevaerdier[0].Bundskat.ShouldEqual(2162.16m);
 			skattevaerdier[0].Sundhedsbidrag.ShouldEqual(3432);
@@ -122,17 +146,7 @@ namespace Maxfire.Skat.UnitTests
 
 			// Note: Indkomstopgørelsen mangler
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
-				new KommunaleSatser
-				{
-					Kommuneskattesats = 0.237m,
-					Kirkeskattesats = 0.0059m
-				},
-				new KommunaleSatser
-				{
-					Kommuneskattesats = 0.237m,
-					Kirkeskattesats = 0.0059m
-				});
+			var kommunaleSatser = getKommunaleSatserForGifte();
 
 			var indkomster = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
@@ -140,7 +154,7 @@ namespace Maxfire.Skat.UnitTests
 						PersonligIndkomst = 388000,
 						NettoKapitalIndkomst = 13500,
 						LigningsmaesigeFradrag = 21600,
-						KapitalPensionsindskud = 46000
+						KapitalPensionsindskud = 32000
 					},
 				new PersonligeBeloeb
 					{
@@ -176,7 +190,81 @@ namespace Maxfire.Skat.UnitTests
 			skatter[1].Sundhedsbidrag
 				.RoundMoney().ShouldEqual(12025.60m);
 			skatter[1].KommunalIndkomstskatOgKirkeskat
-				.RoundMoney().ShouldEqual(36512.72m);
+				.RoundMoney().ShouldEqual(36512.73m);
+
+			var personFradragBeregner = new PersonfradragBeregner();
+			var skattevaerdier = personFradragBeregner.BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
+
+			skattevaerdier[0].Bundskat.ShouldEqual(2162.16m);
+			skattevaerdier[1].Bundskat.ShouldEqual(2162.16m);
+			skattevaerdier[0].Sundhedsbidrag.ShouldEqual(3432);
+			skattevaerdier[1].Sundhedsbidrag.ShouldEqual(3432);
+			skattevaerdier[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(10420.41m);
+			skattevaerdier[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(10420.41m);
+		}
+
+		[Fact]
+		public void Eksempel_10_GifteMedNegativNettoKapitalIndkomstOgUudnyttetBundfradrag()
+		{
+			Constants.Brug2009Vaerdier();
+
+			const decimal indskudPaaPrivatTegnetKapitalPension = 32000;
+
+			var kommunaleSatser = getKommunaleSatserForGifte();
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 600000 - indskudPaaPrivatTegnetKapitalPension,
+					NettoKapitalIndkomst = -11500,
+					LigningsmaesigeFradrag = 21000,
+					KapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 150000,
+					NettoKapitalIndkomst = 8500,
+					LigningsmaesigeFradrag = 7772
+				});
+
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(535500);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(150728);
+
+			var skatterBeregner = new SkatBeregner();
+			var skatter = skatterBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			// Skatter før modregning af underskud og personfradrag
+			skatter[0].Bundskat
+				.RoundMoney().ShouldEqual(28627.20m);
+			skatter[0].Mellemskat
+				.RoundMoney().ShouldEqual(1416);
+			skatter[0].Topskat
+				.RoundMoney().ShouldEqual(37920);
+			skatter[0].Sundhedsbidrag
+				.RoundMoney().ShouldEqual(42840);
+			skatter[0].KommunalIndkomstskatOgKirkeskat
+				.RoundMoney().ShouldEqual(130072.95m);
+
+			skatter[1].Bundskat
+				.RoundMoney().ShouldEqual(7560);
+			skatter[1].Mellemskat
+				.RoundMoney().ShouldEqual(0);
+			skatter[1].Topskat
+				.RoundMoney().ShouldEqual(0);
+			skatter[1].Sundhedsbidrag
+				.RoundMoney().ShouldEqual(12058.24m);
+			skatter[1].KommunalIndkomstskatOgKirkeskat
+				.RoundMoney().ShouldEqual(36611.83m);
+
+			var personFradragBeregner = new PersonfradragBeregner();
+			var skattevaerdier = personFradragBeregner.BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
+
+			skattevaerdier[0].Bundskat.ShouldEqual(2162.16m);
+			skattevaerdier[1].Bundskat.ShouldEqual(2162.16m);
+			skattevaerdier[0].Sundhedsbidrag.ShouldEqual(3432);
+			skattevaerdier[1].Sundhedsbidrag.ShouldEqual(3432);
+			skattevaerdier[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(10420.41m);
+			skattevaerdier[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(10420.41m);
 		}
 
 		[Fact] 
@@ -192,11 +280,7 @@ namespace Maxfire.Skat.UnitTests
 						LigningsmaesigeFradrag = 80000
 					});
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
-				new KommunaleSatser
-					{
-						Kommuneskattesats = 0.2429m
-					});
+			var kommunaleSatser = getKommunaleSatserForUgift();
 
 			// Skattepligtig indkomst før modregning
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(-30000);
@@ -222,6 +306,31 @@ namespace Maxfire.Skat.UnitTests
 			//var modregnResult = x.Beregn(indkomster, skatter, kommunaleSatser);
 
 			//indkomster[0].SkattepligtigIndkomst.ShouldEqual(-30000);
+		}
+
+		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
+		{
+			return new ValueTuple<KommunaleSatser>(
+				new KommunaleSatser
+				{
+					Kommuneskattesats = 0.237m,
+					Kirkeskattesats = 0.0059m
+				});
+		}
+
+		private static ValueTuple<KommunaleSatser> getKommunaleSatserForGifte()
+		{
+			return new ValueTuple<KommunaleSatser>(
+				new KommunaleSatser
+				{
+					Kommuneskattesats = 0.237m,
+					Kirkeskattesats = 0.0059m
+				},
+				new KommunaleSatser
+				{
+					Kommuneskattesats = 0.237m,
+					Kirkeskattesats = 0.0059m
+				});
 		}
 	}
 

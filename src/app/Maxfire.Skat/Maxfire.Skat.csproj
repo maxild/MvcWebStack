@@ -40,6 +40,7 @@
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Mellemskat.cs" />
+    <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
     <Compile Include="SkatBeregner.cs" />

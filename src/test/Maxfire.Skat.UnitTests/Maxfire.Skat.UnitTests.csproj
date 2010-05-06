@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BundskatBeregnerTester.cs" />
+    <Compile Include="AccessorTester.cs" />
     <Compile Include="Eksempler.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
@@ -56,6 +57,10 @@
     <Compile Include="SkatteberegnerTester.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Skat\Maxfire.Skat.csproj">
       <Project>{96028503-E4FA-4BFA-A88F-6307F43965D6}</Project>
       <Name>Maxfire.Skat</Name>

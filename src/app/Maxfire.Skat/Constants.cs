@@ -22,7 +22,7 @@
 
 		// TODO: Ugifte personer under 18 år har reduceret person fradrag
 		private static decimal? _personFradrag;
-		public static decimal PersonFradrag
+		public static decimal Personfradrag
 		{
 			get { return _personFradrag ?? PERSON_FRADRAG; }
 			set { _personFradrag = value; }

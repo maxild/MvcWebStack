@@ -61,6 +61,7 @@
     <Compile Include="PartialComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AttributeExtensions.cs" />
+    <Compile Include="Reflection\PropertyAccessor.cs" />
     <Compile Include="Reflection\DisplayNameExtensions.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\ExpressionHelper.cs" />
