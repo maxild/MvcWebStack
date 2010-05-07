@@ -73,13 +73,13 @@ namespace Maxfire.Skat.UnitTests
 					PersonligIndkomst = 368000 - indskudPaaPrivatTegnetKapitalPension,
 					NettoKapitalIndkomst = 28500,
 					KapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension,
-					LigningsmaesigeFradrag = 15000
+					LigningsmaessigeFradrag = 15000
 				},
 				new PersonligeBeloeb
 				{
 					PersonligIndkomst = 92000,
 					NettoKapitalIndkomst = 18500,
-					LigningsmaesigeFradrag = 8000
+					LigningsmaessigeFradrag = 8000
 				});
 
 			var topskatBeregner = new TopskatBeregner();
@@ -109,7 +109,7 @@ namespace Maxfire.Skat.UnitTests
 					{
 						PersonligIndkomst = 358395,
 						NettoKapitalIndkomst = 8500,
-						LigningsmaesigeFradrag = 24600,
+						LigningsmaessigeFradrag = 24600,
 						KapitalPensionsindskud = 46000
 					});
 
@@ -153,14 +153,14 @@ namespace Maxfire.Skat.UnitTests
 					{
 						PersonligIndkomst = 388000,
 						NettoKapitalIndkomst = 13500,
-						LigningsmaesigeFradrag = 21600,
+						LigningsmaessigeFradrag = 21600,
 						KapitalPensionsindskud = 32000
 					},
 				new PersonligeBeloeb
 					{
 						PersonligIndkomst = 150000,
 						NettoKapitalIndkomst = 8500,
-						LigningsmaesigeFradrag = 8180
+						LigningsmaessigeFradrag = 8180
 					});
 
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(379900);
@@ -217,14 +217,14 @@ namespace Maxfire.Skat.UnitTests
 				{
 					PersonligIndkomst = 600000 - indskudPaaPrivatTegnetKapitalPension,
 					NettoKapitalIndkomst = -11500,
-					LigningsmaesigeFradrag = 21000,
+					LigningsmaessigeFradrag = 21000,
 					KapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension
 				},
 				new PersonligeBeloeb
 				{
 					PersonligIndkomst = 150000,
 					NettoKapitalIndkomst = 8500,
-					LigningsmaesigeFradrag = 7772
+					LigningsmaessigeFradrag = 7772
 				});
 
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(535500);
@@ -277,12 +277,11 @@ namespace Maxfire.Skat.UnitTests
 					{
 						PersonligIndkomst = 360000,
 						NettoKapitalIndkomst = -310000,
-						LigningsmaesigeFradrag = 80000
+						LigningsmaessigeFradrag = 80000
 					});
 
 			var kommunaleSatser = getKommunaleSatserForUgift();
 
-			// Skattepligtig indkomst før modregning
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(-30000);
 
 			var skatterBeregner = new SkatBeregner();
@@ -295,17 +294,28 @@ namespace Maxfire.Skat.UnitTests
 			skatter[0].Sundhedsbidrag.ShouldEqual(0);
 			skatter[0].Kommuneskat.ShouldEqual(0);
 
-			// Skatteværdi af underskud
-			var x = new UnderskudsmodregningBeregner();
-			var modregnedeSkatter = x.Beregn(indkomster, skatter, kommunaleSatser);
+			var underskudBeregner = new UnderskudBeregner();
+			var modregnResults = underskudBeregner.Beregn(indkomster, skatter, kommunaleSatser);
+			var skatterFoerPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
+			var ikkeUdnyttedeSkattevaerdier = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
 
-			modregnedeSkatter[0].Bundskat.ShouldEqual(8457);
+			// Fuld udnyttelse, idet hele skatteværdien kan rummes i bundskatten
+			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(0);
 
-			// TODO: Færdiggør her
+			skatterFoerPersonfradrag[0].Bundskat.ShouldEqual(8457);
+			skatterFoerPersonfradrag[0].Mellemskat.ShouldEqual(768);
+			skatterFoerPersonfradrag[0].Topskat.ShouldEqual(1920);
+			skatterFoerPersonfradrag[0].Sundhedsbidrag.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].Kommuneskat.ShouldEqual(0);
 
-			//var modregnResult = x.Beregn(indkomster, skatter, kommunaleSatser);
+			var personfradragBeregner = new PersonfradragBeregner();
+			var skatterEfterPersonfradrag = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 
-			//indkomster[0].SkattepligtigIndkomst.ShouldEqual(-30000);
+			skatterEfterPersonfradrag[0].Bundskat.ShouldEqual(0);
+			skatterEfterPersonfradrag[0].Mellemskat.ShouldEqual(0);
+			skatterEfterPersonfradrag[0].Topskat.ShouldEqual(0);
+			skatterEfterPersonfradrag[0].Sundhedsbidrag.ShouldEqual(0);
+			skatterEfterPersonfradrag[0].Kommuneskat.ShouldEqual(0);
 		}
 
 		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()

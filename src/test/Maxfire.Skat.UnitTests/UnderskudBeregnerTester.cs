@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Maxfire.Skat.UnitTests
 {
-	public class UnderskudsmodregningBeregnerTester
+	public class UnderskudBeregnerTester
 	{
 		[Fact]
 		public void Eksempel()
@@ -13,7 +13,7 @@ namespace Maxfire.Skat.UnitTests
 					{
 						PersonligIndkomst = 360000,
 						NettoKapitalIndkomst = -310000,
-						LigningsmaesigeFradrag = 80000
+						LigningsmaessigeFradrag = 80000
 					});
 
 			var skatter = new ValueTuple<Skatter>(
@@ -23,7 +23,7 @@ namespace Maxfire.Skat.UnitTests
 						Topskat = 1
 					});
 
-			var x = new UnderskudsmodregningBeregner();
+			var x = new UnderskudBeregner();
 
 			//var modregnResult = x.Beregn(indkomster, skatter, kommunaleSatser);
 

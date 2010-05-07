@@ -47,7 +47,7 @@
     <Compile Include="SkatteModregner.cs" />
     <Compile Include="Skatter.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
-    <Compile Include="UnderskudsmodregningBeregner.cs" />
+    <Compile Include="UnderskudBeregner.cs" />
     <Compile Include="ValueTuple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />

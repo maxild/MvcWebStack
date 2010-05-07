@@ -110,6 +110,7 @@ namespace Maxfire.Skat
 		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
+		// TODO: Vi giver ikke oplysninger om resterende skatteværdi af personfradrag, der fortabes, det bør vi i denne low-level beregner
 		public ValueTuple<Skatter> BeregnSkatEfterPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.

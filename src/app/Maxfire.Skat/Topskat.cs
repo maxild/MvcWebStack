@@ -140,7 +140,7 @@ namespace Maxfire.Skat
 					// de største udgifter af den art, der fradrages ved opgørelsen af den skattepligtige indkomst, 
 					// men ikke ved opgørelsen af personlig indkomst og kapitalindkomst (ligningsmæssige fradrag), 
 					// for at have det højeste beregningsgrundlag efter pkt. A.
-					indexOfMaxGrundlag = indkomster[0].LigningsmaesigeFradrag > indkomster[1].LigningsmaesigeFradrag ? 0 : 1;
+					indexOfMaxGrundlag = indkomster[0].LigningsmaessigeFradrag > indkomster[1].LigningsmaessigeFradrag ? 0 : 1;
 				}
 
 				decimal topskatInklSamletPositivNettoKapitalIndkomst
