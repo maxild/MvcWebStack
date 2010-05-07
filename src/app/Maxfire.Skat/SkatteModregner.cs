@@ -7,14 +7,14 @@ namespace Maxfire.Skat
 {
 	public class ModregnResult
 	{
-		public ModregnResult(Skatter modregnedeSkatter, decimal resterendeSkattevaerdi)
+		public ModregnResult(Skatter modregnedeSkatter, decimal ikkeUdnyttetSkattevaerdi)
 		{
 			ModregnedeSkatter = modregnedeSkatter;
-			ResterendeSkattevaerdi = resterendeSkattevaerdi;
+			IkkeUdnyttetSkattevaerdi = ikkeUdnyttetSkattevaerdi;
 		}
 
 		public Skatter ModregnedeSkatter { get; private set; }
-		public decimal ResterendeSkattevaerdi { get; private set; }
+		public decimal IkkeUdnyttetSkattevaerdi { get; private set; }
 	}
 
 	public class SkatteModregner

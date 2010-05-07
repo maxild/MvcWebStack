@@ -25,13 +25,22 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Map performs a projection
 		/// </summary>
-		// TODO: Svarer til Select i LINQ
 		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<TParent, TItem> projection)
 		{
 			var list = new List<TItem>(tuple.Size);
 			for (int i = 0; i < tuple.Size; i++)
 			{
 				list.Add(projection(tuple[i]));
+			}
+			return new ValueTuple<TItem>(list);
+		}
+
+		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<TParent, int, TItem> projectionWithIndex)
+		{
+			var list = new List<TItem>(tuple.Size);
+			for (int i = 0; i < tuple.Size; i++)
+			{
+				list.Add(projectionWithIndex(tuple[i], i));
 			}
 			return new ValueTuple<TItem>(list);
 		}

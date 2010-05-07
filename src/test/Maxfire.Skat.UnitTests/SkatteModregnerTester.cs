@@ -22,7 +22,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var modregnResult = skatteModregner.Modregn(skatter, 1000);
 
-			modregnResult.ResterendeSkattevaerdi.ShouldEqual(0);
+			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Sundhedsbidrag.ShouldEqual(300);
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(1000);
@@ -44,7 +44,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var modregnResult = skatteModregner.Modregn(skatter, 3000);
 
-			modregnResult.ResterendeSkattevaerdi.ShouldEqual(1700);
+			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(1700);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Sundhedsbidrag.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(1000);
@@ -66,7 +66,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var modregnResult = skatteModregner.Modregn(skatter, -1000);
 
-			modregnResult.ResterendeSkattevaerdi.ShouldEqual(0);
+			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Sundhedsbidrag.ShouldEqual(300);
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(1000);
@@ -88,7 +88,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var modregnResult = skatteModregner.Modregn(skatter, -4000);
 
-			modregnResult.ResterendeSkattevaerdi.ShouldEqual(-2700);
+			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(-2700);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Sundhedsbidrag.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(1000);

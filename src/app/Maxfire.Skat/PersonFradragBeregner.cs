@@ -5,6 +5,18 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
+	public class ModregnPersonfradragResult
+	{
+		public ModregnPersonfradragResult(Skatter modregnedeSkatter, Skatter ikkeUdnyttedeSkattevaerdier)
+		{
+			ModregnedeSkatter = modregnedeSkatter;
+			IkkeUdnyttedeSkattevaerdier = ikkeUdnyttedeSkattevaerdier;
+		}
+
+		public Skatter ModregnedeSkatter { get; private set; }
+		public Skatter IkkeUdnyttedeSkattevaerdier { get; private set; }
+	}
+
 	// Fuldt skattepligtige personer her i landet har et personfradrag på 42.900 kr. (2009 og 2010), 
 	// jf. PSL § 10, stk. 1. Dog udgør personfradraget et beløb på 32.200 kr. (2009 og 2010) for 
 	// personer, som ved indkomstårets udløb ikke er fyldt 18 år og ikke har indgået ægteskab, jf. 
@@ -96,34 +108,15 @@ namespace Maxfire.Skat
 		/// med en procentdel af personfradraget.
 		/// </summary>
 		/// <remarks>
-		/// For gifte personer kan uudnyttet personfradrag oveføres til den anden ægtefælle.
-		/// Uudnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
+		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
+		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
-		public ValueTuple<Skatter> BeregnSkatEfterPersonfradrag(ValueTuple<PersonligeBeloeb> indkomster,
-		                                  ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<Skatter> BeregnSkatEfterPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
-			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
-
-			var modregnedeSkatter = skatter.ToList();
-			var ikkeUdnyttedeSkattevaerdier = new ValueTuple<Skatter>(skatter.Size, () => new Skatter());
-
-			// Refactor: lav denne beregning på en enkelt person (og fjern for-løkken for personer i denne metode)
-			// Metoden benyttes først individuelt, dernæst igen ved uudnyttede skatteværdier hos ægtefælle
-			// Refactor: Lav også beregn skatteværdier
-
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
-			_skatteModregnere.Each(skatteModregner => {
-				for (int i = 0; i < skatter.Size; i++)
-				{
-					// TODO: Refactor to something like 'ModregnSkatteværdiAfPersonfradragIEgneSkatter'
-					var accessor = skatteModregner.First();
-					decimal skattevaerdi = accessor.GetValue(skattevaerdier[i]);
-					var modregnResult = skatteModregner.Modregn(modregnedeSkatter[i], skattevaerdi);
-					modregnedeSkatter[i] = modregnResult.ModregnedeSkatter;
-					decimal ikkeUdnyttetSkattevaerdi = accessor.GetValue(ikkeUdnyttedeSkattevaerdier[i]);
-					accessor.SetValue(ikkeUdnyttedeSkattevaerdier[i], ikkeUdnyttetSkattevaerdi + modregnResult.ResterendeSkattevaerdi);
-				}
-			});
+			var modregnPersonfradragResults = BeregnSkatEfterPersonfradragEgneSkatter(skatter, kommunaleSatser);
+			var ikkeUdnyttedeSkattevaerdier = modregnPersonfradragResults.Map(x => x.IkkeUdnyttedeSkattevaerdier);
+			var modregnedeSkatter = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			// Modregning af ikke udnyttede skatteværdier af personfradraget i ægtefælles indkomstskatter.
 			for (int i = 0; i < skatter.Size; i++)
@@ -137,8 +130,37 @@ namespace Maxfire.Skat
 					// skatteprocenter, og der foretages en lignende modregning som ovenfor anført.
 				}
 			}
+
+			return modregnedeSkatter;
+		}
+
+		/// <summary>
+		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
+		/// </summary>
+		public ValueTuple<ModregnPersonfradragResult> BeregnSkatEfterPersonfradragEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		{
+			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
+			return skatter.Map((skat, index) => BeregnSkatEfterModregningAfSkattevaerdier(skat, skattevaerdier[index]));
+		}
+
+		/// <summary>
+		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
+		/// </summary>
+		public ModregnPersonfradragResult BeregnSkatEfterModregningAfSkattevaerdier(Skatter skatter, Skatter skattevaerdier)
+		{
+			var modregnedeSkatter = skatter.Clone();
+			var ikkeUdnyttedeSkattevaerdier = new Skatter();
 			
-			return new ValueTuple<Skatter>(modregnedeSkatter);
+			_skatteModregnere.Each(skatteModregner =>
+			{
+				var accessor = skatteModregner.First();
+				decimal skattevaerdi = accessor.GetValue(skattevaerdier);
+				var modregnResult = skatteModregner.Modregn(modregnedeSkatter, skattevaerdi);
+				modregnedeSkatter = modregnResult.ModregnedeSkatter;
+				accessor.SetValue(ikkeUdnyttedeSkattevaerdier, modregnResult.IkkeUdnyttetSkattevaerdi);
+			});
+
+			return new ModregnPersonfradragResult(modregnedeSkatter, ikkeUdnyttedeSkattevaerdier);
 		}
 
 		/// <summary>
