@@ -168,35 +168,31 @@ namespace Maxfire.Skat
 		/// </summary>
 		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
+			return kommunaleSatser.Map(kommunaleSats => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats));
+		}
+
+		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser)
+		{
 			// TODO: Personfradrag er individuelt bestemt af alder og civilstand
 			// Personfradrag opgøres efter § 10 og skatteværdien heraf efter § 12.
-			
+
 			// § 12 stk. 1: Skatteværdien af de i § 10 nævnte personfradrag opgøres som en procentdel af fradragene. 
 			// Ved opgørelsen anvendes samme procent som ved beregningen af indkomstskat til kommunen samt kirkeskat. 
 			// Ved beregningen af indkomstskat til staten beregnes skatteværdien af personfradraget med beskatnings-
 			// procenterne for bundskat efter § 5, nr. 1, og for sundhedsbidrag efter § 5, nr. 4.
 
-			var kommuneskattesats = kommunaleSatser.Map(x => x.Kommuneskattesats);
-			var kirkeskattesats = kommunaleSatser.Map(x => x.Kirkeskattesats);
-			
 			decimal skattevaerdiBundskat = Constants.Bundskattesats * Constants.Personfradrag;
 			decimal skattevaerdiSundhedsbidrag = Constants.Sundhedsbidragsats * Constants.Personfradrag;
-			var skattevaerdiKommuneskat = kommuneskattesats * Constants.Personfradrag;
-			var skattevaerdiKirkeskat = kirkeskattesats * Constants.Personfradrag;
+			decimal skattevaerdiKommuneskat = kommunaleSatser.Kommuneskattesats * Constants.Personfradrag;
+			decimal skattevaerdiKirkeskat = kommunaleSatser.Kirkeskattesats * Constants.Personfradrag;
 
-			var list = new List<Skatter>(kommunaleSatser.Size);
-			for (int i = 0; i < kommunaleSatser.Size; i++)
+			return new Skatter
 			{
-				list.Add(new Skatter
-				         	{
-				         		Bundskat = skattevaerdiBundskat,
-				         		Sundhedsbidrag = skattevaerdiSundhedsbidrag,
-				         		Kommuneskat = skattevaerdiKommuneskat[i],
-				         		Kirkeskat = skattevaerdiKirkeskat[i]
-				         	});
-			}
-
-			return new ValueTuple<Skatter>(list);
+				Bundskat = skattevaerdiBundskat,
+				Sundhedsbidrag = skattevaerdiSundhedsbidrag,
+				Kommuneskat = skattevaerdiKommuneskat,
+				Kirkeskat = skattevaerdiKirkeskat
+			};
 		}
 	}
 }
