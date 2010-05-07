@@ -1,7 +1,16 @@
-﻿using System;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
+	public interface ISkattesatser
+	{
+		decimal Kirkeskattesats { get; set; }
+		decimal Kommuneskattesats { get; set; }
+		decimal Sundhedsbidragsats { get; set; }
+		decimal Bundskattesats { get; }
+		decimal Mellemskattesats { get; }
+		decimal Topskattesats { get; }
+		decimal SkatAfAktieindkomstsats { get; }
+	}
+
 	// TODO: make this type immutable, but keep it working with Accessor logic
 	public class Skatter
 	{

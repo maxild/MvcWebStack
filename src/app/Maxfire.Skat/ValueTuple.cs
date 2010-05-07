@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 
@@ -133,14 +134,23 @@ namespace Maxfire.Skat
 			return -1;
 		}
 
+		public T PartnerOf(int index)
+		{
+			if (index == 0 || index == 1)
+			{
+				return _list[index == 0 ? 1 : 0];
+			}
+			throw new IndexOutOfRangeException();
+		}
+
 		public T PartnerOf(T partner)
 		{
 			int i = _list.IndexOf(partner);
-			if (i == 0 || i == 1)
+			if (i >= 0)
 			{
 				return _list[i == 0 ? 1 : 0];
 			}
-			return default(T);
+			throw new ArgumentException("The object cannot be found in the tuple.");
 		}
 
 		public T Sum()

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
 
@@ -119,15 +118,25 @@ namespace Maxfire.Skat
 			var modregnedeSkatter = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			// Modregning af ikke udnyttede skatteværdier af personfradraget i ægtefælles indkomstskatter.
-			for (int i = 0; i < skatter.Size; i++)
+			if (ikkeUdnyttedeSkattevaerdier.Size > 1)
 			{
-				if (ikkeUdnyttedeSkattevaerdier[i].Sum() > 0)
+				int i = ikkeUdnyttedeSkattevaerdier.IndexOf(x => x.Sum() > 0);
+				if (i >= 0 && ikkeUdnyttedeSkattevaerdier.PartnerOf(i).Sum() == 0)
 				{
-					// Der er opsamlet ikke udnyttedde skatteværdier af personfradraget hos person no. i
-
-					// Uudnyttede skatteværdier, omregnes til fradragsbeløb og overføres til ægtefællen.
-					// Her beregnes skatteværdierne med ægtefællens egne (betydning ved forskellige satser, f.eks. kirkesats)
-					// skatteprocenter, og der foretages en lignende modregning som ovenfor anført.
+					var kommunaleSatserOfPartner = kommunaleSatser.PartnerOf(i);
+					var skatterOfPartner = modregnedeSkatter.PartnerOf(i);
+					// Uudnyttede skatteværdier, omregnes til fradragsbeløb.
+					var ikkeUdnyttetFradragsbeloeb = BeregnFradragsbeloeb(ikkeUdnyttedeSkattevaerdier[i], 
+					                                                      kommunaleSatserOfPartner);
+					// Skatteværdierne af fradragsbeløbet bliver beregnet med ægtefællens egne skatteprocenter.
+					var overfoerteSkattevaerdier = BeregnSkattevaerdier(ikkeUdnyttetFradragsbeloeb, 
+					                                                    kommunaleSatserOfPartner);
+					// Modregning af skatteværdierne  i ægtefællens egne indkomstskatter.
+					var modregnedeSkatterOfPartner = BeregnSkatEfterModregningAfSkattevaerdier(skatterOfPartner,
+					                                                                           overfoerteSkattevaerdier).ModregnedeSkatter;
+					modregnedeSkatter = (i == 0) ? 
+						new ValueTuple<Skatter>(modregnedeSkatter[i], modregnedeSkatterOfPartner) :
+ 						new ValueTuple<Skatter>(modregnedeSkatterOfPartner, modregnedeSkatter[i]);
 				}
 			}
 
@@ -181,10 +190,15 @@ namespace Maxfire.Skat
 			// Ved beregningen af indkomstskat til staten beregnes skatteværdien af personfradraget med beskatnings-
 			// procenterne for bundskat efter § 5, nr. 1, og for sundhedsbidrag efter § 5, nr. 4.
 
-			decimal skattevaerdiBundskat = Constants.Bundskattesats * Constants.Personfradrag;
-			decimal skattevaerdiSundhedsbidrag = Constants.Sundhedsbidragsats * Constants.Personfradrag;
-			decimal skattevaerdiKommuneskat = kommunaleSatser.Kommuneskattesats * Constants.Personfradrag;
-			decimal skattevaerdiKirkeskat = kommunaleSatser.Kirkeskattesats * Constants.Personfradrag;
+			return BeregnSkattevaerdier(Constants.Personfradrag, kommunaleSatser);
+		}
+
+		public Skatter BeregnSkattevaerdier(decimal personfradrag, KommunaleSatser kommunaleSatser)
+		{
+			decimal skattevaerdiBundskat = Constants.Bundskattesats * personfradrag;
+			decimal skattevaerdiSundhedsbidrag = Constants.Sundhedsbidragsats * personfradrag;
+			decimal skattevaerdiKommuneskat = kommunaleSatser.Kommuneskattesats * personfradrag;
+			decimal skattevaerdiKirkeskat = kommunaleSatser.Kirkeskattesats * personfradrag;
 
 			return new Skatter
 			{
@@ -193,6 +207,26 @@ namespace Maxfire.Skat
 				Kommuneskat = skattevaerdiKommuneskat,
 				Kirkeskat = skattevaerdiKirkeskat
 			};
+		}
+
+		public static decimal BeregnFradragsbeloeb(Skatter skattevaerdier, KommunaleSatser kommunaleSatser)
+		{
+			// TODO: Refactor this ugly piece of code
+			// Denne metode tror jeg er forkert....
+			//decimal fradragsbeloeb = skattevaerdier.Bundskat / Constants.Bundskattesats;
+			//fradragsbeloeb += skattevaerdier.Sundhedsbidrag/ Constants.Sundhedsbidragsats;
+			//fradragsbeloeb += skattevaerdier.Kommuneskat / kommunaleSatser.Kommuneskattesats;
+			//if (kommunaleSatser.Kirkeskattesats > 0)
+			//{
+			//    fradragsbeloeb += skattevaerdier.Kirkeskat / kommunaleSatser.Kirkeskattesats;
+			//}
+
+			decimal sumSatser = Constants.Bundskattesats + Constants.Sundhedsbidragsats + kommunaleSatser.Kommuneskattesats +
+			                    kommunaleSatser.Kirkeskattesats;
+
+			decimal fradragsbeloeb = skattevaerdier.Sum() / sumSatser;
+
+			return fradragsbeloeb;
 		}
 	}
 }
