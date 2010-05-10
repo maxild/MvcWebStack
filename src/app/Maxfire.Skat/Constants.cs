@@ -12,6 +12,46 @@
 		const decimal TOP_SKATTESATS = 0.15m;
 		const decimal SUNDHEDSBIDRAG_SATS = 0.08m;
 		const decimal PERSON_FRADRAG = 42900;
+		const decimal AKTIEINDKOMST_LAVESTE_PROGRESSIONSGRAENSE = 48300;
+		const decimal AKTIEINDKOMST_HOEJESTE_PROGRESSIONSGRAENSE = decimal.MaxValue;
+		const decimal AKTIEINDKOMST_LAVESTE_SKATTESATS = 0.28m;
+		const decimal AKTIEINDKOMST_MELLEMSTE_SKATTESATS = 0.42m;
+		const decimal AKTIEINDKOMST_HOEJESTE_SKATTESATS = 0.42m;
+
+		private static decimal? _aktieIndkomstLavesteSkattesats;
+		public static decimal AktieIndkomstLavesteSkattesats
+		{
+			get { return _aktieIndkomstLavesteSkattesats ?? AKTIEINDKOMST_LAVESTE_SKATTESATS; }
+			set { _aktieIndkomstLavesteSkattesats = value; }
+		}
+
+		private static decimal? _aktieIndkomstMellemsteSkattesats;
+		public static decimal AktieIndkomstMellemsteSkattesats
+		{
+			get { return _aktieIndkomstMellemsteSkattesats ?? AKTIEINDKOMST_MELLEMSTE_SKATTESATS; }
+			set { _aktieIndkomstMellemsteSkattesats = value; }
+		}
+
+		private static decimal? _aktieIndkomstHoejesteSkattesats;
+		public static decimal AktieIndkomstHoejesteSkattesats
+		{
+			get { return _aktieIndkomstHoejesteSkattesats ?? AKTIEINDKOMST_HOEJESTE_SKATTESATS; }
+			set { _aktieIndkomstHoejesteSkattesats = value; }
+		}
+
+		private static decimal? _aktieIndkomstLavesteProgressionsgraense;
+		public static decimal AktieIndkomstLavesteProgressionsgraense
+		{
+			get { return _aktieIndkomstLavesteProgressionsgraense ?? AKTIEINDKOMST_LAVESTE_PROGRESSIONSGRAENSE; }
+			set { _aktieIndkomstLavesteProgressionsgraense = value; }
+		}
+
+		private static decimal? _aktieIndkomstHoejesteProgressionsgraense;
+		public static decimal AktieIndkomstHoejesteProgressionsgraense
+		{
+			get { return _aktieIndkomstHoejesteProgressionsgraense ?? AKTIEINDKOMST_HOEJESTE_PROGRESSIONSGRAENSE; }
+			set { _aktieIndkomstHoejesteProgressionsgraense = value; }
+		}
 
 		private static decimal? _amBidragsats;
 		public static decimal AMBidragsats
@@ -86,6 +126,11 @@
 			Sundhedsbidragsats = 0.08m;
 			MellemskatBundfradrag = 347200;
 			TopskatBundfradrag = 347200;
+			AktieIndkomstLavesteProgressionsgraense = 48300;
+			AktieIndkomstHoejesteProgressionsgraense = 106100;
+			AktieIndkomstLavesteSkattesats = 0.28m;
+			AktieIndkomstMellemsteSkattesats = 0.43m;
+			AktieIndkomstHoejesteSkattesats = 0.45m;
 		}
 	}
 }

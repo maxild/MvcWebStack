@@ -1,17 +1,62 @@
-﻿namespace Maxfire.Skat
+﻿using System;
+
+namespace Maxfire.Skat
 {
+	// TODO: Mangler sambeskatningseffekter og skattefradrag for negativ aktieindkomst
+
 	/// <summary>
-	/// TFS beregner benytter forskellen mellem den høje og den lave sats (43 - 28), og
-	/// beregner kun udbytteskat med denne 'diff sats' af beløbet ud over progressionsgrænsen.
-	/// Dette skyldes at den lave udbytteskat er kildeskat, og allerede løbende betalt.
+	/// Det laveste trin beskattes med 28 pct i 2009 og 2010.
 	/// </summary>
-	public class AktieindkomstSkatBeregner
+	public class AktieindkomstskatLavesteTrinBeregner
 	{
 		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
 		{
-			// TODO: Vi laver den senere, hvis det er nødvendigt
-			// TODO: Samme logik som overførsel af bundfradrag for positiv kapitalindkomst i topskatten
-			return null;
+			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		{
+			decimal beloebUnderLavesteProgressionsgraense 
+				= Math.Min(Constants.AktieIndkomstLavesteProgressionsgraense, indkomst.AktieIndkomst).NonNegative();
+			return Constants.AktieIndkomstLavesteSkattesats * beloebUnderLavesteProgressionsgraense;
+		}
+	}
+
+	/// <summary>
+	/// Det mellemste trin beskattes med 43 pct i 2009, og 42 pct i 2010.
+	/// </summary>
+	public class AktieindkomstskatMellemsteTrinBeregner
+	{
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		{
+			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		{
+			decimal beloebUnderProgressionsgraense = Math.Min(Constants.AktieIndkomstHoejesteProgressionsgraense,
+															  indkomst.AktieIndkomst);
+			decimal beloebOverLavesteProgressionsgraenseOgUnderHoejesteProgressionsgraense 
+				= (beloebUnderProgressionsgraense - Constants.AktieIndkomstLavesteProgressionsgraense).NonNegative();
+			return Constants.AktieIndkomstMellemsteSkattesats * beloebOverLavesteProgressionsgraenseOgUnderHoejesteProgressionsgraense;
+		}
+	}
+
+	/// <summary>
+	/// Det højeste trin er beskattes med 45 pct. i 2009, og dette trin bortfalder i 2010.
+	/// </summary>
+	public class AktieindkomstskatHoejesteTrinBeregner
+	{
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		{
+			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		{
+			decimal beloebOverHoejesteProgressionsgraense 
+				= (indkomst.AktieIndkomst - Constants.AktieIndkomstHoejesteProgressionsgraense).NonNegative();
+			return Constants.AktieIndkomstHoejesteSkattesats * beloebOverHoejesteProgressionsgraense;
 		}
 	}
 }

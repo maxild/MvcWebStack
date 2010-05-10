@@ -51,7 +51,7 @@ namespace Maxfire.Skat
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst),
+					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
 				),
@@ -63,7 +63,7 @@ namespace Maxfire.Skat
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Sundhedsbidrag),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst),
+					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
 				),
@@ -74,7 +74,7 @@ namespace Maxfire.Skat
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst),
+					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
 				),
 				// Skatteværdi af kirkeskat
@@ -84,7 +84,7 @@ namespace Maxfire.Skat
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst),
+					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
 					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat)
 				)
 			};

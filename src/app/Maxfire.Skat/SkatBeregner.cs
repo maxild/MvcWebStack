@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
 	public class SkatBeregner
 	{
 		public ValueTuple<Skatter> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
+			// TODO: Refactor
+
 			var bundskatBeregner = new BundskatBeregner();
 			var bundskat = bundskatBeregner.BeregnSkat(indkomster);
 
@@ -24,22 +24,26 @@ namespace Maxfire.Skat
 			var kirkeskatBeregner = new KirkeskatBeregner();
 			var kirkeskat = kirkeskatBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
-			var list = new List<Skatter>(indkomster.Size);
+			var aktieindkomstskatLavesteTrinBeregner = new AktieindkomstskatLavesteTrinBeregner();
+			var aktieindkomstskatLavesteTrin = aktieindkomstskatLavesteTrinBeregner.BeregnSkat(indkomster);
 
-			for (int i = 0; i < indkomster.Size; i++)
+			var aktieindkomstskatMellemsteTrinBeregner = new AktieindkomstskatMellemsteTrinBeregner();
+			var aktieindkomstskatMellemsteTrin = aktieindkomstskatMellemsteTrinBeregner.BeregnSkat(indkomster);
+
+			var aktieindkomstskatHoejesteTrinBeregner = new AktieindkomstskatHoejesteTrinBeregner();
+			var aktieindkomstskatHoejesteTrin = aktieindkomstskatHoejesteTrinBeregner.BeregnSkat(indkomster);
+
+			return bundskat.Map(index => new Skatter
 			{
-				list.Add(new Skatter
-				         	{
-				         		Bundskat = bundskat[i],
-				         		Mellemskat = mellemskat[i],
-				         		Topskat = topskat[i],
-				         		Sundhedsbidrag = sundhedsbidrag[i],
-				         		Kommuneskat = kommuneskat[i],
-				         		Kirkeskat = kirkeskat[i]
-				         	});
-			}
-
-			return new ValueTuple<Skatter>(list);
+				Bundskat = bundskat[index],
+				Mellemskat = mellemskat[index],
+				Topskat = topskat[index],
+				Sundhedsbidrag = sundhedsbidrag[index],
+				Kommuneskat = kommuneskat[index],
+				Kirkeskat = kirkeskat[index],
+				AktieindkomstskatUnderGrundbeloebet = aktieindkomstskatLavesteTrin[index],
+				AktieindkomstskatOverGrundbeloebet = aktieindkomstskatMellemsteTrin[index] + aktieindkomstskatHoejesteTrin[index]
+			});
 		}
 	}
 }

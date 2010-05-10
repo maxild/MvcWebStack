@@ -1,19 +1,7 @@
 ﻿using System;
-using Maxfire.Core;
 
 namespace Maxfire.Skat
 {
-	public interface ISkattesatser
-	{
-		decimal Kirkeskattesats { get; set; }
-		decimal Kommuneskattesats { get; set; }
-		decimal Sundhedsbidragsats { get; set; }
-		decimal Bundskattesats { get; }
-		decimal Mellemskattesats { get; }
-		decimal Topskattesats { get; }
-		decimal SkatAfAktieindkomstsats { get; }
-	}
-
 	// TODO: make this type immutable, but keep it working with Accessor logic
 	public class Skatter : IEquatable<Skatter>
 	{
@@ -30,11 +18,37 @@ namespace Maxfire.Skat
 		}
 
 		/// <summary>
-		/// Kun den del angivet ved PSL § 8a, stk. 2, der angiver den del af skat af aktieindkomst, der
-		/// overstiger progressionsgrænsen, og ikke allerede er betalt som kildeskat (A-skat). Dermed 
-		/// angiver beløbet den del der er B-skat.
+		/// I følge bestemmelser i PSL § 8a, stk. 1 bliver skat af aktieindkomst, som ikke overstiger
+		/// grundbeløbet (48.300 kr. i 2009 og 2010) beregnet som en endelig skat på 28 pct. Indeholdt
+		/// udbytteskat efter KSL § 65 af aktieindkomst, der ikke overstiger grundbeløbet, er endelig 
+		/// betaling af skatten, og udbytteskatten modregnes ikke i slutskatten efter KSL § 67.
 		/// </summary>
-		public decimal SkatAfAktieindkomst { get; set; }
+		/// <remarks>
+		/// Skatten af aktieindkomst under progressionsgrænsen er endelig og svarer for udbytters 
+		/// vedkommende til den udbytteskat, som selskabet har indeholdt. At skatten er endelig 
+		/// indebærer, at der ikke kan modregnes skatteværdi af negativ skattepligtig indkomst 
+		/// eller skatteværdi af personfradrag. Dette gælder også i de tilfælde, hvor der ikke 
+		/// er indeholdt skat, f.eks. ved maskeret udlodning og i tilfælde, hvor aktieavancer 
+		/// indgår i aktieindkomsten. I det omfang der ikke er indeholdt udbytteskat af 
+		/// aktieindkomsten, forhøjes modtagerens slutskat med det manglende beløb. 
+		/// </remarks>
+		public decimal AktieindkomstskatUnderGrundbeloebet { get; set; }
+		
+		/// <summary>
+		/// I følge bestemmelser i PSL § 8a, stk. 2 vil skat af aktieindkomst, der overstiger
+		/// grundbeløbet (48.300 kr. i 2009 og 2010) indgå i slutskatten, og den udbytteskat
+		/// der er indeholdt i denne del af udbyttet efter KSL § 65 modregnes i slutskatten 
+		/// efter KSL § 67.
+		/// </summary>
+		/// <remarks>
+		/// Den overskydende del af aktieindkomstskatten indgår altså i slutskatten og indeholdt
+		/// udbytteskat modregnes.
+		/// Aktieindkomst, der overstiger progressionsgrænsen, beskattes med 42 pct. af det 
+		/// overskydende beløb. Denne skat er i modsætning til den lave skat ikke endelig, og 
+		/// der kan således foretages modregning heri af skatteværdi af personfradrag og 
+		/// negativ skattepligtig indkomst. 
+		/// </remarks>
+		public decimal AktieindkomstskatOverGrundbeloebet { get; set; }
 
 		public Skatter Clone()
 		{
@@ -43,7 +57,8 @@ namespace Maxfire.Skat
 
 		public decimal Sum()
 		{
-			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat + KommunalIndkomstskatOgKirkeskat;
+			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat 
+				+ KommunalIndkomstskatOgKirkeskat + AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet;
 		}
 
 		public override int GetHashCode()
@@ -56,7 +71,8 @@ namespace Maxfire.Skat
 				hashCode = (hashCode * 397) ^ Bundskat.GetHashCode();
 				hashCode = (hashCode * 397) ^ Mellemskat.GetHashCode();
 				hashCode = (hashCode * 397) ^ Topskat.GetHashCode();
-				hashCode = (hashCode * 397) ^ SkatAfAktieindkomst.GetHashCode();
+				hashCode = (hashCode * 397) ^ AktieindkomstskatUnderGrundbeloebet.GetHashCode();
+				hashCode = (hashCode * 397) ^ AktieindkomstskatOverGrundbeloebet.GetHashCode();
 				return hashCode;
 			}
 		}
@@ -79,7 +95,8 @@ namespace Maxfire.Skat
 				Bundskat == other.Bundskat &&
 				Mellemskat == other.Mellemskat &&
 				Topskat == other.Topskat && 
-				SkatAfAktieindkomst == other.SkatAfAktieindkomst);
+				AktieindkomstskatUnderGrundbeloebet == other.AktieindkomstskatUnderGrundbeloebet &&
+				AktieindkomstskatOverGrundbeloebet == other.AktieindkomstskatOverGrundbeloebet);
 		}
 	}
 }

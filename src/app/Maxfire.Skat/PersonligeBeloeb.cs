@@ -32,6 +32,10 @@
 
 		public decimal NettoKapitalIndkomst { get; set; }
 
+		// Note: Ingen sondring mellem tab/gevinst på aktier og udbytte, og dermed ingen justering af indeholdt udbytte på årsopgørelsen
+		/// <summary>
+		/// Aktieindkomst uden indeholdt udbytteskat.
+		/// </summary>
 		public decimal AktieIndkomst { get; set; }
 
 		public decimal LigningsmaessigeFradrag { get; set; }

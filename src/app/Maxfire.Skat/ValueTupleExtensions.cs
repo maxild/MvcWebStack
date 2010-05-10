@@ -45,6 +45,16 @@ namespace Maxfire.Skat
 			return new ValueTuple<TItem>(list);
 		}
 
+		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<int, TItem> projectionWithIndex)
+		{
+			var list = new List<TItem>(tuple.Size);
+			for (int i = 0; i < tuple.Size; i++)
+			{
+				list.Add(projectionWithIndex(i));
+			}
+			return new ValueTuple<TItem>(list);
+		}
+
 		public static bool DifferentSign<T>(this ValueTuple<T> tuple)
 		{
 			if (tuple.Size == 1)

@@ -17,7 +17,7 @@ namespace Maxfire.Skat
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-				IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst));
+				IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet));
 		}
 
 		public ValueTuple<ModregnResult2> Beregn(ValueTuple<PersonligeBeloeb> indkomster, 
