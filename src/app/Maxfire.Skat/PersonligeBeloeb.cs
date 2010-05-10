@@ -22,6 +22,9 @@
 		public decimal PersonligIndkomst { get; set; }
 
 		// TODO: Sondring mellem årets underskud i skattepligtige indkomst, og fremført underskud i skattepligtig indkomst
+		/// <summary>
+		/// Skattepligtig indkomst efter modregning af fremført underskud
+		/// </summary>
 		public decimal SkattepligtigIndkomst
 		{
 			get { return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - FremfoertUnderskudSkattepligtigIndkomst; }

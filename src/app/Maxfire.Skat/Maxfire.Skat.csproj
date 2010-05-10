@@ -39,7 +39,11 @@
     <Compile Include="Beloebsgraenser.cs" />
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DecimalExtensions.cs" />
     <Compile Include="Mellemskat.cs" />
+    <Compile Include="ModregnPersonfradragResult.cs" />
+    <Compile Include="ModregnResult.cs" />
+    <Compile Include="ModregnResult2.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
@@ -48,6 +52,7 @@
     <Compile Include="Skatter.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
     <Compile Include="UnderskudBeregner.cs" />
+    <Compile Include="UnderskudSkattevaerdiBeregner.cs" />
     <Compile Include="ValueTuple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />

@@ -5,18 +5,6 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
-	public class ModregnResult
-	{
-		public ModregnResult(Skatter modregnedeSkatter, decimal ikkeUdnyttetSkattevaerdi)
-		{
-			ModregnedeSkatter = modregnedeSkatter;
-			IkkeUdnyttetSkattevaerdi = ikkeUdnyttetSkattevaerdi;
-		}
-
-		public Skatter ModregnedeSkatter { get; private set; }
-		public decimal IkkeUdnyttetSkattevaerdi { get; private set; }
-	}
-
 	public class SkatteModregner
 	{
 		private readonly Accessor<Skatter, decimal>[] _skatteAccessors;

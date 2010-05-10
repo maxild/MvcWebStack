@@ -15,20 +15,20 @@ namespace Maxfire.Skat
 		{
 			return new SkatteModregner(
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
+				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
 				IntrospectionOf<Skatter>.GetAccessorFor(x => x.SkatAfAktieindkomst));
 		}
 
-		// TODO: ModregnResult skal erstattes med UnderskudResult (med IkkeUdnyttetUnderskud istedet for...eller suppleret oveni...IkkeUdnyttetSkattevaerdi)
-		public ValueTuple<ModregnResult> Beregn(ValueTuple<PersonligeBeloeb> indkomster, 
+		public ValueTuple<ModregnResult2> Beregn(ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
-			var skattepligtigIndkomst = indkomster.Map(x => x.SkattepligtigIndkomst);
+			var skattepligtigIndkomster = indkomster.Map(x => x.SkattepligtigIndkomst);
+			var underskudSkattevaerdiBeregnere = GetUnderskudSkattevaerdiBeregnere(kommunaleSatser);
 			// TODO: Sondring mellem skatteværdi af fremført underskud og skatteværdi af årets underskud
-			var skattevaerdier = BeregnSkattevaerdiAfUnderskud(skattepligtigIndkomst, kommunaleSatser);
-
+			
 			// Modregning i egne skatter
-			var modregnResults = BeregnSkatEfterModregningEgneSkatter(skatter, skattevaerdier);
+			var modregnResults = BeregnSkatEfterModregningEgneSkatter(skatter, underskudSkattevaerdiBeregnere, skattepligtigIndkomster);
 
 			// PSL §13, stk 2: Gifte
 
@@ -39,53 +39,69 @@ namespace Maxfire.Skat
 			return modregnResults;
 		}
 
-		public ValueTuple<ModregnResult> BeregnSkatEfterModregningEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<decimal> skattevaerdier)
+		public ValueTuple<ModregnResult2> BeregnSkatEfterModregningEgneSkatter(ValueTuple<Skatter> skatter, 
+			ValueTuple<UnderskudSkattevaerdiBeregner> underskudSkattevaerdiBeregnere, ValueTuple<decimal> skattepligtigeIndkomster)
 		{
 			return skatter.Map(
-				(skat, index) => BeregnSkatEfterModregningAfSkattevaerdi(skat, skattevaerdier[index]));
+				(skat, index) => BeregnSkatEfterModregningEgneSkatter(skat, underskudSkattevaerdiBeregnere[index], skattepligtigeIndkomster[index]));
 		}
 
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdi i den del af egne indkomstskatter, der ikke beregnes af skattepligtig indkomst.
 		/// </summary>
-		public ModregnResult BeregnSkatEfterModregningAfSkattevaerdi(Skatter skatter, decimal skattevaerdi)
+		public ModregnResult2 BeregnSkatEfterModregningEgneSkatter(Skatter skatter, 
+			UnderskudSkattevaerdiBeregner underskudSkattevaerdiBeregner, decimal skattepligtigIndkomst)
 		{
+			var skattevaerdiAfUnderskud = underskudSkattevaerdiBeregner.BeregnSkattevaerdiAfUnderskud(skattepligtigIndkomst);
 			var skatteModregner = GetSkattepligtigIndkomstUnderskudModregner();
-			return skatteModregner.Modregn(skatter, skattevaerdi);
+			var modregnResult = skatteModregner.Modregn(skatter, skattevaerdiAfUnderskud);
+			decimal ikkeUdnyttetSkattevaerdi = modregnResult.IkkeUdnyttetSkattevaerdi;
+			decimal ikkeUdnyttetUnderskud = underskudSkattevaerdiBeregner.BeregnUnderskudAfSkattevaerdi(ikkeUdnyttetSkattevaerdi);
+			return new ModregnResult2(modregnResult.ModregnedeSkatter, ikkeUdnyttetSkattevaerdi, ikkeUdnyttetUnderskud);
 		}
 
-		public ValueTuple<decimal> BeregnSkattevaerdiAfUnderskud(ValueTuple<decimal> skattepligtigIndkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<UnderskudSkattevaerdiBeregner> GetUnderskudSkattevaerdiBeregnere(ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
-			return skattepligtigIndkomster.Map(
-				(skattepligtigIndkomst, index) => BeregnSkattevaerdiAfUnderskud(skattepligtigIndkomst, kommunaleSatser[index]));
+			return kommunaleSatser.Map(satser => GetUnderskudSkattevaerdiBeregner(satser));
 		}
 
-		public decimal BeregnSkattevaerdiAfUnderskud(decimal skattepligtigIndkomst, KommunaleSatser kommunaleSatser)
+		public UnderskudSkattevaerdiBeregner GetUnderskudSkattevaerdiBeregner(KommunaleSatser kommunaleSatser)
 		{
-			if (skattepligtigIndkomst >= 0)
-			{
-				return 0;
-			}
-			var sats = kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats;
-			var skattevaerdiAfUnderskud = -skattepligtigIndkomst * sats;
-			return skattevaerdiAfUnderskud;
+			return new UnderskudSkattevaerdiBeregner(kommunaleSatser);
 		}
 
-		public ValueTuple<decimal> BeregnUnderskudAfSkattevaerdi(ValueTuple<decimal> skattevaerdier, ValueTuple<KommunaleSatser> kommunaleSatser)
-		{
-			return skattevaerdier.Map(
-				(skattevaerdi, index) => BeregnUnderskudAfSkattevaerdi(skattevaerdi, kommunaleSatser[index]));
-		}
+		//public ValueTuple<decimal> BeregnSkattevaerdiAfUnderskud(ValueTuple<decimal> skattepligtigIndkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
+		//{
+		//    return skattepligtigIndkomster.Map(
+		//        (skattepligtigIndkomst, index) => BeregnSkattevaerdiAfUnderskud(skattepligtigIndkomst, kommunaleSatser[index]));
+		//}
 
-		public decimal BeregnUnderskudAfSkattevaerdi(decimal skattevaerdi, KommunaleSatser kommunaleSatser)
-		{
-			if (skattevaerdi <= 0)
-			{
-				return 0;
-			}
-			var sats = kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats;
-			var underskud = skattevaerdi / sats;
-			return underskud;
-		}
+		//public decimal BeregnSkattevaerdiAfUnderskud(decimal skattepligtigIndkomst, KommunaleSatser kommunaleSatser)
+		//{
+		//    if (skattepligtigIndkomst >= 0)
+		//    {
+		//        return 0;
+		//    }
+		//    var sats = kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats;
+		//    var skattevaerdiAfUnderskud = -skattepligtigIndkomst * sats;
+		//    return skattevaerdiAfUnderskud;
+		//}
+
+		//public ValueTuple<decimal> BeregnUnderskudAfSkattevaerdi(ValueTuple<decimal> skattevaerdier, ValueTuple<KommunaleSatser> kommunaleSatser)
+		//{
+		//    return skattevaerdier.Map(
+		//        (skattevaerdi, index) => BeregnUnderskudAfSkattevaerdi(skattevaerdi, kommunaleSatser[index]));
+		//}
+
+		//public decimal BeregnUnderskudAfSkattevaerdi(decimal skattevaerdi, KommunaleSatser kommunaleSatser)
+		//{
+		//    if (skattevaerdi <= 0)
+		//    {
+		//        return 0;
+		//    }
+		//    var sats = kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats;
+		//    var underskud = skattevaerdi / sats;
+		//    return underskud;
+		//}
 	}
 }

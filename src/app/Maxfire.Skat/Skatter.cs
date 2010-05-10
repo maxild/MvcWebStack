@@ -1,4 +1,7 @@
-﻿namespace Maxfire.Skat
+﻿using System;
+using Maxfire.Core;
+
+namespace Maxfire.Skat
 {
 	public interface ISkattesatser
 	{
@@ -12,7 +15,7 @@
 	}
 
 	// TODO: make this type immutable, but keep it working with Accessor logic
-	public class Skatter
+	public class Skatter : IEquatable<Skatter>
 	{
 		public decimal Kirkeskat { get; set; }
 		public decimal Kommuneskat { get; set; }
@@ -41,6 +44,42 @@
 		public decimal Sum()
 		{
 			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat + KommunalIndkomstskatOgKirkeskat;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = Kirkeskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Kommuneskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Sundhedsbidrag.GetHashCode();
+				hashCode = (hashCode * 397) ^ Bundskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Mellemskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Topskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ SkatAfAktieindkomst.GetHashCode();
+				return hashCode;
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as Skatter);
+		}
+
+		public bool Equals(Skatter other)
+		{
+			if (other == null)
+			{
+				return false;
+			}
+
+			return (Kirkeskat == other.Kirkeskat &&
+				Kommuneskat == other.Kommuneskat &&
+				Sundhedsbidrag == other.Sundhedsbidrag &&
+				Bundskat == other.Bundskat &&
+				Mellemskat == other.Mellemskat &&
+				Topskat == other.Topskat && 
+				SkatAfAktieindkomst == other.SkatAfAktieindkomst);
 		}
 	}
 }

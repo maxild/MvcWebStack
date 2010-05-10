@@ -1,5 +1,3 @@
-using System;
-
 namespace Maxfire.Skat
 {
 	// Noter:
@@ -9,30 +7,6 @@ namespace Maxfire.Skat
 	//      Count == 2: beregning af gifte personer (ægtefæller med sambeskatning)
 	// Beregning af to ugifte personer kan laves via facade API
 	//
-
-	public static class DecimalExtensions
-	{
-		public static int Sign(this decimal number)
-		{
-			if (number < 0)
-			{
-				return -1;
-			}
-			return number > 0 ? 1 : 0;
-		}
-
-		public static bool DifferentSign(this decimal lhs, decimal rhs)
-		{
-			return lhs.Sign() * rhs.Sign() == -1;
-		}
-
-		public static decimal NonNegative(this decimal number)
-		{
-			return Math.Max(0, number);
-		}
-
-		
-	}
 
 	public interface IInputBeloeb
 	{

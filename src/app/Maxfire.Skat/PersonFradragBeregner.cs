@@ -4,18 +4,6 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
-	public class ModregnPersonfradragResult
-	{
-		public ModregnPersonfradragResult(Skatter modregnedeSkatter, Skatter ikkeUdnyttedeSkattevaerdier)
-		{
-			ModregnedeSkatter = modregnedeSkatter;
-			IkkeUdnyttedeSkattevaerdier = ikkeUdnyttedeSkattevaerdier;
-		}
-
-		public Skatter ModregnedeSkatter { get; private set; }
-		public Skatter IkkeUdnyttedeSkattevaerdier { get; private set; }
-	}
-
 	// Fuldt skattepligtige personer her i landet har et personfradrag på 42.900 kr. (2009 og 2010), 
 	// jf. PSL § 10, stk. 1. Dog udgør personfradraget et beløb på 32.200 kr. (2009 og 2010) for 
 	// personer, som ved indkomstårets udløb ikke er fyldt 18 år og ikke har indgået ægteskab, jf. 
@@ -111,37 +99,54 @@ namespace Maxfire.Skat
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
 		// TODO: Vi giver ikke oplysninger om resterende skatteværdi af personfradrag, der fortabes, det bør vi i denne low-level beregner
-		public ValueTuple<Skatter> BeregnSkatEfterPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<ModregnResult2> BeregnSkatEfterPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
 			var modregnPersonfradragResults = BeregnSkatEfterPersonfradragEgneSkatter(skatter, kommunaleSatser);
-			var ikkeUdnyttedeSkattevaerdier = modregnPersonfradragResults.Map(x => x.IkkeUdnyttedeSkattevaerdier);
 			var modregnedeSkatter = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
-
+			var ikkeUdnyttedeSkattevaerdier = modregnPersonfradragResults.Map(x => x.IkkeUdnyttedeSkattevaerdier);
+			
 			// Modregning af ikke udnyttede skatteværdier af personfradraget i ægtefælles indkomstskatter.
 			if (ikkeUdnyttedeSkattevaerdier.Size > 1)
 			{
 				int i = ikkeUdnyttedeSkattevaerdier.IndexOf(x => x.Sum() > 0);
 				if (i >= 0 && ikkeUdnyttedeSkattevaerdier.PartnerOf(i).Sum() == 0)
 				{
+					// index i har et resterende ikke udnyttet personfradrag og ægtefælle har fuld udnyttelæse af sit personfradrag
 					var kommunaleSatserOfPartner = kommunaleSatser.PartnerOf(i);
 					var skatterOfPartner = modregnedeSkatter.PartnerOf(i);
 					// Uudnyttede skatteværdier, omregnes til fradragsbeløb.
 					var ikkeUdnyttetFradragsbeloeb = BeregnFradragsbeloeb(ikkeUdnyttedeSkattevaerdier[i], 
 					                                                      kommunaleSatserOfPartner);
 					// Skatteværdierne af fradragsbeløbet bliver beregnet med ægtefællens egne skatteprocenter.
-					var overfoerteSkattevaerdier = BeregnSkattevaerdier(ikkeUdnyttetFradragsbeloeb, 
+					var overfoerteSkattevaerdierTilPartner = BeregnSkattevaerdier(ikkeUdnyttetFradragsbeloeb, 
 					                                                    kommunaleSatserOfPartner);
 					// Modregning af skatteværdierne  i ægtefællens egne indkomstskatter.
-					var modregnedeSkatterOfPartner = BeregnSkatEfterModregningAfSkattevaerdier(skatterOfPartner,
-					                                                                           overfoerteSkattevaerdier).ModregnedeSkatter;
-					modregnedeSkatter = (i == 0) ? 
-						new ValueTuple<Skatter>(modregnedeSkatter[i], modregnedeSkatterOfPartner) :
- 						new ValueTuple<Skatter>(modregnedeSkatterOfPartner, modregnedeSkatter[i]);
+					var modregningPersonfradragResult = BeregnSkatEfterModregningAfSkattevaerdier(skatterOfPartner,
+					                                                                              overfoerteSkattevaerdierTilPartner);
+					// Beregn evt. resterende ikke-udnyttet personfradrag, der 'tabes på gulvet'
+					var modregnedeSkatterOfPartner = modregningPersonfradragResult.ModregnedeSkatter;
+					var ikkeUdnyttedeSkattevaerdierOfPartner = modregningPersonfradragResult.IkkeUdnyttedeSkattevaerdier;
+					if (i == 0)
+					{
+						ikkeUdnyttedeSkattevaerdier = new ValueTuple<Skatter>(ikkeUdnyttedeSkattevaerdier[i],
+						                                                      ikkeUdnyttedeSkattevaerdierOfPartner);
+						modregnedeSkatter = new ValueTuple<Skatter>(modregnedeSkatter[i], modregnedeSkatterOfPartner);
+					}
+					else
+					{
+						ikkeUdnyttedeSkattevaerdier = new ValueTuple<Skatter>(ikkeUdnyttedeSkattevaerdierOfPartner,
+						                                                      ikkeUdnyttedeSkattevaerdier[i]);
+						modregnedeSkatter = new ValueTuple<Skatter>(modregnedeSkatterOfPartner, modregnedeSkatter[i]);
+					}
 				}
 			}
 
-			return modregnedeSkatter;
+			var ikkeUdnyttedeFradrag = ikkeUdnyttedeSkattevaerdier.Map((skattevaerdi, index) => 
+				BeregnFradragsbeloeb(skattevaerdi, kommunaleSatser[index]));
+
+			return modregnedeSkatter.Map((modregnetSkat, index) => 
+				new ModregnResult2(modregnetSkat, ikkeUdnyttedeSkattevaerdier[index].Sum(), ikkeUdnyttedeFradrag[index]));
 		}
 
 		/// <summary>
