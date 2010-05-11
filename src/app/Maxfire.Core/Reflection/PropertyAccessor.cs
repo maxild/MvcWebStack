@@ -8,16 +8,37 @@ namespace Maxfire.Core.Reflection
 	/// The accessor (of a property) contains the executable statements associated with 
 	/// getting (reading or computing) or setting (writing) the property.
 	/// </summary>
-	public interface Accessor<TObject, TPropertyValue>
+	public interface Getter<TObject, TPropertyValue>
 	{
-		void SetValue(TObject target, TPropertyValue propertyValue);
 		TPropertyValue GetValue(TObject target);
 		string PropertyName { get; }
 	}
 
+	public interface Setter<TObject, TPropertyValue>
+	{
+		void SetValue(TObject target, TPropertyValue propertyValue);
+		string PropertyName { get; }
+	}
+
+	public interface Accessor<TObject, TPropertyValue> : Getter<TObject, TPropertyValue>, Setter<TObject, TPropertyValue>
+	{
+	}
+
 	public static class IntrospectionOf<TObject>
 	{
-		public static PropertyAccessor<TObject, TPropertyValue> GetAccessorFor<TPropertyValue>(Expression<Func<TObject, TPropertyValue>> expression)
+		public static Getter<TObject, TPropertyValue> GetGetterFor<TPropertyValue>(Expression<Func<TObject, TPropertyValue>> expression)
+		{
+			var propertyInfo = ExpressionHelper.GetProperty(expression);
+			return new PropertyAccessor<TObject, TPropertyValue>(propertyInfo);
+		}
+
+		public static Setter<TObject, TPropertyValue> GetSetterFor<TPropertyValue>(Expression<Func<TObject, TPropertyValue>> expression)
+		{
+			var propertyInfo = ExpressionHelper.GetProperty(expression);
+			return new PropertyAccessor<TObject, TPropertyValue>(propertyInfo);
+		}
+
+		public static Accessor<TObject, TPropertyValue> GetAccessorFor<TPropertyValue>(Expression<Func<TObject, TPropertyValue>> expression)
 		{
 			var propertyInfo = ExpressionHelper.GetProperty(expression);
 			return new PropertyAccessor<TObject, TPropertyValue>(propertyInfo);

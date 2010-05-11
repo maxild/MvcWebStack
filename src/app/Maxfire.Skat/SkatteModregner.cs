@@ -5,23 +5,47 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
-	public class SkatteModregner
+	public class ModregningGetterAccessorPair
 	{
-		private readonly Accessor<Skatter, decimal>[] _skatteAccessors;
-
-		public SkatteModregner(params Accessor<Skatter, decimal>[] skatteAccessors)
+		public ModregningGetterAccessorPair(Getter<Skatter, decimal> skatteGetter, Accessor<Skatter, decimal> modregningAccessor)
 		{
-			skatteAccessors.ThrowIfNull("skatteAccessors");
-			if (skatteAccessors.Length == 0)
-			{
-				throw new ArgumentException("At least one skatteAccessor must be given.");
-			}
-			_skatteAccessors = skatteAccessors;
+			SkatteGetter = skatteGetter;
+			ModregningAccessor = modregningAccessor;
 		}
 
-		public Accessor<Skatter, decimal> First()
+		/// <summary>
+		/// Getter til at læse skattebeløbet.
+		/// </summary>
+		public Getter<Skatter, decimal> SkatteGetter { get; private set; }
+		
+		/// <summary>
+		/// Getter og Setter (Accessor i min terminologi) til at læse og skrive til modregningsbeløbet.
+		/// </summary>
+		public Accessor<Skatter, decimal> ModregningAccessor { get; private set; }
+	}
+
+	public class SkatteModregner
+	{
+		private readonly ModregningGetterAccessorPair[] _modregningGetterAccessorPairs;
+
+		public SkatteModregner(params ModregningGetterAccessorPair[] modregningGetterAccessorPairs)
 		{
-			return _skatteAccessors[0];
+			modregningGetterAccessorPairs.ThrowIfNull("modregningGetterSetterPairs");
+			if (modregningGetterAccessorPairs.Length == 0)
+			{
+				throw new ArgumentException(string.Format("At least one {0} must be given.", typeof(ModregningGetterAccessorPair).Name));
+			}
+			_modregningGetterAccessorPairs = modregningGetterAccessorPairs;
+		}
+
+		public Getter<Skatter, decimal> FirstSkatteGetter()
+		{
+			return _modregningGetterAccessorPairs[0].SkatteGetter;
+		}
+
+		public Accessor<Skatter, decimal> FirstModregningAccessor()
+		{
+			return _modregningGetterAccessorPairs[0].ModregningAccessor;
 		}
 
 		public ModregnResult Modregn(Skatter skatter, decimal skattevaerdi)
@@ -36,18 +60,15 @@ namespace Maxfire.Skat
 
 			Skatter modregnedeSkatter = skatter.Clone();
 
-			for (int i = 0; i < _skatteAccessors.Length; i++)
+			for (int i = 0; i < _modregningGetterAccessorPairs.Length && skattevaerdi > 0; i++)
 			{
-				var skatteAccesor = _skatteAccessors[i];
-				decimal modregnetSkat = skatteAccesor.GetValue(modregnedeSkatter) - skattevaerdi;
-				if (modregnetSkat >= 0)
-				{
-					skatteAccesor.SetValue(modregnedeSkatter, modregnetSkat);
-					skattevaerdi = 0;
-					break;
-				}
-				skatteAccesor.SetValue(modregnedeSkatter, 0);
-				skattevaerdi = -modregnetSkat;
+				var getter = _modregningGetterAccessorPairs[i].SkatteGetter;
+				var accessor = _modregningGetterAccessorPairs[i].ModregningAccessor;
+				decimal skat = getter.GetValue(modregnedeSkatter);
+				decimal modregning = accessor.GetValue(modregnedeSkatter);
+				decimal modregningAfSkattevaerdi = Math.Min(skat, skattevaerdi);
+				accessor.SetValue(modregnedeSkatter, modregning + modregningAfSkattevaerdi);
+				skattevaerdi -= modregningAfSkattevaerdi;
 			}
 			
 			return new ModregnResult(modregnedeSkatter, sign * skattevaerdi);

@@ -3,23 +3,71 @@
 namespace Maxfire.Skat
 {
 	// TODO: make this type immutable, but keep it working with Accessor logic
+	// TODO: Equals, GetHashCode
+	// TODO: Refactor to finer grained value objects
 	public class Skatter : IEquatable<Skatter>
 	{
-		public decimal Kirkeskat { get; set; }
-		
-		public decimal Kommuneskat { get; set; }
-		
-		public decimal Sundhedsbidrag { get; set; }
+		public decimal ModregnetKirkeskatAfPersonfradrag { get; set; }
+		public decimal BeregnetKirkeskat { get; set; }
+		public decimal Kirkeskat
+		{
+			get { return BeregnetKirkeskat - ModregnetKirkeskatAfPersonfradrag; }
+		}
 
-		public decimal Bundskat { get; set; }
-		
-		public decimal Mellemskat { get; set; }
-		
-		public decimal Topskat { get; set; }
-		
+		public decimal ModregnetKommuneskatAfPersonfradrag { get; set; }
+		public decimal BeregnetKommuneskat { get; set; }
+		public decimal Kommuneskat
+		{
+			get { return BeregnetKommuneskat - ModregnetKommuneskatAfPersonfradrag; }
+		}
+
+		public decimal ModregnetSundhedsbidragAfPersonfradrag { get; set; }
+		public decimal BeregnetSundhedsbidrag { get; set; }
+		public decimal Sundhedsbidrag
+		{
+			get { return BeregnetSundhedsbidrag - ModregnetSundhedsbidragAfPersonfradrag; }
+		}
+
+		public decimal ModregnetBundskatAfPersonfradrag { get; set; }
+		public decimal ModregnetBundskatAfNegativSkattepligtigIndkomst { get; set; }
+		public decimal BeregnetBundskat { get; set; }
+		public decimal Bundskat
+		{
+			get { return BeregnetBundskat - ModregnetBundskatAfNegativSkattepligtigIndkomst - ModregnetBundskatAfPersonfradrag; }
+		}
+
+		public decimal ModregnetMellemskatAfPersonfradrag { get; set; }
+		public decimal ModregnetMellemskatAfNegativSkattepligtigIndkomst { get; set; }
+		public decimal BeregnetMellemskat { get; set; }
+		public decimal Mellemskat
+		{
+			get { return BeregnetMellemskat - ModregnetMellemskatAfNegativSkattepligtigIndkomst - ModregnetMellemskatAfPersonfradrag; }
+		}
+
+		public decimal ModregnetTopskatAfPersonfradrag { get; set; }
+		public decimal ModregnetTopskatAfNegativSkattepligtigIndkomst { get; set; }
+		public decimal BeregnetTopskat { get; set; }
+		public decimal Topskat
+		{
+			get { return BeregnetTopskat - ModregnetTopskatAfNegativSkattepligtigIndkomst - ModregnetTopskatAfPersonfradrag; }
+		}
+
 		public decimal KommunalIndkomstskatOgKirkeskat
 		{
 			get { return Kommuneskat + Kirkeskat; }
+		}
+
+		public decimal ModregnetAktieindkomstskatAfPersonfradrag { get; set; }
+		public decimal ModregnetAktieindkomstskatAfNegativSkattepligtigIndkomst { get; set; }
+
+		public decimal Aktieindkomstskat
+		{
+			get 
+			{
+				return AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet 
+				       - ModregnetAktieindkomstskatAfNegativSkattepligtigIndkomst 
+				       - ModregnetAktieindkomstskatAfPersonfradrag; 
+			}
 		}
 
 		/// <summary>
@@ -63,7 +111,7 @@ namespace Maxfire.Skat
 		public decimal Sum()
 		{
 			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat 
-				+ KommunalIndkomstskatOgKirkeskat + AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet;
+				+ KommunalIndkomstskatOgKirkeskat + Aktieindkomstskat;
 		}
 
 		public override int GetHashCode()

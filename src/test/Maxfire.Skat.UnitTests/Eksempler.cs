@@ -494,6 +494,7 @@ namespace Maxfire.Skat.UnitTests
 			skatter[0].Topskat.ShouldEqual(1920);
 			skatter[0].Sundhedsbidrag.ShouldEqual(0);
 			skatter[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
+			skatter[0].Sum().ShouldEqual(20832);
 
 			var underskudBeregner = new UnderskudBeregner();
 			var modregnResults = underskudBeregner.Beregn(indkomster, skatter, kommunaleSatser);
@@ -509,7 +510,7 @@ namespace Maxfire.Skat.UnitTests
 
 			// Dette fremføres til efterfølgende skatteår
 			ikkeUdnyttedeUnderskud[0].ShouldEqual(135484.67m);
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(200000 * 0.3229m - skatter[0].Sum());
+			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(200000 * 0.3229m - 20832);
 
 			var personfradragBeregner = new PersonfradragBeregner();
 			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);

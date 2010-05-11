@@ -39,10 +39,10 @@ namespace Maxfire.Skat.UnitTests
 			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
 				new Skatter
 				{
-					Sundhedsbidrag = 100,
-					Bundskat = 200,
-					Kommuneskat = 500,
-					Kirkeskat = 50
+					BeregnetSundhedsbidrag = 100,
+					BeregnetBundskat = 200,
+					BeregnetKommuneskat = 500,
+					BeregnetKirkeskat = 50
 				});
 
 			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
@@ -73,10 +73,10 @@ namespace Maxfire.Skat.UnitTests
 			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
 				new Skatter
 				{
-					Sundhedsbidrag = 5, 
-					Bundskat = 200,
-					Kommuneskat = 500,
-					Kirkeskat = 50
+					BeregnetSundhedsbidrag = 5, 
+					BeregnetBundskat = 200,
+					BeregnetKommuneskat = 500,
+					BeregnetKirkeskat = 50
 				});
 
 			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
@@ -108,10 +108,10 @@ namespace Maxfire.Skat.UnitTests
 			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
 				new Skatter
 				{
-					Sundhedsbidrag = 5, // Underskud = 5
-					Bundskat = 2,		// Underskud = 3
-					Kommuneskat = 20,	// Underskud = 5
-					Kirkeskat = 0		// Underskud = 1
+					BeregnetSundhedsbidrag = 5, // Underskud = 5
+					BeregnetBundskat = 2,		// Underskud = 3
+					BeregnetKommuneskat = 20,	// Underskud = 5
+					BeregnetKirkeskat = 0		// Underskud = 1
 				});
 
 			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
@@ -151,16 +151,16 @@ namespace Maxfire.Skat.UnitTests
 			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
 				new Skatter
 				{
-					Sundhedsbidrag = 5, // Underskud = 5
-					Bundskat = 2,		// Underskud = 3
-					Kommuneskat = 20,	// Underskud = 5
-					Kirkeskat = 0		// Underskud = 1
+					BeregnetSundhedsbidrag = 5, // Underskud = 5
+					BeregnetBundskat = 2,		// Underskud = 3
+					BeregnetKommuneskat = 20,	// Underskud = 5
+					BeregnetKirkeskat = 0		// Underskud = 1
 				},
 				new Skatter
 				{
-					Sundhedsbidrag = 100,
-					Bundskat = 200,
-					Kommuneskat = 500
+					BeregnetSundhedsbidrag = 100,
+					BeregnetBundskat = 200,
+					BeregnetKommuneskat = 500
 				});
 
 			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
@@ -35,15 +36,19 @@ namespace Maxfire.Skat
 	//
 	// TODO: Ingen fremførte underskud mellem indkomst år, hverken værdi fra forrige år, eller overførsel til kommende skatteår.
 	// TODO: Skal hedde UnderskudSkattepligtigIndkomstBeregner
+
+	
+	
 	public class UnderskudBeregner
 	{
 		public static SkatteModregner GetSkattepligtigIndkomstUnderskudModregner()
 		{
 			return new SkatteModregner(
-				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
-				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
-				IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-				IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet));
+				Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfNegativSkattepligtigIndkomst),
+				Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfNegativSkattepligtigIndkomst),
+				Modregning.Af(x => x.Topskat).Med(x => x.ModregnetTopskatAfNegativSkattepligtigIndkomst),
+				Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet).Med(x => x.ModregnetAktieindkomstskatAfNegativSkattepligtigIndkomst)
+			);
 		}
 
 		public ValueTuple<ModregnResult2> Beregn(ValueTuple<PersonligeBeloeb> indkomster, 
@@ -55,12 +60,12 @@ namespace Maxfire.Skat
 			
 			// Modregning i egne skatter (PSL § 13 stk.1, pkt. 1 og 2)
 			var modregnResults = BeregnSkatEfterModregningEgneSkatter(skatter, underskudSkattevaerdiBeregnere, skattepligtigIndkomster);
-			var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
-
+			
 			// Underskud, der ikke er modregnet, skal så vidt muligt modregnes 
 			// i ægtefællens skattepligtige indkomst (PSL §13, stk 2 pkt. 1)
-			if (indkomster.Size > 0)
+			if (indkomster.Size > 1)
 			{
+				var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 				modregnResults = NedbringPartnersSkattepligtigeIndkomst(indkomster, skatter, ikkeUdnyttetUnderskud, kommunaleSatser);
 			}
 
@@ -93,6 +98,14 @@ namespace Maxfire.Skat
 				// Og opgør evt. ikke udnyttet underskud, der skal føres videre til reduktion af ægtefællens egne skatter
 				var underskudOverfoertFra = underskudOverfoertTil.Swap();
 				ikkeUdnyttedeUnderskud -= underskudOverfoertFra;
+				// BUG: Nyt design af Skatter med opslitning af skatter i flere variabler
+				// Skatter uden modregning:
+				// * beregnede (BeregnSkatter)
+				// Modregnede skatteværdier af diverse underskud, fradrag:
+				// * modregningAfNegativSkattepligtigIndkomst (ModregnNegativSkattepligtigIndkomst)
+				// * modregningAfNegativPersonligIndkomst (ModregnNegativSkattepligtigIndkomst)
+				// * modregningAfPersonfradrag (ModregnPersonfradrag)
+				// * ??????
 				// Reberegn skatter (=> fejl pga side-effekt i form af overskrivelse af modregninger i bundskatten)
 				var skatBeregner = new SkatBeregner();
 				modregnedeSkatter = skatBeregner.BeregnSkat(indkomster, kommunaleSatser);

@@ -41,6 +41,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="DecimalExtensions.cs" />
     <Compile Include="Mellemskat.cs" />
+    <Compile Include="Modregning.cs" />
     <Compile Include="ModregnPersonfradragResult.cs" />
     <Compile Include="ModregnResult.cs" />
     <Compile Include="ModregnResult2.cs" />

@@ -47,45 +47,45 @@ namespace Maxfire.Skat
 				// sundhedsbidraget, fragår den i nævnte rækkefølge i følgende skatter: bundskat, mellemskat, 
 				// topskat og skat af aktieindkomst, der overstiger 48.300 kr. (2009 og 2010). 
 				new SkatteModregner(
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Sundhedsbidrag),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
+					Modregning.Af(x => x.Sundhedsbidrag).Med(x => x.ModregnetSundhedsbidragAfPersonfradrag),
+					Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfPersonfradrag),
+					Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfPersonfradrag),
+					Modregning.Af(x => x.Topskat).Med(x => x.ModregnetTopskatAfPersonfradrag),
+					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet).Med(x => x.ModregnetAktieindkomstskatAfPersonfradrag),
+					Modregning.Af(x => x.Kommuneskat).Med(x => x.ModregnetKommuneskatAfPersonfradrag),
+					Modregning.Af(x => x.Kirkeskat).Med(x => x.ModregnetKirkeskatAfPersonfradrag)
 				),
 				// Tilsvarende, hvis skatteværdien af personfradraget mht. bundskat ikke kan fradrages i selve bundskatten, 
 				// fragår den i nævnte rækkefølge i følgende skatter: sundhedsbidrag, mellemskat og topskat og skat af 
 				// aktieindkomst, der overstiger 48.300 kr. (2009 og 2010). 
 				new SkatteModregner(
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Sundhedsbidrag),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
+					Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfPersonfradrag),
+					Modregning.Af(x => x.Sundhedsbidrag).Med(x => x.ModregnetSundhedsbidragAfPersonfradrag),
+					Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfPersonfradrag),
+					Modregning.Af(x => x.Topskat).Med(x => x.ModregnetTopskatAfPersonfradrag),
+					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet).Med(x => x.ModregnetAktieindkomstskatAfPersonfradrag),
+					Modregning.Af(x => x.Kommuneskat).Med(x => x.ModregnetKommuneskatAfPersonfradrag),
+					Modregning.Af(x => x.Kirkeskat).Med(x => x.ModregnetKirkeskatAfPersonfradrag)
 				),
 				// Skatteværdi af kommuneskat
 				new SkatteModregner(
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Sundhedsbidrag),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat)
+					Modregning.Af(x => x.Kommuneskat).Med(x => x.ModregnetKommuneskatAfPersonfradrag),
+					Modregning.Af(x => x.Sundhedsbidrag).Med(x => x.ModregnetSundhedsbidragAfPersonfradrag),
+					Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfPersonfradrag),
+					Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfPersonfradrag),
+					Modregning.Af(x => x.Topskat).Med(x => x.ModregnetTopskatAfPersonfradrag),
+					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet).Med(x => x.ModregnetAktieindkomstskatAfPersonfradrag),
+					Modregning.Af(x => x.Kirkeskat).Med(x => x.ModregnetKirkeskatAfPersonfradrag)
 				),
 				// Skatteværdi af kirkeskat
 				new SkatteModregner(
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kirkeskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Sundhedsbidrag),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Bundskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Mellemskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Topskat),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.AktieindkomstskatOverGrundbeloebet),
-					IntrospectionOf<Skatter>.GetAccessorFor(x => x.Kommuneskat)
+					Modregning.Af(x => x.Kirkeskat).Med(x => x.ModregnetKirkeskatAfPersonfradrag),
+					Modregning.Af(x => x.Sundhedsbidrag).Med(x => x.ModregnetSundhedsbidragAfPersonfradrag),
+					Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfPersonfradrag),
+					Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfPersonfradrag),
+					Modregning.Af(x => x.Topskat).Med(x => x.ModregnetTopskatAfPersonfradrag),
+					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet).Med(x => x.ModregnetAktieindkomstskatAfPersonfradrag),
+					Modregning.Af(x => x.Kommuneskat).Med(x => x.ModregnetKommuneskatAfPersonfradrag)
 				)
 			};
 		}
@@ -98,7 +98,6 @@ namespace Maxfire.Skat
 		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
-		// TODO: Vi giver ikke oplysninger om resterende skatteværdi af personfradrag, der fortabes, det bør vi i denne low-level beregner
 		public ValueTuple<ModregnResult2> BeregnSkatEfterPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
@@ -168,11 +167,13 @@ namespace Maxfire.Skat
 			
 			_skatteModregnere.Each(skatteModregner =>
 			{
-				var accessor = skatteModregner.First();
-				decimal skattevaerdi = accessor.GetValue(skattevaerdier);
+				var getter = skatteModregner.FirstSkatteGetter();
+				var accessor = skatteModregner.FirstModregningAccessor();
+				decimal skattevaerdi = getter.GetValue(skattevaerdier);
 				var modregnResult = skatteModregner.Modregn(modregnedeSkatter, skattevaerdi);
 				modregnedeSkatter = modregnResult.ModregnedeSkatter;
-				accessor.SetValue(ikkeUdnyttedeSkattevaerdier, modregnResult.IkkeUdnyttetSkattevaerdi);
+				// Da vi skriver til modregningsbeløb er vi nødt til at skifte fortegn på ikke udnyttet skatteværdi
+				accessor.SetValue(ikkeUdnyttedeSkattevaerdier, -modregnResult.IkkeUdnyttetSkattevaerdi);
 			});
 
 			return new ModregnPersonfradragResult(modregnedeSkatter, ikkeUdnyttedeSkattevaerdier);
@@ -206,12 +207,13 @@ namespace Maxfire.Skat
 			decimal skattevaerdiKommuneskat = kommunaleSatser.Kommuneskattesats * personfradrag;
 			decimal skattevaerdiKirkeskat = kommunaleSatser.Kirkeskattesats * personfradrag;
 
+			// TODO: Er det disse felter i Skatter vi ønsker at bruge
 			return new Skatter
 			{
-				Bundskat = skattevaerdiBundskat,
-				Sundhedsbidrag = skattevaerdiSundhedsbidrag,
-				Kommuneskat = skattevaerdiKommuneskat,
-				Kirkeskat = skattevaerdiKirkeskat
+				BeregnetBundskat = skattevaerdiBundskat,
+				BeregnetSundhedsbidrag = skattevaerdiSundhedsbidrag,
+				BeregnetKommuneskat = skattevaerdiKommuneskat,
+				BeregnetKirkeskat = skattevaerdiKirkeskat
 			};
 		}
 
