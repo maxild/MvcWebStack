@@ -8,6 +8,12 @@
 		public decimal FremfoertUnderskudSkattepligtigIndkomst { get; set; }
 
 		/// <summary>
+		/// Angiver et ikke udnyttet underskud i ægtefælles skattepligtige indkomst,
+		/// der er overført efter reglerne i PSL § 13, stk 2
+		/// </summary>
+		public decimal ModregnetUnderskudSkattepligtigIndkomst { get; set; }
+
+		/// <summary>
 		/// Underskud i skattepligtig indkomst til fremførsel i efterfølgende skatteår.
 		/// </summary>
 		public decimal UnderskudSkattepligtigIndkomstFremfoersel { get; set; }
@@ -23,11 +29,15 @@
 
 		// TODO: Sondring mellem årets underskud i skattepligtige indkomst, og fremført underskud i skattepligtig indkomst
 		/// <summary>
-		/// Skattepligtig indkomst efter modregning af fremført underskud
+		/// Skattepligtig indkomst efter modregning af fremført underskud og overført ikke-udnyttet underskud fra ægtefælle.
 		/// </summary>
 		public decimal SkattepligtigIndkomst
 		{
-			get { return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - FremfoertUnderskudSkattepligtigIndkomst; }
+			get 
+			{ 
+				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag 
+				- FremfoertUnderskudSkattepligtigIndkomst - ModregnetUnderskudSkattepligtigIndkomst; 
+			}
 		}
 
 		public decimal NettoKapitalIndkomst { get; set; }

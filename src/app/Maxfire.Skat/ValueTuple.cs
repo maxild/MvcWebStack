@@ -163,6 +163,11 @@ namespace Maxfire.Skat
 			return total;
 		}
 
+		public ValueTuple<T> Swap()
+		{
+			return Size > 1 ? new ValueTuple<T>(this[1], this[0]) : this;
+		}
+
 		public ValueTuple<T> Clone()
 		{
 			var list = new List<T>(Size);
