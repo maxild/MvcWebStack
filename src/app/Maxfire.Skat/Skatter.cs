@@ -6,10 +6,15 @@ namespace Maxfire.Skat
 	public class Skatter : IEquatable<Skatter>
 	{
 		public decimal Kirkeskat { get; set; }
+		
 		public decimal Kommuneskat { get; set; }
+		
 		public decimal Sundhedsbidrag { get; set; }
+
 		public decimal Bundskat { get; set; }
+		
 		public decimal Mellemskat { get; set; }
+		
 		public decimal Topskat { get; set; }
 		
 		public decimal KommunalIndkomstskatOgKirkeskat

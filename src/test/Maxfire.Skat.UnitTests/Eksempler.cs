@@ -577,7 +577,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag.ShouldEqual(skatterFoerPersonfradrag);
 		}
 
-		public void Eksempel_18_()
+		public void Eksempel_18_ModregningFuldtUdViaNedbringelseAfPartnersSkattepligtigeIndkomst()
 		{
 			Constants.Brug2009Vaerdier();
 
@@ -613,6 +613,9 @@ namespace Maxfire.Skat.UnitTests
 			var skatterFoerPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 			var ikkeUdnyttedeUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 
+			// O til 1 overførsel af hele underskuddet
+			indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-53000);
+			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(53000);
 			// Der er ingen underskud til fremførsel
 			ikkeUdnyttedeUnderskud[0].ShouldEqual(0);
 			ikkeUdnyttedeUnderskud[1].ShouldEqual(0);
@@ -654,6 +657,95 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(27496.28m);
 			skatterEfterPersonfradrag[1].Sum().ShouldEqual(45331.96m);
 		}
+
+		[Fact]
+		public void Eksempel_19_ModregningEgenSkatOgPartnersSkattepligtigeIndkomst()
+		{
+			Constants.Brug2009Vaerdier();
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 50000,
+					NettoKapitalIndkomst = -58000,
+					LigningsmaessigeFradrag = 13000
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 260000,
+					NettoKapitalIndkomst = -4000,
+					LigningsmaessigeFradrag = 8000
+				});
+
+			var kommunaleSatser = getKommunaleSatserForGifte();
+
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(-21000);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(248000);
+
+			var skatterBeregner = new SkatBeregner();
+			var skatter = skatterBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			// Æ1 har egne skatter at modregne underskud i
+			skatter[0].Bundskat.ShouldEqual(2520);
+			skatter[0].Mellemskat.ShouldEqual(0);
+			skatter[0].Topskat.ShouldEqual(0);
+			skatter[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+
+			var underskudBeregner = new UnderskudBeregner();
+			var modregnResults = underskudBeregner.Beregn(indkomster, skatter, kommunaleSatser);
+			var skatterFoerPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
+			var ikkeUdnyttedeUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
+
+			// O til 1 overførsel af hele underskuddet
+			indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-13195.73m);
+			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(13195.73m);
+			// Der er ingen underskud til fremførsel
+			ikkeUdnyttedeUnderskud[0].ShouldEqual(0);
+			ikkeUdnyttedeUnderskud[1].ShouldEqual(0);
+
+			skatterFoerPersonfradrag[0].Bundskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].Mellemskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].Topskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].AktieindkomstskatUnderGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].Sundhedsbidrag.ShouldEqual(0);
+			skatterFoerPersonfradrag[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
+
+			skatterFoerPersonfradrag[1].Bundskat.ShouldEqual(13104);
+			skatterFoerPersonfradrag[1].Mellemskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].Topskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].AktieindkomstskatUnderGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].Sundhedsbidrag.ShouldEqual(18784.32m);
+			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(57033.89m);
+
+			//var personfradragBeregner = new PersonfradragBeregner();
+			//modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			//var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
+
+			//skatterEfterPersonfradrag[0].Bundskat.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].Mellemskat.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].Topskat.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].AktieindkomstskatUnderGrundbeloebet.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].Sundhedsbidrag.ShouldEqual(0);
+			//skatterEfterPersonfradrag[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
+
+			//skatterEfterPersonfradrag[1].Bundskat.ShouldEqual(8779.68m);
+			//skatterEfterPersonfradrag[1].Mellemskat.ShouldEqual(0);
+			//skatterEfterPersonfradrag[1].Topskat.ShouldEqual(0);
+			//skatterEfterPersonfradrag[1].AktieindkomstskatUnderGrundbeloebet.ShouldEqual(0);
+			//skatterEfterPersonfradrag[1].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+			//skatterEfterPersonfradrag[1].Sundhedsbidrag.ShouldEqual(9056);
+			//skatterEfterPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(27496.28m);
+			//skatterEfterPersonfradrag[1].Sum().ShouldEqual(45331.96m);
+		}
+
+		//[Fact]
+		//public void Eksempel_20_()
+		//{
+			
+		//}
 
 		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
 		{

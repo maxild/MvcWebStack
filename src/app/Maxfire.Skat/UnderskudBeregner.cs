@@ -93,7 +93,7 @@ namespace Maxfire.Skat
 				// Og opgør evt. ikke udnyttet underskud, der skal føres videre til reduktion af ægtefællens egne skatter
 				var underskudOverfoertFra = underskudOverfoertTil.Swap();
 				ikkeUdnyttedeUnderskud -= underskudOverfoertFra;
-				// Reberegn skatter
+				// Reberegn skatter (=> fejl pga side-effekt i form af overskrivelse af modregninger i bundskatten)
 				var skatBeregner = new SkatBeregner();
 				modregnedeSkatter = skatBeregner.BeregnSkat(indkomster, kommunaleSatser);
 			}
