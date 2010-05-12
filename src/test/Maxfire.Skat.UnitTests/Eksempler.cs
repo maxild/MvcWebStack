@@ -1,4 +1,3 @@
-using System;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
 

@@ -1,5 +1,6 @@
 ﻿namespace Maxfire.Skat
 {
+	// TODO: Væk med disse globale værdier (for mange side-effekter i tests o.lign.)
 	public static class Constants
 	{
 		// Alle derfault værdier er 2009, 2010 værdier (husk ingen regulering fra 2009 til 2010)
@@ -119,6 +120,7 @@
 
 		public static void Brug2009Vaerdier()
 		{
+			Personfradrag = PERSON_FRADRAG;
 			BundfradragPositivKapitalIndkomst = 0;
 			Bundskattesats = 0.0504m;
 			Mellemskattesats = 0.06m;

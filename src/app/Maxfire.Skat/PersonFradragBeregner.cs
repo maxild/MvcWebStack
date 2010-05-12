@@ -172,7 +172,7 @@ namespace Maxfire.Skat
 				decimal skattevaerdi = getter.GetValue(skattevaerdier);
 				var modregnResult = skatteModregner.Modregn(modregnedeSkatter, skattevaerdi);
 				modregnedeSkatter = modregnResult.ModregnedeSkatter;
-				// Da vi skriver til modregningsbeløb er vi nødt til at skifte fortegn på ikke udnyttet skatteværdi
+				// HACK: Da vi skriver til modregningsbeløb er vi nødt til at skifte fortegn på ikke udnyttet skatteværdi
 				accessor.SetValue(ikkeUdnyttedeSkattevaerdier, -modregnResult.IkkeUdnyttetSkattevaerdi);
 			});
 
