@@ -308,7 +308,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[0].Kommuneskat.ShouldEqual(0);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].Bundskat.ShouldEqual(0);
@@ -404,7 +404,7 @@ namespace Maxfire.Skat.UnitTests
 			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(8229);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults= personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults= personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 			var tabtPersonfradrag = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 
@@ -455,7 +455,7 @@ namespace Maxfire.Skat.UnitTests
 			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(0);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].Bundskat.ShouldEqual(8568 - 2162.16m);
@@ -512,7 +512,7 @@ namespace Maxfire.Skat.UnitTests
 			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(200000 * 0.3229m - 20832);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 			var tabtPersonfradrag = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 
@@ -569,7 +569,7 @@ namespace Maxfire.Skat.UnitTests
 			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(270000 * 0.3229m - (skatter[0].Sum() - skatter[0].AktieindkomstskatUnderGrundbeloebet));
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 			var tabtPersonfradrag = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 
@@ -637,7 +637,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(48337.10m);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			modregnResults = personfradragBeregner.BeregnSkatEfterPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
 			var skatterEfterPersonfradrag = modregnResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].Bundskat.ShouldEqual(0);

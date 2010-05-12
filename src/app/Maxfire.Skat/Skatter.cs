@@ -3,71 +3,37 @@
 namespace Maxfire.Skat
 {
 	// TODO: make this type immutable, but keep it working with Accessor logic
-	// TODO: Equals, GetHashCode
-	// TODO: Refactor to finer grained value objects
 	public class Skatter : IEquatable<Skatter>
 	{
-		public decimal ModregnetKirkeskatAfPersonfradrag { get; set; }
-		public decimal BeregnetKirkeskat { get; set; }
-		public decimal Kirkeskat
+		private static Skatter _nul;
+		public static Skatter Nul
 		{
-			get { return BeregnetKirkeskat - ModregnetKirkeskatAfPersonfradrag; }
+			get
+			{
+				// TODO: Thread-safe here
+				if (_nul == null)
+				{
+					_nul = new Skatter();
+				}
+				return _nul;
+			}
 		}
 
-		public decimal ModregnetKommuneskatAfPersonfradrag { get; set; }
-		public decimal BeregnetKommuneskat { get; set; }
-		public decimal Kommuneskat
-		{
-			get { return BeregnetKommuneskat - ModregnetKommuneskatAfPersonfradrag; }
-		}
+		public decimal Kirkeskat { get; set; }
 
-		public decimal ModregnetSundhedsbidragAfPersonfradrag { get; set; }
-		public decimal BeregnetSundhedsbidrag { get; set; }
-		public decimal Sundhedsbidrag
-		{
-			get { return BeregnetSundhedsbidrag - ModregnetSundhedsbidragAfPersonfradrag; }
-		}
-
-		public decimal ModregnetBundskatAfPersonfradrag { get; set; }
-		public decimal ModregnetBundskatAfNegativSkattepligtigIndkomst { get; set; }
-		public decimal BeregnetBundskat { get; set; }
-		public decimal Bundskat
-		{
-			get { return BeregnetBundskat - ModregnetBundskatAfNegativSkattepligtigIndkomst - ModregnetBundskatAfPersonfradrag; }
-		}
-
-		public decimal ModregnetMellemskatAfPersonfradrag { get; set; }
-		public decimal ModregnetMellemskatAfNegativSkattepligtigIndkomst { get; set; }
-		public decimal BeregnetMellemskat { get; set; }
-		public decimal Mellemskat
-		{
-			get { return BeregnetMellemskat - ModregnetMellemskatAfNegativSkattepligtigIndkomst - ModregnetMellemskatAfPersonfradrag; }
-		}
-
-		public decimal ModregnetTopskatAfPersonfradrag { get; set; }
-		public decimal ModregnetTopskatAfNegativSkattepligtigIndkomst { get; set; }
-		public decimal BeregnetTopskat { get; set; }
-		public decimal Topskat
-		{
-			get { return BeregnetTopskat - ModregnetTopskatAfNegativSkattepligtigIndkomst - ModregnetTopskatAfPersonfradrag; }
-		}
-
+		public decimal Kommuneskat  { get; set; }
+		
+		public decimal Sundhedsbidrag  { get; set; }
+		
+		public decimal Bundskat  { get; set; }
+		
+		public decimal Mellemskat { get; set; }
+		
+		public decimal Topskat { get; set; }
+		
 		public decimal KommunalIndkomstskatOgKirkeskat
 		{
 			get { return Kommuneskat + Kirkeskat; }
-		}
-
-		public decimal ModregnetAktieindkomstskatAfPersonfradrag { get; set; }
-		public decimal ModregnetAktieindkomstskatAfNegativSkattepligtigIndkomst { get; set; }
-
-		public decimal Aktieindkomstskat
-		{
-			get 
-			{
-				return AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet 
-				       - ModregnetAktieindkomstskatAfNegativSkattepligtigIndkomst 
-				       - ModregnetAktieindkomstskatAfPersonfradrag; 
-			}
 		}
 
 		/// <summary>
@@ -102,6 +68,11 @@ namespace Maxfire.Skat
 		/// negativ skattepligtig indkomst. 
 		/// </remarks>
 		public decimal AktieindkomstskatOverGrundbeloebet { get; set; }
+
+		public decimal Aktieindkomstskat
+		{
+			get { return AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet; }
+		}
 
 		public Skatter Clone()
 		{
@@ -150,6 +121,36 @@ namespace Maxfire.Skat
 				Topskat == other.Topskat && 
 				AktieindkomstskatUnderGrundbeloebet == other.AktieindkomstskatUnderGrundbeloebet &&
 				AktieindkomstskatOverGrundbeloebet == other.AktieindkomstskatOverGrundbeloebet);
+		}
+
+		public static Skatter operator+(Skatter lhs, Skatter rhs)
+		{
+			return new Skatter
+			{
+				Kirkeskat = lhs.Kirkeskat + rhs.Kirkeskat,
+				Kommuneskat = lhs.Kommuneskat + rhs.Kommuneskat,
+				Sundhedsbidrag = lhs.Sundhedsbidrag + rhs.Sundhedsbidrag,
+				Bundskat = lhs.Bundskat + rhs.Bundskat,
+				Mellemskat = lhs.Mellemskat + rhs.Mellemskat,
+				Topskat = lhs.Topskat + rhs.Topskat,
+				AktieindkomstskatUnderGrundbeloebet = lhs.AktieindkomstskatUnderGrundbeloebet + rhs.AktieindkomstskatUnderGrundbeloebet,
+				AktieindkomstskatOverGrundbeloebet = lhs.AktieindkomstskatOverGrundbeloebet + rhs.AktieindkomstskatOverGrundbeloebet,
+			};
+		}
+
+		public static Skatter operator -(Skatter lhs, Skatter rhs)
+		{
+			return new Skatter
+			{
+				Kirkeskat = lhs.Kirkeskat - rhs.Kirkeskat,
+				Kommuneskat = lhs.Kommuneskat - rhs.Kommuneskat,
+				Sundhedsbidrag = lhs.Sundhedsbidrag - rhs.Sundhedsbidrag,
+				Bundskat = lhs.Bundskat - rhs.Bundskat,
+				Mellemskat = lhs.Mellemskat - rhs.Mellemskat,
+				Topskat = lhs.Topskat - rhs.Topskat,
+				AktieindkomstskatUnderGrundbeloebet = lhs.AktieindkomstskatUnderGrundbeloebet - rhs.AktieindkomstskatUnderGrundbeloebet,
+				AktieindkomstskatOverGrundbeloebet = lhs.AktieindkomstskatOverGrundbeloebet - rhs.AktieindkomstskatOverGrundbeloebet
+			};
 		}
 	}
 }

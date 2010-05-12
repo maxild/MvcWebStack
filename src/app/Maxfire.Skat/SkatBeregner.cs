@@ -35,12 +35,12 @@
 
 			return bundskat.Map(index => new Skatter
 			{
-				BeregnetBundskat = bundskat[index],
-				BeregnetMellemskat = mellemskat[index],
-				BeregnetTopskat = topskat[index],
-				BeregnetSundhedsbidrag = sundhedsbidrag[index],
-				BeregnetKommuneskat = kommuneskat[index],
-				BeregnetKirkeskat = kirkeskat[index],
+				Bundskat = bundskat[index],
+				Mellemskat = mellemskat[index],
+				Topskat = topskat[index],
+				Sundhedsbidrag = sundhedsbidrag[index],
+				Kommuneskat = kommuneskat[index],
+				Kirkeskat = kirkeskat[index],
 				AktieindkomstskatUnderGrundbeloebet = aktieindkomstskatLavesteTrin[index],
 				AktieindkomstskatOverGrundbeloebet = aktieindkomstskatMellemsteTrin[index] + aktieindkomstskatHoejesteTrin[index]
 			});

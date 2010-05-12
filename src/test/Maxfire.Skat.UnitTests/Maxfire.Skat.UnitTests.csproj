@@ -51,6 +51,7 @@
     <Compile Include="KommuneskatBeregnerTester.cs" />
     <Compile Include="PersonfradragBeregnerTester.cs" />
     <Compile Include="SkatteModregnerTester.cs" />
+    <Compile Include="SkatterTester.cs" />
     <Compile Include="SundhedsbidragBeregnerTester.cs" />
     <Compile Include="TopskatBeregnerTester.cs" />
     <Compile Include="UnderskudBeregnerTester.cs" />

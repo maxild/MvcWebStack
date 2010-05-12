@@ -11,18 +11,24 @@ namespace Maxfire.Skat.UnitTests
 		{
 			var skatter = new Skatter
 			              	{
-			              		BeregnetBundskat = 800,
-			              		BeregnetMellemskat = 500,
-			              		BeregnetTopskat = 1000
+			              		Bundskat = 800,
+			              		Mellemskat = 500,
+			              		Topskat = 1000
 			              	};
 
 			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfNegativSkattepligtigIndkomst),
-				Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfNegativSkattepligtigIndkomst));
+				Modregning.Af(x => x.Bundskat),
+				Modregning.Af(x => x.Mellemskat));
 
 			var modregnResult = skatteModregner.Modregn(skatter, 1000);
 
 			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(0);
+			modregnResult.UdnyttetSkattevaerdi.ShouldEqual(1000);
+			
+			modregnResult.UdnyttedeSkattevaerdier.Bundskat.ShouldEqual(800);
+			modregnResult.UdnyttedeSkattevaerdier.Mellemskat.ShouldEqual(200);
+			modregnResult.UdnyttedeSkattevaerdier.Topskat.ShouldEqual(0);
+
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Mellemskat.ShouldEqual(300);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(1000);
@@ -33,65 +39,53 @@ namespace Maxfire.Skat.UnitTests
 		{
 			var skatter = new Skatter
 			{
-				BeregnetBundskat = 800,
-				BeregnetMellemskat = 500,
-				BeregnetTopskat = 1000
+				Bundskat = 800,
+				Mellemskat = 500,
+				Topskat = 1000
 			};
 
 			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfNegativSkattepligtigIndkomst),
-				Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfNegativSkattepligtigIndkomst));
+				Modregning.Af(x => x.Bundskat),
+				Modregning.Af(x => x.Mellemskat));
 
 			var modregnResult = skatteModregner.Modregn(skatter, 3000);
 
 			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(1700);
+			modregnResult.UdnyttetSkattevaerdi.ShouldEqual(1300);
+
+			modregnResult.UdnyttedeSkattevaerdier.Bundskat.ShouldEqual(800);
+			modregnResult.UdnyttedeSkattevaerdier.Mellemskat.ShouldEqual(500);
+			modregnResult.UdnyttedeSkattevaerdier.Topskat.ShouldEqual(0);
+
 			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Mellemskat.ShouldEqual(0);
 			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(1000);
 		}
 
 		[Fact]
-		public void FuldModregningAfNegativSkattevaerdi()
+		public void ModregningAfNegativSkattevaerdi()
 		{
 			var skatter = new Skatter
 			{
-				BeregnetBundskat = 800,
-				BeregnetMellemskat = 500,
-				BeregnetTopskat = 1000
+				Bundskat = 800,
+				Mellemskat = 500,
+				Topskat = 1000
 			};
 
 			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfNegativSkattepligtigIndkomst),
-				Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfNegativSkattepligtigIndkomst));
+				Modregning.Af(x => x.Bundskat),
+				Modregning.Af(x => x.Mellemskat));
 
-			var modregnResult = skatteModregner.Modregn(skatter, -1000);
+			var modregnResult = skatteModregner.Modregn(skatter, -140);
 
 			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(0);
-			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(0);
-			modregnResult.ModregnedeSkatter.Mellemskat.ShouldEqual(300);
-			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(1000);
-		}
+			modregnResult.UdnyttetSkattevaerdi.ShouldEqual(0);
 
-		[Fact]
-		public void DelvisModregningAfNegativSkattevaerdi()
-		{
-			var skatter = new Skatter
-			{
-				BeregnetBundskat = 800,
-				BeregnetMellemskat = 500,
-				BeregnetTopskat = 1000
-			};
+			modregnResult.UdnyttedeSkattevaerdier.Bundskat.ShouldEqual(0);
+			modregnResult.UdnyttedeSkattevaerdier.Mellemskat.ShouldEqual(0);
+			modregnResult.UdnyttedeSkattevaerdier.Topskat.ShouldEqual(0);
 
-			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat).Med(x => x.ModregnetBundskatAfNegativSkattepligtigIndkomst),
-				Modregning.Af(x => x.Mellemskat).Med(x => x.ModregnetMellemskatAfNegativSkattepligtigIndkomst));
-
-			var modregnResult = skatteModregner.Modregn(skatter, -4000);
-
-			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(-2700);
-			modregnResult.ModregnedeSkatter.Bundskat.ShouldEqual(0);
-			modregnResult.ModregnedeSkatter.Mellemskat.ShouldEqual(0);
-			modregnResult.ModregnedeSkatter.Topskat.ShouldEqual(1000);
+			modregnResult.ModregnedeSkatter.ShouldEqual(skatter);
 		}
 	}
 }
