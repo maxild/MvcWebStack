@@ -78,6 +78,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var modregnResult = skatteModregner.Modregn(skatter, -140);
 
+			// Bemærk at ikke udnyttet skatteværdi er nul (og ikke -140), idet den skal være ikke-negativ
 			modregnResult.IkkeUdnyttetSkattevaerdi.ShouldEqual(0);
 			modregnResult.UdnyttetSkattevaerdi.ShouldEqual(0);
 

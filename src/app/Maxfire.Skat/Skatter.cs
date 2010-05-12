@@ -74,11 +74,6 @@ namespace Maxfire.Skat
 			get { return AktieindkomstskatUnderGrundbeloebet + AktieindkomstskatOverGrundbeloebet; }
 		}
 
-		public Skatter Clone()
-		{
-			return (Skatter)MemberwiseClone();
-		}
-
 		public decimal Sum()
 		{
 			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat 
@@ -151,6 +146,26 @@ namespace Maxfire.Skat
 				AktieindkomstskatUnderGrundbeloebet = lhs.AktieindkomstskatUnderGrundbeloebet - rhs.AktieindkomstskatUnderGrundbeloebet,
 				AktieindkomstskatOverGrundbeloebet = lhs.AktieindkomstskatOverGrundbeloebet - rhs.AktieindkomstskatOverGrundbeloebet
 			};
+		}
+
+		public static Skatter operator *(decimal lhs, Skatter rhs)
+		{
+			return new Skatter
+			{
+				Kirkeskat = lhs * rhs.Kirkeskat,
+				Kommuneskat = lhs * rhs.Kommuneskat,
+				Sundhedsbidrag = lhs * rhs.Sundhedsbidrag,
+				Bundskat = lhs * rhs.Bundskat,
+				Mellemskat = lhs * rhs.Mellemskat,
+				Topskat = lhs * rhs.Topskat,
+				AktieindkomstskatUnderGrundbeloebet = lhs * rhs.AktieindkomstskatUnderGrundbeloebet,
+				AktieindkomstskatOverGrundbeloebet = lhs * rhs.AktieindkomstskatOverGrundbeloebet
+			};
+		}
+
+		public static Skatter operator *(Skatter lhs, decimal rhs)
+		{
+			return rhs * lhs;
 		}
 	}
 }

@@ -44,8 +44,10 @@
     <Compile Include="Modregning.cs" />
     <Compile Include="ModregnPersonfradragResult.cs" />
     <Compile Include="ModregnResult.cs" />
-    <Compile Include="ModregnResult2.cs" />
+    <Compile Include="ModregnResultEx.cs" />
+    <Compile Include="ModregnResultExtensions.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
+    <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
     <Compile Include="SkatBeregner.cs" />
@@ -53,7 +55,7 @@
     <Compile Include="Skatter.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
     <Compile Include="UnderskudBeregner.cs" />
-    <Compile Include="UnderskudSkattevaerdiBeregner.cs" />
+    <Compile Include="SkattevaerdiOmregner.cs" />
     <Compile Include="ValueTuple.cs" />
     <Compile Include="KapitalIndkomst.cs" />
     <Compile Include="Ligningsmaessigefradrag.cs" />

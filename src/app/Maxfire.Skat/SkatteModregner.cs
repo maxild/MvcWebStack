@@ -24,16 +24,28 @@ namespace Maxfire.Skat
 		}
 
 		/// <summary>
-		/// Beregner mulige modregnede skatteværdier Modregner den angivne (absolutte) skatteværdi 
+		/// Beregner modregnede skatter og udnyttede skatteværdier efter modregning af den angivne skatteværdi i skatterne.
 		/// </summary>
-		/// <param name="skatter"></param>
-		/// <param name="skattevaerdi"></param>
-		/// <returns></returns>
+		/// <param name="skatter">De skatter der skal modregnes skatteværdi i.</param>
+		/// <param name="skattevaerdi">Den skatteværdi, der skal modregnes i skatterne.</param>
+		/// <returns>Modregnede skatter, udnyttede skatteværdier og fordelingen mellem udnyttet og ikke udnyttet skatteværdi.</returns>
 		public ModregnResult Modregn(Skatter skatter, decimal skattevaerdi)
+		{
+			var modregninger = BeregnModregninger(skatter, skattevaerdi);
+			return new ModregnResult(skatter, skattevaerdi.NonNegative(), modregninger);
+		}
+
+		/// <summary>
+		/// Beregner mulige modregninger af den angivne skatteværdi i skatterne.
+		/// </summary>
+		/// <param name="skatter">De skatter der skal modregnes skatteværdi i</param>
+		/// <param name="skattevaerdi">Den skatteværdi, der skal modregnes i skatterne</param>
+		/// <returns>De mulige modregninger, der også angiver de udnyttede skatteværdier.</returns>
+		public Skatter BeregnModregninger(Skatter skatter, decimal skattevaerdi)
 		{
 			if (skattevaerdi <= 0)
 			{
-				return new ModregnResult(skatter, Skatter.Nul, 0);
+				return Skatter.Nul;
 			}
 
 			var modregninger = new Skatter();
@@ -47,8 +59,8 @@ namespace Maxfire.Skat
 				accessor.SetValue(modregninger, modregning + modregningAfSkattevaerdi);
 				skattevaerdi -= modregningAfSkattevaerdi;
 			}
-			
-			return new ModregnResult(skatter, modregninger, skattevaerdi);
+
+			return modregninger;
 		}
 	}
 }

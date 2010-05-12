@@ -2,12 +2,17 @@
 {
 	public class ModregnResult
 	{
-		public ModregnResult(Skatter skatter, Skatter modregning, decimal ikkeUdnyttetSkattevaerdi)
+		public ModregnResult(Skatter skatter, decimal skattevaerdi, Skatter modregninger)
 		{
 			Skatter = skatter;
-			UdnyttedeSkattevaerdier = modregning;
-			IkkeUdnyttetSkattevaerdi = ikkeUdnyttetSkattevaerdi;
+			Skattevaerdi = skattevaerdi; 
+			UdnyttedeSkattevaerdier = modregninger;
 		}
+
+		/// <summary>
+		/// Størrelsen af den skatteværdi, der er forsøgt modregnet.
+		/// </summary>
+		public decimal Skattevaerdi { get; private set; }
 
 		/// <summary>
 		/// Størrelsen af de skatter, der skal modregnes i.
@@ -30,7 +35,10 @@
 		/// <summary>
 		/// Skatteværdien af det ikke udnyttede fradrag, underskud el.lign.
 		/// </summary>
-		public decimal IkkeUdnyttetSkattevaerdi { get; private set; }
+		public decimal IkkeUdnyttetSkattevaerdi
+		{
+			get { return Skattevaerdi - UdnyttetSkattevaerdi; }
+		}
 		
 		/// <summary>
 		/// Skatteværdien af det udnyttede fradrag, underskud el.lign.
