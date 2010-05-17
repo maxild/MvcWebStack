@@ -22,13 +22,13 @@
 		public Skatter BeregnSkattevaerdier(decimal personfradrag)
 		{
 			var skattevaerdier = _skattesatser * personfradrag;
-			return skattevaerdier;
+			return skattevaerdier.RoundMoney();
 		}
 
 		public decimal BeregnFradragsbeloeb(decimal skattevaerdi)
 		{
 			decimal fradragsbeloeb = skattevaerdi / _skattesatser.Sum();
-			return fradragsbeloeb;
+			return fradragsbeloeb.RoundMoney();
 		}
 	}
 }

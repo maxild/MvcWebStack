@@ -157,13 +157,13 @@ namespace Maxfire.Skat.UnitTests
 			Constants.Sundhedsbidragsats = 0.1m;
 			Constants.Bundskattesats = 0.05m;
 
-			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
+			var skatter = new ValueTuple<Skatter>(
 				new Skatter
 				{
-					Sundhedsbidrag = 5, // Underskud = 5
-					Bundskat = 2,		// Underskud = 3
-					Kommuneskat = 20,	// Underskud = 5
-					Kirkeskat = 0		// Underskud = 1
+					Sundhedsbidrag = 5, // Ikke-udnyttet = 5
+					Bundskat = 2,		// Ikke-udnyttet = 3
+					Kommuneskat = 20,	// Ikke-udnyttet = 5
+					Kirkeskat = 0		// Ikke-udnyttet = 1
 				},
 				new Skatter
 				{
@@ -172,7 +172,7 @@ namespace Maxfire.Skat.UnitTests
 					Kommuneskat = 500
 				});
 
-			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -186,22 +186,18 @@ namespace Maxfire.Skat.UnitTests
 			var personfradragBeregner = new PersonfradragBeregner();
 
 			var modregnResults = personfradragBeregner.ModregningAfPersonfradrag(skatter, kommunaleSatser);
-			var ikkeUdnyttetSkattevaerdi = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
-			var ikkeUdnyttetFradrag = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
 			var modregnedeSkatter = modregnResults.Map(x => x.ModregnedeSkatter);
 
-			// 35 == 14 / (sum af satser), 14 = uudnyttet skatteværdi, der overføres til ægtefælle
-			// BUG: Forkerkt index på kommunale satser
+			// 34,15 == 14 / (sum af satser), 14 = uudnyttet skatteværdi, der overføres til ægtefælle
 			// TODO: Benyt instans metoden på beregner: BeregnSkattevaerdierAfPersonfradrag (efter BUG er rettet)
-			var skattevaerdi = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser[1]).BeregnSkattevaerdier(35);
+			var uudnyttetPersonfradrag = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser[0]).BeregnFradragsbeloeb(14);
+			var skattevaerdi = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser[1]).BeregnSkattevaerdier(uudnyttetPersonfradrag);
 			
 			// Værdien af det overførte personfradrag
-			skattevaerdi.Sundhedsbidrag.ShouldEqual(3.5m);
-			skattevaerdi.Bundskat.ShouldEqual(1.75m);
-			skattevaerdi.Kommuneskat.ShouldEqual(8.75m);
+			skattevaerdi.Sundhedsbidrag.ShouldEqual(3.42m);
+			skattevaerdi.Bundskat.ShouldEqual(1.71m);
+			skattevaerdi.Kommuneskat.ShouldEqual(8.54m);
 			skattevaerdi.Kirkeskat.ShouldEqual(0);
-
-			// TODO: Lav den færdig
 
 			// Skatterne nulstilles af værdien af personfradraget,
 			modregnedeSkatter[0].Sundhedsbidrag.ShouldEqual(0);
@@ -210,9 +206,9 @@ namespace Maxfire.Skat.UnitTests
 			modregnedeSkatter[0].Kirkeskat.ShouldEqual(0);
 
 			// og det uudnyttede personfradrag overføres til ægtefællen
-			modregnedeSkatter[1].Sundhedsbidrag.ShouldEqual(90 - 3.5m);
-			modregnedeSkatter[1].Bundskat.ShouldEqual(195 - 1.75m);
-			modregnedeSkatter[1].Kommuneskat.ShouldEqual(475 - 8.75m);
+			modregnedeSkatter[1].Sundhedsbidrag.ShouldEqual(90 - 3.42m);
+			modregnedeSkatter[1].Bundskat.ShouldEqual(195 - 1.71m);
+			modregnedeSkatter[1].Kommuneskat.ShouldEqual(475 - 8.54m);
 			modregnedeSkatter[1].Kirkeskat.ShouldEqual(0);
 		}
 	}

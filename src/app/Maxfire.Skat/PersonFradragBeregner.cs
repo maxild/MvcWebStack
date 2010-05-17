@@ -122,12 +122,13 @@ namespace Maxfire.Skat
 		{
 			var modregninger = new Skatter();
 			
+			// Hver af skatteværdierne modregnes i lovens nævnte rækkefølge
 			_skatteModregnere.Each(skatteModregner =>
 			{
 				var accessor = skatteModregner.FirstAccessor();
 				decimal vaerdiAfSkat = accessor.GetValue(skattevaerdier);
-				var modregnResult = skatteModregner.Modregn(skatter - modregninger, vaerdiAfSkat);
-				modregninger += modregnResult.UdnyttedeSkattevaerdier;
+				Skatter modregningerAfSkat = skatteModregner.BeregnModregninger(skatter - modregninger, vaerdiAfSkat);
+				modregninger += modregningerAfSkat;
 			});
 
 			var omregner = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser);
@@ -184,31 +185,31 @@ namespace Maxfire.Skat
 			ModregnResultEx first, second;
 			if (i == 0)
 			{
-				first = new ModregnResultEx(skatter[0], 
-										   skattevaerdiEgneSkatter[0],
-				                           udnyttedeSkattevaerdierEgneSkatter[0] + udnyttedeSkattevaerdierOfPartner, 
-										   fradragEgneSkatter[0] + overfoertFradragTilPartner,
-				                           udnyttetFradragEgneSkatter[0] + udnyttetFradragOfPartner);
 				// TODO: Hvad med reduktion af denne
-				second = new ModregnResultEx(skatter[1],
-											skattevaerdiEgneSkatter[1],
-											udnyttedeSkattevaerdierEgneSkatter[1], 
-											fradragEgneSkatter[1],
-											udnyttetFradragEgneSkatter[1]);
-			}
-			else
-			{
 				first = new ModregnResultEx(skatter[0], 
 										   skattevaerdiEgneSkatter[0],
-										   udnyttedeSkattevaerdierEgneSkatter[0],
+				                           udnyttedeSkattevaerdierEgneSkatter[0], 
 										   fradragEgneSkatter[0],
-										   udnyttetFradragEgneSkatter[0]);
-				// TODO: Hvad med reduktion af denne
+				                           udnyttetFradragEgneSkatter[0]);
 				second = new ModregnResultEx(skatter[1],
 											skattevaerdiEgneSkatter[1],
 											udnyttedeSkattevaerdierEgneSkatter[1] + udnyttedeSkattevaerdierOfPartner, 
 											fradragEgneSkatter[1] + overfoertFradragTilPartner,
 											udnyttetFradragEgneSkatter[1] + udnyttetFradragOfPartner);
+			}
+			else
+			{
+				// TODO: Hvad med reduktion af denne
+				first = new ModregnResultEx(skatter[0], 
+										   skattevaerdiEgneSkatter[0],
+										   udnyttedeSkattevaerdierEgneSkatter[0] + udnyttedeSkattevaerdierOfPartner,
+										   fradragEgneSkatter[0] + overfoertFradragTilPartner,
+										   udnyttetFradragEgneSkatter[0] + udnyttetFradragOfPartner);
+				second = new ModregnResultEx(skatter[1],
+											skattevaerdiEgneSkatter[1],
+											udnyttedeSkattevaerdierEgneSkatter[1], 
+											fradragEgneSkatter[1],
+											udnyttetFradragEgneSkatter[1]);
 			}
 
 			return new ValueTuple<ModregnResultEx>(first, second);
