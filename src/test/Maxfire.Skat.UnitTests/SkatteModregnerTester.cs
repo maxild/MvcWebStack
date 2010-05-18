@@ -16,9 +16,9 @@ namespace Maxfire.Skat.UnitTests
 			              		Topskat = 1000
 			              	};
 
-			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat),
-				Modregning.Af(x => x.Mellemskat));
+			var skatteModregner = new SkatteModregner<Skatter>(
+				Modregning<Skatter>.Af(x => x.Bundskat),
+				Modregning<Skatter>.Af(x => x.Mellemskat));
 
 			var modregnResult = skatteModregner.Modregn(skatter, 1000);
 
@@ -44,9 +44,9 @@ namespace Maxfire.Skat.UnitTests
 				Topskat = 1000
 			};
 
-			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat),
-				Modregning.Af(x => x.Mellemskat));
+			var skatteModregner = new SkatteModregner<Skatter>(
+				Modregning<Skatter>.Af(x => x.Bundskat),
+				Modregning<Skatter>.Af(x => x.Mellemskat));
 
 			var modregnResult = skatteModregner.Modregn(skatter, 3000);
 
@@ -72,9 +72,9 @@ namespace Maxfire.Skat.UnitTests
 				Topskat = 1000
 			};
 
-			var skatteModregner = new SkatteModregner(
-				Modregning.Af(x => x.Bundskat),
-				Modregning.Af(x => x.Mellemskat));
+			var skatteModregner = new SkatteModregner<Skatter>(
+				Modregning<Skatter>.Af(x => x.Bundskat),
+				Modregning<Skatter>.Af(x => x.Mellemskat));
 
 			var modregnResult = skatteModregner.Modregn(skatter, -140);
 

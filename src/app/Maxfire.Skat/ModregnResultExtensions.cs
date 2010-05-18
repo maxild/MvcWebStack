@@ -2,12 +2,13 @@
 {
 	public static class ModregnResultExtensions
 	{
-		public static ModregnResultEx ToModregnResultEx(this ModregnResult modregnResult, ISkattevaerdiOmregner skattevaerdiOmregner)
+		public static ModregnResultEx<TSkatter> ToModregnResultEx<TSkatter>(this ModregnResult<TSkatter> modregnResult, ISkattevaerdiOmregner skattevaerdiOmregner)
+			where TSkatter : ISumable<decimal>, new()
 		{
 			decimal underskud = skattevaerdiOmregner.BeregnFradragsbeloeb(modregnResult.Skattevaerdi);
 			decimal udnyttetUnderskud = skattevaerdiOmregner.BeregnFradragsbeloeb(modregnResult.UdnyttetSkattevaerdi);
 
-			return new ModregnResultEx(modregnResult.Skatter, modregnResult.Skattevaerdi, 
+			return new ModregnResultEx<TSkatter>(modregnResult.Skatter, modregnResult.Skattevaerdi, 
 			                          modregnResult.UdnyttedeSkattevaerdier, underskud, udnyttetUnderskud);
 		}
 	}

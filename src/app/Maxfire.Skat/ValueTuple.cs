@@ -117,6 +117,18 @@ namespace Maxfire.Skat
 			get { return _list.Count; }
 		}
 
+		public bool AllZero()
+		{
+			for (int i = 0; i < Size; i++)
+			{
+				if (Operator<T>.Equal(this[i], Operator<T>.Zero))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public int IndexOf(T value)
 		{
 			return _list.IndexOf(value);

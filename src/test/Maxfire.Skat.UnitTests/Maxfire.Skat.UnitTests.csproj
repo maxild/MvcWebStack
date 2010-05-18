@@ -54,7 +54,7 @@
     <Compile Include="SkatterTester.cs" />
     <Compile Include="SundhedsbidragBeregnerTester.cs" />
     <Compile Include="TopskatBeregnerTester.cs" />
-    <Compile Include="UnderskudBeregnerTester.cs" />
+    <Compile Include="SkattepligtigIndkomstUnderskudBeregnerTester.cs" />
     <Compile Include="ValueTupleTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkatteberegnerTester.cs" />

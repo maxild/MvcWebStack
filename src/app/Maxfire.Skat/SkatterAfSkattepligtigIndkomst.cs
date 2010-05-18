@@ -1,0 +1,100 @@
+﻿using System;
+
+namespace Maxfire.Skat
+{
+	/// <summary>
+	/// Indkomst skatter til stat, kommune og kirke, der beregnes på baggrund af den skattepligtige indkomst.
+	/// </summary>
+	/// <remarks>
+	/// Disse indkomstskatter beregnes først efter modregning og fremførsel af indeværende års underskud 
+	/// i skattepligtig indkomst og tidligere års underskud i skattepligtig indkomst, jf. PSL § 13, stk. 1 og 2. 
+	/// </remarks>
+	public class SkatterAfSkattepligtigIndkomst : IEquatable<SkatterAfSkattepligtigIndkomst>, ISumable<decimal>
+	{
+		// TODO: Not immutable
+		private static readonly SkatterAfSkattepligtigIndkomst _nul = new SkatterAfSkattepligtigIndkomst();
+		public static SkatterAfSkattepligtigIndkomst Nul
+		{
+			get { return _nul; }
+		}
+
+		public decimal Sundhedsbidrag { get; set; }
+
+		public decimal Kommuneskat { get; set; }
+		
+		public decimal Kirkeskat { get; set; }
+
+		public decimal KommunalIndkomstskatOgKirkeskat
+		{
+			get { return Kommuneskat + Kirkeskat; }
+		}
+
+		public decimal Sum()
+		{
+			return Sundhedsbidrag + KommunalIndkomstskatOgKirkeskat;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = Kirkeskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Kommuneskat.GetHashCode();
+				hashCode = (hashCode * 397) ^ Sundhedsbidrag.GetHashCode();
+				return hashCode;
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as SkatterAfSkattepligtigIndkomst);
+		}
+
+		public bool Equals(SkatterAfSkattepligtigIndkomst other)
+		{
+			if (other == null)
+			{
+				return false;
+			}
+
+			return (Kirkeskat == other.Kirkeskat &&
+				Kommuneskat == other.Kommuneskat &&
+				Sundhedsbidrag == other.Sundhedsbidrag);
+		}
+
+		public static SkatterAfSkattepligtigIndkomst operator +(SkatterAfSkattepligtigIndkomst lhs, SkatterAfSkattepligtigIndkomst rhs)
+		{
+			return new SkatterAfSkattepligtigIndkomst
+			{
+				Kirkeskat = lhs.Kirkeskat + rhs.Kirkeskat,
+				Kommuneskat = lhs.Kommuneskat + rhs.Kommuneskat,
+				Sundhedsbidrag = lhs.Sundhedsbidrag + rhs.Sundhedsbidrag
+			};
+		}
+
+		public static SkatterAfSkattepligtigIndkomst operator -(SkatterAfSkattepligtigIndkomst lhs, SkatterAfSkattepligtigIndkomst rhs)
+		{
+			return new SkatterAfSkattepligtigIndkomst
+			{
+				Kirkeskat = lhs.Kirkeskat - rhs.Kirkeskat,
+				Kommuneskat = lhs.Kommuneskat - rhs.Kommuneskat,
+				Sundhedsbidrag = lhs.Sundhedsbidrag - rhs.Sundhedsbidrag
+			};
+		}
+
+		public static SkatterAfSkattepligtigIndkomst operator *(decimal lhs, SkatterAfSkattepligtigIndkomst rhs)
+		{
+			return new SkatterAfSkattepligtigIndkomst
+			{
+				Kirkeskat = lhs * rhs.Kirkeskat,
+				Kommuneskat = lhs * rhs.Kommuneskat,
+				Sundhedsbidrag = lhs * rhs.Sundhedsbidrag
+			};
+		}
+
+		public static SkatterAfSkattepligtigIndkomst operator *(SkatterAfSkattepligtigIndkomst lhs, decimal rhs)
+		{
+			return rhs * lhs;
+		}
+	}
+}

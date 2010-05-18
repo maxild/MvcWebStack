@@ -36,55 +36,55 @@ namespace Maxfire.Skat
 	// til nedsættelse efter § 9 af den anden ægtefælles skatter.
 	public class PersonfradragBeregner
 	{
-		private readonly List<SkatteModregner> _skatteModregnere;
+		private readonly List<SkatteModregner<Skatter>> _skatteModregnere;
 
 		public PersonfradragBeregner()
 		{
-			_skatteModregnere = new List<SkatteModregner>
+			_skatteModregnere = new List<SkatteModregner<Skatter>>
 			{
 				// I det omfang skatteværdien af personfradraget mht. sundhedsbidrag ikke kan fradrages i selve 
 				// sundhedsbidraget, fragår den i nævnte rækkefølge i følgende skatter: bundskat, mellemskat, 
 				// topskat og skat af aktieindkomst, der overstiger 48.300 kr. (2009 og 2010). 
-				new SkatteModregner(
-					Modregning.Af(x => x.Sundhedsbidrag),
-					Modregning.Af(x => x.Bundskat),
-					Modregning.Af(x => x.Mellemskat),
-					Modregning.Af(x => x.Topskat),
-					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet),
-					Modregning.Af(x => x.Kommuneskat),
-					Modregning.Af(x => x.Kirkeskat)
+				new SkatteModregner<Skatter>(
+					Modregning<Skatter>.Af(x => x.Sundhedsbidrag),
+					Modregning<Skatter>.Af(x => x.Bundskat),
+					Modregning<Skatter>.Af(x => x.Mellemskat),
+					Modregning<Skatter>.Af(x => x.Topskat),
+					Modregning<Skatter>.Af(x => x.AktieindkomstskatOverGrundbeloebet),
+					Modregning<Skatter>.Af(x => x.Kommuneskat),
+					Modregning<Skatter>.Af(x => x.Kirkeskat)
 				),
 				// Tilsvarende, hvis skatteværdien af personfradraget mht. bundskat ikke kan fradrages i selve bundskatten, 
 				// fragår den i nævnte rækkefølge i følgende skatter: sundhedsbidrag, mellemskat og topskat og skat af 
 				// aktieindkomst, der overstiger 48.300 kr. (2009 og 2010). 
-				new SkatteModregner(
-					Modregning.Af(x => x.Bundskat),
-					Modregning.Af(x => x.Sundhedsbidrag),
-					Modregning.Af(x => x.Mellemskat),
-					Modregning.Af(x => x.Topskat),
-					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet),
-					Modregning.Af(x => x.Kommuneskat),
-					Modregning.Af(x => x.Kirkeskat)
+				new SkatteModregner<Skatter>(
+					Modregning<Skatter>.Af(x => x.Bundskat),
+					Modregning<Skatter>.Af(x => x.Sundhedsbidrag),
+					Modregning<Skatter>.Af(x => x.Mellemskat),
+					Modregning<Skatter>.Af(x => x.Topskat),
+					Modregning<Skatter>.Af(x => x.AktieindkomstskatOverGrundbeloebet),
+					Modregning<Skatter>.Af(x => x.Kommuneskat),
+					Modregning<Skatter>.Af(x => x.Kirkeskat)
 				),
 				// Skatteværdi af kommuneskat
-				new SkatteModregner(
-					Modregning.Af(x => x.Kommuneskat),
-					Modregning.Af(x => x.Sundhedsbidrag),
-					Modregning.Af(x => x.Bundskat),
-					Modregning.Af(x => x.Mellemskat),
-					Modregning.Af(x => x.Topskat),
-					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet),
-					Modregning.Af(x => x.Kirkeskat)
+				new SkatteModregner<Skatter>(
+					Modregning<Skatter>.Af(x => x.Kommuneskat),
+					Modregning<Skatter>.Af(x => x.Sundhedsbidrag),
+					Modregning<Skatter>.Af(x => x.Bundskat),
+					Modregning<Skatter>.Af(x => x.Mellemskat),
+					Modregning<Skatter>.Af(x => x.Topskat),
+					Modregning<Skatter>.Af(x => x.AktieindkomstskatOverGrundbeloebet),
+					Modregning<Skatter>.Af(x => x.Kirkeskat)
 				),
 				// Skatteværdi af kirkeskat
-				new SkatteModregner(
-					Modregning.Af(x => x.Kirkeskat),
-					Modregning.Af(x => x.Sundhedsbidrag),
-					Modregning.Af(x => x.Bundskat),
-					Modregning.Af(x => x.Mellemskat),
-					Modregning.Af(x => x.Topskat),
-					Modregning.Af(x => x.AktieindkomstskatOverGrundbeloebet),
-					Modregning.Af(x => x.Kommuneskat)
+				new SkatteModregner<Skatter>(
+					Modregning<Skatter>.Af(x => x.Kirkeskat),
+					Modregning<Skatter>.Af(x => x.Sundhedsbidrag),
+					Modregning<Skatter>.Af(x => x.Bundskat),
+					Modregning<Skatter>.Af(x => x.Mellemskat),
+					Modregning<Skatter>.Af(x => x.Topskat),
+					Modregning<Skatter>.Af(x => x.AktieindkomstskatOverGrundbeloebet),
+					Modregning<Skatter>.Af(x => x.Kommuneskat)
 				)
 			};
 		}
@@ -97,7 +97,7 @@ namespace Maxfire.Skat
 		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
-		public ValueTuple<ModregnResultEx> ModregningAfPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<ModregnResultEx<Skatter>> ModregningAfPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
 			var modregnEgneSkatterResults = ModregningAfPersonfradragEgneSkatter(skatter, kommunaleSatser);
@@ -109,7 +109,7 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
 		/// </summary>
-		public ValueTuple<ModregnResultEx> ModregningAfPersonfradragEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<ModregnResultEx<Skatter>> ModregningAfPersonfradragEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
 			return skatter.Map((skat, index) => ModregningAfSkattevaerdier(skat, skattevaerdier[index], kommunaleSatser[index]));
@@ -118,7 +118,7 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
 		/// </summary>
-		public ModregnResultEx ModregningAfSkattevaerdier(Skatter skatter, Skatter skattevaerdier, KommunaleSatser kommunaleSatser)
+		public ModregnResultEx<Skatter> ModregningAfSkattevaerdier(Skatter skatter, Skatter skattevaerdier, KommunaleSatser kommunaleSatser)
 		{
 			var modregninger = new Skatter();
 			
@@ -136,12 +136,12 @@ namespace Maxfire.Skat
 			var skattevaerdi = skattevaerdier.Sum();
 			//var fradrag = omregner.BeregnFradragsbeloeb(skattevaerdi);
 			//var udnyttetFradrag = omregner.BeregnFradragsbeloeb(modregninger.Sum());
-			
-			return new ModregnResult(skatter, skattevaerdi, modregninger).ToModregnResultEx(omregner);
+
+			return new ModregnResult<Skatter>(skatter, skattevaerdi, modregninger).ToModregnResultEx(omregner);
 		}
 
 		// Er dette summen eller den ekstra overførsel? Lige nu er det summen
-		public ValueTuple<ModregnResultEx> ModregningAfOverfoertPersonfradragTilPartner(ValueTuple<ModregnResultEx> modregnEgneSkatterResults, 
+		public ValueTuple<ModregnResultEx<Skatter>> ModregningAfOverfoertPersonfradragTilPartner(ValueTuple<ModregnResultEx<Skatter>> modregnEgneSkatterResults, 
 			ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
 			if (modregnEgneSkatterResults.Size == 1)
@@ -182,16 +182,16 @@ namespace Maxfire.Skat
 			var udnyttetFradragOfPartner = modregnPartnersEgneSkatterResult.UdnyttetFradrag;
 
 			// TODO: Refactor this shit
-			ModregnResultEx first, second;
+			ModregnResultEx<Skatter> first, second;
 			if (i == 0)
 			{
 				// TODO: Hvad med reduktion af denne
-				first = new ModregnResultEx(skatter[0], 
+				first = new ModregnResultEx<Skatter>(skatter[0], 
 										   skattevaerdiEgneSkatter[0],
 				                           udnyttedeSkattevaerdierEgneSkatter[0], 
 										   fradragEgneSkatter[0],
 				                           udnyttetFradragEgneSkatter[0]);
-				second = new ModregnResultEx(skatter[1],
+				second = new ModregnResultEx<Skatter>(skatter[1],
 											skattevaerdiEgneSkatter[1],
 											udnyttedeSkattevaerdierEgneSkatter[1] + udnyttedeSkattevaerdierOfPartner, 
 											fradragEgneSkatter[1] + overfoertFradragTilPartner,
@@ -200,19 +200,19 @@ namespace Maxfire.Skat
 			else
 			{
 				// TODO: Hvad med reduktion af denne
-				first = new ModregnResultEx(skatter[0], 
+				first = new ModregnResultEx<Skatter>(skatter[0], 
 										   skattevaerdiEgneSkatter[0],
 										   udnyttedeSkattevaerdierEgneSkatter[0] + udnyttedeSkattevaerdierOfPartner,
 										   fradragEgneSkatter[0] + overfoertFradragTilPartner,
 										   udnyttetFradragEgneSkatter[0] + udnyttetFradragOfPartner);
-				second = new ModregnResultEx(skatter[1],
+				second = new ModregnResultEx<Skatter>(skatter[1],
 											skattevaerdiEgneSkatter[1],
 											udnyttedeSkattevaerdierEgneSkatter[1], 
 											fradragEgneSkatter[1],
 											udnyttetFradragEgneSkatter[1]);
 			}
 
-			return new ValueTuple<ModregnResultEx>(first, second);
+			return new ValueTuple<ModregnResultEx<Skatter>>(first, second);
 		}
 
 		/// <summary>

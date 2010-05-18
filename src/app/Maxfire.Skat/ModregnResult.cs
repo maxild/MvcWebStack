@@ -1,8 +1,11 @@
-﻿namespace Maxfire.Skat
+﻿using Maxfire.Core;
+
+namespace Maxfire.Skat
 {
-	public class ModregnResult
+	public class ModregnResult<TSkatter>
+		where TSkatter : ISumable<decimal>
 	{
-		public ModregnResult(Skatter skatter, decimal skattevaerdi, Skatter modregninger)
+		public ModregnResult(TSkatter skatter, decimal skattevaerdi, TSkatter modregninger)
 		{
 			Skatter = skatter;
 			Skattevaerdi = skattevaerdi; 
@@ -17,19 +20,19 @@
 		/// <summary>
 		/// Størrelsen af de skatter, der skal modregnes i.
 		/// </summary>
-		public Skatter Skatter { get; private set; }
+		public TSkatter Skatter { get; private set; }
 
 		/// <summary>
 		/// De udnyttede skatteværdier, der svarer til de mulige modregninger i skatterne.
 		/// </summary>
-		public Skatter UdnyttedeSkattevaerdier { get; private set; }
+		public TSkatter UdnyttedeSkattevaerdier { get; private set; }
 
 		/// <summary>
 		/// Skatternes størrelse efter modregning.
 		/// </summary>
-		public Skatter ModregnedeSkatter
+		public TSkatter ModregnedeSkatter
 		{
-			get { return Skatter - UdnyttedeSkattevaerdier; }
+			get { return Operator<TSkatter>.Subtract(Skatter, UdnyttedeSkattevaerdier); }
 		}
 		
 		/// <summary>

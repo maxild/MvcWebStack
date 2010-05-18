@@ -2,14 +2,15 @@
 {
 	// TODO: Prøv at eleiminer en af ModregnResult og ModregnResult
 	// TODO: Sørg for så få kald til ctor, istedet skal ToModregnResult extension method benyttes
-	public class ModregnResultEx : ModregnResult
+	public class ModregnResultEx<TSkatter> : ModregnResult<TSkatter>
+		where TSkatter : ISumable<decimal>, new()
 	{
-		public static ModregnResultEx Nul(Skatter skatter)
+		public static ModregnResultEx<TSkatter> Nul(TSkatter skatter)
 		{
-			return new ModregnResultEx(skatter, 0, Skatter.Nul, 0, 0);
+			return new ModregnResultEx<TSkatter>(skatter, 0, new TSkatter(), 0, 0);
 		}
 
-		public ModregnResultEx(Skatter skatter, decimal skattevaerdi, Skatter udnyttedeSkattevaerdier, 
+		public ModregnResultEx(TSkatter skatter, decimal skattevaerdi, TSkatter udnyttedeSkattevaerdier, 
 			decimal fradrag, decimal udnyttetFradrag) 
 			: base(skatter, skattevaerdi, udnyttedeSkattevaerdier)
 		{

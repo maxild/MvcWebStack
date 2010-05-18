@@ -4,11 +4,11 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
-	public static class Modregning
+	public static class Modregning<TSkatter>
 	{
-		public static Accessor<Skatter, decimal > Af(Expression<Func<Skatter, decimal>> expression)
+		public static Accessor<TSkatter, decimal> Af(Expression<Func<TSkatter, decimal>> expression)
 		{
-			return IntrospectionOf<Skatter>.GetAccessorFor(expression);
+			return IntrospectionOf<TSkatter>.GetAccessorFor(expression);
 		}
 	}
 }

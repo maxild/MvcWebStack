@@ -4,11 +4,12 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Skat
 {
-	public class SkatteModregner
+	public class SkatteModregner<TSkatter>
+		where TSkatter : ISumable<decimal>, new()
 	{
-		private readonly Accessor<Skatter, decimal>[] _accessors;
+		private readonly Accessor<TSkatter, decimal>[] _accessors;
 
-		public SkatteModregner(params Accessor<Skatter, decimal>[] accessors)
+		public SkatteModregner(params Accessor<TSkatter, decimal>[] accessors)
 		{
 			accessors.ThrowIfNull("accessors");
 			if (accessors.Length == 0)
@@ -18,7 +19,7 @@ namespace Maxfire.Skat
 			_accessors = accessors;
 		}
 
-		public Accessor<Skatter, decimal> FirstAccessor()
+		public Accessor<TSkatter, decimal> FirstAccessor()
 		{
 			return _accessors[0];
 		}
@@ -29,10 +30,10 @@ namespace Maxfire.Skat
 		/// <param name="skatter">De skatter der skal modregnes skatteværdi i.</param>
 		/// <param name="skattevaerdi">Den skatteværdi, der skal modregnes i skatterne.</param>
 		/// <returns>Modregnede skatter, udnyttede skatteværdier og fordelingen mellem udnyttet og ikke udnyttet skatteværdi.</returns>
-		public ModregnResult Modregn(Skatter skatter, decimal skattevaerdi)
+		public ModregnResult<TSkatter> Modregn(TSkatter skatter, decimal skattevaerdi)
 		{
 			var modregninger = BeregnModregninger(skatter, skattevaerdi);
-			return new ModregnResult(skatter, skattevaerdi.NonNegative(), modregninger);
+			return new ModregnResult<TSkatter>(skatter, skattevaerdi.NonNegative(), modregninger);
 		}
 
 		/// <summary>
@@ -41,14 +42,14 @@ namespace Maxfire.Skat
 		/// <param name="skatter">De skatter der skal modregnes skatteværdi i</param>
 		/// <param name="skattevaerdi">Den skatteværdi, der skal modregnes i skatterne</param>
 		/// <returns>De mulige modregninger, der også angiver de udnyttede skatteværdier.</returns>
-		public Skatter BeregnModregninger(Skatter skatter, decimal skattevaerdi)
+		public TSkatter BeregnModregninger(TSkatter skatter, decimal skattevaerdi)
 		{
+			var modregninger = new TSkatter();
+
 			if (skattevaerdi <= 0)
 			{
-				return Skatter.Nul;
+				return modregninger;
 			}
-
-			var modregninger = new Skatter();
 
 			for (int i = 0; i < _accessors.Length && skattevaerdi > 0; i++)
 			{

@@ -2,51 +2,32 @@
 
 namespace Maxfire.Skat
 {
-	// TODO: make this type immutable, but keep it working with Accessor logic
 	/// <summary>
-	/// De samlede skatter
+	/// Indkomstskatter til staten, der beregnes på baggrund af den personlige indkomst og
+	/// positiv nettokapitalindkomst.
 	/// </summary>
-	public class Skatter : IEquatable<Skatter>, ISumable<decimal>
+	/// <remarks>
+	/// Disse indkomstskatter til staten beregnes først efter modregning og fremførsel af
+	/// indeværende års underskud i personlig indkomst og tidligere års underskud i personlig
+	/// indkomst, jf. PSL § 13, stk. 3 og 4. 
+	/// 
+	/// Det er i disse skatter, der sker modregning af underskudsværdier (skatteværdier) 
+	/// af negativ skattepligtig indkomst, jf. PSL § 13, stk. 1 og 2.
+	/// </remarks>
+	public class SkatterAfPersonligIndkomst : IEquatable<SkatterAfPersonligIndkomst>, ISumable<decimal>
 	{
-		private static readonly Skatter _nul = new Skatter();
-		public static Skatter Nul
+		// TODO: Not immutable
+		private static readonly SkatterAfPersonligIndkomst _nul = new SkatterAfPersonligIndkomst();
+		public static SkatterAfPersonligIndkomst Nul
 		{
 			get { return _nul; }
 		}
 
-		public Skatter()
-		{
-		}
-		
-		public Skatter(SkatterAfPersonligIndkomst skatterAfPersonligIndkomst, SkatterAfSkattepligtigIndkomst skatterAfSkattepligtigIndkomst)
-		{
-			// TODO: Make this type be composed of SkatterAfPersonligIndkomst og SkatterAfSkattepligtigIndkomst
-			Sundhedsbidrag = skatterAfSkattepligtigIndkomst.Sundhedsbidrag;
-			Kommuneskat = skatterAfSkattepligtigIndkomst.Kommuneskat;
-			Kirkeskat = skatterAfSkattepligtigIndkomst.Kirkeskat;
-			Bundskat = skatterAfPersonligIndkomst.Bundskat;
-			Mellemskat = skatterAfPersonligIndkomst.Mellemskat;
-			Topskat = skatterAfPersonligIndkomst.Topskat;
-			AktieindkomstskatUnderGrundbeloebet = skatterAfPersonligIndkomst.AktieindkomstskatUnderGrundbeloebet;
-			AktieindkomstskatOverGrundbeloebet = skatterAfPersonligIndkomst.AktieindkomstskatOverGrundbeloebet;
-		}
+		public decimal Bundskat { get; set; }
 
-		public decimal Sundhedsbidrag { get; set; }
-
-		public decimal Kirkeskat { get; set; }
-
-		public decimal Kommuneskat  { get; set; }
-		
-		public decimal Bundskat  { get; set; }
-		
 		public decimal Mellemskat { get; set; }
-		
+
 		public decimal Topskat { get; set; }
-		
-		public decimal KommunalIndkomstskatOgKirkeskat
-		{
-			get { return Kommuneskat + Kirkeskat; }
-		}
 
 		/// <summary>
 		/// I følge bestemmelser i PSL § 8a, stk. 1 bliver skat af aktieindkomst, som ikke overstiger
@@ -64,7 +45,7 @@ namespace Maxfire.Skat
 		/// aktieindkomsten, forhøjes modtagerens slutskat med det manglende beløb. 
 		/// </remarks>
 		public decimal AktieindkomstskatUnderGrundbeloebet { get; set; }
-		
+
 		/// <summary>
 		/// I følge bestemmelser i PSL § 8a, stk. 2 vil skat af aktieindkomst, der overstiger
 		/// grundbeløbet (48.300 kr. i 2009 og 2010) indgå i slutskatten, og den udbytteskat
@@ -88,18 +69,14 @@ namespace Maxfire.Skat
 
 		public decimal Sum()
 		{
-			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat 
-				+ KommunalIndkomstskatOgKirkeskat + Aktieindkomstskat;
+			return Bundskat + Mellemskat + Topskat + Aktieindkomstskat;
 		}
 
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-				int hashCode = Kirkeskat.GetHashCode();
-				hashCode = (hashCode * 397) ^ Kommuneskat.GetHashCode();
-				hashCode = (hashCode * 397) ^ Sundhedsbidrag.GetHashCode();
-				hashCode = (hashCode * 397) ^ Bundskat.GetHashCode();
+				int hashCode = Bundskat.GetHashCode();
 				hashCode = (hashCode * 397) ^ Mellemskat.GetHashCode();
 				hashCode = (hashCode * 397) ^ Topskat.GetHashCode();
 				hashCode = (hashCode * 397) ^ AktieindkomstskatUnderGrundbeloebet.GetHashCode();
@@ -110,33 +87,27 @@ namespace Maxfire.Skat
 
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as Skatter);
+			return Equals(obj as SkatterAfPersonligIndkomst);
 		}
 
-		public bool Equals(Skatter other)
+		public bool Equals(SkatterAfPersonligIndkomst other)
 		{
 			if (other == null)
 			{
 				return false;
 			}
 
-			return (Kirkeskat == other.Kirkeskat &&
-				Kommuneskat == other.Kommuneskat &&
-				Sundhedsbidrag == other.Sundhedsbidrag &&
-				Bundskat == other.Bundskat &&
+			return (Bundskat == other.Bundskat &&
 				Mellemskat == other.Mellemskat &&
-				Topskat == other.Topskat && 
+				Topskat == other.Topskat &&
 				AktieindkomstskatUnderGrundbeloebet == other.AktieindkomstskatUnderGrundbeloebet &&
 				AktieindkomstskatOverGrundbeloebet == other.AktieindkomstskatOverGrundbeloebet);
 		}
 
-		public static Skatter operator+(Skatter lhs, Skatter rhs)
+		public static SkatterAfPersonligIndkomst operator +(SkatterAfPersonligIndkomst lhs, SkatterAfPersonligIndkomst rhs)
 		{
-			return new Skatter
+			return new SkatterAfPersonligIndkomst
 			{
-				Kirkeskat = lhs.Kirkeskat + rhs.Kirkeskat,
-				Kommuneskat = lhs.Kommuneskat + rhs.Kommuneskat,
-				Sundhedsbidrag = lhs.Sundhedsbidrag + rhs.Sundhedsbidrag,
 				Bundskat = lhs.Bundskat + rhs.Bundskat,
 				Mellemskat = lhs.Mellemskat + rhs.Mellemskat,
 				Topskat = lhs.Topskat + rhs.Topskat,
@@ -145,13 +116,10 @@ namespace Maxfire.Skat
 			};
 		}
 
-		public static Skatter operator -(Skatter lhs, Skatter rhs)
+		public static SkatterAfPersonligIndkomst operator -(SkatterAfPersonligIndkomst lhs, SkatterAfPersonligIndkomst rhs)
 		{
-			return new Skatter
+			return new SkatterAfPersonligIndkomst
 			{
-				Kirkeskat = lhs.Kirkeskat - rhs.Kirkeskat,
-				Kommuneskat = lhs.Kommuneskat - rhs.Kommuneskat,
-				Sundhedsbidrag = lhs.Sundhedsbidrag - rhs.Sundhedsbidrag,
 				Bundskat = lhs.Bundskat - rhs.Bundskat,
 				Mellemskat = lhs.Mellemskat - rhs.Mellemskat,
 				Topskat = lhs.Topskat - rhs.Topskat,
@@ -160,13 +128,10 @@ namespace Maxfire.Skat
 			};
 		}
 
-		public static Skatter operator *(decimal lhs, Skatter rhs)
+		public static SkatterAfPersonligIndkomst operator *(decimal lhs, SkatterAfPersonligIndkomst rhs)
 		{
-			return new Skatter
+			return new SkatterAfPersonligIndkomst
 			{
-				Kirkeskat = lhs * rhs.Kirkeskat,
-				Kommuneskat = lhs * rhs.Kommuneskat,
-				Sundhedsbidrag = lhs * rhs.Sundhedsbidrag,
 				Bundskat = lhs * rhs.Bundskat,
 				Mellemskat = lhs * rhs.Mellemskat,
 				Topskat = lhs * rhs.Topskat,
@@ -175,7 +140,7 @@ namespace Maxfire.Skat
 			};
 		}
 
-		public static Skatter operator *(Skatter lhs, decimal rhs)
+		public static SkatterAfPersonligIndkomst operator *(SkatterAfPersonligIndkomst lhs, decimal rhs)
 		{
 			return rhs * lhs;
 		}

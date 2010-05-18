@@ -40,6 +40,7 @@
     <Compile Include="Bundskat.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DecimalExtensions.cs" />
+    <Compile Include="ISumable.cs" />
     <Compile Include="KommunaleSatser.cs" />
     <Compile Include="Mellemskat.cs" />
     <Compile Include="Modregning.cs" />
@@ -51,12 +52,17 @@
     <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
+    <Compile Include="PersonligIndkomstUnderskudBeregner.cs" />
+    <Compile Include="SkatAfPersonligIndkomstBeregner.cs" />
+    <Compile Include="SkatAfSkattepligtigIndkomstBeregner.cs" />
     <Compile Include="SkatBeregner.cs" />
     <Compile Include="SkatteModregner.cs" />
     <Compile Include="Skatter.cs" />
+    <Compile Include="SkatterAfPersonligIndkomst.cs" />
+    <Compile Include="SkatterAfSkattepligtigIndkomst.cs" />
     <Compile Include="SkatterExtensions.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
-    <Compile Include="UnderskudBeregner.cs" />
+    <Compile Include="SkattepligtigIndkomstUnderskudBeregner.cs" />
     <Compile Include="SkattevaerdiOmregner.cs" />
     <Compile Include="ValueTuple.cs" />
     <Compile Include="KapitalIndkomst.cs" />

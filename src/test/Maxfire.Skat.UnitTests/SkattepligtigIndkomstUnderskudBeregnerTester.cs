@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Maxfire.Skat.UnitTests
 {
-	public class UnderskudBeregnerTester
+	public class SkattepligtigIndkomstUnderskudBeregnerTester
 	{
 		//[Fact]
 		//public void Eksempel()
