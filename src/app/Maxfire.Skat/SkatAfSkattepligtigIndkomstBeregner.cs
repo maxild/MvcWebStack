@@ -15,12 +15,7 @@
 			var kirkeskatBeregner = new KirkeskatBeregner();
 			var kirkeskat = kirkeskatBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
-			return sundhedsbidrag.Map(index => new SkatterAfSkattepligtigIndkomst
-			                                   	{
-			                                   		Sundhedsbidrag = sundhedsbidrag[index],
-			                                   		Kommuneskat = kommuneskat[index],
-			                                   		Kirkeskat = kirkeskat[index]
-			                                   	});
+			return sundhedsbidrag.Map(index => new SkatterAfSkattepligtigIndkomst(sundhedsbidrag[index], kommuneskat[index], kirkeskat[index]));
 		}
 	}
 }

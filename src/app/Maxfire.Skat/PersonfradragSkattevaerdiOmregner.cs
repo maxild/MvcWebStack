@@ -4,13 +4,10 @@
 	{
 		public static PersonfradragSkattevaerdiOmregner Create(KommunaleSatser kommunaleSatser)
 		{
-			return new PersonfradragSkattevaerdiOmregner(new Skatter
-			                                             	{
-			                                             		Sundhedsbidrag = Constants.Sundhedsbidragsats,
-			                                             		Bundskat = Constants.Bundskattesats,
-			                                             		Kommuneskat = kommunaleSatser.Kommuneskattesats,
-			                                             		Kirkeskat = kommunaleSatser.Kirkeskattesats
-			                                             	});
+			return new PersonfradragSkattevaerdiOmregner(
+				new Skatter(sundhedsbidrag: Constants.Sundhedsbidragsats,
+				            kommuneskat: kommunaleSatser.Kommuneskattesats,
+				            bundskat: Constants.Bundskattesats, kirkeskat: kommunaleSatser.Kirkeskattesats));
 		}
 		private readonly Skatter _skattesatser;
 

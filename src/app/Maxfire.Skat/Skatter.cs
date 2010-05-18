@@ -2,25 +2,31 @@
 
 namespace Maxfire.Skat
 {
-	// TODO: make this type immutable, but keep it working with Accessor logic
 	/// <summary>
 	/// De samlede skatter
 	/// </summary>
 	public class Skatter : IEquatable<Skatter>, ISumable<decimal>
 	{
-		private static readonly Skatter _nul = new Skatter();
-		public static Skatter Nul
-		{
-			get { return _nul; }
-		}
-
 		public Skatter()
 		{
 		}
-		
+
+		public Skatter(decimal sundhedsbidrag = 0, decimal kommuneskat = 0, decimal kirkeskat = 0, 
+			decimal bundskat = 0, decimal mellemskat = 0, decimal topskat = 0, 
+			decimal aktieindkomstskatUnderGrundbeloebet = 0, decimal aktieindkomstskatOverGrundbeloebet = 0)
+		{
+			Sundhedsbidrag = sundhedsbidrag;
+			Kommuneskat = kommuneskat;
+			Kirkeskat = kirkeskat;
+			Bundskat = bundskat;
+			Mellemskat = mellemskat;
+			Topskat = topskat;
+			AktieindkomstskatUnderGrundbeloebet = aktieindkomstskatUnderGrundbeloebet;
+			AktieindkomstskatOverGrundbeloebet = aktieindkomstskatOverGrundbeloebet;
+		}
+
 		public Skatter(SkatterAfPersonligIndkomst skatterAfPersonligIndkomst, SkatterAfSkattepligtigIndkomst skatterAfSkattepligtigIndkomst)
 		{
-			// TODO: Make this type be composed of SkatterAfPersonligIndkomst og SkatterAfSkattepligtigIndkomst
 			Sundhedsbidrag = skatterAfSkattepligtigIndkomst.Sundhedsbidrag;
 			Kommuneskat = skatterAfSkattepligtigIndkomst.Kommuneskat;
 			Kirkeskat = skatterAfSkattepligtigIndkomst.Kirkeskat;
@@ -31,17 +37,17 @@ namespace Maxfire.Skat
 			AktieindkomstskatOverGrundbeloebet = skatterAfPersonligIndkomst.AktieindkomstskatOverGrundbeloebet;
 		}
 
-		public decimal Sundhedsbidrag { get; set; }
+		public decimal Sundhedsbidrag { get; private set; }
 
-		public decimal Kirkeskat { get; set; }
+		public decimal Kirkeskat { get; private set; }
 
-		public decimal Kommuneskat  { get; set; }
+		public decimal Kommuneskat  { get; private set; }
 		
-		public decimal Bundskat  { get; set; }
+		public decimal Bundskat  { get; private set; }
 		
-		public decimal Mellemskat { get; set; }
+		public decimal Mellemskat { get; private set; }
 		
-		public decimal Topskat { get; set; }
+		public decimal Topskat { get; private set; }
 		
 		public decimal KommunalIndkomstskatOgKirkeskat
 		{
@@ -63,7 +69,7 @@ namespace Maxfire.Skat
 		/// indgår i aktieindkomsten. I det omfang der ikke er indeholdt udbytteskat af 
 		/// aktieindkomsten, forhøjes modtagerens slutskat med det manglende beløb. 
 		/// </remarks>
-		public decimal AktieindkomstskatUnderGrundbeloebet { get; set; }
+		public decimal AktieindkomstskatUnderGrundbeloebet { get; private set; }
 		
 		/// <summary>
 		/// I følge bestemmelser i PSL § 8a, stk. 2 vil skat af aktieindkomst, der overstiger
@@ -79,7 +85,7 @@ namespace Maxfire.Skat
 		/// der kan således foretages modregning heri af skatteværdi af personfradrag og 
 		/// negativ skattepligtig indkomst. 
 		/// </remarks>
-		public decimal AktieindkomstskatOverGrundbeloebet { get; set; }
+		public decimal AktieindkomstskatOverGrundbeloebet { get; private set; }
 
 		public decimal Aktieindkomstskat
 		{
@@ -90,6 +96,21 @@ namespace Maxfire.Skat
 		{
 			return Sundhedsbidrag + Bundskat + Mellemskat + Topskat 
 				+ KommunalIndkomstskatOgKirkeskat + Aktieindkomstskat;
+		}
+
+		public Skatter RoundMoney()
+		{
+			return new Skatter
+			{
+				Kommuneskat = Kommuneskat.RoundMoney(),
+				Kirkeskat = Kirkeskat.RoundMoney(),
+				Sundhedsbidrag = Sundhedsbidrag.RoundMoney(),
+				Bundskat = Bundskat.RoundMoney(),
+				Mellemskat = Mellemskat.RoundMoney(),
+				Topskat = Topskat.RoundMoney(),
+				AktieindkomstskatUnderGrundbeloebet = AktieindkomstskatUnderGrundbeloebet.RoundMoney(),
+				AktieindkomstskatOverGrundbeloebet = AktieindkomstskatOverGrundbeloebet.RoundMoney()
+			};
 		}
 
 		public override int GetHashCode()

@@ -8,41 +8,14 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void CanAdd()
 		{
-			var x = new Skatter
-			{
-				Kommuneskat = 1,
-				Kirkeskat = 2,
-				Sundhedsbidrag = 3,
-				Bundskat = 4,
-				Mellemskat = 5,
-				Topskat = 6,
-				AktieindkomstskatUnderGrundbeloebet = 7,
-				AktieindkomstskatOverGrundbeloebet = 8
-			};
+			var x = new Skatter(kommuneskat: 1, sundhedsbidrag: 3, kirkeskat: 2, bundskat: 4, mellemskat: 5,
+			                    topskat: 6, aktieindkomstskatUnderGrundbeloebet: 7, aktieindkomstskatOverGrundbeloebet: 8);
 
-			var y = new Skatter
-			{
-				Kommuneskat = 2,
-				Kirkeskat = 4,
-				Sundhedsbidrag = 6,
-				Bundskat = 8,
-				Mellemskat = 10,
-				Topskat = 12,
-				AktieindkomstskatUnderGrundbeloebet = 14,
-				AktieindkomstskatOverGrundbeloebet = 16
-			};
+			var y = new Skatter(kommuneskat: 2, sundhedsbidrag: 6, kirkeskat: 4, bundskat: 8, mellemskat: 10,
+			                    topskat: 12, aktieindkomstskatUnderGrundbeloebet: 14, aktieindkomstskatOverGrundbeloebet: 16);
 
-			(x + y).ShouldEqual(new Skatter
-			                    	{
-			                    		Kommuneskat = 3,
-			                    		Kirkeskat = 6,
-			                    		Sundhedsbidrag = 9,
-			                    		Bundskat = 12,
-			                    		Mellemskat = 15,
-			                    		Topskat = 18,
-			                    		AktieindkomstskatUnderGrundbeloebet = 21,
-			                    		AktieindkomstskatOverGrundbeloebet = 24
-			                    	});
+			(x + y).ShouldEqual(new Skatter(kommuneskat: 3, sundhedsbidrag: 9, kirkeskat: 6, bundskat: 12,
+			                                mellemskat: 15, topskat: 18, aktieindkomstskatUnderGrundbeloebet: 21, aktieindkomstskatOverGrundbeloebet: 24));
 		}
 	}
 }

@@ -24,14 +24,10 @@
 			var aktieindkomstskatHoejesteTrinBeregner = new AktieindkomstskatHoejesteTrinBeregner();
 			var aktieindkomstskatHoejesteTrin = aktieindkomstskatHoejesteTrinBeregner.BeregnSkat(indkomster);
 
-			return bundskat.Map(index => new SkatterAfPersonligIndkomst
-			                             	{
-			                             		Bundskat = bundskat[index],
-			                             		Mellemskat = mellemskat[index],
-			                             		Topskat = topskat[index],
-			                             		AktieindkomstskatUnderGrundbeloebet = aktieindkomstskatLavesteTrin[index],
-			                             		AktieindkomstskatOverGrundbeloebet = aktieindkomstskatMellemsteTrin[index] + aktieindkomstskatHoejesteTrin[index]
-			                             	});
+			return bundskat.Map(index =>
+					new SkatterAfPersonligIndkomst(bundskat[index], mellemskat[index], topskat[index],
+					                               aktieindkomstskatLavesteTrin[index],
+					                               aktieindkomstskatMellemsteTrin[index] + aktieindkomstskatHoejesteTrin[index]));
 		}
 	}
 }

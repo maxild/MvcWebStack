@@ -35,17 +35,10 @@ namespace Maxfire.Skat.UnitTests
 			Constants.Personfradrag = 100;
 			Constants.Sundhedsbidragsats = 0.1m;
 			Constants.Bundskattesats = 0.05m;
-			
-			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
-				new Skatter
-				{
-					Sundhedsbidrag = 100,
-					Bundskat = 200,
-					Kommuneskat = 500,
-					Kirkeskat = 50
-				});
 
-			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var skatter = new ValueTuple<Skatter>(new Skatter(sundhedsbidrag: 100, kommuneskat: 500, bundskat: 200, kirkeskat: 50));
+
+			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -81,16 +74,9 @@ namespace Maxfire.Skat.UnitTests
 			Constants.Sundhedsbidragsats = 0.1m;
 			Constants.Bundskattesats = 0.05m;
 
-			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
-				new Skatter
-				{
-					Sundhedsbidrag = 5, 
-					Bundskat = 200,
-					Kommuneskat = 500,
-					Kirkeskat = 50
-				});
+			var skatter = new ValueTuple<Skatter>(new Skatter(sundhedsbidrag: 5, kommuneskat: 500, bundskat: 200, kirkeskat: 50));
 
-			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -116,16 +102,9 @@ namespace Maxfire.Skat.UnitTests
 			Constants.Sundhedsbidragsats = 0.1m;
 			Constants.Bundskattesats = 0.05m;
 
-			ValueTuple<Skatter> skatter = new ValueTuple<Skatter>(
-				new Skatter
-				{
-					Sundhedsbidrag = 5, // Underskud = 5
-					Bundskat = 2,		// Underskud = 3
-					Kommuneskat = 20,	// Underskud = 5
-					Kirkeskat = 0		// Underskud = 1
-				});
+			var skatter = new ValueTuple<Skatter>(new Skatter(sundhedsbidrag: 5, kommuneskat: 20, bundskat: 2));
 
-			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -158,19 +137,8 @@ namespace Maxfire.Skat.UnitTests
 			Constants.Bundskattesats = 0.05m;
 
 			var skatter = new ValueTuple<Skatter>(
-				new Skatter
-				{
-					Sundhedsbidrag = 5, // Ikke-udnyttet = 5
-					Bundskat = 2,		// Ikke-udnyttet = 3
-					Kommuneskat = 20,	// Ikke-udnyttet = 5
-					Kirkeskat = 0		// Ikke-udnyttet = 1
-				},
-				new Skatter
-				{
-					Sundhedsbidrag = 100,
-					Bundskat = 200,
-					Kommuneskat = 500
-				});
+				new Skatter(sundhedsbidrag: 5, kommuneskat: 20, bundskat: 2),
+				new Skatter(sundhedsbidrag: 100, kommuneskat: 500, bundskat: 200));
 
 			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser

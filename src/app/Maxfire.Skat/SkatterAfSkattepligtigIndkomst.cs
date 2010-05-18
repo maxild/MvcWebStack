@@ -11,18 +11,22 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class SkatterAfSkattepligtigIndkomst : IEquatable<SkatterAfSkattepligtigIndkomst>, ISumable<decimal>
 	{
-		// TODO: Not immutable
-		private static readonly SkatterAfSkattepligtigIndkomst _nul = new SkatterAfSkattepligtigIndkomst();
-		public static SkatterAfSkattepligtigIndkomst Nul
+		public SkatterAfSkattepligtigIndkomst()
 		{
-			get { return _nul; }
 		}
 
-		public decimal Sundhedsbidrag { get; set; }
+		public SkatterAfSkattepligtigIndkomst(decimal sundhedsbidrag=0, decimal kommuneskat=0, decimal kirkeskat=0)
+		{
+			Sundhedsbidrag = sundhedsbidrag;
+			Kommuneskat = kommuneskat;
+			Kirkeskat = kirkeskat;
+		}
 
-		public decimal Kommuneskat { get; set; }
+		public decimal Sundhedsbidrag { get; private set; }
+
+		public decimal Kommuneskat { get; private set; }
 		
-		public decimal Kirkeskat { get; set; }
+		public decimal Kirkeskat { get; private set; }
 
 		public decimal KommunalIndkomstskatOgKirkeskat
 		{

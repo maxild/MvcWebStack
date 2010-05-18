@@ -16,18 +16,25 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class SkatterAfPersonligIndkomst : IEquatable<SkatterAfPersonligIndkomst>, ISumable<decimal>
 	{
-		// TODO: Not immutable
-		private static readonly SkatterAfPersonligIndkomst _nul = new SkatterAfPersonligIndkomst();
-		public static SkatterAfPersonligIndkomst Nul
+		public SkatterAfPersonligIndkomst()
 		{
-			get { return _nul; }
 		}
 
-		public decimal Bundskat { get; set; }
+		public SkatterAfPersonligIndkomst(decimal bundskat=0, decimal mellemskat=0, decimal topskat=0,
+			decimal aktieindkomstskatUnderGrundbeloebet=0, decimal aktieindkomstskatOverGrundbeloebet=0)
+		{
+			Bundskat = bundskat;
+			Mellemskat = mellemskat;
+			Topskat = topskat;
+			AktieindkomstskatUnderGrundbeloebet = aktieindkomstskatUnderGrundbeloebet;
+			AktieindkomstskatOverGrundbeloebet = aktieindkomstskatOverGrundbeloebet;
+		}
 
-		public decimal Mellemskat { get; set; }
+		public decimal Bundskat { get; private set; }
 
-		public decimal Topskat { get; set; }
+		public decimal Mellemskat { get; private set; }
+
+		public decimal Topskat { get; private set; }
 
 		/// <summary>
 		/// I følge bestemmelser i PSL § 8a, stk. 1 bliver skat af aktieindkomst, som ikke overstiger
@@ -44,7 +51,7 @@ namespace Maxfire.Skat
 		/// indgår i aktieindkomsten. I det omfang der ikke er indeholdt udbytteskat af 
 		/// aktieindkomsten, forhøjes modtagerens slutskat med det manglende beløb. 
 		/// </remarks>
-		public decimal AktieindkomstskatUnderGrundbeloebet { get; set; }
+		public decimal AktieindkomstskatUnderGrundbeloebet { get; private set; }
 
 		/// <summary>
 		/// I følge bestemmelser i PSL § 8a, stk. 2 vil skat af aktieindkomst, der overstiger
@@ -60,7 +67,7 @@ namespace Maxfire.Skat
 		/// der kan således foretages modregning heri af skatteværdi af personfradrag og 
 		/// negativ skattepligtig indkomst. 
 		/// </remarks>
-		public decimal AktieindkomstskatOverGrundbeloebet { get; set; }
+		public decimal AktieindkomstskatOverGrundbeloebet { get; private set; }
 
 		public decimal Aktieindkomstskat
 		{

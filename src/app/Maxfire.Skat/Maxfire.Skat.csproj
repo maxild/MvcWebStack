@@ -60,7 +60,6 @@
     <Compile Include="Skatter.cs" />
     <Compile Include="SkatterAfPersonligIndkomst.cs" />
     <Compile Include="SkatterAfSkattepligtigIndkomst.cs" />
-    <Compile Include="SkatterExtensions.cs" />
     <Compile Include="Sundhedsbidrag.cs" />
     <Compile Include="SkattepligtigIndkomstUnderskudBeregner.cs" />
     <Compile Include="SkattevaerdiOmregner.cs" />
