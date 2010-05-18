@@ -49,6 +49,7 @@
     <Compile Include="Eksempler.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
+    <Compile Include="PartialTrustContext.cs" />
     <Compile Include="PersonfradragBeregnerTester.cs" />
     <Compile Include="SkatteModregnerTester.cs" />
     <Compile Include="SkatterTester.cs" />
