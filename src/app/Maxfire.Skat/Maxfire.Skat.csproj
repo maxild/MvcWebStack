@@ -53,8 +53,8 @@
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
     <Compile Include="PersonligIndkomstUnderskudBeregner.cs" />
-    <Compile Include="SkatAfPersonligIndkomstBeregner.cs" />
-    <Compile Include="SkatAfSkattepligtigIndkomstBeregner.cs" />
+    <Compile Include="SkatterAfPersonligIndkomstBeregner.cs" />
+    <Compile Include="SkatterAfSkattepligtigIndkomstBeregner.cs" />
     <Compile Include="SkatBeregner.cs" />
     <Compile Include="SkatteModregner.cs" />
     <Compile Include="Skatter.cs" />

@@ -7,7 +7,7 @@
 	//        var skatAfPersonligIndkomstBeregner = new SkatAfPersonligIndkomstBeregner();
 	//        var skatterAfPersonligIndkomst = skatAfPersonligIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
-	//        var skatAfSkattepligtigIndkomstBeregner = new SkatAfSkattepligtigIndkomstBeregner();
+	//        var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 	//        var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
 	//        return skatterAfPersonligIndkomst.Map(index => 

@@ -1,6 +1,6 @@
 ﻿namespace Maxfire.Skat
 {
-	public class SkatAfPersonligIndkomstBeregner
+	public class SkatterAfPersonligIndkomstBeregner
 	{
 		public ValueTuple<SkatterAfPersonligIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
