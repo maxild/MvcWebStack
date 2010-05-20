@@ -16,6 +16,8 @@ namespace Maxfire.Skat
 	/// </remarks>
 	public class SkatterAfPersonligIndkomst : IEquatable<SkatterAfPersonligIndkomst>, ISumable<decimal>
 	{
+		public static readonly SkatterAfPersonligIndkomst Nul = new SkatterAfPersonligIndkomst();
+
 		public SkatterAfPersonligIndkomst()
 		{
 		}

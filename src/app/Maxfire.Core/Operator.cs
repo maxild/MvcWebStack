@@ -239,47 +239,47 @@ namespace Maxfire.Core
 	/// <seealso cref="Operator"/>
 	public static class Operator<TValue, TResult>
 	{
-		private static readonly Func<TValue, TResult> convert;
+		private static readonly Func<TValue, TResult> _convert;
 		/// <summary>
 		/// Returns a delegate to convert a value between two types; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide a suitable cast, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this cast.
 		/// </summary>
-		public static Func<TValue, TResult> Convert { get { return convert; } }
+		public static Func<TValue, TResult> Convert { get { return _convert; } }
 		static Operator()
 		{
-			convert = ExpressionHelper.CreateExpression<TValue, TResult>(body => Expression.Convert(body, typeof(TResult)));
-			add = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Add, true);
-			subtract = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Subtract, true);
-			multiply = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Multiply, true);
-			divide = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Divide, true);
+			_convert = ExpressionHelper.CreateExpression<TValue, TResult>(body => Expression.Convert(body, typeof(TResult)));
+			_add = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Add, true);
+			_subtract = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Subtract, true);
+			_multiply = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Multiply, true);
+			_divide = ExpressionHelper.CreateExpression<TResult, TValue, TResult>(Expression.Divide, true);
 		}
 
-		private static readonly Func<TResult, TValue, TResult> add, subtract, multiply, divide;
+		private static readonly Func<TResult, TValue, TResult> _add, _subtract, _multiply, _divide;
 		/// <summary>
 		/// Returns a delegate to evaluate binary addition (+) for the given types; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<TResult, TValue, TResult> Add { get { return add; } }
+		public static Func<TResult, TValue, TResult> Add { get { return _add; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary subtraction (-) for the given types; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<TResult, TValue, TResult> Subtract { get { return subtract; } }
+		public static Func<TResult, TValue, TResult> Subtract { get { return _subtract; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary multiplication (*) for the given types; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<TResult, TValue, TResult> Multiply { get { return multiply; } }
+		public static Func<TResult, TValue, TResult> Multiply { get { return _multiply; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary division (/) for the given types; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<TResult, TValue, TResult> Divide { get { return divide; } }
+		public static Func<TResult, TValue, TResult> Divide { get { return _divide; } }
 	}
 
 	/// <summary>
@@ -289,132 +289,132 @@ namespace Maxfire.Core
 	/// <seealso cref="Operator&lt;TValue,TResult&gt;"/>
 	public static class Operator<T>
 	{
-		static readonly INullOp<T> nullOp;
-		internal static INullOp<T> NullOp { get { return nullOp; } }
+		static readonly INullOp<T> _nullOp;
+		internal static INullOp<T> NullOp { get { return _nullOp; } }
 
-		static readonly T zero;
+		static readonly T _zero;
 		/// <summary>
 		/// Returns the zero value for value-types (even full Nullable&lt;TInner&gt;) - or null for reference types
 		/// </summary>
-		public static T Zero { get { return zero; } }
+		public static T Zero { get { return _zero; } }
 
-		static readonly Func<T, T> negate, not;
-		static readonly Func<T, T, T> or, and, xor;
+		static readonly Func<T, T> _negate, _not;
+		static readonly Func<T, T, T> _or, _and, _xor;
 		/// <summary>
 		/// Returns a delegate to evaluate unary negation (-) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T> Negate { get { return negate; } }
+		public static Func<T, T> Negate { get { return _negate; } }
 		/// <summary>
 		/// Returns a delegate to evaluate bitwise not (~) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T> Not { get { return not; } }
+		public static Func<T, T> Not { get { return _not; } }
 		/// <summary>
 		/// Returns a delegate to evaluate bitwise or (|) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Or { get { return or; } }
+		public static Func<T, T, T> Or { get { return _or; } }
 		/// <summary>
 		/// Returns a delegate to evaluate bitwise and (&amp;) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> And { get { return and; } }
+		public static Func<T, T, T> And { get { return _and; } }
 		/// <summary>
 		/// Returns a delegate to evaluate bitwise xor (^) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Xor { get { return xor; } }
+		public static Func<T, T, T> Xor { get { return _xor; } }
 
-		static readonly Func<T, T, T> add, subtract, multiply, divide;
+		static readonly Func<T, T, T> _add, _subtract, _multiply, _divide;
 		/// <summary>
 		/// Returns a delegate to evaluate binary addition (+) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Add { get { return add; } }
+		public static Func<T, T, T> Add { get { return _add; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary subtraction (-) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Subtract { get { return subtract; } }
+		public static Func<T, T, T> Subtract { get { return _subtract; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary multiplication (*) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Multiply { get { return multiply; } }
+		public static Func<T, T, T> Multiply { get { return _multiply; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary division (/) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, T> Divide { get { return divide; } }
+		public static Func<T, T, T> Divide { get { return _divide; } }
 
 
-		static readonly Func<T, T, bool> equal, notEqual, greaterThan, lessThan, greaterThanOrEqual, lessThanOrEqual;
+		static readonly Func<T, T, bool> _equal, _notEqual, _greaterThan, _lessThan, _greaterThanOrEqual, _lessThanOrEqual;
 		/// <summary>
 		/// Returns a delegate to evaluate binary equality (==) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> Equal { get { return equal; } }
+		public static Func<T, T, bool> Equal { get { return _equal; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary inequality (!=) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> NotEqual { get { return notEqual; } }
+		public static Func<T, T, bool> NotEqual { get { return _notEqual; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary greater-then (&gt;) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> GreaterThan { get { return greaterThan; } }
+		public static Func<T, T, bool> GreaterThan { get { return _greaterThan; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary less-than (&lt;) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> LessThan { get { return lessThan; } }
+		public static Func<T, T, bool> LessThan { get { return _lessThan; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary greater-than-or-equal (&gt;=) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> GreaterThanOrEqual { get { return greaterThanOrEqual; } }
+		public static Func<T, T, bool> GreaterThanOrEqual { get { return _greaterThanOrEqual; } }
 		/// <summary>
 		/// Returns a delegate to evaluate binary less-than-or-equal (&lt;=) for the given type; this delegate will throw
 		/// an InvalidOperationException if the type T does not provide this operator, or for
 		/// Nullable&lt;TInner&gt; if TInner does not provide this operator.
 		/// </summary>
-		public static Func<T, T, bool> LessThanOrEqual { get { return lessThanOrEqual; } }
+		public static Func<T, T, bool> LessThanOrEqual { get { return _lessThanOrEqual; } }
 
 
 		public static Func<T, bool> GreaterThanZero
 		{
-			get { return x => greaterThan(x, Zero); }
+			get { return x => _greaterThan(x, Zero); }
 		}
 		
 		public static Func<T, bool> LessThanZero
 		{
-			get { return x => lessThan(x, Zero); }
+			get { return x => _lessThan(x, Zero); }
 		}
 	
 		public static Func<T, bool> GreaterThanOrEqualToZero
 		{
-			get { return x => greaterThanOrEqual(x, Zero); }
+			get { return x => _greaterThanOrEqual(x, Zero); }
 		}
 
 		public static Func<T, bool> LessThanOrEqualToZero
 		{
-			get { return x => lessThanOrEqual(x, Zero); }
+			get { return x => _lessThanOrEqual(x, Zero); }
 		}
 
 		public static Func<T, T, T> Max
@@ -449,44 +449,44 @@ namespace Maxfire.Core
 
 		static Operator()
 		{
-			add = ExpressionHelper.CreateExpression<T, T, T>(Expression.Add);
-			subtract = ExpressionHelper.CreateExpression<T, T, T>(Expression.Subtract);
-			divide = ExpressionHelper.CreateExpression<T, T, T>(Expression.Divide);
-			multiply = ExpressionHelper.CreateExpression<T, T, T>(Expression.Multiply);
+			_add = ExpressionHelper.CreateExpression<T, T, T>(Expression.Add);
+			_subtract = ExpressionHelper.CreateExpression<T, T, T>(Expression.Subtract);
+			_divide = ExpressionHelper.CreateExpression<T, T, T>(Expression.Divide);
+			_multiply = ExpressionHelper.CreateExpression<T, T, T>(Expression.Multiply);
 
-			greaterThan = ExpressionHelper.CreateExpression<T, T, bool>(Expression.GreaterThan);
-			greaterThanOrEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.GreaterThanOrEqual);
-			lessThan = ExpressionHelper.CreateExpression<T, T, bool>(Expression.LessThan);
-			lessThanOrEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.LessThanOrEqual);
-			equal = ExpressionHelper.CreateExpression<T, T, bool>(Expression.Equal);
-			notEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.NotEqual);
+			_greaterThan = ExpressionHelper.CreateExpression<T, T, bool>(Expression.GreaterThan);
+			_greaterThanOrEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.GreaterThanOrEqual);
+			_lessThan = ExpressionHelper.CreateExpression<T, T, bool>(Expression.LessThan);
+			_lessThanOrEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.LessThanOrEqual);
+			_equal = ExpressionHelper.CreateExpression<T, T, bool>(Expression.Equal);
+			_notEqual = ExpressionHelper.CreateExpression<T, T, bool>(Expression.NotEqual);
 
-			negate = ExpressionHelper.CreateExpression<T, T>(Expression.Negate);
-			and = ExpressionHelper.CreateExpression<T, T, T>(Expression.And);
-			or = ExpressionHelper.CreateExpression<T, T, T>(Expression.Or);
-			not = ExpressionHelper.CreateExpression<T, T>(Expression.Not);
-			xor = ExpressionHelper.CreateExpression<T, T, T>(Expression.ExclusiveOr);
+			_negate = ExpressionHelper.CreateExpression<T, T>(Expression.Negate);
+			_and = ExpressionHelper.CreateExpression<T, T, T>(Expression.And);
+			_or = ExpressionHelper.CreateExpression<T, T, T>(Expression.Or);
+			_not = ExpressionHelper.CreateExpression<T, T>(Expression.Not);
+			_xor = ExpressionHelper.CreateExpression<T, T, T>(Expression.ExclusiveOr);
 
 			Type typeT = typeof(T);
 			if (typeT.IsValueType && typeT.IsGenericType && (typeT.GetGenericTypeDefinition() == typeof(Nullable<>)))
 			{
 				// get the *inner* zero (not a null Nullable<TValue>, but default(TValue))
 				Type nullType = typeT.GetGenericArguments()[0];
-				zero = (T)Activator.CreateInstance(nullType);
-				nullOp = (INullOp<T>)Activator.CreateInstance(
+				_zero = (T)Activator.CreateInstance(nullType);
+				_nullOp = (INullOp<T>)Activator.CreateInstance(
 				                     	typeof(StructNullOp<>).MakeGenericType(nullType));
 			}
 			else
 			{
-				zero = default(T);
+				_zero = default(T);
 				if (typeT.IsValueType)
 				{
-					nullOp = (INullOp<T>)Activator.CreateInstance(
+					_nullOp = (INullOp<T>)Activator.CreateInstance(
 					                     	typeof(StructNullOp<>).MakeGenericType(typeT));
 				}
 				else
 				{
-					nullOp = (INullOp<T>)Activator.CreateInstance(
+					_nullOp = (INullOp<T>)Activator.CreateInstance(
 					                     	typeof(ClassNullOp<>).MakeGenericType(typeT));
 				}
 			}

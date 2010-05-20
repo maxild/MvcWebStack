@@ -109,51 +109,51 @@ namespace Maxfire.Skat
 
 		// TODO: Denne sammenblander de to modregninger: 1) egne skatter, 2) overførsel af underskud til ægtefælles skattepligtige indkomst
 		// TODO: Dette er en anden modregning end i egne skatter, hvordan gør vi det?
-		public ValueTuple<Skatter> ReberegnSkatterAfOverfoertUnderskud(ValueTuple<PersonligeBeloeb> indkomster,
-			ValueTuple<Skatter> skatter, ValueTuple<decimal> overfoerselAfUnderskud, ValueTuple<KommunaleSatser> kommunaleSatser)
-		{
-			if (overfoerselAfUnderskud.AllZero())
-			{
-				return skatter;
-			}
+		//public ValueTuple<Skatter> ReberegnSkatterAfOverfoertUnderskud(ValueTuple<PersonligeBeloeb> indkomster,
+		//    ValueTuple<Skatter> skatter, ValueTuple<decimal> overfoerselAfUnderskud, ValueTuple<KommunaleSatser> kommunaleSatser)
+		//{
+		//    if (overfoerselAfUnderskud.AllZero())
+		//    {
+		//        return skatter;
+		//    }
 
-			// Begge ægtefæller kan ikke både have underskud, og plads til at rumme dette underskud, derfor 
-			// kan vi entydigt overføre underskud fra i til partnerOf(i)
-			//decimal overfoerselAfUnderskud = muligOverfoerselAfUnderskud[i];
-			int i = overfoerselAfUnderskud.IndexOf(x => x > 0);
-			indkomster.PartnerOf(i).ModregnetUnderskudSkattepligtigIndkomst = overfoerselAfUnderskud.PartnerOf(i);
-			indkomster[i].ModregnetUnderskudSkattepligtigIndkomst = overfoerselAfUnderskud[i];
+		//    // Begge ægtefæller kan ikke både have underskud, og plads til at rumme dette underskud, derfor 
+		//    // kan vi entydigt overføre underskud fra i til partnerOf(i)
+		//    //decimal overfoerselAfUnderskud = muligOverfoerselAfUnderskud[i];
+		//    int i = overfoerselAfUnderskud.IndexOf(x => x > 0);
+		//    indkomster.PartnerOf(i).ModregnetUnderskudSkattepligtigIndkomst = overfoerselAfUnderskud.PartnerOf(i);
+		//    indkomster[i].ModregnetUnderskudSkattepligtigIndkomst = overfoerselAfUnderskud[i];
 			
-			// Reberegn skatter (istedet for at beregne skatteværdien)
-			var skatBeregner = new SkatBeregner();
-			var reberegnedeSkatter = skatBeregner.BeregnSkat(indkomster, kommunaleSatser);
+		//    // Reberegn skatter (istedet for at beregne skatteværdien)
+		//    var skatBeregner = new SkatBeregner();
+		//    var reberegnedeSkatter = skatBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
-			return reberegnedeSkatter;
+		//    return reberegnedeSkatter;
 			
-			// NOTE: Modregningen kan udregnes som (modregning = skatter - reberegnedeSkatter)
-			//var skatter = modregnEgneSkatterResults.Map(x => x.Skatter);
-			//var modregningAfOverfoersel = skatter - reberegnedeSkatter;
+		//    // NOTE: Modregningen kan udregnes som (modregning = skatter - reberegnedeSkatter)
+		//    //var skatter = modregnEgneSkatterResults.Map(x => x.Skatter);
+		//    //var modregningAfOverfoersel = skatter - reberegnedeSkatter;
 
-			//// Note: Vi beregner ikke modregninger mht. reduktionen af ægtefællens skattepligtige indkomst,
-			//// og derfor bliver skatteværdier og modregninger ikke korrigeret
-			//var skattevaerdier = modregnEgneSkatterResults.Map(x => x.Skattevaerdi);
-			//var modregninger = modregnEgneSkatterResults.Map(x => x.UdnyttedeSkattevaerdier);
+		//    //// Note: Vi beregner ikke modregninger mht. reduktionen af ægtefællens skattepligtige indkomst,
+		//    //// og derfor bliver skatteværdier og modregninger ikke korrigeret
+		//    //var skattevaerdier = modregnEgneSkatterResults.Map(x => x.Skattevaerdi);
+		//    //var modregninger = modregnEgneSkatterResults.Map(x => x.UdnyttedeSkattevaerdier);
 			
-			//// Underskuddet korrigeres for overførslen, hvilket gælder både det samlede underskud og det udnyttede underskud
-			//// NOTE: Pga den måde som overførslen udregnes vil et overført underskud altid blive udnyttet fuldt ud, sådan at
-			//// partnerOf(i) har et ikke-udnyttet underskud på nul (i kan stadig have et uudnyttet underskud, hvis det ikke kan
-			//// rummes i partnerOf(i)'s skattepligtige indkomst)
-			//var underskudEgneSkatter = modregnEgneSkatterResults.Map(x => x.Fradrag);
-			//var underskudOverfoersel = muligOverfoerselAfUnderskud - muligOverfoerselAfUnderskud.Swap();
-			//var underskudEfterOverfoersel = underskudEgneSkatter + underskudOverfoersel;
-			//var udnyttetUnderskudEgneSkatter = modregnEgneSkatterResults.Map(x => x.UdnyttetFradrag);
-			//var udnyttetUnderskudEfterOverfoersel = udnyttetUnderskudEgneSkatter + muligOverfoerselAfUnderskud;
+		//    //// Underskuddet korrigeres for overførslen, hvilket gælder både det samlede underskud og det udnyttede underskud
+		//    //// NOTE: Pga den måde som overførslen udregnes vil et overført underskud altid blive udnyttet fuldt ud, sådan at
+		//    //// partnerOf(i) har et ikke-udnyttet underskud på nul (i kan stadig have et uudnyttet underskud, hvis det ikke kan
+		//    //// rummes i partnerOf(i)'s skattepligtige indkomst)
+		//    //var underskudEgneSkatter = modregnEgneSkatterResults.Map(x => x.Fradrag);
+		//    //var underskudOverfoersel = muligOverfoerselAfUnderskud - muligOverfoerselAfUnderskud.Swap();
+		//    //var underskudEfterOverfoersel = underskudEgneSkatter + underskudOverfoersel;
+		//    //var udnyttetUnderskudEgneSkatter = modregnEgneSkatterResults.Map(x => x.UdnyttetFradrag);
+		//    //var udnyttetUnderskudEfterOverfoersel = udnyttetUnderskudEgneSkatter + muligOverfoerselAfUnderskud;
 
-			//// TODO: modregninger er kun mht. egne skatter, og overførsel af underskud til ægtefælle end del af reberegnede skatter
-			//// TODO: Er sidstnævnte en del af indkomstopgørelsen, eller en del af modregningen af underskud????
-			//return reberegnedeSkatter.Map((reberegnetSkat, index) => new ModregnResultEx(reberegnetSkat, skattevaerdier[index], 
-			//    modregninger[index], underskudEfterOverfoersel[index], udnyttetUnderskudEfterOverfoersel[index]));
-		}
+		//    //// TODO: modregninger er kun mht. egne skatter, og overførsel af underskud til ægtefælle end del af reberegnede skatter
+		//    //// TODO: Er sidstnævnte en del af indkomstopgørelsen, eller en del af modregningen af underskud????
+		//    //return reberegnedeSkatter.Map((reberegnetSkat, index) => new ModregnResultEx(reberegnetSkat, skattevaerdier[index], 
+		//    //    modregninger[index], underskudEfterOverfoersel[index], udnyttetUnderskudEfterOverfoersel[index]));
+		//}
 
 		public ValueTuple<ModregnResultEx<SkatterAfPersonligIndkomst>> ModregnResterendeUnderskudPartnersEgneSkatter(
 			ValueTuple<ModregnResultEx<SkatterAfPersonligIndkomst>> modregnResults, ValueTuple<SkattevaerdiOmregner> underskudSkattevaerdiBeregnere)

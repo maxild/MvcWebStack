@@ -7,6 +7,8 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class Skatter : IEquatable<Skatter>, ISumable<decimal>
 	{
+		public static readonly Skatter Nul = new Skatter();
+		
 		public Skatter()
 		{
 		}

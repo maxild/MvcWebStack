@@ -125,6 +125,12 @@ namespace Maxfire.TestCommons.AssertExtensions
 			return actual;
 		}
 
+		public static T ShouldEqualDefault<T>(this T actual) where T : new()
+		{
+			Assert.Equal(new T(), actual, new AssertComparer<T>());
+			return actual;
+		}
+
 		/// <summary>
 		/// Verifies that two objects are equal (by type).
 		/// </summary>
