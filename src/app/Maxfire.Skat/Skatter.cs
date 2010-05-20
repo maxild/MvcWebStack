@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Maxfire.Skat
 {
@@ -113,6 +114,27 @@ namespace Maxfire.Skat
 				AktieindkomstskatUnderGrundbeloebet = AktieindkomstskatUnderGrundbeloebet.RoundMoney(),
 				AktieindkomstskatOverGrundbeloebet = AktieindkomstskatOverGrundbeloebet.RoundMoney()
 			};
+		}
+
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+			sb.AppendFormat("Bundskat: {0}", Bundskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Mellemskat: {0}", Mellemskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Topskat: {0}", Topskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Aktieindkomstskat1: {0}", AktieindkomstskatUnderGrundbeloebet);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Aktieindkomstskat2: {0}", AktieindkomstskatOverGrundbeloebet);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Sundhedsbidrag: {0}", Sundhedsbidrag);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Kommuneskat: {0}", Kommuneskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Kirkeskat: {0}", Kirkeskat);
+			return sb.ToString();
 		}
 
 		public override int GetHashCode()

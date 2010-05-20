@@ -2,10 +2,10 @@
 
 namespace Maxfire.Skat
 {
-	public class ModregnResult<TSkatter>
+	public class ModregnSkatterResult<TSkatter>
 		where TSkatter : ISumable<decimal>
 	{
-		public ModregnResult(TSkatter skatter, decimal skattevaerdi, TSkatter modregninger)
+		public ModregnSkatterResult(TSkatter skatter, decimal skattevaerdi, TSkatter modregninger)
 		{
 			Skatter = skatter;
 			Skattevaerdi = skattevaerdi; 

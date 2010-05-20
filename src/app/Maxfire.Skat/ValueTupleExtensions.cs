@@ -127,6 +127,16 @@ namespace Maxfire.Skat
 			return overfoertBundfradrag;
 		}
 
+		public static ValueTuple<decimal> GetMuligModregning(this ValueTuple<decimal> tuple, ValueTuple<decimal> underskud)
+		{
+			return tuple.Map((value, index) => Math.Min(value, underskud[index]).NonNegative());
+		}
+
+		//public static ValueTuple<decimal> GetMuligOverfoertModregning(this ValueTuple<decimal> tuple, ValueTuple<decimal> underskud)
+		//{
+		//    return tuple.Swap().GetMuligModregning(underskud).Swap();
+		//}
+
 		public static ValueTuple<decimal> RoundMoney(this ValueTuple<decimal> tuple)
 		{
 			IList<decimal> list = new List<decimal>(tuple.Size);

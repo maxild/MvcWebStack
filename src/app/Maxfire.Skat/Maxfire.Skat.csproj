@@ -45,9 +45,9 @@
     <Compile Include="Mellemskat.cs" />
     <Compile Include="Modregning.cs" />
     <Compile Include="ModregnPersonfradragResult.cs" />
-    <Compile Include="ModregnResult.cs" />
-    <Compile Include="ModregnResultEx.cs" />
-    <Compile Include="ModregnResultExtensions.cs" />
+    <Compile Include="ModregnSkatterResult.cs" />
+    <Compile Include="ModregnSkatterResultEx.cs" />
+    <Compile Include="ModregnSkatterResultExtensions.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />

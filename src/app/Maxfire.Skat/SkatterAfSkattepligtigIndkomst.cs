@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Maxfire.Skat
 {
@@ -38,6 +39,17 @@ namespace Maxfire.Skat
 		public decimal Sum()
 		{
 			return Sundhedsbidrag + KommunalIndkomstskatOgKirkeskat;
+		}
+
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+			sb.AppendFormat("Sundhedsbidrag: {0}", Sundhedsbidrag);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Kommuneskat: {0}", Kommuneskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Kirkeskat: {0}", Kirkeskat);
+			return sb.ToString();
 		}
 
 		public override int GetHashCode()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Maxfire.Skat
 {
@@ -79,6 +80,21 @@ namespace Maxfire.Skat
 		public decimal Sum()
 		{
 			return Bundskat + Mellemskat + Topskat + Aktieindkomstskat;
+		}
+
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+			sb.AppendFormat("Bundskat: {0}", Bundskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Mellemskat: {0}", Mellemskat);
+			sb.Append(Environment.NewLine); 
+			sb.AppendFormat("Topskat: {0}", Topskat);
+			sb.Append(Environment.NewLine);
+			sb.AppendFormat("Aktieindkomstskat1: {0}", AktieindkomstskatUnderGrundbeloebet);
+			sb.Append(Environment.NewLine); 
+			sb.AppendFormat("Aktieindkomstskat2: {0}", AktieindkomstskatOverGrundbeloebet);
+			return sb.ToString();
 		}
 
 		public override int GetHashCode()

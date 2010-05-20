@@ -1,16 +1,16 @@
 ﻿namespace Maxfire.Skat
 {
-	// TODO: Prøv at eleiminer en af ModregnResult og ModregnResult
+	// TODO: Prøv at eliminer en af ModregnSkatterResult og ModregnSkatterResultEx
 	// TODO: Sørg for så få kald til ctor, istedet skal ToModregnResult extension method benyttes
-	public class ModregnResultEx<TSkatter> : ModregnResult<TSkatter>
+	public class ModregnSkatterResultEx<TSkatter> : ModregnSkatterResult<TSkatter>
 		where TSkatter : ISumable<decimal>, new()
 	{
-		public static ModregnResultEx<TSkatter> Nul(TSkatter skatter)
+		public static ModregnSkatterResultEx<TSkatter> Nul(TSkatter skatter)
 		{
-			return new ModregnResultEx<TSkatter>(skatter, 0, new TSkatter(), 0, 0);
+			return new ModregnSkatterResultEx<TSkatter>(skatter, 0, new TSkatter(), 0, 0);
 		}
 
-		public ModregnResultEx(TSkatter skatter, decimal skattevaerdi, TSkatter udnyttedeSkattevaerdier, 
+		public ModregnSkatterResultEx(TSkatter skatter, decimal skattevaerdi, TSkatter udnyttedeSkattevaerdier, 
 			decimal fradrag, decimal udnyttetFradrag) 
 			: base(skatter, skattevaerdi, udnyttedeSkattevaerdier)
 		{

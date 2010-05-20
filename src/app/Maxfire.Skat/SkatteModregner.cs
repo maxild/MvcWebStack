@@ -30,10 +30,21 @@ namespace Maxfire.Skat
 		/// <param name="skatter">De skatter der skal modregnes skatteværdi i.</param>
 		/// <param name="skattevaerdi">Den skatteværdi, der skal modregnes i skatterne.</param>
 		/// <returns>Modregnede skatter, udnyttede skatteværdier og fordelingen mellem udnyttet og ikke udnyttet skatteværdi.</returns>
-		public ModregnResult<TSkatter> Modregn(TSkatter skatter, decimal skattevaerdi)
+		public ModregnSkatterResult<TSkatter> Modregn(TSkatter skatter, decimal skattevaerdi)
 		{
 			var modregninger = BeregnModregninger(skatter, skattevaerdi);
-			return new ModregnResult<TSkatter>(skatter, skattevaerdi.NonNegative(), modregninger);
+			return new ModregnSkatterResult<TSkatter>(skatter, skattevaerdi.NonNegative(), modregninger);
+		}
+
+		/// <summary>
+		/// Beregner mulige modregninger af den angivne skatteværdi i skatterne.
+		/// </summary>
+		/// <param name="skatter">De skatter der skal modregnes skatteværdi i</param>
+		/// <param name="skattevaerdier">Den skatteværdi, der skal modregnes i skatterne</param>
+		/// <returns>De mulige modregninger, der også angiver de udnyttede skatteværdier.</returns>
+		public ValueTuple<TSkatter> BeregnModregninger(ValueTuple<TSkatter> skatter, ValueTuple<decimal> skattevaerdier)
+		{
+			return skatter.Map((skat, index) => BeregnModregninger(skat, skattevaerdier[index]));
 		}
 
 		/// <summary>
