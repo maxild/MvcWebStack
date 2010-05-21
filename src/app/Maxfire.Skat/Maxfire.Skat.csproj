@@ -43,6 +43,7 @@
     <Compile Include="ISumable.cs" />
     <Compile Include="KommunaleSatser.cs" />
     <Compile Include="Mellemskat.cs" />
+    <Compile Include="ModregnIndkomstResult.cs" />
     <Compile Include="Modregning.cs" />
     <Compile Include="ModregnPersonfradragResult.cs" />
     <Compile Include="ModregnSkatterResult.cs" />

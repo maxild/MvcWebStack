@@ -2,20 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
 {
+	// The projection T --> IValueTuple<T> preserves the direction of assignment compatibility. That is
+	// we can assign an IValueTuple<Derived> to a consumer expection an IValueTuple<Base>, because 
+	// assignment compatibility is preserved.
+	public interface IValueTuple<out T>
+	{
+		T this[int index] { get; }
+		T PartnerOf(int index);
+		int Size { get; }
+		bool AllZero();
+		T Sum();
+		IValueTuple<T> Swap();
+	}
+
 	/// <summary>
 	/// In mathematics and computer science a tuple represents the notion of an ordered list of 
 	/// elements. In set theory, an (ordered) n-tuple is a sequence (or ordered list) of n elements, 
 	/// where n is a positive integer. There is also one 0-tuple, an empty sequence. An n-tuple is 
 	/// defined inductively using the construction of an ordered pair.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class ValueTuple<T> : IEnumerable<T>, IEquatable<ValueTuple<T>>
+	public class ValueTuple<T> : IValueTuple<T>, IEnumerable<T>, IEquatable<ValueTuple<T>>
 	{
 		private readonly IList<T> _list;
 
@@ -178,6 +189,11 @@ namespace Maxfire.Skat
 		public ValueTuple<T> Swap()
 		{
 			return Size > 1 ? new ValueTuple<T>(this[1], this[0]) : this;
+		}
+
+		IValueTuple<T> IValueTuple<T>.Swap()
+		{
+			return Swap();
 		}
 
 		public ValueTuple<T> Clone()

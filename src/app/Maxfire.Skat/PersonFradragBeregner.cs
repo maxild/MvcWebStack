@@ -137,7 +137,7 @@ namespace Maxfire.Skat
 			//var fradrag = omregner.BeregnFradragsbeloeb(skattevaerdi);
 			//var udnyttetFradrag = omregner.BeregnFradragsbeloeb(modregninger.Sum());
 
-			return new ModregnSkatterResult<Skatter>(skatter, skattevaerdi, modregninger).ToModregnResultEx(omregner);
+			return new ModregnSkatterResult<Skatter>(skatter, skattevaerdi, modregninger).ToModregnSkatterResultEx(omregner);
 		}
 
 		// Er dette summen eller den ekstra overførsel? Lige nu er det summen

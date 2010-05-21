@@ -24,6 +24,11 @@ namespace Maxfire.Skat
 			return _accessors[0];
 		}
 
+		public ValueTuple<ModregnSkatterResult<TSkatter>> Modregn(ValueTuple<TSkatter> skatter, ValueTuple<decimal> skattevaerdier)
+		{
+			return skatter.Map((skat, index) => Modregn(skat, skattevaerdier[index]));
+		}
+
 		/// <summary>
 		/// Beregner modregnede skatter og udnyttede skatteværdier efter modregning af den angivne skatteværdi i skatterne.
 		/// </summary>

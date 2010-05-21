@@ -22,6 +22,12 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(coll.ToList());
 		}
 
+		public static ValueTuple<TResult> Cast<T, TResult>(this ValueTuple<T> tuple)
+			where T : TResult
+		{
+			return tuple.Map((T value) => (TResult)value);
+		}
+
 		/// <summary>
 		/// Map performs a projection
 		/// </summary>

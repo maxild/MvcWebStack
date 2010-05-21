@@ -1,4 +1,3 @@
-using System;
 using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
@@ -47,6 +46,20 @@ namespace Maxfire.Skat
 			);
 		}
 
+		public static ValueTuple<ModregnIndkomstResult> ModregnUnderskud(ValueTuple<decimal> indkomster, ValueTuple<decimal> underskud)
+		{
+			ValueTuple<decimal> modregninger = indkomster.GetMuligModregning(underskud);
+			return modregninger.Map((modregning, index) => new ModregnIndkomstResult(underskud[index], indkomster[index], modregning));
+		}
+
+		public static ValueTuple<ModregnSkatterResultEx<SkatterAfPersonligIndkomst>> ModregnUnderskudsvaerdi(ValueTuple<SkatterAfPersonligIndkomst> skatter, 
+			ValueTuple<decimal> underskud, ValueTuple<SkattevaerdiOmregner> skattevaerdiOmregnere)
+		{
+			var skatteModregner = GetSkattepligtigIndkomstUnderskudModregner();
+			var underskudsvaerdier = underskud.Map((beloeb, index) => skattevaerdiOmregnere[index].BeregnSkattevaerdi(beloeb));
+			var modregnResult = skatteModregner.Modregn(skatter, underskudsvaerdier);
+			return modregnResult.ToModregnSkatterResultEx(skattevaerdiOmregnere.Cast<SkattevaerdiOmregner, ISkattevaerdiOmregner>());
+		}
 
 		// Beregner modregninger i SkatterAfPersonligIndkomst (bundskat, mellemskat, topskat og aktieindkomstskat over grundbeløbet)
 		// og modregninger af den skattepligtige indkomst, samt evt. restunderskud til fremførsel.
@@ -56,7 +69,7 @@ namespace Maxfire.Skat
 		public ValueTuple<ModregnSkatterResultEx<SkatterAfPersonligIndkomst>> ModregningAfUnderskud(ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
-			var skattevaerdiOmregner = GetUnderskudSkattevaerdiBeregnere(kommunaleSatser);
+			var skattevaerdiOmregnere = getUnderskudSkattevaerdiBeregnere(kommunaleSatser);
 			var skatteModregner = GetSkattepligtigIndkomstUnderskudModregner();
 
 			var skattepligtigeIndkomster = indkomster.Map(x => x.SkattepligtigIndkomst);
@@ -64,20 +77,19 @@ namespace Maxfire.Skat
 			// I. Årets underskud
 			var underskud = +(-skattepligtigeIndkomster);
 			var underskudsvaerdier = underskud.Map((fradragsbeloeb, index) =>
-				skattevaerdiOmregner[index].BeregnSkattevaerdi(fradragsbeloeb));
+				skattevaerdiOmregnere[index].BeregnSkattevaerdi(fradragsbeloeb));
 			
 			// Trin 1: Modregn underskud i egen positive skattepligtige indkomst
-			ValueTuple<decimal> modregningSkattepligtigIndkomstEgetUnderskud = skattepligtigeIndkomster.GetMuligModregning(underskud);
-			skattepligtigeIndkomster -= modregningSkattepligtigIndkomstEgetUnderskud;
-			var restunderskud = underskud - modregningSkattepligtigIndkomstEgetUnderskud;
-
+			var modregnIndkomstResults = ModregnUnderskud(skattepligtigeIndkomster, underskud);
+			var modregningSkattepligtigIndkomstEgetUnderskud = modregnIndkomstResults.Map(x => x.UdnyttetUnderskud);
+			var restunderskud = modregnIndkomstResults.Map(x => x.IkkeUdnyttetUnderskud);
+			
 			// Trin 2: Modregn underskudsværdi i egne skatter
-			var restunderskudsvaerdier = restunderskud.Map((fradragsbeloeb, index) => 
-				skattevaerdiOmregner[index].BeregnSkattevaerdi(fradragsbeloeb));
-			ValueTuple<SkatterAfPersonligIndkomst> modregningerEgetUnderskud = skatteModregner.BeregnModregninger(skatter, restunderskudsvaerdier);
-			restunderskudsvaerdier -= modregningerEgetUnderskud.Map(m => m.Sum());
-			restunderskud = restunderskudsvaerdier.Map((underskudsvaerdi, index) =>
-			                                           skattevaerdiOmregner[index].BeregnFradragsbeloeb(underskudsvaerdi));
+			var modregningSkatterResult = ModregnUnderskudsvaerdi(skatter, restunderskud, skattevaerdiOmregnere);
+			var modregningerEgetUnderskud = modregningSkatterResult.Map(x => x.UdnyttedeSkattevaerdier);
+			restunderskud = modregningSkatterResult.Map(x => x.IkkeUdnyttetFradrag);
+			
+			skattepligtigeIndkomster = modregnIndkomstResults.Map(x => x.ModregnetIndkomst);
 
 			ValueTuple<decimal> modregningPersonligIndkomstOverfoertUnderskud 
 				= new ValueTuple<decimal>(skatter.Size, () => 0);
@@ -95,13 +107,13 @@ namespace Maxfire.Skat
 
 				// Trin 5: Modregn overført underskudsværdi (pba ægtefælles skattesatser) i ægtefælles skatter
 				var restOverfoertUnderskudsvaerdier = restOverfoertUnderskud.Map((fradragsbeloeb, index) =>
-				                                       skattevaerdiOmregner[index].BeregnSkattevaerdi(fradragsbeloeb));
+				                                       skattevaerdiOmregnere[index].BeregnSkattevaerdi(fradragsbeloeb));
 				modregningerOverfoertUnderskud = skatteModregner.BeregnModregninger(skatter - modregningerEgetUnderskud, restOverfoertUnderskudsvaerdier);
 				restOverfoertUnderskudsvaerdier -= modregningerOverfoertUnderskud.Map(m => m.Sum());
 				
 				// Trin 6: Tilbagefør restunderskud til kilden, og sørg for at rapportere det til fremførsel
 				ValueTuple<decimal> tilbagefoertUnderskud = restOverfoertUnderskudsvaerdier.Map((underskudsvaerdi, index) =>
-				                                       skattevaerdiOmregner[index].BeregnFradragsbeloeb(underskudsvaerdi));
+				                                       skattevaerdiOmregnere[index].BeregnFradragsbeloeb(underskudsvaerdi));
 			}
 			
 			// II. Fremført underskud
@@ -117,24 +129,7 @@ namespace Maxfire.Skat
 			// Dette resultat viser kun værdien af modregningerne i bundskat, mellemskat mv. og ikke hele modregningen
 			return skatter.Map((skat, index) => 
 				new ModregnSkatterResult<SkatterAfPersonligIndkomst>(skat, underskudsvaerdier[index], 
-					modregningerEgetUnderskud[index] + modregningerOverfoertUnderskud[index]).ToModregnResultEx(skattevaerdiOmregner[index]));
-		}
-
-		/// <summary>
-		/// Denne tuple kan adderes til skattepligtig indkomst for at fremkalde skattepligtig indkomst efter overførsel af underskud
-		/// </summary>
-		public ValueTuple<decimal> BeregnOverfoertAfUnderskud(ValueTuple<decimal> skattepligtigeIndkomster, ValueTuple<decimal> ikkeUdnyttetUnderskud)
-		{
-			var ikkeUdnyttetUnderskudHosPartner = ikkeUdnyttetUnderskud.Swap();
-
-			// Begge ægtefæller kan ikke både have underskud, og plads til at rumme dette underskud, og derfor 
-			// er denne tuple enten (x, 0), (0, x) eller (0, 0)
-			var muligOverfoerselAfUnderskud = skattepligtigeIndkomster.Map((skattepligtigIndkomst, index) =>
-				Math.Min(skattepligtigIndkomst, ikkeUdnyttetUnderskudHosPartner[index]).NonNegative());
-
-			var underskudOverfoersel = muligOverfoerselAfUnderskud - muligOverfoerselAfUnderskud.Swap();
-
-			return underskudOverfoersel;
+					modregningerEgetUnderskud[index] + modregningerOverfoertUnderskud[index]).ToModregnSkatterResultEx(skattevaerdiOmregnere[index]));
 		}
 
 		// TODO: Denne sammenblander de to modregninger: 1) egne skatter, 2) overførsel af underskud til ægtefælles skattepligtige indkomst
@@ -214,12 +209,12 @@ namespace Maxfire.Skat
 								  udnyttetUnderskud[index] + udnyttetOverfoertUnderskud[index]));
 		}
 
-		public ValueTuple<SkattevaerdiOmregner> GetUnderskudSkattevaerdiBeregnere(ValueTuple<KommunaleSatser> kommunaleSatser)
+		private static ValueTuple<SkattevaerdiOmregner> getUnderskudSkattevaerdiBeregnere(ValueTuple<KommunaleSatser> kommunaleSatser)
 		{
-			return kommunaleSatser.Map(satser => GetUnderskudSkattevaerdiBeregner(satser));
+			return kommunaleSatser.Map(getUnderskudSkattevaerdiBeregner);
 		}
 
-		public SkattevaerdiOmregner GetUnderskudSkattevaerdiBeregner(KommunaleSatser kommunaleSatser)
+		private static SkattevaerdiOmregner getUnderskudSkattevaerdiBeregner(KommunaleSatser kommunaleSatser)
 		{
 			return new SkattevaerdiOmregner(kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats);
 		}
