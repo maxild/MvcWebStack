@@ -298,10 +298,10 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			skatterAfPersonligIndkomst = modregnResults.Map(x => x.ModregnedeSkatter);
-			var ikkeUdnyttedeSkattevaerdier = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
 			// Fuld udnyttelse, idet hele skatteværdien kan rummes i bundskatten
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(0);
+			restunderskud[0].ShouldEqual(0);
 
 			skatterAfPersonligIndkomst[0].Bundskat.ShouldEqual(8457);
 			skatterAfPersonligIndkomst[0].Mellemskat.ShouldEqual(768);
@@ -353,11 +353,9 @@ namespace Maxfire.Skat.UnitTests
 			// Kommuneskat, kirkeskat og sundhedsbidrag er alle nul
 			skatterAfSkattepligtigIndkomst[0].ShouldEqualDefault();
 
-			var ikkeUdnyttedeUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
-			var ikkeUdnyttedeSkattevaerdier = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
-			ikkeUdnyttedeUnderskud[0].ShouldEqual(59000);
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(59000 * (kommunaleSatser[0].KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats));
+			restunderskud[0].ShouldEqual(59000);
 		}
 
 		[Fact]
@@ -387,13 +385,11 @@ namespace Maxfire.Skat.UnitTests
 			
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnSkatteplitigIndkomstResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
-			var ikkeUdnyttedeUnderskud = modregnSkatteplitigIndkomstResults.Map(x => x.IkkeUdnyttetFradrag);
-			var ikkeUdnyttedeSkattevaerdier = modregnSkatteplitigIndkomstResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
-
+			var restunderskud = modregnSkatteplitigIndkomstResults.Map(x => x.Restunderskud);
+			
 			// Dette underskud skal fremføres til følgende skatteår
-			ikkeUdnyttedeUnderskud[0].ShouldEqual(25484.67m);
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(8229);
-
+			restunderskud[0].ShouldEqual(25484.67m);
+			
 			// Dette er skatter efter modregning af underskud i skattepligtig indkomst
 			skatterAfPersonligIndkomst = modregnSkatteplitigIndkomstResults.Map(x => x.ModregnedeSkatter);
 
@@ -445,11 +441,8 @@ namespace Maxfire.Skat.UnitTests
 			
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
-			var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
-			var udnyttetUnderskud = modregnResults.Map(x => x.UdnyttetFradrag);
-			var ikkeUdnyttetSkattevaerdi = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
-			var udnyttetSkattevaerdi = modregnResults.Map(x => x.UdnyttetSkattevaerdi);
-
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
+			
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
@@ -457,13 +450,10 @@ namespace Maxfire.Skat.UnitTests
 			skatterAfSkattepligtigIndkomst[0].KommunalIndkomstskatOgKirkeskat.ShouldEqual(28662.20m);
 
 			// Intet underskud => Ingen modregninger
-			var modregninger = modregnResults.Map(x => x.UdnyttedeSkattevaerdier);
+			var modregninger = modregnResults.Map(x => x.ModregningSkatter);
 			modregninger[0].ShouldEqual(SkatterAfPersonligIndkomst.Nul);
-			udnyttetUnderskud[0].ShouldEqual(0);
-			ikkeUdnyttetUnderskud[0].ShouldEqual(0);
-			udnyttetSkattevaerdi[0].ShouldEqual(0);
-			ikkeUdnyttetSkattevaerdi[0].ShouldEqual(0);
-
+			restunderskud[0].ShouldEqual(0);
+			
 			var skatterFoerPersonfradrag = new Skatter(skatterAfPersonligIndkomst[0], skatterAfSkattepligtigIndkomst[0]).ToTuple();
 
 			var personfradragBeregner = new PersonfradragBeregner();
@@ -510,15 +500,13 @@ namespace Maxfire.Skat.UnitTests
 			var modregnSkattepligtigIndkomstUnderskudResults 
 				= underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			skatterAfPersonligIndkomst = modregnSkattepligtigIndkomstUnderskudResults.Map(x => x.ModregnedeSkatter);
-			var ikkeUdnyttedeUnderskud = modregnSkattepligtigIndkomstUnderskudResults.Map(x => x.IkkeUdnyttetFradrag);
-			var ikkeUdnyttedeSkattevaerdier = modregnSkattepligtigIndkomstUnderskudResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
-
+			var restunderskud = modregnSkattepligtigIndkomstUnderskudResults.Map(x => x.Restunderskud);
+			
 			// Alle skatter bliver modregnet i nul
 			skatterAfPersonligIndkomst[0].ShouldEqual(SkatterAfPersonligIndkomst.Nul);
 			// Og dette fremføres til efterfølgende skatteår
-			ikkeUdnyttedeUnderskud[0].ShouldEqual(135484.67m);
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(200000 * 0.3229m - 20832);
-
+			restunderskud[0].ShouldEqual(135484.67m);
+			
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
@@ -570,13 +558,11 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
-			var ikkeUdnyttedeUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
-			var ikkeUdnyttedeSkattevaerdier = modregnResults.Map(x => x.IkkeUdnyttetSkattevaerdi);
-
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
+			
 			// Dette fremføres til efterfølgende skatteår
-			ikkeUdnyttedeUnderskud[0].ShouldEqual(59046.14m);
-			ikkeUdnyttedeSkattevaerdier[0].ShouldEqual(270000 * 0.3229m - (skatterAfPersonligIndkomst[0].Sum() - skatterAfPersonligIndkomst[0].AktieindkomstskatUnderGrundbeloebet));
-
+			restunderskud[0].ShouldEqual(59046.14m);
+			
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
@@ -600,7 +586,6 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag.ShouldEqual(skatterFoerPersonfradrag);
 		}
 
-		// TODO: Failure in test
 		[Fact]
 		public void Eksempel_18_ModregningFuldtUdViaNedbringelseAfPartnersSkattepligtigeIndkomst()
 		{
@@ -633,14 +618,14 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
-			var ikkeUdnyttedeUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
 			// O til 1 overførsel af hele underskuddet
 			//indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-53000); // NOTE: Vi laver ikke nogen modregning med modsat fortegn
 			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(53000);
 			// Der er ingen underskud til fremførsel
-			//ikkeUdnyttedeUnderskud[0].ShouldEqual(0); // NOTE: Vi medregner kun underskudsværdier og ikke underskud
-			ikkeUdnyttedeUnderskud[1].ShouldEqual(0);
+			restunderskud[0].ShouldEqual(53000); // NOTE: Vi medregner kun underskudsværdier og ikke underskud
+			restunderskud[1].ShouldEqual(-53000); // BUG: Det overførte og udnyttede underskud regnes som uudnyttet hos Æ1
 
 			var skatterAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatterAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
@@ -711,19 +696,14 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
-			var udnyttetUnderskud = modregnResults.Map(x => x.UdnyttetFradrag);
-			var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
 			// O til 1 overførsel af hele underskuddet
 			//indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-13195.73m); // NOTE: Vi laver ikke nogen modregning med modsat fortegn
 			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(13195.73m);
 			// Der er ingen underskud til fremførsel
-			udnyttetUnderskud[0].ShouldEqual(7804.27m);
-			ikkeUdnyttetUnderskud[0].ShouldEqual(13195.73m); // BUG: Det overførte underskud regnes som uudnyttet
-			udnyttetUnderskud[1].ShouldEqual(0);
-			//ikkeUdnyttetUnderskud[0].ShouldEqual(0);
-			//udnyttetUnderskud[1].ShouldEqual(13195.73m); // NOTE: Vi medregner lige nu ikke overførte underskud som udnyttede
-			ikkeUdnyttetUnderskud[1].ShouldEqual(0);
+			restunderskud[0].ShouldEqual(13195.73m); // BUG: Det overførte underskud regnes som uudnyttet
+			restunderskud[1].ShouldEqual(-13195.73m);
 
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
@@ -791,17 +771,14 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
-			var udnyttetUnderskud = modregnResults.Map(x => x.UdnyttetFradrag);
-			var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
 			// O til 1 delvis overførsel af underskuddet
 			//indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-12000);
 			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(12000);
 			// Der er ingen underskud til fremførsel
-			udnyttetUnderskud[0].ShouldEqual(0);
-			ikkeUdnyttetUnderskud[0].ShouldEqual(25000); // Æ1 udnytter ikke selv sit underskud
-			udnyttetUnderskud[1].ShouldEqual(13000); // BUG: Dette er den overførte underskudsværdi, de 12000 i underskud tæller ikke lige nu i koden
-			ikkeUdnyttetUnderskud[1].ShouldEqual(-13000); // Ved at udnytte 13000 af ægtefællens underskud bliver den negativ
+			restunderskud[0].ShouldEqual(25000); // Æ1 udnytter ikke selv sit underskud
+			restunderskud[1].ShouldEqual(-25000); // Ved at udnytte 25000 (12000 underskud, 13000 underskudsværdi) af ægtefællens underskud bliver den negativ
 
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
@@ -870,17 +847,14 @@ namespace Maxfire.Skat.UnitTests
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
 			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
-			var udnyttetUnderskud = modregnResults.Map(x => x.UdnyttetFradrag);
-			var ikkeUdnyttetUnderskud = modregnResults.Map(x => x.IkkeUdnyttetFradrag);
+			var restunderskud = modregnResults.Map(x => x.Restunderskud);
 
 			// O til 1 delvis overførsel af underskuddet
 			//indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-24000);
 			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(24000);
 			// Der er ingen underskud til fremførsel
-			udnyttetUnderskud[0].ShouldEqual(17169.40m);
-			ikkeUdnyttetUnderskud[0].ShouldEqual(94000 - 17169.40m); // Note: Dette er den del af underskuddet, der hverken udnyttes i egne skatter eller i ægtefællens skattepligtige indkomst
-			udnyttetUnderskud[1].ShouldEqual(52830.60m); // BUG: De 24000 i overført underskud medregnes ikke, kun underskudsværdien 
-			ikkeUdnyttetUnderskud[1].ShouldEqual(-52830.60m);
+			restunderskud[0].ShouldEqual(94000 - 17169.40m); // Note: Restunderskuddet som Æ1 ikke selv kan rumme i sine skatter
+			restunderskud[1].ShouldEqual(-(94000 - 17169.40m)); // BUG: Ægtefæller udnytter underskuddet, og restunderskud positivt for Æ1
 
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);

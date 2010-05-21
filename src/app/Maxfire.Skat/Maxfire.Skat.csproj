@@ -49,6 +49,7 @@
     <Compile Include="ModregnSkatterResult.cs" />
     <Compile Include="ModregnSkatterResultEx.cs" />
     <Compile Include="ModregnSkatterResultExtensions.cs" />
+    <Compile Include="ModregnUnderskudResult.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />
