@@ -8,35 +8,39 @@
 		public decimal FremfoertUnderskudSkattepligtigIndkomst { get; set; }
 
 		/// <summary>
-		/// Angiver et ikke udnyttet underskud i ægtefælles skattepligtige indkomst,
-		/// der er overført efter reglerne i PSL § 13, stk 2
+		/// Modregning af underskud i skattepligtig indkomst i årets positive skattepligtige indkomst.
 		/// </summary>
+		/// <remarks>
+		/// Der er tre årsager til modregning i den positive skattepligtige indkomst:
+		///    1) Årets underskud, der er overført og modregnet i ægtefælles positive skattepligtige indkomst.
+		///    2) Fremført underskud, der er modregnet i egen positive skattepligtige indkomst.
+		///    3) Fremført underskud, der er overført og modregnet i ægtefælles positive skattepligtige indkomst.
+		/// </remarks>
 		public decimal ModregnetUnderskudSkattepligtigIndkomst { get; set; }
 
 		/// <summary>
 		/// Underskud i skattepligtig indkomst til fremførsel i efterfølgende skatteår.
 		/// </summary>
-		public decimal UnderskudSkattepligtigIndkomstFremfoersel { get; set; }
+		public decimal UnderskudSkattepligtigIndkomstTilFremfoersel { get; set; }
 		
-		/// <summary>
-		/// Underskud i skattepligtig indkomst, der er blevet modregnet i årets skatter.
-		/// </summary>
-		public decimal UnderskudSkattepligtigIndkomstModregning { get; set; }
-
 		public decimal AMIndkomst { get; set; }
 
 		public decimal PersonligIndkomst { get; set; }
 
-		// TODO: Sondring mellem årets underskud i skattepligtige indkomst, og fremført underskud i skattepligtig indkomst
 		/// <summary>
-		/// Skattepligtig indkomst efter modregning af fremført underskud og overført ikke-udnyttet underskud fra ægtefælle.
+		/// Skattepligtig indkomst efter modregning af underskud.
 		/// </summary>
+		/// <remarks>
+		/// Først efter modregning og fremførsel af underskud er udført vil SkattepligtigIndkomst indeholde værdien af
+		/// et fremført underskud. Derfor er det yderst vigtigt at modregning og fremførsel af underskud sker inden 
+		/// beregning af skatter baseret på den skattepligtige indkomst.
+		/// </remarks>
 		public decimal SkattepligtigIndkomst
 		{
 			get 
-			{ 
-				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag 
-				- FremfoertUnderskudSkattepligtigIndkomst - ModregnetUnderskudSkattepligtigIndkomst; 
+			{
+				// Note: ModregnetUnderskudSkattepligtigIndkomst indeholder den del årets og fremførst underskud, der kan rummes i positiv skattepligtig indkomst
+				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - ModregnetUnderskudSkattepligtigIndkomst; 
 			}
 		}
 

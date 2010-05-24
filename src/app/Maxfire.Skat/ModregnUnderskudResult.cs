@@ -14,17 +14,25 @@
 		}
 
 		/// <summary>
-		/// Størrelsen på den modregning, der kan rummes i den skattepligtige indkomst.
+		/// Modregning i den (positive) skattepligtige indkomst.
 		/// </summary>
 		public decimal ModregningSkattepligtigIndkomst { get; private set; }
 
 		/// <summary>
-		/// Størrelsen af de modregninger af skatteværdier, der kan rummes i skatterne.
+		/// Modregninger i skatter.
 		/// </summary>
 		public SkatterAfPersonligIndkomst ModregningSkatter { get; private set; }
 
 		/// <summary>
-		/// Reduktionen i underskuddet som følge af denne modregning.
+		/// Modregninger i skatter omregnet til underskud.
+		/// </summary>
+		public decimal ModregningUnderskudSkatter
+		{
+			get { return ModregningUnderskud - ModregningSkattepligtigIndkomst; }
+		}
+
+		/// <summary>
+		/// Reduktionen i underskuddet som følge af modregningen i den (positive) skattepligtige indkomst og skatter.
 		/// </summary>
 		public decimal ModregningUnderskud { get; private set; }
 
@@ -53,9 +61,6 @@
 		}
 	}
 
-	// TODO: UdnyttetUnderskud = ModregningSkattepligeIndkomster, UdnyttetSkattevaerdi = ModregningSkatter.Sum()
-	// TODO: Ikke udnyttede værdier for begge
-	// NOTE: Restunderskud forener underskud og underskudsværdi
 	/// <summary>
 	/// Resultat af samlet modregning i egen skattepligtige indkomst og skatter samt ægtefælles skatepligtige indkomst og skatter.
 	/// </summary>
@@ -66,7 +71,7 @@
 		                              decimal underskud, decimal modregningUnderskud)
 		{
 			SkattepligtigIndkomst = skattepligtigIndkomst;
-			ModregningSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
+			ModregningUnderskudSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
 			Skatter = skatter;
 			ModregningSkatter = modregningSkatter;
 			Underskud = underskud;
@@ -76,7 +81,7 @@
 		/// <summary>
 		/// Størrelsen på den modregning, der kan rummes i den skattepligtige indkomst.
 		/// </summary>
-		public decimal ModregningSkattepligtigIndkomst { get; private set; }
+		public decimal ModregningUnderskudSkattepligtigIndkomst { get; private set; }
 			
 		/// <summary>
 		/// Den skattepligtige indkomst før modregning.
@@ -88,7 +93,7 @@
 		/// </summary>
 		public decimal ModregnetSkattepligtigIndkomst
 		{
-			get { return SkattepligtigIndkomst - ModregningSkattepligtigIndkomst; }
+			get { return SkattepligtigIndkomst - ModregningUnderskudSkattepligtigIndkomst; }
 		}
 
 		/// <summary>
@@ -110,20 +115,27 @@
 		}
 
 		/// <summary>
+		/// Modregning i skatter omregnet til underskud.
+		/// </summary>
+		public decimal ModregningUnderskudSkatter
+		{
+			get { return ModregningUnderskud - ModregningUnderskudSkattepligtigIndkomst; }
+		}
+
+		/// <summary>
 		/// Underskuddet inden modregning og fremførsel.
 		/// </summary>
 		public decimal Underskud { get; private set; }
 
 		/// <summary>
-		/// Den del af underskuddet, der er benyttet til modregning i skattepligtig indkomst og skatter.
+		/// Den del af underskuddet, der er benyttet til modregning i den (positive) skattepligtige indkomst og skatter.
 		/// </summary>
 		public decimal ModregningUnderskud { get; private set; }
 
 		/// <summary>
 		/// Den del af underskuddet, der skal fremføres til næste indkomstår.
 		/// </summary>
-		// TODO: Rename to UnderskudTilFremfoersel
-		public decimal Restunderskud
+		public decimal UnderskudTilFremfoersel
 		{
 			get { return Underskud - ModregningUnderskud; }
 		}
