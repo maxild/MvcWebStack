@@ -1,5 +1,8 @@
 ﻿namespace Maxfire.Skat
 {
+	/// <summary>
+	/// Resultat af enten egne modregninger eller ægtefælle modregninger
+	/// </summary>
 	public class BeregnModregningerResult
 	{
 		public BeregnModregningerResult(decimal modregningSkattepligtigIndkomst, 
@@ -46,24 +49,28 @@
 		{
 			return beregnModregningerResults.Map((result, index) =>
 				new ModregnUnderskudResult(skattepligtigeIndkomster[index], result.ModregningSkattepligtigIndkomst,
-					skatter[index], result.ModregningSkatter, result.GetRestunderskud(underskud[index])));
+					skatter[index], result.ModregningSkatter, underskud[index], result.ModregningUnderskud));
 		}
 	}
 
 	// TODO: UdnyttetUnderskud = ModregningSkattepligeIndkomster, UdnyttetSkattevaerdi = ModregningSkatter.Sum()
 	// TODO: Ikke udnyttede værdier for begge
 	// NOTE: Restunderskud forener underskud og underskudsværdi
+	/// <summary>
+	/// Resultat af samlet modregning i egen skattepligtige indkomst og skatter samt ægtefælles skatepligtige indkomst og skatter.
+	/// </summary>
 	public class ModregnUnderskudResult
 	{
 		public ModregnUnderskudResult(decimal skattepligtigIndkomst, decimal modregningSkattepligtigIndkomst,
 		                              SkatterAfPersonligIndkomst skatter, SkatterAfPersonligIndkomst modregningSkatter,
-		                              decimal restUnderskud)
+		                              decimal underskud, decimal modregningUnderskud)
 		{
 			SkattepligtigIndkomst = skattepligtigIndkomst;
 			ModregningSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
 			Skatter = skatter;
 			ModregningSkatter = modregningSkatter;
-			Restunderskud = restUnderskud;
+			Underskud = underskud;
+			ModregningUnderskud = modregningUnderskud;
 		}
 
 		/// <summary>
@@ -97,13 +104,28 @@
 		/// <summary>
 		/// Skatterne efter modregning af underskudsværdi.
 		/// </summary>
-		public SkatterAfPersonligIndkomst ModregnedeSkatter {
+		public SkatterAfPersonligIndkomst ModregnedeSkatter 
+		{
 			get { return Skatter - ModregningSkatter; }
 		}
-			
+
 		/// <summary>
-		/// Det resterende underskud efter modregning af underskud og underskudsværdi.
+		/// Underskuddet inden modregning og fremførsel.
 		/// </summary>
-		public decimal Restunderskud { get; private set; }
+		public decimal Underskud { get; private set; }
+
+		/// <summary>
+		/// Den del af underskuddet, der er benyttet til modregning i skattepligtig indkomst og skatter.
+		/// </summary>
+		public decimal ModregningUnderskud { get; private set; }
+
+		/// <summary>
+		/// Den del af underskuddet, der skal fremføres til næste indkomstår.
+		/// </summary>
+		// TODO: Rename to UnderskudTilFremfoersel
+		public decimal Restunderskud
+		{
+			get { return Underskud - ModregningUnderskud; }
+		}
 	}
 }
