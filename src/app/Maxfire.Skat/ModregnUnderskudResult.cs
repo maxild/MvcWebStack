@@ -8,7 +8,7 @@
 		public BeregnModregningerResult(decimal modregningSkattepligtigIndkomst, 
 			SkatterAfPersonligIndkomst modregningSkatter, decimal modregningUnderskud)
 		{
-			ModregningSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
+			ModregningUnderskudSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
 			ModregningSkatter = modregningSkatter;
 			ModregningUnderskud = modregningUnderskud;
 		}
@@ -16,10 +16,10 @@
 		/// <summary>
 		/// Modregning i den (positive) skattepligtige indkomst.
 		/// </summary>
-		public decimal ModregningSkattepligtigIndkomst { get; private set; }
+		public decimal ModregningUnderskudSkattepligtigIndkomst { get; private set; }
 
 		/// <summary>
-		/// Modregninger i skatter.
+		/// Modregninger i skatterne.
 		/// </summary>
 		public SkatterAfPersonligIndkomst ModregningSkatter { get; private set; }
 
@@ -28,7 +28,7 @@
 		/// </summary>
 		public decimal ModregningUnderskudSkatter
 		{
-			get { return ModregningUnderskud - ModregningSkattepligtigIndkomst; }
+			get { return ModregningUnderskud - ModregningUnderskudSkattepligtigIndkomst; }
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@
 		public static BeregnModregningerResult operator+ (BeregnModregningerResult lhs, BeregnModregningerResult rhs)
 		{
 			return new BeregnModregningerResult(
-				lhs.ModregningSkattepligtigIndkomst + rhs.ModregningSkattepligtigIndkomst,
+				lhs.ModregningUnderskudSkattepligtigIndkomst + rhs.ModregningUnderskudSkattepligtigIndkomst,
 				lhs.ModregningSkatter + rhs.ModregningSkatter,
 				lhs.ModregningUnderskud + rhs.ModregningUnderskud);
 		}
@@ -52,12 +52,20 @@
 	
 	public static class BeregnModregningerResultExtensions
 	{
+		public static ValueTuple<BeregnModregningerResult> SwapUnderskud(this ValueTuple<BeregnModregningerResult> result)
+		{
+			// Vi ombytter modregninger i underskud, men lader modregninger i skatter være
+			return new ValueTuple<BeregnModregningerResult>(
+				new BeregnModregningerResult(result[1].ModregningUnderskudSkattepligtigIndkomst, result[0].ModregningSkatter, result[1].ModregningUnderskud),
+				new BeregnModregningerResult(result[0].ModregningUnderskudSkattepligtigIndkomst, result[1].ModregningSkatter, result[0].ModregningUnderskud)
+			);
+		}
+		
 		public static ValueTuple<ModregnUnderskudResult> ToModregnResult(this ValueTuple<BeregnModregningerResult> beregnModregningerResults, 
-			ValueTuple<decimal> skattepligtigeIndkomster, ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<decimal> underskud)
+			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<decimal> underskud)
 		{
 			return beregnModregningerResults.Map((result, index) =>
-				new ModregnUnderskudResult(skattepligtigeIndkomster[index], result.ModregningSkattepligtigIndkomst,
-					skatter[index], result.ModregningSkatter, underskud[index], result.ModregningUnderskud));
+				new ModregnUnderskudResult(underskud[index], result.ModregningUnderskud, result.ModregningUnderskudSkattepligtigIndkomst, skatter[index], result.ModregningSkatter));
 		}
 	}
 
@@ -66,34 +74,45 @@
 	/// </summary>
 	public class ModregnUnderskudResult
 	{
-		public ModregnUnderskudResult(decimal skattepligtigIndkomst, decimal modregningSkattepligtigIndkomst,
-		                              SkatterAfPersonligIndkomst skatter, SkatterAfPersonligIndkomst modregningSkatter,
-		                              decimal underskud, decimal modregningUnderskud)
+		public ModregnUnderskudResult(decimal underskud, decimal modregningUnderskud, decimal modregningSkattepligtigIndkomst, 
+			SkatterAfPersonligIndkomst skatter, SkatterAfPersonligIndkomst modregningSkatter)
 		{
-			SkattepligtigIndkomst = skattepligtigIndkomst;
+			Underskud = underskud;
+			ModregningUnderskud = modregningUnderskud;
 			ModregningUnderskudSkattepligtigIndkomst = modregningSkattepligtigIndkomst;
 			Skatter = skatter;
 			ModregningSkatter = modregningSkatter;
-			Underskud = underskud;
-			ModregningUnderskud = modregningUnderskud;
 		}
 
 		/// <summary>
-		/// Størrelsen på den modregning, der kan rummes i den skattepligtige indkomst.
+		/// Underskuddet inden modregning og fremførsel.
+		/// </summary>
+		public decimal Underskud { get; private set; }
+
+		/// <summary>
+		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst.
 		/// </summary>
 		public decimal ModregningUnderskudSkattepligtigIndkomst { get; private set; }
-			
+
 		/// <summary>
-		/// Den skattepligtige indkomst før modregning.
+		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles skatter.
 		/// </summary>
-		public decimal SkattepligtigIndkomst { get; private set; }
-			
-		/// <summary>
-		/// Den skattepligtige indkomst efter modregning.
-		/// </summary>
-		public decimal ModregnetSkattepligtigIndkomst
+		public decimal ModregningUnderskudSkatter
 		{
-			get { return SkattepligtigIndkomst - ModregningUnderskudSkattepligtigIndkomst; }
+			get { return ModregningUnderskud - ModregningUnderskudSkattepligtigIndkomst; }
+		}
+
+		/// <summary>
+		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst og skatter.
+		/// </summary>
+		public decimal ModregningUnderskud { get; private set; }
+
+		/// <summary>
+		/// Den del af underskuddet, der skal fremføres til næste indkomstår.
+		/// </summary>
+		public decimal UnderskudTilFremfoersel
+		{
+			get { return Underskud - ModregningUnderskud; }
 		}
 
 		/// <summary>
@@ -109,35 +128,9 @@
 		/// <summary>
 		/// Skatterne efter modregning af underskudsværdi.
 		/// </summary>
-		public SkatterAfPersonligIndkomst ModregnedeSkatter 
+		public SkatterAfPersonligIndkomst ModregnedeSkatter
 		{
 			get { return Skatter - ModregningSkatter; }
-		}
-
-		/// <summary>
-		/// Modregning i skatter omregnet til underskud.
-		/// </summary>
-		public decimal ModregningUnderskudSkatter
-		{
-			get { return ModregningUnderskud - ModregningUnderskudSkattepligtigIndkomst; }
-		}
-
-		/// <summary>
-		/// Underskuddet inden modregning og fremførsel.
-		/// </summary>
-		public decimal Underskud { get; private set; }
-
-		/// <summary>
-		/// Den del af underskuddet, der er benyttet til modregning i den (positive) skattepligtige indkomst og skatter.
-		/// </summary>
-		public decimal ModregningUnderskud { get; private set; }
-
-		/// <summary>
-		/// Den del af underskuddet, der skal fremføres til næste indkomstår.
-		/// </summary>
-		public decimal UnderskudTilFremfoersel
-		{
-			get { return Underskud - ModregningUnderskud; }
 		}
 	}
 }

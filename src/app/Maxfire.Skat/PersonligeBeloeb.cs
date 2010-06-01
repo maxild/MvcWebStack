@@ -5,6 +5,9 @@
 	/// </summary>
 	public class PersonligeBeloeb
 	{
+		/// <summary>
+		/// Et fremført underskud i skattepligtig indkomst fra tidligere indkomstår.
+		/// </summary>
 		public decimal FremfoertUnderskudSkattepligtigIndkomst { get; set; }
 
 		/// <summary>

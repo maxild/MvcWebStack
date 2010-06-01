@@ -57,7 +57,7 @@ namespace Maxfire.Skat
 				= modregnEgenOgAegtefaelleUnderskudOgUnderskudsvaerdi(indkomster, skattepligtigeIndkomster,
 						skatter, aaretsUnderskud, kommunaleSatser, (value, index) => indkomster[index].ModregnetUnderskudSkattepligtigIndkomst -= value);
 
-			var modregningSkattepligtigIndkomster = modregnAaretsUnderskudResult.Map(x => x.ModregningSkattepligtigIndkomst);
+			var modregningSkattepligtigIndkomster = modregnAaretsUnderskudResult.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
 			var modregningSkatter = modregnAaretsUnderskudResult.Map(x => x.ModregningSkatter);
 
 			// II. Fremført underskud
@@ -67,7 +67,7 @@ namespace Maxfire.Skat
 						skatter - modregningSkatter, fremfoertUnderskud, kommunaleSatser, (value, index) => indkomster[index].FremfoertUnderskudSkattepligtigIndkomst -= value);
 
 			return (modregnAaretsUnderskudResult + modregnFremfoertUnderskudResult)
-				.ToModregnResult(skattepligtigeIndkomster, skatter, aaretsUnderskud + fremfoertUnderskud);
+				.ToModregnResult(skatter, aaretsUnderskud + fremfoertUnderskud);
 		}
 
 		private static SkatteModregner<SkatterAfPersonligIndkomst> getSkattepligtigIndkomstUnderskudModregner()
@@ -103,14 +103,14 @@ namespace Maxfire.Skat
 			ValueTuple<KommunaleSatser> kommunaleSatser,
 			Action<decimal, int> nulstilHandler)
 		{
-			// Modregn i egen skattepligtige indkomst og skatter
+			// Modregn i egen skattepligtig indkomst og skatter
 			var modregnEgetUnderskudResult = modregnUnderskudOgUnderskudsvaerdi(skattepligtigeIndkomster, skatter, underskud, kommunaleSatser);
 			var restunderskud = modregnEgetUnderskudResult.Map((x, index) => x.GetRestunderskud(underskud[index]));
 
 			if (skatter.Size == 1)
 			{
 				// Note: Side-effekter...skal fjernes
-				var modregningIndkomster = modregnEgetUnderskudResult.Map(x => x.ModregningSkattepligtigIndkomst);
+				var modregningIndkomster = modregnEgetUnderskudResult.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
 				modregningIndkomster.Each((modregningIndkomst, index) =>
 				{
 					nulstilHandler(underskud[index], index);
@@ -123,16 +123,17 @@ namespace Maxfire.Skat
 				return modregnEgetUnderskudResult;
 			}
 
-			// Modregn i ægtefælles skattepligtige indkomst og skatter
+			// Modregn i ægtefælles skattepligtig indkomst og skatter
 			var modregningSkatter = modregnEgetUnderskudResult.Map(x => x.ModregningSkatter);
 			var overfoertUnderskud = restunderskud.Swap();
 			var modregnOverfoertUnderskudResult = modregnUnderskudOgUnderskudsvaerdi(skattepligtigeIndkomster,
 			                                             skatter - modregningSkatter, overfoertUnderskud, kommunaleSatser);
-			var tilbagefoertUnderskud = modregnOverfoertUnderskudResult.Map((x, index) => x.GetRestunderskud(underskud[index])).Swap();
-			
+			var overfoertRestunderskud = modregnOverfoertUnderskudResult.Map((x, index) => x.GetRestunderskud(overfoertUnderskud[index]));
+			var tilbagefoertUnderskud = overfoertRestunderskud.Swap();
+
 			// Note: Side-effekter...skal fjernes
-			var modregningIndkomsterEgetUnderskud = modregnEgetUnderskudResult.Map(x => x.ModregningSkattepligtigIndkomst);
-			var modregningIndkomsterOverfoertUnderskud = modregnOverfoertUnderskudResult.Map(x => x.ModregningSkattepligtigIndkomst);
+			var modregningIndkomsterEgetUnderskud = modregnEgetUnderskudResult.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
+			var modregningIndkomsterOverfoertUnderskud = modregnOverfoertUnderskudResult.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
 			(modregningIndkomsterEgetUnderskud + modregningIndkomsterOverfoertUnderskud).Each((modregningIndkomst, index) =>
 			{
 				nulstilHandler(underskud[index], index);
@@ -142,7 +143,7 @@ namespace Maxfire.Skat
 			    indkomster[index].UnderskudSkattepligtigIndkomstTilFremfoersel += tilbagefoertUnderskud[index];
 			});
 
-			return modregnEgetUnderskudResult + modregnOverfoertUnderskudResult;
+			return modregnEgetUnderskudResult + modregnOverfoertUnderskudResult.SwapUnderskud();
 		}
 
 		private static ValueTuple<BeregnModregningerResult> modregnUnderskudOgUnderskudsvaerdi(ValueTuple<decimal> skattepligtigeIndkomster, 
