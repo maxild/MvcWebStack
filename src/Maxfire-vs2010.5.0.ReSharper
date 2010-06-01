@@ -1017,4 +1017,69 @@ Nedbringelse</UserWords>
       <Abbreviation Text="USD" />
     </Naming2>
   </CodeStyleSettings>
+  <SharedSolutionTemplateManager>
+    <LiveTemplates>
+      <Template uid="8a183cfa-2f7f-4707-9420-15845062606e" shortcut="gsc" description="Generic Specification Context" text="[Context]&#xD;&#xA;public class $CLASS$ : XunitSpec&lt;$CONTEXT$&gt; {$END$}" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="CLASS" expression="" initialRange="0" />
+          <Variable name="CONTEXT" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="ee9132d2-0155-46e7-953c-4344cb20b04d" shortcut="le" description="Lambda Expression" text="$VAR$ =&gt; $VAR$$END$" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="VAR" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="a3c47b9d-bce0-46af-9934-538e169c0fdf" shortcut="sc" description="Specification Context" text="[Context]&#xD;&#xA;public class $CLASS$ : XunitSpec {$END$}" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="CLASS" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="37435f4f-edc8-4e5c-853e-cb8f4f28209b" shortcut="spec" description="Specification Method" text="[Specification]&#xD;&#xA;public void $TESTNAME$()&#xD;&#xA;{&#xD;&#xA;	$END$&#xD;&#xA;}" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TESTNAME" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="cb91b88d-688b-432d-9c34-7059108886aa" shortcut="tc" description="Test Class" text="public class $TESTNAME$&#xD;&#xA;{&#xD;&#xA;	$END$&#xD;&#xA;}" reformat="False" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TESTNAME" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+      <Template uid="1f1e9e5e-ba11-4be7-b102-a41c6f56c8c8" shortcut="tm" description="Test Method" text="[Fact]&#xD;&#xA;public void $TESTNAME$()&#xD;&#xA;{&#xD;&#xA;	$END$&#xD;&#xA;}" reformat="True" shortenQualifiedReferences="True">
+        <Context>
+          <CSharpContext context="Everywhere" minimumLanguageVersion="2.0" />
+        </Context>
+        <Categories />
+        <Variables>
+          <Variable name="TESTNAME" expression="" initialRange="0" />
+        </Variables>
+        <CustomProperties />
+      </Template>
+    </LiveTemplates>
+  </SharedSolutionTemplateManager>
 </Configuration>

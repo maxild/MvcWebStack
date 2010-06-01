@@ -1363,6 +1363,24 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
 		}
 
+		[Fact]
+		public void Eksempel_33_ModregningFuldtUdINettokapitalindkomst_Ugift()
+		{
+			Constants.Brug2009Vaerdier();
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+					{
+						PersonligIndkomst = -10000,
+						NettoKapitalIndkomst = 370000,
+						LigningsmaessigeFradrag = 3000
+					});
+
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(357000);
+
+			// TODO: Fortsæt her
+		}
+
 		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
 		{
 			return new ValueTuple<KommunaleSatser>(
