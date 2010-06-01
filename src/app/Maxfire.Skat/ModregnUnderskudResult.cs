@@ -85,17 +85,19 @@
 		}
 
 		/// <summary>
-		/// Underskuddet inden modregning og fremførsel.
+		/// Summen af årets underskud og fremført underskud inden modregning og fremførsel.
 		/// </summary>
 		public decimal Underskud { get; private set; }
 
 		/// <summary>
-		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst.
+		/// Den del af summen af årets underskud og fremført underskud, der er benyttet 
+		/// til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst.
 		/// </summary>
 		public decimal ModregningUnderskudSkattepligtigIndkomst { get; private set; }
 
 		/// <summary>
-		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles skatter.
+		/// Den del af summen af årets underskud og fremført underskud, der er benyttet 
+		/// til modregning i enten egen eller ægtefælles skatter.
 		/// </summary>
 		public decimal ModregningUnderskudSkatter
 		{
@@ -103,12 +105,14 @@
 		}
 
 		/// <summary>
-		/// Den del af underskuddet, der er benyttet til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst og skatter.
+		/// Den del af summen af årets underskud og fremført underskud, der er benyttet 
+		/// til modregning i enten egen eller ægtefælles (positive) skattepligtige indkomst og skatter.
 		/// </summary>
 		public decimal ModregningUnderskud { get; private set; }
 
 		/// <summary>
-		/// Den del af underskuddet, der skal fremføres til næste indkomstår.
+		/// Den del af summen af årets underskud og fremført underskud, der 
+		/// skal fremføres til næste indkomstår.
 		/// </summary>
 		public decimal UnderskudTilFremfoersel
 		{

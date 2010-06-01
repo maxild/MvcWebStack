@@ -619,9 +619,9 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			var modregnResults2 = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
-			var skatterEfterPersonfradrag = modregnResults2.Map(x => x.ModregnedeSkatter);
-			var tabtPersonfradrag = modregnResults2.Map(x => x.IkkeUdnyttetFradrag);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
+			var tabtPersonfradrag = modregnPersonfradragResults.Map(x => x.IkkeUdnyttetFradrag);
 
 			tabtPersonfradrag[0].ShouldEqual(Constants.Personfradrag);
 			skatterEfterPersonfradrag.ShouldEqual(skatterFoerPersonfradrag);
@@ -704,8 +704,8 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(48337.10m);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			var modregnResults2 = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
-			var skatterEfterPersonfradrag = modregnResults2.Map(x => x.ModregnedeSkatter);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
 
@@ -801,8 +801,8 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.RoundMoney().ShouldEqual(57033.96m);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			var modregnResults2 = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
-			var skatterEfterPersonfradrag = modregnResults2.Map(x => x.ModregnedeSkatter);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
 
@@ -892,8 +892,8 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			var modregnResults2 = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
-			var skatterEfterPersonfradrag = modregnResults2.Map(x => x.ModregnedeSkatter);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
 			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
@@ -985,11 +985,207 @@ namespace Maxfire.Skat.UnitTests
 			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
 
 			var personfradragBeregner = new PersonfradragBeregner();
-			var modregnResults2 = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
-			var skatterEfterPersonfradrag = modregnResults2.Map(x => x.ModregnedeSkatter);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
 			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
+		}
+
+		[Fact]
+		public void Eksempel_22_ModregningFuldtUdPartnersSkat()
+		{
+			Constants.Brug2009Vaerdier();
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					LigningsmaessigeFradrag = 2000
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 23000,
+					NettoKapitalIndkomst = -4000,
+					LigningsmaessigeFradrag = 20000
+				});
+
+			var kommunaleSatser = getKommunaleSatserForGifte();
+
+			// Skattepligtig indkomst før modregning af underskud mellem ægtefæller
+			indkomster[0].FremfoertUnderskudSkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(-2000);
+			indkomster[1].FremfoertUnderskudSkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(-1000);
+
+			var skatAfPersonligIndkomstBeregner = new SkatterAfPersonligIndkomstBeregner();
+			var skatterAfPersonligIndkomst = skatAfPersonligIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			// Æ1 har egne skatter at modregne i
+			skatterAfPersonligIndkomst[0].Bundskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[0].Mellemskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[0].Topskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+
+			skatterAfPersonligIndkomst[1].Bundskat.ShouldEqual(1159.20m); // <-- denne skat kan indeholde begge ægtefællers underskud
+			skatterAfPersonligIndkomst[1].Mellemskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[1].Topskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[1].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+
+			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
+			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
+			
+			// Skattepligtig indkomst efter modregning af underskud mellem ægtefæller
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-2000);
+			indkomster[0].UnderskudSkattepligtigIndkomstTilFremfoersel.ShouldEqual(0);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(-1000);
+			indkomster[1].UnderskudSkattepligtigIndkomstTilFremfoersel.ShouldEqual(0);
+
+			var modregningUnderskudSkattepligtigIndkomst = modregnResults.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
+			var modregningUnderskudSkatter = modregnResults.Map(x => x.ModregningUnderskudSkatter);
+			var modregningUnderskud = modregnResults.Map(x => x.ModregningUnderskud);
+			var underskudTilFremfoersel = modregnResults.Map(x => x.UnderskudTilFremfoersel);
+
+			modregningUnderskudSkattepligtigIndkomst[0].ShouldEqual(0);
+			modregningUnderskudSkatter[0].ShouldEqual(2000);
+			modregningUnderskud[0].ShouldEqual(2000);
+			underskudTilFremfoersel[0].ShouldEqual(0);
+
+			modregningUnderskudSkattepligtigIndkomst[1].ShouldEqual(0);
+			modregningUnderskudSkatter[1].ShouldEqual(1000);
+			modregningUnderskud[1].ShouldEqual(1000);
+			underskudTilFremfoersel[1].ShouldEqual(0);
+
+			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
+
+			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
+			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			var skatterFoerPersonfradrag = new ValueTuple<Skatter>(
+				new Skatter(skatterAfPersonligIndkomstEfterModregningAfUnderskud[0], skatterAfSkattepligtigIndkomst[0]),
+				new Skatter(skatterAfPersonligIndkomstEfterModregningAfUnderskud[1], skatterAfSkattepligtigIndkomst[1]));
+
+			skatterFoerPersonfradrag[0].ShouldEqual(Skatter.Nul);
+			
+			// Så meget bundskat er der tilbage efter modregning af underskud
+			skatterFoerPersonfradrag[1].Bundskat.ShouldEqual(190.50m);
+			skatterFoerPersonfradrag[1].Mellemskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].Topskat.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].AktieindkomstskatUnderGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].Sundhedsbidrag.ShouldEqual(0);
+			skatterFoerPersonfradrag[1].KommunalIndkomstskatOgKirkeskat.ShouldEqual(0);
+
+			var personfradragBeregner = new PersonfradragBeregner();
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
+
+			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
+			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
+		}
+
+		[Fact]
+		public void Eksempel_23_DenEnePartnerHarUnderskudFraTidligereAar()
+		{
+			Constants.Brug2009Vaerdier();
+
+			var indkomster = new ValueTuple<PersonligeBeloeb>(
+				new PersonligeBeloeb
+				{
+					FremfoertUnderskudSkattepligtigIndkomst = 500000,
+					PersonligIndkomst = 200000,
+					NettoKapitalIndkomst = -20000,
+					LigningsmaessigeFradrag = 7000
+				},
+				new PersonligeBeloeb
+				{
+					PersonligIndkomst = 100000,
+					NettoKapitalIndkomst = -30000,
+					LigningsmaessigeFradrag = 3000
+				});
+
+			var kommunaleSatser = getKommunaleSatserForGifte();
+
+			// Skattepligtig indkomst før modregning af underskud mellem ægtefæller
+			indkomster[0].FremfoertUnderskudSkattepligtigIndkomst.ShouldEqual(500000);   // fremført underskud
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(173000);                     // årets underskud
+			indkomster[1].FremfoertUnderskudSkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(67000);
+
+			var skatAfPersonligIndkomstBeregner = new SkatterAfPersonligIndkomstBeregner();
+			var skatterAfPersonligIndkomst = skatAfPersonligIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			// Æ1 har egne skatter at modregne i
+			skatterAfPersonligIndkomst[0].Bundskat.ShouldEqual(10080);
+			skatterAfPersonligIndkomst[0].Mellemskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[0].Topskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[0].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+
+			skatterAfPersonligIndkomst[1].Bundskat.ShouldEqual(5040);
+			skatterAfPersonligIndkomst[1].Mellemskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[1].Topskat.ShouldEqual(0);
+			skatterAfPersonligIndkomst[1].AktieindkomstskatOverGrundbeloebet.ShouldEqual(0);
+
+			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner();
+			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser);
+
+			// Skattepligtig indkomst efter modregning af underskud mellem ægtefæller
+			indkomster[0].SkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[0].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(173000);
+			indkomster[0].UnderskudSkattepligtigIndkomstTilFremfoersel.ShouldEqual(213174.35m);
+			indkomster[1].SkattepligtigIndkomst.ShouldEqual(0);
+			indkomster[1].ModregnetUnderskudSkattepligtigIndkomst.ShouldEqual(67000);
+			indkomster[1].UnderskudSkattepligtigIndkomstTilFremfoersel.ShouldEqual(0);
+
+			var summenAfAaretsOgFremfoertUnderskud = modregnResults.Map(x => x.Underskud);
+			var modregningUnderskudSkattepligtigIndkomst = modregnResults.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
+			var modregningUnderskudSkatter = modregnResults.Map(x => x.ModregningUnderskudSkatter);
+			var modregningUnderskud = modregnResults.Map(x => x.ModregningUnderskud);
+			var underskudTilFremfoersel = modregnResults.Map(x => x.UnderskudTilFremfoersel);
+
+			summenAfAaretsOgFremfoertUnderskud[0].ShouldEqual(500000);
+			modregningUnderskudSkattepligtigIndkomst[0].ShouldEqual(173000 + 67000);
+			modregningUnderskudSkatter[0].ShouldEqual(31217.10m + 15608.55m);
+			modregningUnderskud[0].ShouldEqual(173000 + 67000 + 31217.10m + 15608.55m);
+			underskudTilFremfoersel[0].ShouldEqual(213174.35m);
+
+			summenAfAaretsOgFremfoertUnderskud[1].ShouldEqual(0); 
+			modregningUnderskudSkattepligtigIndkomst[1].ShouldEqual(0);
+			modregningUnderskudSkatter[1].ShouldEqual(0);
+			modregningUnderskud[1].ShouldEqual(0);
+			underskudTilFremfoersel[1].ShouldEqual(0);
+
+			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
+
+			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner();
+			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser);
+
+			var skatterFoerPersonfradrag = new ValueTuple<Skatter>(
+				new Skatter(skatterAfPersonligIndkomstEfterModregningAfUnderskud[0], skatterAfSkattepligtigIndkomst[0]),
+				new Skatter(skatterAfPersonligIndkomstEfterModregningAfUnderskud[1], skatterAfSkattepligtigIndkomst[1]));
+
+			skatterFoerPersonfradrag[0].ShouldEqual(Skatter.Nul);
+			skatterFoerPersonfradrag[1].ShouldEqual(Skatter.Nul);
+
+			var personfradragBeregner = new PersonfradragBeregner();
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(skatterFoerPersonfradrag, kommunaleSatser);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
+
+			skatterEfterPersonfradrag[0].ShouldEqual(Skatter.Nul);
+			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
+		}
+
+		[Fact]
+		public void Eksempel_24_()
+		{
+			
+		}
+
+		[Fact]
+		public void Eksempel_25_()
+		{
+
 		}
 
 		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
