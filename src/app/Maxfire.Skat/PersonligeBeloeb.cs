@@ -5,6 +5,37 @@
 	/// </summary>
 	public class PersonligeBeloeb
 	{
+		public decimal AMIndkomst { get; set; }
+
+		public decimal FremfoertUnderskudPersonligIndkomst { get; set; }
+
+		public decimal ModregnetUnderskudPersonligIndkomst { get; set; }
+
+		public decimal PersonligIndkomst { get; set; }
+
+		/// <summary>
+		/// Personligindkomst der bliver brugt i skattegrundlaget for bundskat, mellemskat og topskat.
+		/// </summary>
+		public decimal PersonligIndkomstSkattegrundlag 
+		{
+			get { return PersonligIndkomst - ModregnetUnderskudPersonligIndkomst; }
+		}
+
+		/// <summary>
+		/// Modregning af underskud i personlig indkomst i nettokapitalindkomsten.
+		/// </summary>
+		public decimal ModregnetUnderskudNettoKapitalIndkomst { get; set; }
+
+		public decimal NettoKapitalIndkomst { get; set; }
+		
+		/// <summary>
+		/// Nettokapitalindkomst der bliver brugt i skattegrundlaget for bundskat, mellemskat og topskat.
+		/// </summary>
+		public decimal NettoKapitalIndkomstSkattegrundlag
+		{
+			get { return NettoKapitalIndkomst - ModregnetUnderskudNettoKapitalIndkomst; }
+		}
+
 		/// <summary>
 		/// Et fremført underskud i skattepligtig indkomst fra tidligere indkomstår.
 		/// </summary>
@@ -26,10 +57,6 @@
 		/// </summary>
 		public decimal UnderskudSkattepligtigIndkomstTilFremfoersel { get; set; }
 		
-		public decimal AMIndkomst { get; set; }
-
-		public decimal PersonligIndkomst { get; set; }
-
 		/// <summary>
 		/// Skattepligtig indkomst efter modregning af underskud.
 		/// </summary>
@@ -42,12 +69,9 @@
 		{
 			get 
 			{
-				// Note: ModregnetUnderskudSkattepligtigIndkomst indeholder den del årets og fremførst underskud, der kan rummes i positiv skattepligtig indkomst
 				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - ModregnetUnderskudSkattepligtigIndkomst; 
 			}
 		}
-
-		public decimal NettoKapitalIndkomst { get; set; }
 
 		// Note: Ingen sondring mellem tab/gevinst på aktier og udbytte, og dermed ingen justering af indeholdt udbytte på årsopgørelsen
 		/// <summary>

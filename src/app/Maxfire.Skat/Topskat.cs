@@ -20,7 +20,7 @@ namespace Maxfire.Skat
 		public ValueTuple<decimal> BeregnNettoKapitalIndkomstTilBeskatning(ValueTuple<PersonligeBeloeb> input)
 		{			
 			var bundfradrag = BeregnBundfradragForPositivKapitalIndkomst(input);
-			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomst);
+			var nettokapitalindkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var nettokapitalindkomstTilBeskatning = nettokapitalindkomst - bundfradrag;
 			return nettokapitalindkomstTilBeskatning;
 		}
@@ -39,7 +39,7 @@ namespace Maxfire.Skat
 			// §7, stk 3: ikke-udnyttet bundfradrag (grundbeløb på 40.000 kr, 2010) kan 
 			// overføres mellem ægtefæller (sambeskating af ægtefæller).
 			Func<PersonligeBeloeb, bool> fuldUdnyttelseAfBundfradrag = x => 
-				x.NettoKapitalIndkomst >= Constants.BundfradragPositivKapitalIndkomst;
+				x.NettoKapitalIndkomstSkattegrundlag >= Constants.BundfradragPositivKapitalIndkomst;
 
 
 			// TODO: Kan optimeres til een og kun een har fuld udnyttelse => den anden med uudnyttet overfører til den med fuld udnyttelse, men skriv specs først
@@ -55,7 +55,7 @@ namespace Maxfire.Skat
 			{
 				var overfoeresFra = input.PartnerOf(overfoeresTil);
 				
-				decimal fraBundfradrag = overfoeresFra.NettoKapitalIndkomst.NonNegative();
+				decimal fraBundfradrag = overfoeresFra.NettoKapitalIndkomstSkattegrundlag.NonNegative();
 				decimal tilBundfradrag = 2 * Constants.BundfradragPositivKapitalIndkomst - fraBundfradrag;
 
 				return input.IndexOf(overfoeresTil) == 0 ? tilBundfradrag.ToTuple(fraBundfradrag) : 
@@ -77,8 +77,8 @@ namespace Maxfire.Skat
 			ValueTuple<decimal> topskat;
 			var topskatGrundlagBeregner = new TopskatGrundlagBeregner();
 
-			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomst);
-			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomst);
+			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
+			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskud);
 
 			// TODO: Er dette ikke samme algoritme uanset Size

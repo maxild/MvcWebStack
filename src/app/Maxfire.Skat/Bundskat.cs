@@ -13,8 +13,8 @@
 		/// </summary>
 		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> input)
 		{
-			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
-			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomst);
+			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
+			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 
 			// §6, stk 3: Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb 
 			// i den anden ægtefælles positive kapitalindkomst inden beregning af bundskatten.

@@ -10,8 +10,8 @@ namespace Maxfire.Skat
 		/// </summary>
 		public ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
 		{
-			var personligIndkomst = input.Map(x => x.PersonligIndkomst);
-			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomst);
+			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
+			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 
 			// Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb
 			// i den anden ægtefælles positive nettokapitalindkomst, inden mellemskatten beregnes
