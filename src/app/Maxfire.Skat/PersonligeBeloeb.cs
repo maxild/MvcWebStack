@@ -14,6 +14,11 @@
 		public decimal PersonligIndkomst { get; set; }
 
 		/// <summary>
+		/// Underskud i personlig indkomst til fremførsel i efterfølgende skatteår.
+		/// </summary>
+		public decimal UnderskudPersonligIndkomstTilFremfoersel { get; set; }
+		
+		/// <summary>
 		/// Personligindkomst der bliver brugt i skattegrundlaget for bundskat, mellemskat og topskat.
 		/// </summary>
 		public decimal PersonligIndkomstSkattegrundlag 

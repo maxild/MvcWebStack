@@ -133,16 +133,26 @@ namespace Maxfire.Skat
 			return overfoertBundfradrag;
 		}
 
-		public static ValueTuple<decimal> GetMuligModregning(this ValueTuple<decimal> tuple, ValueTuple<decimal> underskud)
+		/// <summary>
+		/// Beregn den del af en tuple af underskud, der kan rummes i en tuple af beløb.
+		/// </summary>
+		/// <param name="indkomster">De beløb, der skal rumme underskuddene</param>
+		/// <param name="underskud">De underskud, der skal rummes i beløbene</param>
+		/// <returns>Den del af underskuddet, der kan rummes i beløbene uden at beløbene ved modregning bliver negative.</returns>
+		public static ValueTuple<decimal> GetMuligeModregninger(this ValueTuple<decimal> indkomster, ValueTuple<decimal> underskud)
 		{
-			return tuple.Map((value, index) => Math.Min(value, underskud[index]).NonNegative());
+			return indkomster.Map((beloeb, index) => Math.Min(beloeb, underskud[index]).NonNegative());
 		}
 
-		//public static ValueTuple<decimal> GetMuligOverfoertModregning(this ValueTuple<decimal> tuple, ValueTuple<decimal> underskud)
-		//{
-		//    return tuple.Swap().GetMuligModregning(underskud).Swap();
-		//}
+		public static ValueTuple<ModregnIndkomstResult> ModregnUnderskud(this ValueTuple<decimal> indkomster, ValueTuple<decimal> underskud)
+		{
+			var modregninger = indkomster.GetMuligeModregninger(underskud);
+			return modregninger.Map((modregning, index) => new ModregnIndkomstResult(underskud[index], indkomster[index], modregning));
+		}
 
+		/// <summary>
+		/// Øre-afrunding af tuple af beløb.
+		/// </summary>
 		public static ValueTuple<decimal> RoundMoney(this ValueTuple<decimal> tuple)
 		{
 			IList<decimal> list = new List<decimal>(tuple.Size);
