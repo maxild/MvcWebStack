@@ -105,7 +105,7 @@ namespace Maxfire.Skat
 			// med tillæg af heri fradragne og ikke medregnede beløb omfattet af beløbsgrænsen i 
 			// pensionsbeskatningslovens § 16, stk. 1, i det omfang dette beregningsgrundlag overstiger topskattegrænsen 
 			var grundlagUdenNettokapitalindkomst = personligIndkomst + kapitalPensionsindskud - Constants.TopskatBundfradrag;
-			var topskatUdenPositivNettoKapitalIndkomst = Constants.Topskattesats * grundlagUdenNettokapitalindkomst;
+			var topskatUdenPositivNettoKapitalIndkomst = +(Constants.Topskattesats * grundlagUdenNettokapitalindkomst);
 
 			// §7, stk 5: Der beregnes tillige skat af ægtefællernes samlede positive nettokapitalindkomst. Til 
 			// dette formål beregnes en skat hos den af ægtefællerne, der har det højeste beregningsgrundlag 
@@ -118,7 +118,7 @@ namespace Maxfire.Skat
 			if (samletNettoKapitalIndkomstTilBeskatning <= 0)
 			{
 				// Det andet led udgår
-				topskat = +topskatUdenPositivNettoKapitalIndkomst;
+				topskat = topskatUdenPositivNettoKapitalIndkomst;
 			}
 			else
 			{
@@ -144,7 +144,8 @@ namespace Maxfire.Skat
 				}
 
 				decimal topskatInklSamletPositivNettoKapitalIndkomst
-					= Constants.Topskattesats * (grundlagUdenNettokapitalindkomst[indexOfMaxGrundlag] + samletNettoKapitalIndkomstTilBeskatning);
+					= (Constants.Topskattesats * (grundlagUdenNettokapitalindkomst[indexOfMaxGrundlag] 
+						+ samletNettoKapitalIndkomstTilBeskatning)).NonNegative();
 
 				// §7, Stk. 6: Forskellen mellem skatten efter stk. 5 og skatten efter stk. 4
 				// for den ægtefælle, der har det højeste beregningsgrundlag efter stk. 4,
@@ -154,7 +155,7 @@ namespace Maxfire.Skat
 
 				var fordelingsnoegle = positivNettoKapitalIndkomstTilBeskatning / samletNettoKapitalIndkomstTilBeskatning;
 
-				topskat = +topskatUdenPositivNettoKapitalIndkomst + fordelingsnoegle * samletTopskatAfPositivNettoKapitalIndkomst;
+				topskat = topskatUdenPositivNettoKapitalIndkomst + fordelingsnoegle * samletTopskatAfPositivNettoKapitalIndkomst;
 			}
 
 			return topskat.RoundMoney();

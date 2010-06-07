@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Maxfire.Skat
+﻿namespace Maxfire.Skat
 {
 	public class MellemskatGrundlagBeregner
 	{
