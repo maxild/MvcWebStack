@@ -87,10 +87,20 @@
 		public decimal LigningsmaessigeFradrag { get; set; }
 
 		/// <summary>
+		/// Modregning af underskud i personlig indkomst i kapitalpensionsindskud.
+		/// </summary>
+		public decimal ModregnetUnderskudKapitalPensionsindskud { get; set; }
+
+		/// <summary>
 		/// PBL § 16, stk. 1, omhandler indskud til kapitalpensionsordninger, kapitalforsikring 
 		/// og bidrag til supplerende engangsydelser fra pensionskasser, hvor der maksimalt kan 
 		/// indbetales op til 46.000 kr. (2009 og 2010).
 		/// </summary>
 		public decimal KapitalPensionsindskud { get; set; }
+
+		public decimal KapitalPensionsindskudSkattegrundlag
+		{
+			get { return KapitalPensionsindskud - ModregnetUnderskudKapitalPensionsindskud; }
+		}
 	}
 }

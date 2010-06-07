@@ -79,7 +79,7 @@ namespace Maxfire.Skat
 
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
-			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskud);
+			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
 
 			// TODO: Er dette ikke samme algoritme uanset Size
 			if (indkomster.Size == 1)

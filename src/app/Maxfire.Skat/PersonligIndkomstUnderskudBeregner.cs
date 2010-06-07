@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Maxfire.Core.Extensions;
 
 namespace Maxfire.Skat
@@ -46,46 +45,27 @@ namespace Maxfire.Skat
 	{
 		public void ModregningAfUnderskud(ValueTuple<PersonligeBeloeb> indkomster)
 		{
-			var personligeIndkomster = indkomster.Map(x => x.PersonligIndkomst);
-			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskud);
-
 			// I. Årets underskud
 
+			Action<decimal, int> aaretsUnderskudNulstiller 
+				= (value, index) => indkomster[index].ModregnetUnderskudPersonligIndkomst -= value;
+
+			var personligeIndkomster = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var aaretsUnderskud = +(-personligeIndkomster);
 
-			var aaretsRestunderskud = aaretsUnderskud;
-
-			if (indkomster.Size == 2)
-			{
-				// Modregning i ægtefælles (positive) personlige indkomst
-				var overfoertUnderskud = aaretsUnderskud.Swap();
-				var modregnIndkomstResults = personligeIndkomster.ModregnUnderskud(overfoertUnderskud);
-				var overfoertRestunderskud = modregnIndkomstResults.Map(x => x.IkkeUdnyttetUnderskud);
-
-				// TODO: Side-effekt
-				modregnIndkomstResults.Each((modregnIndkomstResult, index) => 
-					indkomster[index].ModregnetUnderskudPersonligIndkomst += modregnIndkomstResult.UdnyttetUnderskud);
-				
-				// Modregning i ægtefælles kapitalpensionsindskud
-				var modregnKapitalPensionsindskudResults = kapitalPensionsindskud.ModregnUnderskud(overfoertRestunderskud);
-				overfoertRestunderskud = modregnKapitalPensionsindskudResults.Map(x => x.IkkeUdnyttetUnderskud);
-				aaretsRestunderskud = overfoertRestunderskud.Swap();
-
-				var udnyttetUnderskud = aaretsUnderskud - aaretsRestunderskud;
-				// TODO: Side-effekt
-				// Nulstilling af årets underskud
-				udnyttetUnderskud.Each((underskud, index) => indkomster[index].ModregnetUnderskudPersonligIndkomst -= underskud);
-			}
+			// Note: Vi modregner både i egen og ægtefælles personlige indkomst, omend egen muligvis er både redundant (pga underskud)
+			// og forkert idet det er uvist om egne indskud på kapitalpension skal modregnes initial i dette trin.
+			var aaretsRestunderskud = getRestunderskudEfterEgenOgOverfoertPersonligIndkomstModregning(indkomster,
+				aaretsUnderskud, aaretsUnderskudNulstiller);
 
 			// Modregning i ægtefællers samlede nettokapitalindkomst
 			aaretsRestunderskud = getRestunderskudEfterNettoKapitalIndkomstModregning(indkomster, 
-				aaretsRestunderskud, (value, index) => indkomster[index].ModregnetUnderskudPersonligIndkomst -= value);
+				aaretsRestunderskud, aaretsUnderskudNulstiller);
 
 			// restunderskud fremføres
 			aaretsRestunderskud.Each((underskud, index) =>
 			{
-				// Nulstilling af årets underskud
-				indkomster[index].ModregnetUnderskudPersonligIndkomst -= underskud;
+				aaretsUnderskudNulstiller(underskud, index);
 				indkomster[index].UnderskudPersonligIndkomstTilFremfoersel += underskud;
 			});
 
@@ -93,71 +73,88 @@ namespace Maxfire.Skat
 
 			var fremfoertUnderskud = indkomster.Map(x => x.FremfoertUnderskudPersonligIndkomst);
 
+			Action<decimal, int> fremfoertUnderskudNulstiller 
+				= (value, index) => indkomster[index].FremfoertUnderskudPersonligIndkomst -= value;
+
 			// modregning i ægtefællers samlede positive nettokapitalindkomst
 			var fremfoertRestunderskud = getRestunderskudEfterNettoKapitalIndkomstModregning(indkomster,
-				fremfoertUnderskud, (value, index) => indkomster[index].FremfoertUnderskudPersonligIndkomst -= value);
+				fremfoertUnderskud, fremfoertUnderskudNulstiller);
 
 			// modregning i egen og ægtefælles personlige indkomst
-			fremfoertRestunderskud = getRestunderskudEfterPersonligIndkomstModregning(indkomster, 
-				fremfoertRestunderskud, (value, index) => indkomster[index].FremfoertUnderskudPersonligIndkomst -= value);
+			fremfoertRestunderskud = getRestunderskudEfterEgenOgOverfoertPersonligIndkomstModregning(indkomster,
+				fremfoertRestunderskud, fremfoertUnderskudNulstiller);
 
 			// restunderskud fremføres
 			fremfoertRestunderskud.Each((underskud, index) =>
 			{
-				// Nulstilling af årets underskud
-				indkomster[index].ModregnetUnderskudPersonligIndkomst -= underskud;
+				fremfoertUnderskudNulstiller(underskud, index);
 				indkomster[index].UnderskudPersonligIndkomstTilFremfoersel += underskud;
 			});
 		}
 
-		private ValueTuple<decimal> getRestunderskudEfterPersonligIndkomstModregning(ValueTuple<PersonligeBeloeb> indkomster, 
+		private static ValueTuple<decimal> getRestunderskudEfterEgenOgOverfoertPersonligIndkomstModregning(ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<decimal> underskud, Action<decimal, int> nulstilHandler)
 		{
-			var personligeIndkomster = indkomster.Map(x => x.PersonligIndkomst);
-			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskud);
-
-			// Modregning i egen P.I.
-			// Modregning i egen kapitalpensionsindskud
-			var modregnEgenIndkomstResults = personligeIndkomster.ModregnUnderskud(underskud);
-
-			// TODO: Side-effekt
-			modregnEgenIndkomstResults.Each((modregnIndkomstResult, index) =>
-				indkomster[index].ModregnetUnderskudPersonligIndkomst += modregnIndkomstResult.UdnyttetUnderskud);
-
+			// Modregning i egen personlig indkomst med tillæg af kapitalpensionsindskud
+			var restunderskud = getRestunderskudEfterPersonligIndkomstModregning(indkomster, underskud);
 			
-			var modregninger = modregnEgenIndkomstResults.Map(x => x.UdnyttetUnderskud);
-			personligeIndkomster -= modregninger;
+			// Nulstil underskud med den udnyttede del af underskuddet
+			var udnyttetUnderskud = underskud - restunderskud;
+			udnyttetUnderskud.Each(nulstilHandler);
 
-			// Modregning i ægtefælles personlige indkomst med tillæg af kapitalpensionsindskud))
+			// Modregning i ægtefælles personlige indkomst med tillæg af kapitalpensionsindskud
 			if (indkomster.Size == 2)
 			{
-				// Modregning i ægtefælles (positive) personlige indkomst
-				var overfoertUnderskud = underskud.Swap();
-				var modregnIndkomstResults = personligeIndkomster.ModregnUnderskud(overfoertUnderskud);
-				var overfoertRestunderskud = modregnIndkomstResults.Map(x => x.IkkeUdnyttetUnderskud);
+				underskud = restunderskud;
+				var overfoertUnderskud = restunderskud.Swap();
+				var overfoertRestunderskud = getRestunderskudEfterPersonligIndkomstModregning(indkomster, overfoertUnderskud);
+				restunderskud = overfoertRestunderskud.Swap();
+				udnyttetUnderskud = underskud - restunderskud;
 
-				// TODO: Side-effekt
-				modregnIndkomstResults.Each((modregnIndkomstResult, index) =>
-					indkomster[index].ModregnetUnderskudPersonligIndkomst += modregnIndkomstResult.UdnyttetUnderskud);
-
-				// Modregning i ægtefælles kapitalpensionsindskud
-				var modregnKapitalPensionsindskudResults = kapitalPensionsindskud.ModregnUnderskud(overfoertRestunderskud);
-				overfoertRestunderskud = modregnKapitalPensionsindskudResults.Map(x => x.IkkeUdnyttetUnderskud);
-				var restunderskud = overfoertRestunderskud.Swap();
-
-				var udnyttetUnderskud = underskud - restunderskud;
-				// TODO: Side-effekt
+				// Nulstil underskud med den udnyttede del af underskuddet
 				udnyttetUnderskud.Each(nulstilHandler);
 			}
 
-			// TODO
-			return null;
+			return restunderskud;
 		}
 
-		private ValueTuple<decimal> getRestunderskudEfterNettoKapitalIndkomstModregning(ValueTuple<PersonligeBeloeb> indkomster, 
+		/// <summary>
+		/// Modregning i personlige indkomst med tillæg af kapitalpensionsindskud
+		/// </summary>
+		private static ValueTuple<decimal> getRestunderskudEfterPersonligIndkomstModregning(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<decimal> underskud)
+		{
+			var personligeIndkomster = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
+			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
+
+			// Modregning i personlig indkomst
+			var modregnIndkomstResults = personligeIndkomster.ModregnUnderskud(underskud);
+
+			// TODO: Side-effekt
+			modregnIndkomstResults.Each((modregnIndkomstResult, index) =>
+			{
+				indkomster[index].ModregnetUnderskudPersonligIndkomst += modregnIndkomstResult.UdnyttetUnderskud;
+			});
+
+			var restunderskud = modregnIndkomstResults.Map(x => x.IkkeUdnyttetUnderskud);
+
+			// Modregning i kapitalpensionsindskud
+			var modregnKapitalPensionsindskudResults = kapitalPensionsindskud.ModregnUnderskud(restunderskud);
+			
+			// TODO: Side-effekt
+			modregnKapitalPensionsindskudResults.Each((modregnIndkomstResult, index) =>
+			{
+				indkomster[index].ModregnetUnderskudKapitalPensionsindskud += modregnIndkomstResult.UdnyttetUnderskud;
+			});
+
+			restunderskud = modregnKapitalPensionsindskudResults.Map(x => x.IkkeUdnyttetUnderskud);
+
+			return restunderskud;
+		}
+
+		private static ValueTuple<decimal> getRestunderskudEfterNettoKapitalIndkomstModregning(ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<decimal> underskud, Action<decimal, int> nulstilHandler)
 		{
-			// Modregn underskud først i egen (positive) nettokapitalindkomst
+			// Modregn underskud i egen (positive) nettokapitalindkomst
 			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var modregningEgenNettoKapitalIndkomst = getMuligModregning(nettokapitalindkomst, underskud);
 			
@@ -171,7 +168,7 @@ namespace Maxfire.Skat
 			nettokapitalindkomst -= modregningEgenNettoKapitalIndkomst;
 			underskud -= modregningEgenNettoKapitalIndkomst;
 
-			// Modregn dernæst restunderskud i ægtefælles (positive) nettokapitalindkomst
+			// Modregn underskud i ægtefælles (positive) nettokapitalindkomst
 			if (indkomster.Size == 2)
 			{
 				var overfoertUnderskud = underskud.Swap();
@@ -180,19 +177,19 @@ namespace Maxfire.Skat
 				// TODO: Side-effekt
 				modregningPartnersNettoKapitalIndkomst.Each((modregning, index) =>
 				{
-					// Nulstilling af årets underskud
-					indkomster.PartnerOf(index).ModregnetUnderskudPersonligIndkomst -= modregning;
 					indkomster[index].ModregnetUnderskudNettoKapitalIndkomst += modregning;
 				});
 
 				var udnyttetUnderskud = modregningPartnersNettoKapitalIndkomst.Swap();
+				udnyttetUnderskud.Each(nulstilHandler);
+				
 				underskud -= udnyttetUnderskud;
 			}
 
 			return underskud;
 		}
 
-		private ValueTuple<decimal> getMuligModregning(ValueTuple<decimal> nettokapitalindkomst, ValueTuple<decimal> underskud)
+		private static ValueTuple<decimal> getMuligModregning(ValueTuple<decimal> nettokapitalindkomst, ValueTuple<decimal> underskud)
 		{
 			var samletkapitalindkomst = nettokapitalindkomst.Sum();
 			// TODO: Make overloads of Min, Max, Path.Combine in Maxfire.Core
