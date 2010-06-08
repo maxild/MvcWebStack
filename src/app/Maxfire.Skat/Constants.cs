@@ -12,6 +12,7 @@
 		const decimal MELLEM_SKATTESATS = 0.06m;
 		const decimal TOP_SKATTESATS = 0.15m;
 		const decimal SUNDHEDSBIDRAG_SATS = 0.08m;
+		const decimal SKATTELOFT_SATS = 0.515m;
 		const decimal PERSON_FRADRAG = 42900;
 		const decimal AKTIEINDKOMST_LAVESTE_PROGRESSIONSGRAENSE = 48300;
 		const decimal AKTIEINDKOMST_HOEJESTE_PROGRESSIONSGRAENSE = decimal.MaxValue;
@@ -118,14 +119,22 @@
 			set { _topSkattesats = value; }
 		}
 
+		private static decimal? _skatteloftSats;
+		public static decimal Skatteloftsats
+		{
+			get { return _skatteloftSats ?? SKATTELOFT_SATS; }
+			set { _skatteloftSats = value; }
+		}
+
 		public static void Brug2009Vaerdier()
 		{
 			Personfradrag = PERSON_FRADRAG;
-			BundfradragPositivKapitalIndkomst = 0;
+			BundfradragPositivKapitalIndkomst = 0; // Benytter 2009 regler inden fradrag på 40.000 blev gældende
 			Bundskattesats = 0.0504m;
 			Mellemskattesats = 0.06m;
 			Topskattesats = 0.15m;
 			Sundhedsbidragsats = 0.08m;
+			Skatteloftsats = 0.59m;
 			MellemskatBundfradrag = 347200;
 			TopskatBundfradrag = 347200;
 			AktieIndkomstLavesteProgressionsgraense = 48300;

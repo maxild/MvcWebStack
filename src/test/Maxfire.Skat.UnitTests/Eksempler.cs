@@ -65,7 +65,7 @@ namespace Maxfire.Skat.UnitTests
 		public void Eksempel_4_Topskattegrundlag_Gifte()
 		{
 			Constants.Brug2009Vaerdier();
-
+			
 			const decimal indskudPaaPrivatTegnetKapitalPension = 32000;
 
 			var indkomster = new ValueTuple<PersonligeBeloeb>(
@@ -84,7 +84,7 @@ namespace Maxfire.Skat.UnitTests
 				});
 
 			var topskatBeregner = new TopskatBeregner();
-			var topskat = topskatBeregner.BeregnSkat(indkomster);
+			var topskat = topskatBeregner.BeregnSkat(indkomster, getKommunaleSatserForGifte());
 
 			topskat[0].ShouldEqual(7395);
 			topskat[1].ShouldEqual(2775);

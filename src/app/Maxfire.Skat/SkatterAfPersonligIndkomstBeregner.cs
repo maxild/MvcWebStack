@@ -13,7 +13,7 @@
 			var mellemskat = mellemskatBeregner.BeregnSkat(indkomster);
 
 			var topskatBeregner = new TopskatBeregner();
-			var topskat = topskatBeregner.BeregnSkat(indkomster);
+			var topskat = topskatBeregner.BeregnSkat(indkomster, kommunaleSatser);
 
 			var aktieindkomstskatLavesteTrinBeregner = new AktieindkomstskatLavesteTrinBeregner();
 			var aktieindkomstskatLavesteTrin = aktieindkomstskatLavesteTrinBeregner.BeregnSkat(indkomster);
