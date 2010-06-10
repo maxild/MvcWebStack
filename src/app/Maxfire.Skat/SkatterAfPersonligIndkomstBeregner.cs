@@ -2,27 +2,32 @@
 {
 	public class SkatterAfPersonligIndkomstBeregner
 	{
-		public ValueTuple<SkatterAfPersonligIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public SkatterAfPersonligIndkomstBeregner(ISkattelovRegistry skattelovRegistry)
 		{
-			// TODO: Refactor
+			_skattelovRegistry = skattelovRegistry;
+		}
 
-			var bundskatBeregner = new BundskatBeregner();
-			var bundskat = bundskatBeregner.BeregnSkat(indkomster);
+		public ValueTuple<SkatterAfPersonligIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		{
+			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
+			var bundskat = bundskatBeregner.BeregnSkat(indkomster, skatteAar);
 
-			var mellemskatBeregner = new MellemskatBeregner();
-			var mellemskat = mellemskatBeregner.BeregnSkat(indkomster);
+			var mellemskatBeregner = new MellemskatBeregner(_skattelovRegistry);
+			var mellemskat = mellemskatBeregner.BeregnSkat(indkomster, skatteAar);
 
-			var topskatBeregner = new TopskatBeregner();
-			var topskat = topskatBeregner.BeregnSkat(indkomster, kommunaleSatser);
+			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);
+			var topskat = topskatBeregner.BeregnSkat(indkomster, skatteAar, kommunaleSatser);
 
-			var aktieindkomstskatLavesteTrinBeregner = new AktieindkomstskatLavesteTrinBeregner();
-			var aktieindkomstskatLavesteTrin = aktieindkomstskatLavesteTrinBeregner.BeregnSkat(indkomster);
+			var aktieindkomstskatLavesteTrinBeregner = new AktieindkomstskatLavesteTrinBeregner(_skattelovRegistry);
+			var aktieindkomstskatLavesteTrin = aktieindkomstskatLavesteTrinBeregner.BeregnSkat(indkomster, skatteAar);
 
-			var aktieindkomstskatMellemsteTrinBeregner = new AktieindkomstskatMellemsteTrinBeregner();
-			var aktieindkomstskatMellemsteTrin = aktieindkomstskatMellemsteTrinBeregner.BeregnSkat(indkomster);
+			var aktieindkomstskatMellemsteTrinBeregner = new AktieindkomstskatMellemsteTrinBeregner(_skattelovRegistry);
+			var aktieindkomstskatMellemsteTrin = aktieindkomstskatMellemsteTrinBeregner.BeregnSkat(indkomster, skatteAar);
 
-			var aktieindkomstskatHoejesteTrinBeregner = new AktieindkomstskatHoejesteTrinBeregner();
-			var aktieindkomstskatHoejesteTrin = aktieindkomstskatHoejesteTrinBeregner.BeregnSkat(indkomster);
+			var aktieindkomstskatHoejesteTrinBeregner = new AktieindkomstskatHoejesteTrinBeregner(_skattelovRegistry);
+			var aktieindkomstskatHoejesteTrin = aktieindkomstskatHoejesteTrinBeregner.BeregnSkat(indkomster, skatteAar);
 
 			return bundskat.Map(index =>
 					new SkatterAfPersonligIndkomst(bundskat[index], mellemskat[index], topskat[index],

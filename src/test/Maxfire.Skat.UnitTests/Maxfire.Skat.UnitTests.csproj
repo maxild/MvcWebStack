@@ -46,7 +46,9 @@
   <ItemGroup>
     <Compile Include="BundskatBeregnerTester.cs" />
     <Compile Include="AccessorTester.cs" />
+    <Compile Include="DefaultSkattelovRegistryTester.cs" />
     <Compile Include="Eksempler.cs" />
+    <Compile Include="AbstractFakeSkattelovRegistry.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
     <Compile Include="PartialTrustContext.cs" />

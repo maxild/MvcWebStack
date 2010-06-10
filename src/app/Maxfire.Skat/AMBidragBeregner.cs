@@ -2,10 +2,17 @@
 {
 	public class AMBidragBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public AMBidragBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			var amIndkomst = indkomster.Map(x => x.AMIndkomst);
-			return Constants.AMBidragsats * amIndkomst;
+			return _skattelovRegistry.GetAMBidragSkattesats(skatteAar) * amIndkomst;
 		}
 	}
 }

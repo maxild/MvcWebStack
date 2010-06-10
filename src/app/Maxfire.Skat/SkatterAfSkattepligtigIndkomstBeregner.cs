@@ -2,12 +2,17 @@
 {
 	public class SkatterAfSkattepligtigIndkomstBeregner
 	{
-		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser)
-		{
-			// TODO: Refactor
+		private readonly ISkattelovRegistry _skattelovRegistry;
 
-			var sundhedsbidragBeregner = new SundhedsbidragBeregner();
-			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(indkomster);
+		public SkatterAfSkattepligtigIndkomstBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		{
+			var sundhedsbidragBeregner = new SundhedsbidragBeregner(_skattelovRegistry);
+			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(indkomster, skatteAar);
 
 			var kommuneskatBeregner = new KommuneskatBeregner();
 			var kommuneskat = kommuneskatBeregner.BeregnSkat(indkomster, kommunaleSatser);

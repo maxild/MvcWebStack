@@ -2,18 +2,15 @@
 {
 	public class PersonfradragSkattevaerdiOmregner : ISkattevaerdiOmregner
 	{
-		public static PersonfradragSkattevaerdiOmregner Create(KommunaleSatser kommunaleSatser)
-		{
-			return new PersonfradragSkattevaerdiOmregner(
-				new Skatter(sundhedsbidrag: Constants.Sundhedsbidragsats,
-				            kommuneskat: kommunaleSatser.Kommuneskattesats,
-				            bundskat: Constants.Bundskattesats, kirkeskat: kommunaleSatser.Kirkeskattesats));
-		}
 		private readonly Skatter _skattesatser;
 
-		public PersonfradragSkattevaerdiOmregner(Skatter skattesatser)
+		public PersonfradragSkattevaerdiOmregner(KommunaleSatser kommunaleSatser, ISkattelovRegistry skattelovRegistry, int skatteAar)
 		{
-			_skattesatser = skattesatser;
+			_skattesatser = new Skatter(
+				bundskat: skattelovRegistry.GetBundSkattesats(skatteAar),
+				sundhedsbidrag: skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar),
+				kommuneskat: kommunaleSatser.Kommuneskattesats,
+				kirkeskat: kommunaleSatser.Kirkeskattesats);
 		}
 
 		public Skatter BeregnSkattevaerdier(decimal personfradrag)

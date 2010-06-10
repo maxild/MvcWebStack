@@ -1,7 +1,20 @@
 ﻿namespace Maxfire.Skat
 {
-	public class MellemskatGrundlagBeregner
+	public class MellemskatBeregner
 	{
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public MellemskatBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			var grundlag = BeregnGrundlag(indkomster, skatteAar);
+			return _skattelovRegistry.GetMellemSkattesats(skatteAar) * grundlag;
+		}
+
 		/// <summary>
 		/// Beregn mellemskattegrundlaget før bundfradrag.
 		/// </summary>
@@ -20,27 +33,17 @@
 		/// <summary>
 		/// Beregn det udnyttede bundfradrag efter at der er sket overførsel af bundfradrag mellem ægtefæller.
 		/// </summary>
-		public ValueTuple<decimal> BeregnSambeskattetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnSambeskattetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			return bruttoGrundlag.BeregnSambeskattetBundfradrag(Constants.MellemskatBundfradrag);
+			return bruttoGrundlag.BeregnSambeskattetBundfradrag(_skattelovRegistry.GetMellemskatBundfradrag(skatteAar));
 		}
 
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster);
+			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster, skatteAar);
 			return +(bruttoGrundlag - udnyttetBundfradrag);
-		}
-	}
-
-	public class MellemskatBeregner
-	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
-		{
-			var grundlagBeregner = new MellemskatGrundlagBeregner();
-			var grundlag = grundlagBeregner.BeregnGrundlag(indkomster);
-			return Constants.Mellemskattesats * grundlag;
 		}
 	}
 }

@@ -58,25 +58,33 @@ namespace Maxfire.Skat
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public class TopskatBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser=null)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public TopskatBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar, ValueTuple<KommunaleSatser> kommunaleSatser=null)
 		{
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
+			var topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
 
 			ValueTuple<decimal> topskatteGrundlag;
 
 			if (indkomster.Size == 1)
 			{
-				var positivNettoKapitalIndkomstTilBeskatning = +(nettokapitalindkomst - Constants.BundfradragPositivKapitalIndkomst);
+				var positivNettoKapitalIndkomstTilBeskatning = +(nettokapitalindkomst - _skattelovRegistry.GetPositivNettoKapitalIndkomstBundfradrag(skatteAar));
 
 				topskatteGrundlag = +(personligIndkomst + positivNettoKapitalIndkomstTilBeskatning
-								 + kapitalPensionsindskud - Constants.TopskatBundfradrag);
+								 + kapitalPensionsindskud - topskatBundfradrag);
 			}
 			else
 			{
-				var grundlagUdenPositivNettoKapitalIndkomst = personligIndkomst + kapitalPensionsindskud - Constants.TopskatBundfradrag;
-				var nettoKapitalIndkomstTilBeskatning = BeregnNettoKapitalIndkomstTilBeskatning(indkomster);
+				var grundlagUdenPositivNettoKapitalIndkomst = personligIndkomst + kapitalPensionsindskud - topskatBundfradrag;
+				var nettoKapitalIndkomstTilBeskatning = BeregnNettoKapitalIndkomstTilBeskatning(indkomster, skatteAar);
 				var samletNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.Sum();
 
 				if (samletNettoKapitalIndkomstTilBeskatning <= 0)
@@ -113,18 +121,22 @@ namespace Maxfire.Skat
 				}
 			}
 
-			return beregnSkatUnderSkatteloft(topskatteGrundlag, kommunaleSatser);
+			return beregnSkatUnderSkatteloft(topskatteGrundlag, kommunaleSatser, skatteAar);
 		}
 
-		private static ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser)
+		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			kommunaleSatser = kommunaleSatser ?? new ValueTuple<KommunaleSatser>(grundlag.Size, () => new KommunaleSatser());
+			decimal bundskattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
+			decimal mellemskattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);
+			decimal topskattesats = _skattelovRegistry.GetTopSkattesats(skatteAar);
+			decimal sundhedsbidragsats = _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar);
+			decimal skatteloftsats = _skattelovRegistry.GetSkatteloftSkattesats(skatteAar);
 			var kommunaleskattesatser = kommunaleSatser.Map(x => x.Kommuneskattesats);
-			decimal fastsats = Constants.Bundskattesats + Constants.Mellemskattesats 
-				+ Constants.Topskattesats + Constants.Sundhedsbidragsats;
+			decimal fastsats = bundskattesats + mellemskattesats + topskattesats + sundhedsbidragsats;
 			var skattesatser = fastsats + kommunaleskattesatser;
-			var nedslagssatsen = +(skattesatser - Constants.Skatteloftsats);
-			var topskattesatsen = +(Constants.Topskattesats - nedslagssatsen);
+			var nedslagssatsen = +(skattesatser - skatteloftsats);
+			var topskattesatsen = +(topskattesats - nedslagssatsen);
 			var topskat = topskattesatsen * grundlag;
 			return topskat.RoundMoney();
 		}
@@ -133,9 +145,9 @@ namespace Maxfire.Skat
 		/// Beregn den del af nettokapitalindkomsten, der overstiger det grundbeløb, som angiver 
 		/// bundfradraget for positiv nettokapitalindkomst.
 		/// </summary>
-		public static ValueTuple<decimal> BeregnNettoKapitalIndkomstTilBeskatning(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnNettoKapitalIndkomstTilBeskatning(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
-			var bundfradrag = BeregnBundfradragForPositivKapitalIndkomst(indkomster);
+			var bundfradrag = BeregnBundfradragForPositivKapitalIndkomst(indkomster, skatteAar);
 			var nettokapitalindkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var nettokapitalindkomstTilBeskatning = nettokapitalindkomst - bundfradrag;
 			return nettokapitalindkomstTilBeskatning;
@@ -145,23 +157,24 @@ namespace Maxfire.Skat
 		/// Beregn størrelsen af hver persons bundfradrag for positiv nettokapitalindkomst under 
 		/// hensyntagen til reglerne om overførsel af ikke-udnyttet bundfradreg mellem ægtefæller.
 		/// </summary>
-		public static ValueTuple<decimal> BeregnBundfradragForPositivKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnBundfradragForPositivKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
+			decimal bundfradragPositivNettoKapitalIndkomst = _skattelovRegistry.GetPositivNettoKapitalIndkomstBundfradrag(skatteAar);
 			if (indkomster.Size == 1)
 			{
-				return Constants.BundfradragPositivKapitalIndkomst.ToTuple();
+				return bundfradragPositivNettoKapitalIndkomst.ToTuple();
 			}
 
 			// §7, stk 3: ikke-udnyttet bundfradrag (grundbeløb på 40.000 kr, 2010) kan 
 			// overføres mellem ægtefæller (sambeskating af ægtefæller).
 			Func<PersonligeBeloeb, bool> fuldUdnyttelseAfBundfradrag = x =>
-				x.NettoKapitalIndkomstSkattegrundlag >= Constants.BundfradragPositivKapitalIndkomst;
+				x.NettoKapitalIndkomstSkattegrundlag >= bundfradragPositivNettoKapitalIndkomst;
 
 			// TODO: Kan optimeres til een og kun een har fuld udnyttelse => den anden med uudnyttet overfører til den med fuld udnyttelse, men skriv specs først
 
 			if (indkomster.All(fuldUdnyttelseAfBundfradrag))
 			{
-				return Constants.BundfradragPositivKapitalIndkomst.ToTuple(Constants.BundfradragPositivKapitalIndkomst);
+				return bundfradragPositivNettoKapitalIndkomst.ToTuple(bundfradragPositivNettoKapitalIndkomst);
 			}
 
 			// Der er uudnyttet bundfradrag hos mindst en ægtefælle, men kan det udnyttes hos den anden ægtefælle
@@ -171,14 +184,14 @@ namespace Maxfire.Skat
 				var overfoeresFra = indkomster.PartnerOf(overfoeresTil);
 
 				decimal fraBundfradrag = overfoeresFra.NettoKapitalIndkomstSkattegrundlag.NonNegative();
-				decimal tilBundfradrag = 2 * Constants.BundfradragPositivKapitalIndkomst - fraBundfradrag;
+				decimal tilBundfradrag = 2 * bundfradragPositivNettoKapitalIndkomst - fraBundfradrag;
 
 				return indkomster.IndexOf(overfoeresTil) == 0 ? tilBundfradrag.ToTuple(fraBundfradrag) :
 					fraBundfradrag.ToTuple(tilBundfradrag);
 			}
 
 			// Begge ægtefæller har et uudnyttet bundfradrag, så ingen overførsel
-			return Constants.BundfradragPositivKapitalIndkomst.ToTuple(Constants.BundfradragPositivKapitalIndkomst);
+			return bundfradragPositivNettoKapitalIndkomst.ToTuple(bundfradragPositivNettoKapitalIndkomst);
 		}
 	}
 }

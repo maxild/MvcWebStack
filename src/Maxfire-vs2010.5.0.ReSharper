@@ -220,7 +220,15 @@ Positivt
 Mulig
 Mulige
 Skatteloftsats
-Uden</UserWords>
+Uden
+Skattelov
+stk
+Bidrag
+Mellem
+Brutto
+Udnyttelse
+Selve
+Skatten</UserWords>
             </CustomDictionary>
           </Dictionaries>
         </CustomDictionaries>
@@ -1025,6 +1033,7 @@ Uden</UserWords>
       <Abbreviation Text="DKK" />
       <Abbreviation Text="EUR" />
       <Abbreviation Text="USD" />
+      <Abbreviation Text="AM" />
     </Naming2>
   </CodeStyleSettings>
   <SharedSolutionTemplateManager>

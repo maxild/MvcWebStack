@@ -1,0 +1,270 @@
+using System;
+using Maxfire.TestCommons.AssertExtensions;
+using Xunit;
+
+namespace Maxfire.Skat.UnitTests
+{
+	public class DefaultSkattelovRegistryTester
+	{
+		private readonly DefaultSkattelovRegistry _registry;
+
+		public DefaultSkattelovRegistryTester()
+		{
+			_registry = new DefaultSkattelovRegistry();
+		}
+
+		[Fact]
+		public void Vaerdier2008Throws()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(() => _registry.GetBundSkattesats(2008));
+		}
+
+		[Fact]
+		public void Vaerdier2009()
+		{
+			const int aar = 2009;
+			
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(106100);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.43m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0.45m);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0504m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0.06m);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.59m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(347200);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(347200);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(0);
+		}
+
+		[Fact]
+		public void Vaerdier2010()
+		{
+			const int aar = 2010;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0367m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2011()
+		{
+			const int aar = 2011;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0367m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2012()
+		{
+			const int aar = 2012;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.07m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0467m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2013()
+		{
+			const int aar = 2013;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.06m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0567m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2014()
+		{
+			const int aar = 2014;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.05m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0667m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2015()
+		{
+			const int aar = 2015;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.04m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0767m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2016()
+		{
+			const int aar = 2016;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.03m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0867m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2017()
+		{
+			const int aar = 2017;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.02m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.0967m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2018()
+		{
+			const int aar = 2018;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0.01m);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.1067m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2019()
+		{
+			const int aar = 2019;
+
+			_registry.GetAktieIndkomstLavesteProgressionsgraense(aar).ShouldEqual(48300);
+			_registry.GetAktieIndkomstHoejesteProgressionsgraense(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetAktieIndkomstLavesteSkattesats(aar).ShouldEqual(0.28m);
+			_registry.GetAktieIndkomstMellemsteSkattesats(aar).ShouldEqual(0.42m);
+			_registry.GetAktieIndkomstHoejesteSkattesats(aar).ShouldEqual(0);
+			_registry.GetAMBidragSkattesats(aar).ShouldEqual(0.08m);
+			_registry.GetSundhedsbidragSkattesats(aar).ShouldEqual(0);
+			_registry.GetBundSkattesats(aar).ShouldEqual(0.1167m);
+			_registry.GetMellemSkattesats(aar).ShouldEqual(0);
+			_registry.GetTopSkattesats(aar).ShouldEqual(0.15m);
+			_registry.GetSkatteloftSkattesats(aar).ShouldEqual(0.515m);
+			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
+			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
+			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+		}
+
+		[Fact]
+		public void Vaerdier2029Throws()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(() => _registry.GetBundSkattesats(2020));
+		}
+	}
+}

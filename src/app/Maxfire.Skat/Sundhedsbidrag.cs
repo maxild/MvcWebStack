@@ -2,10 +2,17 @@
 {
 	public class SundhedsbidragBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public SundhedsbidragBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			var skattepligtigIndkomst = indkomster.Map(x => x.SkattepligtigIndkomst);
-			return Constants.Sundhedsbidragsats * (+skattepligtigIndkomst);
+			return _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar) * (+skattepligtigIndkomst);
 		}
 	}
 }

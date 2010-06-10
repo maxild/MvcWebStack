@@ -5,11 +5,17 @@ namespace Maxfire.Skat.UnitTests
 {
 	public class SundhedsbidragBeregnerTester
 	{
+		class FakeSkattelovRegistry : AbstractFakeSkattelovRegistry
+		{
+			public override decimal GetSundhedsbidragSkattesats(int skatteAar)
+			{
+				return 0.08m;
+			}
+		}
+
 		[Fact]
 		public void BeregnSkat()
 		{
-			Constants.Sundhedsbidragsats = 0.08m;
-
 			var personligeBeloeb = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
 				{
@@ -17,9 +23,9 @@ namespace Maxfire.Skat.UnitTests
 				}
 			);
 
-			var sundhedsbidragBeregner = new SundhedsbidragBeregner();
+			var sundhedsbidragBeregner = new SundhedsbidragBeregner(new FakeSkattelovRegistry());
 
-			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(personligeBeloeb);
+			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(personligeBeloeb, 2010);
 
 			sundhedsbidrag[0].ShouldEqual(8);
 		}

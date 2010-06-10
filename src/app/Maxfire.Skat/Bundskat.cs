@@ -1,13 +1,20 @@
 ﻿namespace Maxfire.Skat
 {
-	/// <summary>
-	/// §6, stk 1: Bundskattegrundlaget er den personlige indkomst med tillæg af positiv nettokapitalindkomst. 
-	/// </summary>
-	/// <remarks>
-	/// Negativ nettolapitalindkomst og ligningsmæssige fradrag kan altså ikke fratrækkes i grundlaget for bundskat.	
-	/// </remarks>
-	public class BundskatGrundlagBeregner
+	public class BundskatBeregner
 	{
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public BundskatBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			var grundlag = BeregnGrundlag(indkomster);
+			return _skattelovRegistry.GetBundSkattesats(skatteAar) * grundlag;
+		}
+
 		/// <summary>
 		/// Beregn bundskattegrundlaget under hensyn til evt. modregnet negativ  negativ nettokapitalindkomst.
 		/// </summary>
@@ -21,16 +28,6 @@
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
 			return personligIndkomst + (+nettoKapitalIndkomstEfterModregning);
-		}
-	}
-
-	public class BundskatBeregner
-	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
-		{
-			var grundlagBeregner = new BundskatGrundlagBeregner();
-			var grundlag = grundlagBeregner.BeregnGrundlag(indkomster);
-			return Constants.Bundskattesats * grundlag;
 		}
 	}
 }

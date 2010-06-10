@@ -36,6 +36,13 @@ namespace Maxfire.Skat
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	public class SkattepligtigIndkomstUnderskudBeregner
 	{
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public SkattepligtigIndkomstUnderskudBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
 		/// <summary>
 		/// Modregner først årets (eventuelle) underskud i egen og derefter ægtefælles skattepligtige indkomst og skatter, dernæst bliver
 		/// et (eventuelt) fremført underskud modregnet på samme måde, og endelig bliver et eventuelt restunderskud fremført til næste 
@@ -44,9 +51,10 @@ namespace Maxfire.Skat
 		/// <param name="indkomster">De indkomster, hvor underskuddet bliver modregnet</param>
 		/// <param name="skatter">De skatter, hvor underskud bliver modregnet</param>
 		/// <param name="kommunaleSatser">Kommunale skattesatser</param>
+		/// <param name="skatteAar">Skatteåret</param>
 		/// <returns>Resultatet</returns>
 		public ValueTuple<ModregnUnderskudResult> ModregningAfUnderskud(ValueTuple<PersonligeBeloeb> indkomster, 
-			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var skattepligtigeIndkomster = indkomster.Map(x => x.SkattepligtigIndkomst);
 			
@@ -55,7 +63,7 @@ namespace Maxfire.Skat
 
 			var modregnAaretsUnderskudResult 
 				= modregnEgenOgAegtefaelleUnderskudOgUnderskudsvaerdi(indkomster, skattepligtigeIndkomster,
-						skatter, aaretsUnderskud, kommunaleSatser, 
+						skatter, aaretsUnderskud, kommunaleSatser, skatteAar,
 							(value, index) => indkomster[index].ModregnetUnderskudSkattepligtigIndkomst -= value);
 
 			
@@ -66,7 +74,7 @@ namespace Maxfire.Skat
 			
 			var modregnFremfoertUnderskudResult
 				= modregnEgenOgAegtefaelleUnderskudOgUnderskudsvaerdi(indkomster, skattepligtigeIndkomsterEfterModregningAfAaretsUnderskud, 
-						skatter - modregningSkatter, fremfoertUnderskud, kommunaleSatser, 
+						skatter - modregningSkatter, fremfoertUnderskud, kommunaleSatser, skatteAar,
 							(value, index) => indkomster[index].FremfoertUnderskudSkattepligtigIndkomst -= value);
 
 			return (modregnAaretsUnderskudResult + modregnFremfoertUnderskudResult)
@@ -92,16 +100,17 @@ namespace Maxfire.Skat
 			return modregnResult.ToModregnSkatterResultEx(skattevaerdiOmregnere.Cast<SkattevaerdiOmregner, ISkattevaerdiOmregner>());
 		}
 
-		private static ValueTuple<BeregnModregningerResult> modregnEgenOgAegtefaelleUnderskudOgUnderskudsvaerdi(
+		private ValueTuple<BeregnModregningerResult> modregnEgenOgAegtefaelleUnderskudOgUnderskudsvaerdi(
 			ValueTuple<PersonligeBeloeb> indkomster, 
 			ValueTuple<decimal> skattepligtigeIndkomster, 
 			ValueTuple<SkatterAfPersonligIndkomst> skatter, 
 			ValueTuple<decimal> underskud, 
 			ValueTuple<KommunaleSatser> kommunaleSatser,
+			int skatteAar,
 			Action<decimal, int> nulstilHandler)
 		{
 			// Modregn i egen skattepligtig indkomst og skatter
-			var modregnEgetUnderskudResult = modregnUnderskudOgUnderskudsvaerdi(skattepligtigeIndkomster, skatter, underskud, kommunaleSatser);
+			var modregnEgetUnderskudResult = modregnUnderskudOgUnderskudsvaerdi(skattepligtigeIndkomster, skatter, underskud, kommunaleSatser, skatteAar);
 			var restunderskud = modregnEgetUnderskudResult.Map((x, index) => x.GetRestunderskud(underskud[index]));
 
 			var modregningIndkomster = modregnEgetUnderskudResult.Map(x => x.ModregningUnderskudSkattepligtigIndkomst);
@@ -132,7 +141,7 @@ namespace Maxfire.Skat
 			var skattepligtigeIndkomsterEfterEgenModregning = indkomster.Map(x => x.SkattepligtigIndkomst);
 			var overfoertUnderskud = restunderskud.Swap();
 			var modregnOverfoertUnderskudResult = modregnUnderskudOgUnderskudsvaerdi(skattepligtigeIndkomsterEfterEgenModregning,
-			                                             skatter - modregningSkatter, overfoertUnderskud, kommunaleSatser);
+			                                             skatter - modregningSkatter, overfoertUnderskud, kommunaleSatser, skatteAar);
 			var overfoertRestunderskud = modregnOverfoertUnderskudResult.Map((x, index) => x.GetRestunderskud(overfoertUnderskud[index]));
 			var tilbagefoertUnderskud = overfoertRestunderskud.Swap();
 
@@ -158,10 +167,10 @@ namespace Maxfire.Skat
 			return modregnEgetUnderskudResult + modregnOverfoertUnderskudResult.SwapUnderskud();
 		}
 
-		private static ValueTuple<BeregnModregningerResult> modregnUnderskudOgUnderskudsvaerdi(ValueTuple<decimal> skattepligtigeIndkomster, 
-			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<decimal> underskud, ValueTuple<KommunaleSatser> kommunaleSatser) 
+		private ValueTuple<BeregnModregningerResult> modregnUnderskudOgUnderskudsvaerdi(ValueTuple<decimal> skattepligtigeIndkomster, 
+			ValueTuple<SkatterAfPersonligIndkomst> skatter, ValueTuple<decimal> underskud, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar) 
 		{
-			var skattevaerdiOmregnere = getUnderskudSkattevaerdiBeregnere(kommunaleSatser);
+			var skattevaerdiOmregnere = getUnderskudSkattevaerdiBeregnere(kommunaleSatser, skatteAar);
 
 			// Modregn underskud i positiv skattepligtige indkomst
 			var modregnIndkomstResults = skattepligtigeIndkomster.ModregnUnderskud(underskud);
@@ -178,14 +187,14 @@ namespace Maxfire.Skat
 					underskud[index] - restunderskud[index]));
 		}
 
-		private static ValueTuple<SkattevaerdiOmregner> getUnderskudSkattevaerdiBeregnere(ValueTuple<KommunaleSatser> kommunaleSatser)
+		private ValueTuple<SkattevaerdiOmregner> getUnderskudSkattevaerdiBeregnere(ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			return kommunaleSatser.Map(getUnderskudSkattevaerdiBeregner);
+			return kommunaleSatser.Map(satser => getUnderskudSkattevaerdiBeregner(satser, skatteAar));
 		}
 
-		private static SkattevaerdiOmregner getUnderskudSkattevaerdiBeregner(KommunaleSatser kommunaleSatser)
+		private SkattevaerdiOmregner getUnderskudSkattevaerdiBeregner(KommunaleSatser kommunaleSatser, int skatteAar)
 		{
-			return new SkattevaerdiOmregner(kommunaleSatser.KommuneOgKirkeskattesats + Constants.Sundhedsbidragsats);
+			return new SkattevaerdiOmregner(kommunaleSatser.KommuneOgKirkeskattesats + _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar));
 		}
 	}
 }

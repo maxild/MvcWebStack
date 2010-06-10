@@ -9,16 +9,23 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class AktieindkomstskatLavesteTrinBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public AktieindkomstskatLavesteTrinBeregner(ISkattelovRegistry skattelovRegistry)
 		{
-			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			return indkomster.Map(indkomst => BeregnSkat(indkomst, skatteAar));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst, int skatteAar)
 		{
 			decimal beloebUnderLavesteProgressionsgraense 
-				= Math.Min(Constants.AktieIndkomstLavesteProgressionsgraense, indkomst.AktieIndkomst).NonNegative();
-			return Constants.AktieIndkomstLavesteSkattesats * beloebUnderLavesteProgressionsgraense;
+				= Math.Min(_skattelovRegistry.GetAktieIndkomstLavesteProgressionsgraense(skatteAar), indkomst.AktieIndkomst).NonNegative();
+			return _skattelovRegistry.GetAktieIndkomstLavesteSkattesats(skatteAar) * beloebUnderLavesteProgressionsgraense;
 		}
 	}
 
@@ -27,18 +34,26 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class AktieindkomstskatMellemsteTrinBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public AktieindkomstskatMellemsteTrinBeregner(ISkattelovRegistry skattelovRegistry)
 		{
-			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
-			decimal beloebUnderProgressionsgraense = Math.Min(Constants.AktieIndkomstHoejesteProgressionsgraense,
+			return indkomster.Map(indkomst => BeregnSkat(indkomst, skatteAar));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst, int skatteAar)
+		{
+			decimal beloebUnderProgressionsgraense 
+				= Math.Min(_skattelovRegistry.GetAktieIndkomstHoejesteProgressionsgraense(skatteAar),
 															  indkomst.AktieIndkomst);
 			decimal beloebOverLavesteProgressionsgraenseOgUnderHoejesteProgressionsgraense 
-				= (beloebUnderProgressionsgraense - Constants.AktieIndkomstLavesteProgressionsgraense).NonNegative();
-			return Constants.AktieIndkomstMellemsteSkattesats * beloebOverLavesteProgressionsgraenseOgUnderHoejesteProgressionsgraense;
+				= (beloebUnderProgressionsgraense - _skattelovRegistry.GetAktieIndkomstLavesteProgressionsgraense(skatteAar)).NonNegative();
+			return _skattelovRegistry.GetAktieIndkomstMellemsteSkattesats(skatteAar) * beloebOverLavesteProgressionsgraenseOgUnderHoejesteProgressionsgraense;
 		}
 	}
 
@@ -47,16 +62,23 @@ namespace Maxfire.Skat
 	/// </summary>
 	public class AktieindkomstskatHoejesteTrinBeregner
 	{
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster)
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public AktieindkomstskatHoejesteTrinBeregner(ISkattelovRegistry skattelovRegistry)
 		{
-			return indkomster.Map(indkomst => BeregnSkat(indkomst));
+			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public decimal BeregnSkat(PersonligeBeloeb indkomst)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			return indkomster.Map(indkomst => BeregnSkat(indkomst, skatteAar));
+		}
+
+		public decimal BeregnSkat(PersonligeBeloeb indkomst, int skatteAar)
 		{
 			decimal beloebOverHoejesteProgressionsgraense 
-				= (indkomst.AktieIndkomst - Constants.AktieIndkomstHoejesteProgressionsgraense).NonNegative();
-			return Constants.AktieIndkomstHoejesteSkattesats * beloebOverHoejesteProgressionsgraense;
+				= (indkomst.AktieIndkomst - _skattelovRegistry.GetAktieIndkomstHoejesteProgressionsgraense(skatteAar)).NonNegative();
+			return _skattelovRegistry.GetAktieIndkomstHoejesteSkattesats(skatteAar) * beloebOverHoejesteProgressionsgraense;
 		}
 	}
 }

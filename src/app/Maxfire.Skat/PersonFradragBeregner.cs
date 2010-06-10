@@ -36,10 +36,12 @@ namespace Maxfire.Skat
 	// til nedsættelse efter § 9 af den anden ægtefælles skatter.
 	public class PersonfradragBeregner
 	{
+		private readonly ISkattelovRegistry _skattelovRegistry;
 		private readonly List<SkatteModregner<Skatter>> _skatteModregnere;
 
-		public PersonfradragBeregner()
+		public PersonfradragBeregner(ISkattelovRegistry skattelovRegistry)
 		{
+			_skattelovRegistry = skattelovRegistry;
 			_skatteModregnere = new List<SkatteModregner<Skatter>>
 			{
 				// I det omfang skatteværdien af personfradraget mht. sundhedsbidrag ikke kan fradrages i selve 
@@ -97,28 +99,28 @@ namespace Maxfire.Skat
 		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
-		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradrag(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
-			var modregnEgneSkatterResults = ModregningAfPersonfradragEgneSkatter(skatter, kommunaleSatser);
+			var modregnEgneSkatterResults = ModregningAfPersonfradragEgneSkatter(skatter, kommunaleSatser, skatteAar);
 
 			// Modregning af ....
-			return ModregningAfOverfoertPersonfradragTilPartner(modregnEgneSkatterResults, kommunaleSatser);
+			return ModregningAfOverfoertPersonfradragTilPartner(modregnEgneSkatterResults, kommunaleSatser, skatteAar);
 		}
 
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
 		/// </summary>
-		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradragEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradragEgneSkatter(ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser);
-			return skatter.Map((skat, index) => ModregningAfSkattevaerdier(skat, skattevaerdier[index], kommunaleSatser[index]));
+			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser, skatteAar);
+			return skatter.Map((skat, index) => ModregningAfSkattevaerdier(skat, skattevaerdier[index], kommunaleSatser[index], skatteAar));
 		}
 
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
 		/// </summary>
-		public ModregnSkatterResultEx<Skatter> ModregningAfSkattevaerdier(Skatter skatter, Skatter skattevaerdier, KommunaleSatser kommunaleSatser)
+		public ModregnSkatterResultEx<Skatter> ModregningAfSkattevaerdier(Skatter skatter, Skatter skattevaerdier, KommunaleSatser kommunaleSatser, int skatteAar)
 		{
 			var modregninger = new Skatter();
 			
@@ -131,7 +133,7 @@ namespace Maxfire.Skat
 				modregninger += modregningerAfSkat;
 			});
 
-			var omregner = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser);
+			var omregner = new PersonfradragSkattevaerdiOmregner(kommunaleSatser, _skattelovRegistry, skatteAar);
 
 			var skattevaerdi = skattevaerdier.Sum();
 			//var fradrag = omregner.BeregnFradragsbeloeb(skattevaerdi);
@@ -142,7 +144,7 @@ namespace Maxfire.Skat
 
 		// Er dette summen eller den ekstra overførsel? Lige nu er det summen
 		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfOverfoertPersonfradragTilPartner(ValueTuple<ModregnSkatterResultEx<Skatter>> modregnEgneSkatterResults, 
-			ValueTuple<KommunaleSatser> kommunaleSatser)
+			ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			if (modregnEgneSkatterResults.Size == 1)
 			{
@@ -169,13 +171,13 @@ namespace Maxfire.Skat
 			
 			// Skatteværdierne af det overførte fradragsbeløb bliver beregnet med ægtefællens egne skatteprocenter.
 			var overfoertFradragTilPartner = ikkeUdnyttetFradragEgneSkatter[i];
-			var overfoerteSkattevaerdierTilPartner = PersonfradragSkattevaerdiOmregner.Create(kommunaleSatserOfPartner)
-				.BeregnSkattevaerdier(overfoertFradragTilPartner);
+			var omregner = new PersonfradragSkattevaerdiOmregner(kommunaleSatserOfPartner, _skattelovRegistry, skatteAar);
+			var overfoerteSkattevaerdierTilPartner = omregner.BeregnSkattevaerdier(overfoertFradragTilPartner);
 			
 			// Modregning af skatteværdierne i ægtefællens egne indkomstskatter.
 			var modregnPartnersEgneSkatterResult = ModregningAfSkattevaerdier(skatterOfPartner,
 																				overfoerteSkattevaerdierTilPartner,
-																				kommunaleSatserOfPartner);
+																				kommunaleSatserOfPartner, skatteAar);
 			
 			// Beregn evt. resterende ikke-udnyttet personfradrag, der 'tabes på gulvet'
 			var udnyttedeSkattevaerdierOfPartner = modregnPartnersEgneSkatterResult.UdnyttedeSkattevaerdier;
@@ -218,12 +220,12 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn skatteværdier af personfradraget for kommuneskat, kirkeskat, bundskat og sundhedsbidrag.
 		/// </summary>
-		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<KommunaleSatser> kommunaleSatser)
+		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			return kommunaleSatser.Map(kommunaleSats => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats));
+			return kommunaleSatser.Map(kommunaleSats => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats, skatteAar));
 		}
 
-		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser)
+		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser, int skatteAar)
 		{
 			// TODO: Personfradrag er individuelt bestemt af alder og civilstand
 			// Personfradrag opgøres efter § 10 og skatteværdien heraf efter § 12.
@@ -232,8 +234,8 @@ namespace Maxfire.Skat
 			// Ved opgørelsen anvendes samme procent som ved beregningen af indkomstskat til kommunen samt kirkeskat. 
 			// Ved beregningen af indkomstskat til staten beregnes skatteværdien af personfradraget med beskatnings-
 			// procenterne for bundskat efter § 5, nr. 1, og for sundhedsbidrag efter § 5, nr. 4.
-
-			return PersonfradragSkattevaerdiOmregner.Create(kommunaleSatser).BeregnSkattevaerdier(Constants.Personfradrag);
+			var omregner = new PersonfradragSkattevaerdiOmregner(kommunaleSatser, _skattelovRegistry, skatteAar);
+			return omregner.BeregnSkattevaerdier(_skattelovRegistry.GetPersonfradrag(skatteAar));
 		}
 	}
 }
