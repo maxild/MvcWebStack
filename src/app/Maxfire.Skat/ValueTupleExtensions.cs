@@ -162,5 +162,15 @@ namespace Maxfire.Skat
 			}
 			return new ValueTuple<decimal>(list);
 		}
+
+		public static ValueTuple<T> Loft<T>(this ValueTuple<T> tuple, T maksimalOevreGraense)
+		{
+			return tuple.Map(value => Operator<T>.Min(value, maksimalOevreGraense));
+		}
+
+		public static ValueTuple<T> Bund<T>(this ValueTuple<T> tuple, T minimalNedreGraense)
+		{
+			return tuple.Map(value => Operator<T>.Max(value, minimalNedreGraense));
+		}
 	}
 }

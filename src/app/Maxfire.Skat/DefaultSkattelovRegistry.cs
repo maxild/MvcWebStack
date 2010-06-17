@@ -18,7 +18,7 @@ namespace Maxfire.Skat
 		{
 			{"GetAktieIndkomstLavesteProgressionsgraense",  values(48300) },
 			{"GetAktieIndkomstHoejesteProgressionsgraense", values(106100, decimal.MaxValue) }, // Bortfalder fra og med 2010
-			{"GetAktieIndkomstLavesteSkattesats",           values(0.28m) },
+			{"GetAktieIndkomstLavesteSkattesats",           values(0.28m, 0.28m, 0.28m, 0.27m) },
 			{"GetAktieIndkomstMellemsteSkattesats",         values(0.43m, 0.42m) },
 			{"GetAktieIndkomstHoejesteSkattesats",          values(0.45m, 0) }, // Bortfalder fra og med 2010
 			{"GetAMBidragSkattesats",                       values(0.08m) },
@@ -27,10 +27,14 @@ namespace Maxfire.Skat
 			{"GetMellemSkattesats",                         values(0.06m, 0) }, // Bortfalder fra og med 2010
 			{"GetTopSkattesats",                            values(0.15m) },
 			{"GetSkatteloftSkattesats",                     values(0.59m, 0.515m) },
-			{"GetPersonfradrag",                            values(42900) }, // TODO: Ugifte personer under 18 år har reduceret person fradrag
+			{"GetPersonfradrag",                            values(42900) }, // TODO: Ugifte personer under 18 år har reduceret person fradrag på 32200 (2010 niveau)
 			{"GetMellemskatBundfradrag",                    values(347200, decimal.MaxValue) }, // Bortfalder fra og med 2010
-			{"GetTopskatBundfradrag",                       values(347200, 389900) }, // 409100 fra og med 2011????
+			{"GetTopskatBundfradrag",                       values(347200, 389900, 409100) },
 			{"GetPositivNettoKapitalIndkomstBundfradrag",   values(0, 40000) }, // Indført fra og med 2010
+			{"GetNegativNettoKapitalIndkomstGrundbeloeb",   values(0, 0, 0, 50000) }, // Indført fra og med 2012 (beløbsgrænsen reguleres ikke efter 2012)
+			{"GetNegativNettoKapitalIndkomstSats",          values(0, 0, 0, 0.01m, 0.02m, 0.03m, 0.04m, 0.05m, 0.06m, 0.07m, 0.08m) }, // Indført fra og med 2012
+			{"GetBeskaeftigelsesfradragGrundbeloeb",        values(13600,   13600,   13600,   14100,  14400,  14900,   15400,  16000, 16600,  17300,  17900) },
+			{"GetBeskaeftigelsesfradragSats",               values(0.0425m, 0.0425m, 0.0425m, 0.044m, 0.045m, 0.0465m, 0.048m, 0.05m, 0.052m, 0.054m, 0.056m) },
 		};
 
 		static decimal[] values(params decimal[] values)
@@ -139,6 +143,26 @@ namespace Maxfire.Skat
 		}
 
 		public decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetNegativNettoKapitalIndkomstGrundbeloeb(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetNegativNettoKapitalIndkomstSats(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetBeskaeftigelsesfradragSats(int skatteAar)
 		{
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}

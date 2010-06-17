@@ -57,7 +57,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var mellemskatGrundlagBeregner = new MellemskatBeregner(_skattelovRegistry);
 
-			var grundlagFoerBundfradrag = mellemskatGrundlagBeregner.BeregnBruttoGrundlag(indkomster);
+			var grundlagFoerBundfradrag = MellemskatBeregner.BeregnBruttoGrundlag(indkomster);
 			var udnyttetBundfradrag = mellemskatGrundlagBeregner.BeregnSambeskattetBundfradrag(indkomster, SKATTE_AAR);
 			var grundlag = mellemskatGrundlagBeregner.BeregnGrundlag(indkomster, SKATTE_AAR);
 

@@ -43,6 +43,7 @@
     <Compile Include="ISkattelovRegistry.cs" />
     <Compile Include="ISumable.cs" />
     <Compile Include="KommunaleSatser.cs" />
+    <Compile Include="KompensationBeregner.cs" />
     <Compile Include="Mellemskat.cs" />
     <Compile Include="ModregnIndkomstResult.cs" />
     <Compile Include="Modregning.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="ModregnSkatterResultEx.cs" />
     <Compile Include="ModregnSkatterResultExtensions.cs" />
     <Compile Include="ModregnUnderskudResult.cs" />
+    <Compile Include="NegativNettoKapitalIndkomstNedslagsberegner.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />

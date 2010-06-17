@@ -76,5 +76,25 @@
 		{
 			return 0m;
 		}
+
+		public virtual decimal GetNegativNettoKapitalIndkomstGrundbeloeb(int skatteAar)
+		{
+			return 0m;
+		}
+
+		public virtual decimal GetNegativNettoKapitalIndkomstSats(int skatteAar)
+		{
+			return 0m;
+		}
+
+		public decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar)
+		{
+			return 0;
+		}
+
+		public decimal GetBeskaeftigelsesfradragSats(int skatteAar)
+		{
+			return 0;
+		}
 	}
 }

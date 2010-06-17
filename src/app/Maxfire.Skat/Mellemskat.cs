@@ -15,10 +15,17 @@
 			return _skattelovRegistry.GetMellemSkattesats(skatteAar) * grundlag;
 		}
 
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
+			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster, skatteAar);
+			return +(bruttoGrundlag - udnyttetBundfradrag);
+		}
+
 		/// <summary>
 		/// Beregn mellemskattegrundlaget før bundfradrag.
 		/// </summary>
-		public ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
+		public static ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
 		{
 			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
@@ -37,13 +44,6 @@
 		{
 			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
 			return bruttoGrundlag.BeregnSambeskattetBundfradrag(_skattelovRegistry.GetMellemskatBundfradrag(skatteAar));
-		}
-
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
-		{
-			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster, skatteAar);
-			return +(bruttoGrundlag - udnyttetBundfradrag);
 		}
 	}
 }

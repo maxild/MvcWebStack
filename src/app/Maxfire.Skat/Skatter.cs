@@ -3,6 +3,7 @@ using System.Text;
 
 namespace Maxfire.Skat
 {
+	// TODO: Rename to PersonSkatter (or IndkomstSkatter, or SkatterAfIndkomst)
 	/// <summary>
 	/// De samlede skatter
 	/// </summary>

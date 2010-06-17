@@ -59,6 +59,14 @@
 		decimal GetTopskatBundfradrag(int skatteAar);
 
 		decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar);
+
+		decimal GetNegativNettoKapitalIndkomstGrundbeloeb(int skatteAar);
+
+		decimal GetNegativNettoKapitalIndkomstSats(int skatteAar);
+
+		decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar);
+
+		decimal GetBeskaeftigelsesfradragSats(int skatteAar);
 	}
 
 	public interface ISkattelovRegistry : IAktieindkomstRegistry, ISkattepligtigIndkomstRegistry
