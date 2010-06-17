@@ -51,6 +51,7 @@
     <Compile Include="AbstractFakeSkattelovRegistry.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
+    <Compile Include="NegativNettoKapitalIndkomstNedslagBeregnerTester.cs" />
     <Compile Include="PartialTrustContext.cs" />
     <Compile Include="PersonfradragBeregnerTester.cs" />
     <Compile Include="SkatteModregnerTester.cs" />

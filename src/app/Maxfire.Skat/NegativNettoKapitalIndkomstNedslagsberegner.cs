@@ -33,31 +33,44 @@ namespace Maxfire.Skat
 
 		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<Skatter> skatter, int skatteAar)
 		{
+			var nedslag = BeregnNedslag(indkomster, skatteAar);
+			return ModregnMedNedslag(skatter, nedslag);
+		}
+
+		public ValueTuple<decimal> BeregnNedslag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
 			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomst);
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 			var grundbeloeb = _skattelovRegistry.GetNegativNettoKapitalIndkomstGrundbeloeb(skatteAar);
-			var negativNettoKapitalIndkomstEfterModregningDerIkkeOverstigerGrundbeloeb 
+			var negativNettoKapitalIndkomstEfterModregningDerIkkeOverstigerGrundbeloeb
 				= (+(-nettoKapitalIndkomstEfterModregning)).Loft(grundbeloeb);
 
 			var sats = _skattelovRegistry.GetNegativNettoKapitalIndkomstSats(skatteAar);
 			var nedslag = sats * negativNettoKapitalIndkomstEfterModregningDerIkkeOverstigerGrundbeloeb;
 
+			return nedslag;
+		}
+
+// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(ValueTuple<Skatter> skatter, ValueTuple<decimal> nedslag)
+// ReSharper restore MemberCanBeMadeStatic.Global
+		{
 			var skatteModregner = getSkatteModregner();
 
 			// Modregn nedslag i egne skatter
 			var modregningerFraEgetNedslag = skatteModregner.BeregnModregninger(skatter, nedslag);
-			
-			if (nettoKapitalIndkomst.Size == 1)
+
+			if (skatter.Size == 1)
 			{
 				return new ModregnSkatterResult<Skatter>(skatter[0], nedslag[0], modregningerFraEgetNedslag[0]).ToTuple();
 			}
-			
+
 			// Modregn evt. uudnyttet nedslag i ægtefælles skatter
 			var udnyttetNedslag = modregningerFraEgetNedslag.Map(x => x.Sum());
 			var ikkeUdnyttetNedslag = nedslag - udnyttetNedslag;
 			var overfoertNedslag = ikkeUdnyttetNedslag.Swap();
-			
-			var modregningerFraOverfoertNedslag 
+
+			var modregningerFraOverfoertNedslag
 				= skatteModregner.BeregnModregninger(skatter - modregningerFraEgetNedslag, overfoertNedslag);
 			var udnyttetOverfortNedslag = modregningerFraOverfoertNedslag.Map(x => x.Sum());
 
@@ -65,7 +78,7 @@ namespace Maxfire.Skat
 			var overfortUdnyttetNedslag = udnyttetOverfortNedslag - udnyttetOverfortNedslag.Swap();
 
 			//...sådan at IkkeUdnyttetSkattevaerdi er korrekt på den returnerede værdi
-			return skatter.Map((skat, index) => 
+			return skatter.Map((skat, index) =>
 				new ModregnSkatterResult<Skatter>(skat, nedslag[index] + overfortUdnyttetNedslag[index],
 					modregningerFraEgetNedslag[index] + modregningerFraOverfoertNedslag[index]));
 		}
