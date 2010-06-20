@@ -1,5 +1,17 @@
 ﻿namespace Maxfire.Skat
 {
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	// PSL § 6.
+	//
+	// Stk. 1. Skatten efter § 5, nr. 1, beregnes med den procent, der anføres i stk. 2, af den personlige
+	// indkomst med tillæg af positiv nettokapitalindkomst.
+	// (Stk. 2. angiver bundskattesatsen 2010-19)
+	// Stk. 3. Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb i den anden
+	// ægtefælles positive nettokapitalindkomst, inden skatten efter stk. 1 og 2 beregnes. Det er en forudsætning,
+	// at ægtefællerne er samlevende ved indkomstårets udløb.
+	//
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	public class BundskatBeregner
 	{
 		private readonly ISkattelovRegistry _skattelovRegistry;
@@ -25,8 +37,6 @@
 			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 
-			// §6, stk 3: Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb 
-			// i den anden ægtefælles positive kapitalindkomst inden beregning af bundskatten.
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
 			return personligIndkomst + (+nettoKapitalIndkomstEfterModregning);
