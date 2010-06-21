@@ -187,7 +187,15 @@ namespace Maxfire.Skat
 		/// </summary>
 		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
 		{
-			return +(tuple - new ValueTuple<T>(tuple.Size, () => limit));
+			return tuple.DifferencesGreaterThan(new ValueTuple<T>(tuple.Size, () => limit));
+		}
+
+		/// <summary>
+		/// Frembring tuple af ikke negative værdier af forskelle, der er større end en angivet grænseværdi.
+		/// </summary>
+		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, ValueTuple<T> limits)
+		{
+			return +(tuple - limits);
 		}
 	}
 }

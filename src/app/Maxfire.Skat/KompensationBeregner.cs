@@ -62,10 +62,14 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnForskelsbeloeb(ValueTuple<PersonligeBeloeb> indkomster)
+		public ValueTuple<decimal> BeregnForskelsbeloeb(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
+			// TODO: Satser er hårdkodede
+
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
-			var bundLettelse = 0.015m * bundskatBeregner.BeregnGrundlag(indkomster).DifferencesGreaterThan(44800);
+			var bundLettelseBundfradrag 
+				= personer.Map(person => _skattelovRegistry.GetBundLettelseBundfradrag(skatteAar, person.GetAlder(skatteAar), personer.Size > 1));
+			var bundLettelse = 0.015m * bundskatBeregner.BeregnGrundlag(indkomster).DifferencesGreaterThan(bundLettelseBundfradrag);
 
 
 
