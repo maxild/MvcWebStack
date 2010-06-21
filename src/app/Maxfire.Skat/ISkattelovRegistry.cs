@@ -54,7 +54,10 @@
 		decimal GetTopskatBundfradrag(int skatteAar);
 		decimal GetPositivNettoKapitalIndkomstGrundbeloeb(int skatteAar);
 
-		decimal GetPersonfradrag(int skatteAar);
+		decimal GetPersonfradrag(int skatteAar, int alder, bool gift);
+		decimal GetBundLettelseBundfradrag(int skatteAar, int alder, bool gift);
+		decimal GetMellemLettelseBundfradrag(int skatteAar);
+		decimal GetTopLettelseBundfradrag(int skatteAar);
 
 		decimal GetSkatteloftSkattesats(int skatteAar);
 

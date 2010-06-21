@@ -53,6 +53,7 @@
     <Compile Include="ModregnSkatterResultExtensions.cs" />
     <Compile Include="ModregnUnderskudResult.cs" />
     <Compile Include="NegativNettoKapitalIndkomstNedslagsberegner.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="PersonFradragBeregner.cs" />
     <Compile Include="PersonfradragSkattevaerdiOmregner.cs" />
     <Compile Include="PersonligeBeloeb.cs" />

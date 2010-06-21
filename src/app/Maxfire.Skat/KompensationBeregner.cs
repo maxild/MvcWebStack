@@ -55,6 +55,33 @@
 	/////////////////////////////////////////////////////////////////////////////////////////
 	public class KompensationBeregner
 	{
-		
+		private readonly ISkattelovRegistry _skattelovRegistry;
+
+		public KompensationBeregner(ISkattelovRegistry skattelovRegistry)
+		{
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public ValueTuple<decimal> BeregnForskelsbeloeb(ValueTuple<PersonligeBeloeb> indkomster)
+		{
+			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
+			var bundLettelse = 0.015m * bundskatBeregner.BeregnGrundlag(indkomster).DifferencesGreaterThan(44800);
+
+
+
+			return null;
+		}
+
+		private static SkatteModregner<Skatter> getSkatteModregner()
+		{
+			return new SkatteModregner<Skatter>(
+				Modregning<Skatter>.Af(x => x.Bundskat),
+				Modregning<Skatter>.Af(x => x.Topskat),
+				Modregning<Skatter>.Af(x => x.Sundhedsbidrag),
+				Modregning<Skatter>.Af(x => x.AktieindkomstskatOverGrundbeloebet),
+				Modregning<Skatter>.Af(x => x.Kommuneskat),
+				Modregning<Skatter>.Af(x => x.Kirkeskat)
+			);
+		}
 	}
 }

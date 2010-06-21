@@ -27,7 +27,12 @@ namespace Maxfire.Skat
 			{"GetMellemSkattesats",                         values(0.06m, 0) }, // Bortfalder fra og med 2010
 			{"GetTopSkattesats",                            values(0.15m) },
 			{"GetSkatteloftSkattesats",                     values(0.59m, 0.515m) },
-			{"GetPersonfradrag",                            values(42900) }, // TODO: Ugifte personer under 18 år har reduceret person fradrag på 32200 (2010 niveau)
+			{"getPersonfradragForVoksne",                   values(42900) },
+			{"getPersonfradragForBoern",                    values(32200) },
+			{"getBundLettelseBundfradragForVoksne",         values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 44800) },
+			{"getBundLettelseBundfradragForBoern",          values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 33600) },
+			{"GetMellemLettelseBundfradrag",                values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) },
+			{"GetTopLettelseBundfradrag",                   values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) },
 			{"GetMellemskatBundfradrag",                    values(347200, decimal.MaxValue) }, // Bortfalder fra og med 2010
 			{"GetTopskatBundfradrag",                       values(347200, 389900, 409100) },
 			{"GetPositivNettoKapitalIndkomstGrundbeloeb",   values(0, 40000) }, // Indført fra og med 2010
@@ -70,6 +75,21 @@ namespace Maxfire.Skat
 			if (skatteAar < MIN_SKATTEAAR|| skatteAar > MAX_SKATTEAAR)
 				throw new ArgumentOutOfRangeException("skatteAar", skatteAar, 
 					string.Format("Beløbsgrænser eller skattesatser kan ikke aflæses for skatteår udenfor intervallet {0}..{1}.", MIN_SKATTEAAR, MAX_SKATTEAAR));
+		}
+
+		public decimal GetPersonfradrag(int skatteAar, int alder, bool gift)
+		{
+			return isGiftOrVoksen(gift, alder) ? getPersonfradragForVoksne(skatteAar) : getPersonfradragForBoern(skatteAar);
+		}
+
+		public decimal GetBundLettelseBundfradrag(int skatteAar, int alder, bool gift)
+		{
+			return isGiftOrVoksen(gift, alder) ? getBundLettelseBundfradragForVoksne(skatteAar) : getBundLettelseBundfradragForBoern(skatteAar);
+		}
+
+		static bool isGiftOrVoksen(bool gift, int alder)
+		{
+			return gift || alder >= 18;
 		}
 
 		public decimal GetAktieIndkomstLavesteProgressionsgraense(int skatteAar)
@@ -127,7 +147,32 @@ namespace Maxfire.Skat
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}
 
-		public decimal GetPersonfradrag(int skatteAar)
+		static decimal getPersonfradragForVoksne(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		static decimal getPersonfradragForBoern(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		static decimal getBundLettelseBundfradragForVoksne(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		static decimal getBundLettelseBundfradragForBoern(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetMellemLettelseBundfradrag(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetTopLettelseBundfradrag(int skatteAar)
 		{
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}

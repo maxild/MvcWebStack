@@ -57,7 +57,22 @@
 			return 0m;
 		}
 
-		public virtual decimal GetPersonfradrag(int skatteAar)
+		public virtual decimal GetPersonfradrag(int skatteAar, int alder, bool gift)
+		{
+			return 0m;
+		}
+
+		public virtual decimal GetBundLettelseBundfradrag(int skatteAar, int alder, bool gift)
+		{
+			return 0m;
+		}
+
+		public virtual decimal GetMellemLettelseBundfradrag(int skatteAar)
+		{
+			return 0m;
+		}
+
+		public virtual decimal GetTopLettelseBundfradrag(int skatteAar)
 		{
 			return 0m;
 		}
