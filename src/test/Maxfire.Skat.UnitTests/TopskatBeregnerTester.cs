@@ -7,7 +7,7 @@ namespace Maxfire.Skat.UnitTests
 	{
 		class FakeSkattelovRegistry : AbstractFakeSkattelovRegistry
 		{
-			public override decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar)
+			public override decimal GetPositivNettoKapitalIndkomstGrundbeloeb(int skatteAar)
 			{
 				return 0;
 			}

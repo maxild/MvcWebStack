@@ -48,24 +48,20 @@
 
 		decimal GetMellemSkattesats(int skatteAar);
 
-		decimal GetTopSkattesats(int skatteAar);
+		decimal GetMellemskatBundfradrag(int skatteAar);
 
-		decimal GetSkatteloftSkattesats(int skatteAar);
+		decimal GetTopSkattesats(int skatteAar);
+		decimal GetTopskatBundfradrag(int skatteAar);
+		decimal GetPositivNettoKapitalIndkomstGrundbeloeb(int skatteAar);
 
 		decimal GetPersonfradrag(int skatteAar);
 
-		decimal GetMellemskatBundfradrag(int skatteAar);
-
-		decimal GetTopskatBundfradrag(int skatteAar);
-
-		decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar);
+		decimal GetSkatteloftSkattesats(int skatteAar);
 
 		decimal GetNegativNettoKapitalIndkomstGrundbeloeb(int skatteAar);
-
 		decimal GetNegativNettoKapitalIndkomstSats(int skatteAar);
 
 		decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar);
-
 		decimal GetBeskaeftigelsesfradragSats(int skatteAar);
 	}
 

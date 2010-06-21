@@ -38,7 +38,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(347200);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(347200);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(0);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(0);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(0);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
@@ -64,7 +64,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(389900);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(0);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
@@ -90,7 +90,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(0);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
@@ -116,7 +116,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.01m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14100);
@@ -142,7 +142,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.02m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14400);
@@ -168,7 +168,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.03m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14900);
@@ -194,7 +194,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.04m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(15400);
@@ -220,7 +220,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.05m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(16000);
@@ -246,7 +246,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.06m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(16600);
@@ -272,7 +272,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.07m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(17300);
@@ -298,7 +298,7 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetPersonfradrag(aar).ShouldEqual(42900);
 			_registry.GetMellemskatBundfradrag(aar).ShouldEqual(decimal.MaxValue);
 			_registry.GetTopskatBundfradrag(aar).ShouldEqual(409100);
-			_registry.GetPositivNettoKapitalIndkomstBundfradrag(aar).ShouldEqual(40000);
+			_registry.GetPositivNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(40000);
 			_registry.GetNegativNettoKapitalIndkomstGrundbeloeb(aar).ShouldEqual(50000);
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.08m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(17900);

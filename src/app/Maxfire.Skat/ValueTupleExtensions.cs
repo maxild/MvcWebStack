@@ -172,5 +172,13 @@ namespace Maxfire.Skat
 		{
 			return tuple.Map(value => Operator<T>.Max(value, minimalNedreGraense));
 		}
+
+		/// <summary>
+		/// Frembring tuple af ikke negative værdier, der er større end en angivet grænseværdi.
+		/// </summary>
+		public static ValueTuple<T> ValuesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
+		{
+			return +(tuple - new ValueTuple<T>(tuple.Size, () => limit));
+		}
 	}
 }

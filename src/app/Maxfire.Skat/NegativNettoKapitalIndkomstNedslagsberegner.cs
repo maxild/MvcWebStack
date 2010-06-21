@@ -21,6 +21,12 @@ namespace Maxfire.Skat
 	// modregnes den ikke udnyttede del i den anden ægtefælles skatter, hvis ægtefællerne 
 	// er samlevende ved indkomstårets udløb.
 	//
+	// TODO: (Fra mail): Med hensyn til skattenedslaget for negativ nettokapitalindkomst under 50.000 
+	// henholdsvis 100.000 kr. for ægtepar, sker beregningen ligeledes for ægtefællernes 
+	// negative nettokapitalindkomst under ét. I dit eksempel vil der blive beregnet nedslag 
+	// af 100.000 kr., og nedslaget vil efterfølgende blive delt mellem ægtefællerne i forhold 
+	// til deres andel af den samlede negative nettokapitalindkomst.
+	//
 	///////////////////////////////////////////////////////////////////////////////////////////
 	public class NegativNettoKapitalIndkomstNedslagBeregner
 	{

@@ -30,7 +30,7 @@ namespace Maxfire.Skat
 			{"GetPersonfradrag",                            values(42900) }, // TODO: Ugifte personer under 18 år har reduceret person fradrag på 32200 (2010 niveau)
 			{"GetMellemskatBundfradrag",                    values(347200, decimal.MaxValue) }, // Bortfalder fra og med 2010
 			{"GetTopskatBundfradrag",                       values(347200, 389900, 409100) },
-			{"GetPositivNettoKapitalIndkomstBundfradrag",   values(0, 40000) }, // Indført fra og med 2010
+			{"GetPositivNettoKapitalIndkomstGrundbeloeb",   values(0, 40000) }, // Indført fra og med 2010
 			{"GetNegativNettoKapitalIndkomstGrundbeloeb",   values(0, 0, 0, 50000) }, // Indført fra og med 2012 (beløbsgrænsen reguleres ikke efter 2012)
 			{"GetNegativNettoKapitalIndkomstSats",          values(0, 0, 0, 0.01m, 0.02m, 0.03m, 0.04m, 0.05m, 0.06m, 0.07m, 0.08m) }, // Indført fra og med 2012
 			{"GetBeskaeftigelsesfradragGrundbeloeb",        values(13600,   13600,   13600,   14100,  14400,  14900,   15400,  16000, 16600,  17300,  17900) },
@@ -142,7 +142,7 @@ namespace Maxfire.Skat
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}
 
-		public decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar)
+		public decimal GetPositivNettoKapitalIndkomstGrundbeloeb(int skatteAar)
 		{
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}

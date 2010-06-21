@@ -72,7 +72,7 @@
 			return 0m;
 		}
 
-		public virtual decimal GetPositivNettoKapitalIndkomstBundfradrag(int skatteAar)
+		public virtual decimal GetPositivNettoKapitalIndkomstGrundbeloeb(int skatteAar)
 		{
 			return 0m;
 		}
