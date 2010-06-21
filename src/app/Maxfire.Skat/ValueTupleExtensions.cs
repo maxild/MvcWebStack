@@ -61,6 +61,9 @@ namespace Maxfire.Skat
 			return new ValueTuple<TItem>(list);
 		}
 
+		/// <summary>
+		/// Har tuple værdier modsat fortegn?
+		/// </summary>
 		public static bool DifferentSign<T>(this ValueTuple<T> tuple)
 		{
 			if (tuple.Size == 1)
@@ -163,20 +166,26 @@ namespace Maxfire.Skat
 			return new ValueTuple<decimal>(list);
 		}
 
+		/// <summary>
+		/// Frembring tuple af værdier, der er mindre eller lig med en en angivet loftværdi.
+		/// </summary>
 		public static ValueTuple<T> Loft<T>(this ValueTuple<T> tuple, T maksimalOevreGraense)
 		{
 			return tuple.Map(value => Operator<T>.Min(value, maksimalOevreGraense));
 		}
 
+		/// <summary>
+		/// Frembring tuple af værdier, der er større eller lig med en angivet bundværdi.
+		/// </summary>
 		public static ValueTuple<T> Bund<T>(this ValueTuple<T> tuple, T minimalNedreGraense)
 		{
 			return tuple.Map(value => Operator<T>.Max(value, minimalNedreGraense));
 		}
 
 		/// <summary>
-		/// Frembring tuple af ikke negative værdier, der er større end en angivet grænseværdi.
+		/// Frembring tuple af ikke negative værdier af forskelle, der er større end en angivet grænseværdi.
 		/// </summary>
-		public static ValueTuple<T> ValuesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
+		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
 		{
 			return +(tuple - new ValueTuple<T>(tuple.Size, () => limit));
 		}

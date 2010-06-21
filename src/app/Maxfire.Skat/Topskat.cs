@@ -70,7 +70,7 @@
 			var topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
 			var positivNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetPositivNettoKapitalIndkomstGrundbeloeb(skatteAar);
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
-			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.ValuesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
+			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
 
 			ValueTuple<decimal> topskatteGrundlag;
 
