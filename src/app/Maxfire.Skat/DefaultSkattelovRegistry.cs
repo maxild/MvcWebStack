@@ -17,10 +17,10 @@ namespace Maxfire.Skat
 		private static readonly IDictionary<string, decimal[]> _registry = new Dictionary<string, decimal[]>
 		{
 			{"GetAktieIndkomstLavesteProgressionsgraense",  values(48300) },
-			{"GetAktieIndkomstHoejesteProgressionsgraense", values(106100, decimal.MaxValue) }, // Bortfalder fra og med 2010
+			{"GetAktieIndkomstHoejesteProgressionsgraense", values(106100, decimal.MaxValue) },   // Bortfalder fra og med 2010
 			{"GetAktieIndkomstLavesteSkattesats",           values(0.28m, 0.28m, 0.28m, 0.27m) },
 			{"GetAktieIndkomstMellemsteSkattesats",         values(0.43m, 0.42m) },
-			{"GetAktieIndkomstHoejesteSkattesats",          values(0.45m, 0) }, // Bortfalder fra og med 2010
+			{"GetAktieIndkomstHoejesteSkattesats",          values(0.45m, 0) },                   // Bortfalder fra og med 2010
 			
 			{"GetAMBidragSkattesats",                       values(0.08m) },
 			
@@ -28,12 +28,12 @@ namespace Maxfire.Skat
 			
 			{"GetBundSkattesats",                           values(0.0504m, 0.0367m, 0.0367m, 0.0467m, 0.0567m, 0.0667m, 0.0767m, 0.0867m, 0.0967m, 0.1067m, 0.1167m) },
 			
-			{"GetMellemSkattesats",                         values(0.06m, 0) }, // Bortfalder fra og med 2010
+			{"GetMellemSkattesats",                         values(0.06m, 0) },                 // Bortfalder fra og med 2010
 			{"GetMellemskatBundfradrag",                    values(347200, decimal.MaxValue) }, // Bortfalder fra og med 2010
 			
 			{"GetTopSkattesats",                            values(0.15m) },
 			{"GetTopskatBundfradrag",                       values(347200, 389900, 409100) },
-			{"GetPositivNettoKapitalIndkomstGrundbeloeb",   values(0, 40000) }, // Indført fra og med 2010
+			{"GetPositivNettoKapitalIndkomstGrundbeloeb",   values(0, 40000) },                 // Indført fra og med 2010
 			
 			{"GetSkatteloftSkattesats",                     values(0.59m, 0.515m) },
 			
@@ -46,10 +46,12 @@ namespace Maxfire.Skat
 			{"getBundLettelseBundfradragForBoern",          values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 33600) },  // De 33.600 svarer til afrundet_til_100(32200 * 1,045)
 			{"GetMellemLettelseBundfradrag",                values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) }, // De 362.800 svarer til afrundet_til_100(347.200 * 1,045)
 			{"GetTopLettelseBundfradrag",                   values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) }, // De 362.800 svarer til afrundet_til_100(347.200 * 1,045)
+			{"getPersonfradragSkaerpelseForVoksne",         values(0, 0, 0, 1900) }, // De 1.900 svarer til afrundet_til_100(42900 * 0,045)
+			{"getPersonfradragSkaerpelseForBoern",          values(0, 0, 0, 1400) }, // De 1.400 svarer til afrundet_til_100(32200 * 0,045)
 			
 			// Nedslag for negativ nettokapitalindkomst (2012-2019)
-			{"GetNegativNettoKapitalIndkomstGrundbeloeb",   values(0, 0, 0, 50000) }, // Indført fra og med 2012 (beløbsgrænsen reguleres ikke efter 2012)
-			{"GetNegativNettoKapitalIndkomstSats",          values(0, 0, 0, 0.01m, 0.02m, 0.03m, 0.04m, 0.05m, 0.06m, 0.07m, 0.08m) }, // Indført fra og med 2012
+			{"GetNegativNettoKapitalIndkomstGrundbeloeb",   values(0, 0, 0, 50000) }, // beløbsgrænsen reguleres ikke efter 2012
+			{"GetNegativNettoKapitalIndkomstSats",          values(0, 0, 0, 0.01m, 0.02m, 0.03m, 0.04m, 0.05m, 0.06m, 0.07m, 0.08m) },
 			
 			{"GetBeskaeftigelsesfradragGrundbeloeb",        values(13600,   13600,   13600,   14100,  14400,  14900,   15400,  16000, 16600,  17300,  17900) },
 			{"GetBeskaeftigelsesfradragSats",               values(0.0425m, 0.0425m, 0.0425m, 0.044m, 0.045m, 0.0465m, 0.048m, 0.05m, 0.052m, 0.054m, 0.056m) },
@@ -98,6 +100,11 @@ namespace Maxfire.Skat
 		public decimal GetBundLettelseBundfradrag(int skatteAar, int alder, bool gift)
 		{
 			return isGiftOrVoksen(gift, alder) ? getBundLettelseBundfradragForVoksne(skatteAar) : getBundLettelseBundfradragForBoern(skatteAar);
+		}
+
+		public decimal GetPersonfradragSkaerpelse(int skatteAar, int alder, bool gift)
+		{
+			return isGiftOrVoksen(gift, alder) ? getPersonfradragSkaerpelseForVoksne(skatteAar) : getPersonfradragSkaerpelseForBoern(skatteAar);
 		}
 
 		static bool isGiftOrVoksen(bool gift, int alder)
@@ -166,6 +173,16 @@ namespace Maxfire.Skat
 		}
 
 		static decimal getPersonfradragForBoern(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		static decimal getPersonfradragSkaerpelseForVoksne(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		static decimal getPersonfradragSkaerpelseForBoern(int skatteAar)
 		{
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}

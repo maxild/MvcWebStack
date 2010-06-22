@@ -52,6 +52,29 @@
 	// indkomst, men ikke ved opgørelsen af personlig
 	// indkomst og kapitalindkomst (ligningsmæssige fradrag).
 	//
+	// Stk. 3. Forskelsbeløbet opgøres som summen af beløbene opgjort efter nr. 1-5 fratrukket beløbet
+	// opgjort efter nr. 6. Er beløbet negativt, sættes det til 0. Fra dette beløb trækkes beløbet opgjort
+	// efter nr. 7.
+	//
+	// Stk. 4. Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb i den anden
+	// ægtefælles positive nettokapitalindkomst, inden beløbet efter stk. 2, nr. 2, beregnes, hvis
+	// ægtefællerne er samlevende ved indkomstårets udløb.
+	//
+	// Stk. 5. Hvis en gift persons personlige indkomst med tillæg af positiv nettokapitalindkomst
+	// er lavere end bundfradraget i stk. 2, nr. 2 forhøjes den anden ægtefælles bundfradrag med
+	// forskelsbeløbet, inden beløbet efter stk. 2, nr. 2, beregnes, hvis ægtefællerne er samlevende ved
+	// indkomstårets udløb. 1. pkt. finder ikke anvendelse for indkomstår, hvor der er valgt beskatning
+	// efter kildeskattelovens § 48 F, stk. 1-3.
+	//
+	// Stk. 6. For ægtefæller finder § 7, stk. 5-10, anvendelse ved beregning af beløbet efter stk. 2, nr.
+	// 3, med de bundfradrag, der er anført i stk. 2, nr. 3.
+	//
+	// Stk. 7. Hvis en gift person har positiv nettokapitalindkomst, modregnes dette beløb i den anden
+	// ægtefælles negative nettokapitalindkomst, inden beløbet efter stk. 2, nr. 7, beregnes, hvis
+	// ægtefællerne er samlevende ved indkomstårets udløb.
+	//
+	// Stk. 8. Grundbeløb og bundfradrag i stk. 2, nr. 1, 2, 3, 5 og 6, reguleres efter § 20.
+	//
 	/////////////////////////////////////////////////////////////////////////////////////////
 	public class KompensationBeregner
 	{
@@ -65,12 +88,17 @@
 		/// <summary>
 		/// Beregn det nedslag i skatten der gives som følge af PSL § 26 (kompensationsordning fra forårspakke 2.0)
 		/// </summary>
-		public ValueTuple<decimal> BeregnKompensation(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnKompensation(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			// TODO: Satser er hårdkodede
+			// TODO: Beregn hvert led 1-7 i hver sin funktion/procedure (nemmere at teste sådan)
+			// TODO: Satser er hårdkodede, skal benytte ISkattelovRegistry for alle satser og beløb
 			// Note: Med tidligere gældende lovgivning var satsen i 2010 5,26 pct.
-			// TODO: Satsen er jo nedsat 5,26 pct. fra x til 3,67 pct. hvilket er en nedsættelse på 1,59 pct. point
+			// TODO: Satsen er jo nedsat 5,26 pct. fra 5,26 pct. til 3,67 pct. hvilket er en nedsættelse på 1,59 pct. point (_ikke_ 1,5 pct. point)
 			
+			// TODO: For ægtefæller foretages en samlet beregning af kompensationen (1-7). Kompensationen opgøres som summen af det forskelsbeløb
+			// der opgøres efter stk 2 og 3 for den enkelte ægtefælle. Herefter fordeles forskelsbeløbet ift. størrelsen af det beløb, der
+			// for hver af ægtefællerne medregnes efter stk 2, nr. 7 (dvs. Skatteskærpelse på fradragene)
+
 			// 1) Skattelettelse ved nedsættelse af bundskattesatsen
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
 			var bundLettelseBundfradrag 
@@ -91,22 +119,42 @@
 			var topSkattelettelse = 0.15m * (topskatteGrundlagMedTidligereBundfradrag - topskatteGrundlagMedNuvaerendeBundfradrag);
 
 			// 4) Skattelettelse ved nedsættelse af aktieindkomstskattesatsen
-			var aktieSkattelettelse = 0; // TODO
+			var aktieSkattelettelse = 0.01m * indkomster.Map(x => x.AktieIndkomst);
 
 			// 5) Skattelettelse ved forhøjelse af beskæftigelsesfradraget
-			var beskaeftigelsesfradragSkattelettelse = 0; // TODO
+			var skattesats = 0.08m + kommunaleSatser.Map(x => x.KommuneOgKirkeskattesats);
+			var beskaeftigelsesfradragBeregner = new BeskaeftigelsesfradragBeregner(_skattelovRegistry);
+			var beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(indkomster, 0.0425m, 14200);
+			var beskaeftigelsesfradragMedNuvaerendeSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(indkomster, skatteAar);
+			var beskaeftigelsesfradragSkattelettelse = skattesats * (beskaeftigelsesfradragMedNuvaerendeSatsOgGrundbeloeb - beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb);
 
 			// 6) Skatteskærpelse ved nulregulering af personfradraget
-			var personFradragSkatteskaerpelse = 0; // TODO;
+			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
+			var personfradragSkaerpelse = personer.Map(person => _skattelovRegistry.GetPersonfradragSkaerpelse(skatteAar, person.GetAlder(skatteAar), personer.Size > 1));
+			var personfradragSkatteskaerpelse 
+				= personfradragBeregner.BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser, skatteAar, personfradragSkaerpelse)
+					.Map(x => x.Sum());
 
-			// 7)
-			var fradragsSkatteskaerpelse = 0;
+			// 7) Skatteskærpelse på fradragene
+			decimal sats = 0.08m - _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar);
+			var negativNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetNegativNettoKapitalIndkomstGrundbeloeb(skatteAar);
+			// TODO: For ægtefæller er det summen
+			var negativNettoKapitalIndkomstOverGrundbeloebet = (+(-indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag).NedbringPositivtMedEvtNegativt())).DifferencesGreaterThan(negativNettoKapitalIndkomstGrundbeloeb);
+			var fradragSkatteskaerpelse = sats * (negativNettoKapitalIndkomstOverGrundbeloebet + indkomster.Map(x => x.LigningsmaessigeFradrag));
 
 			var forskelsbeloeb =
 				(+(bundSkattelettelse + mellemSkattelettelse + topSkattelettelse + aktieSkattelettelse +
-				 beskaeftigelsesfradragSkattelettelse - personFradragSkatteskaerpelse)) - fradragsSkatteskaerpelse;
+				 beskaeftigelsesfradragSkattelettelse - personfradragSkatteskaerpelse)) - fradragSkatteskaerpelse;
+
+			// TODO: Hvis forkelsbeløbet er negativ beregnes kompensationen.....
 
 			return forskelsbeloeb;
+		}
+
+		public ModregnSkatterResult<Skatter> ModregnMedKompensation()
+		{
+			// TODO
+			return null;
 		}
 
 		private static SkatteModregner<Skatter> getSkatteModregner()

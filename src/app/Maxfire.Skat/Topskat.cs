@@ -76,58 +76,76 @@
 		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb=0)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
+			var grundlagUdenPositivNettoKapitalIndkomst = BeregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
+			var grundlagAfPositivNettoKapitalIndkomst = BeregnGrundlagAfPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag, positivNettoKapitalIndkomstGrundbeloeb);
+			var topskatteGrundlag = grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
+			return topskatteGrundlag;
+		}
+
+		static ValueTuple<decimal> beregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
+		{
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
-			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
+			return personligIndkomst + kapitalPensionsindskud - topskatBundfradrag;
+		}
+
+// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<decimal> BeregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
+// ReSharper restore MemberCanBeMadeStatic.Global
+		{
+			return +beregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
+		}
+
+// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<decimal> BeregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb = 0)
+// ReSharper restore MemberCanBeMadeStatic.Global
+		{
+			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
-			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
 
-			ValueTuple<decimal> topskatteGrundlag;
+			var samletNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.Sum() - indkomster.Size * positivNettoKapitalIndkomstGrundbeloeb;
 
-			if (indkomster.Size == 1)
+			if (samletNettoKapitalIndkomstTilBeskatning <= 0)
 			{
+				return new ValueTuple<decimal>(indkomster.Size, () => 0);
+			}
 
-				topskatteGrundlag = +(personligIndkomst + positivNettoKapitalIndkomstTilBeskatning
-								 + kapitalPensionsindskud - topskatBundfradrag);
+			var grundlagUdenPositivNettoKapitalIndkomst = beregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
+			
+			int indexOfMaxGrundlag = getIndexOfMaxGrundlag(indkomster, grundlagUdenPositivNettoKapitalIndkomst);
+
+			decimal grundlagInklSamletPositivNettoKapitalIndkomst
+				= (grundlagUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag] + samletNettoKapitalIndkomstTilBeskatning).NonNegative();
+
+			decimal samletGrundlagAfPositivNettoKapitalIndkomst
+				= grundlagInklSamletPositivNettoKapitalIndkomst - grundlagUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag].NonNegative();
+
+			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
+			var fordelingsnoegle = positivNettoKapitalIndkomstTilBeskatning / positivNettoKapitalIndkomstTilBeskatning.Sum();
+
+			return fordelingsnoegle * samletGrundlagAfPositivNettoKapitalIndkomst;
+		}
+
+		private static int getIndexOfMaxGrundlag(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<decimal> grundlagUdenPositivNettoKapitalIndkomst)
+		{
+			if (grundlagUdenPositivNettoKapitalIndkomst.Size == 1)
+			{
+				return 0;
+			}
+			int indexOfMaxGrundlag;
+			if (grundlagUdenPositivNettoKapitalIndkomst[0] > grundlagUdenPositivNettoKapitalIndkomst[1])
+			{
+				indexOfMaxGrundlag = 0;
+			}
+			else if (grundlagUdenPositivNettoKapitalIndkomst[0] < grundlagUdenPositivNettoKapitalIndkomst[1])
+			{
+				indexOfMaxGrundlag = 1;
 			}
 			else
 			{
-				var grundlagUdenPositivNettoKapitalIndkomst = personligIndkomst + kapitalPensionsindskud - topskatBundfradrag;
-				var samletNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.Sum() - 2 * positivNettoKapitalIndkomstGrundbeloeb;
-
-				if (samletNettoKapitalIndkomstTilBeskatning <= 0)
-				{
-					topskatteGrundlag = +grundlagUdenPositivNettoKapitalIndkomst;
-				}
-				else
-				{
-					int indexOfMaxGrundlag;
-					if (grundlagUdenPositivNettoKapitalIndkomst[0] > grundlagUdenPositivNettoKapitalIndkomst[1])
-					{
-						indexOfMaxGrundlag = 0;
-					}
-					else if (grundlagUdenPositivNettoKapitalIndkomst[0] < grundlagUdenPositivNettoKapitalIndkomst[1])
-					{
-						indexOfMaxGrundlag = 1;
-					}
-					else
-					{
-						indexOfMaxGrundlag = indkomster[0].LigningsmaessigeFradrag > indkomster[1].LigningsmaessigeFradrag ? 0 : 1;
-					}
-
-					decimal grundlagInklSamletPositivNettoKapitalIndkomst
-						= (grundlagUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag] + samletNettoKapitalIndkomstTilBeskatning).NonNegative();
-
-					decimal samletGrundlagAfPositivNettoKapitalIndkomst
-						= grundlagInklSamletPositivNettoKapitalIndkomst - grundlagUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag].NonNegative();
-
-					var fordelingsnoegle = positivNettoKapitalIndkomstTilBeskatning / samletNettoKapitalIndkomstTilBeskatning;
-
-					topskatteGrundlag = (+grundlagUdenPositivNettoKapitalIndkomst) + fordelingsnoegle * samletGrundlagAfPositivNettoKapitalIndkomst;
-				}
+				indexOfMaxGrundlag = indkomster[0].LigningsmaessigeFradrag > indkomster[1].LigningsmaessigeFradrag ? 0 : 1;
 			}
-
-			return topskatteGrundlag;
+			return indexOfMaxGrundlag;
 		}
 
 		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)

@@ -222,10 +222,15 @@ namespace Maxfire.Skat
 		/// </summary>
 		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<Person> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			return kommunaleSatser.Map((kommunaleSats, index) => BeregnSkattevaerdierAfPersonfradrag(personer[index], kommunaleSats, skatteAar, personer.Size > 1));
+			return kommunaleSatser.Map((kommunaleSats, index) => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats, skatteAar, personer[index], personer.Size > 1));
 		}
 
-		public Skatter BeregnSkattevaerdierAfPersonfradrag(Person person, KommunaleSatser kommunaleSatser, int skatteAar, bool gift)
+		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar, ValueTuple<decimal> personfradrag)
+		{
+			return kommunaleSatser.Map((kommunaleSats, index) => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats, skatteAar, personfradrag[index]));
+		}
+
+		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser, int skatteAar, Person person, bool gift)
 		{
 			// TODO: Personfradrag er individuelt bestemt af alder og civilstand
 			// Personfradrag opgøres efter § 10 og skatteværdien heraf efter § 12.
@@ -234,8 +239,14 @@ namespace Maxfire.Skat
 			// Ved opgørelsen anvendes samme procent som ved beregningen af indkomstskat til kommunen samt kirkeskat. 
 			// Ved beregningen af indkomstskat til staten beregnes skatteværdien af personfradraget med beskatnings-
 			// procenterne for bundskat efter § 5, nr. 1, og for sundhedsbidrag efter § 5, nr. 4.
+			decimal personfradrag = _skattelovRegistry.GetPersonfradrag(skatteAar, person.GetAlder(skatteAar), gift);
+			return BeregnSkattevaerdierAfPersonfradrag(kommunaleSatser, skatteAar, personfradrag);
+		}
+
+		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser, int skatteAar, decimal personfradrag)
+		{
 			var omregner = new PersonfradragSkattevaerdiOmregner(kommunaleSatser, _skattelovRegistry, skatteAar);
-			return omregner.BeregnSkattevaerdier(_skattelovRegistry.GetPersonfradrag(skatteAar, person.GetAlder(skatteAar), gift));
+			return omregner.BeregnSkattevaerdier(personfradrag);
 		}
 	}
 }

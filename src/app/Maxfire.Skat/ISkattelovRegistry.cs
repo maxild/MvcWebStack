@@ -58,6 +58,7 @@
 		decimal GetBundLettelseBundfradrag(int skatteAar, int alder, bool gift);
 		decimal GetMellemLettelseBundfradrag(int skatteAar);
 		decimal GetTopLettelseBundfradrag(int skatteAar);
+		decimal GetPersonfradragSkaerpelse(int skatteAar, int alder, bool gift);
 
 		decimal GetSkatteloftSkattesats(int skatteAar);
 

@@ -77,6 +77,11 @@
 			return 0m;
 		}
 
+		public virtual decimal GetPersonfradragSkaerpelse(int skatteAar, int alder, bool gift)
+		{
+			return 0m;
+		}
+
 		public virtual decimal GetMellemskatBundfradrag(int skatteAar)
 		{
 			return 0m;
