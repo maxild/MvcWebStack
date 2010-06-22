@@ -62,18 +62,51 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnForskelsbeloeb(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		/// <summary>
+		/// Beregn det nedslag i skatten der gives som følge af PSL § 26 (kompensationsordning fra forårspakke 2.0)
+		/// </summary>
+		public ValueTuple<decimal> BeregnKompensation(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			// TODO: Satser er hårdkodede
-
+			// Note: Med tidligere gældende lovgivning var satsen i 2010 5,26 pct.
+			// TODO: Satsen er jo nedsat 5,26 pct. fra x til 3,67 pct. hvilket er en nedsættelse på 1,59 pct. point
+			
+			// 1) Skattelettelse ved nedsættelse af bundskattesatsen
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
 			var bundLettelseBundfradrag 
 				= personer.Map(person => _skattelovRegistry.GetBundLettelseBundfradrag(skatteAar, person.GetAlder(skatteAar), personer.Size > 1));
-			var bundLettelse = 0.015m * bundskatBeregner.BeregnGrundlag(indkomster).DifferencesGreaterThan(bundLettelseBundfradrag);
+			var bundSkattelettelse = 0.015m * bundskatBeregner.BeregnBruttoGrundlag(indkomster).DifferencesGreaterThan(bundLettelseBundfradrag);
 
+			// 2) Skattelettelse ved Fjernelse af mellemskatten
+			var mellemskatBeregner = new MellemskatBeregner(_skattelovRegistry);
+			var mellemLettelseBundfradrag = _skattelovRegistry.GetMellemLettelseBundfradrag(skatteAar);
+			var mellemSkattelettelse = 0.06m * mellemskatBeregner.BeregnGrundlag(indkomster, mellemLettelseBundfradrag);
 
+			// 3) Skattelettelse ved forøgelse af topskattegrænsen
+			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);
+			var topLettelseBundfradrag = _skattelovRegistry.GetTopLettelseBundfradrag(skatteAar);
+			var topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
+			var topskatteGrundlagMedTidligereBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topLettelseBundfradrag);
+			var topskatteGrundlagMedNuvaerendeBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topskatBundfradrag);
+			var topSkattelettelse = 0.15m * (topskatteGrundlagMedTidligereBundfradrag - topskatteGrundlagMedNuvaerendeBundfradrag);
 
-			return null;
+			// 4) Skattelettelse ved nedsættelse af aktieindkomstskattesatsen
+			var aktieSkattelettelse = 0; // TODO
+
+			// 5) Skattelettelse ved forhøjelse af beskæftigelsesfradraget
+			var beskaeftigelsesfradragSkattelettelse = 0; // TODO
+
+			// 6) Skatteskærpelse ved nulregulering af personfradraget
+			var personFradragSkatteskaerpelse = 0; // TODO;
+
+			// 7)
+			var fradragsSkatteskaerpelse = 0;
+
+			var forskelsbeloeb =
+				(+(bundSkattelettelse + mellemSkattelettelse + topSkattelettelse + aktieSkattelettelse +
+				 beskaeftigelsesfradragSkattelettelse - personFradragSkatteskaerpelse)) - fradragsSkatteskaerpelse;
+
+			return forskelsbeloeb;
 		}
 
 		private static SkatteModregner<Skatter> getSkatteModregner()

@@ -64,11 +64,21 @@
 
 		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar, ValueTuple<KommunaleSatser> kommunaleSatser=null)
 		{
+			decimal topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
+			decimal positivNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetPositivNettoKapitalIndkomstGrundbeloeb(skatteAar);
+
+			var topskatteGrundlag = BeregnGrundlag(indkomster, topskatBundfradrag, positivNettoKapitalIndkomstGrundbeloeb);
+
+			return beregnSkatUnderSkatteloft(topskatteGrundlag, kommunaleSatser, skatteAar);
+		}
+
+// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb=0)
+// ReSharper restore MemberCanBeMadeStatic.Global
+		{
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
-			var topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
-			var positivNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetPositivNettoKapitalIndkomstGrundbeloeb(skatteAar);
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
 
@@ -76,7 +86,7 @@
 
 			if (indkomster.Size == 1)
 			{
-				
+
 				topskatteGrundlag = +(personligIndkomst + positivNettoKapitalIndkomstTilBeskatning
 								 + kapitalPensionsindskud - topskatBundfradrag);
 			}
@@ -117,23 +127,29 @@
 				}
 			}
 
-			return beregnSkatUnderSkatteloft(topskatteGrundlag, kommunaleSatser, skatteAar);
+			return topskatteGrundlag;
 		}
 
 		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			kommunaleSatser = kommunaleSatser ?? new ValueTuple<KommunaleSatser>(grundlag.Size, () => new KommunaleSatser());
+
 			decimal bundskattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
 			decimal mellemskattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);
 			decimal topskattesats = _skattelovRegistry.GetTopSkattesats(skatteAar);
 			decimal sundhedsbidragsats = _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar);
-			decimal skatteloftsats = _skattelovRegistry.GetSkatteloftSkattesats(skatteAar);
 			var kommunaleskattesatser = kommunaleSatser.Map(x => x.Kommuneskattesats);
+
 			decimal fastsats = bundskattesats + mellemskattesats + topskattesats + sundhedsbidragsats;
 			var skattesatser = fastsats + kommunaleskattesatser;
+
+			decimal skatteloftsats = _skattelovRegistry.GetSkatteloftSkattesats(skatteAar);
 			var nedslagssatsen = +(skattesatser - skatteloftsats);
+
 			var topskattesatsen = +(topskattesats - nedslagssatsen);
+
 			var topskat = topskattesatsen * grundlag;
+
 			return topskat.RoundMoney();
 		}
 	}

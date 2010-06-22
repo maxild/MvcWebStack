@@ -23,17 +23,19 @@
 
 		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
-			var grundlag = BeregnGrundlag(indkomster);
-			return _skattelovRegistry.GetBundSkattesats(skatteAar) * grundlag;
+			decimal bundSkattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
+			var grundlag = BeregnBruttoGrundlag(indkomster);
+			return bundSkattesats * grundlag;
 		}
 
 		/// <summary>
-		/// Beregn bundskattegrundlaget under hensyn til evt. modregnet negativ  negativ nettokapitalindkomst.
+		/// Beregn bundskattegrundlaget under hensyn til evt. modregnet negativ negativ nettokapitalindkomst.
 		/// </summary>
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> input)
+		public ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
+			// TODO: Findes også i Mellemskatberegner
 			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 

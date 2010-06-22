@@ -35,7 +35,7 @@ namespace Maxfire.Skat.UnitTests
 				});
 
 			var bundskatGrundlagBeregner = new BundskatBeregner(_skattelovRegistry);
-			var bundskatGrundlag = bundskatGrundlagBeregner.BeregnGrundlag(indkomster);
+			var bundskatGrundlag = bundskatGrundlagBeregner.BeregnBruttoGrundlag(indkomster);
 
 			bundskatGrundlag[0].ShouldEqual(100000);
 			bundskatGrundlag[1].ShouldEqual(410000);
@@ -58,7 +58,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var mellemskatGrundlagBeregner = new MellemskatBeregner(_skattelovRegistry);
 
-			var grundlagFoerBundfradrag = MellemskatBeregner.BeregnBruttoGrundlag(indkomster);
+			var grundlagFoerBundfradrag = mellemskatGrundlagBeregner.BeregnBruttoGrundlag(indkomster);
 			var udnyttetBundfradrag = mellemskatGrundlagBeregner.BeregnSambeskattetBundfradrag(indkomster, SKATTE_AAR);
 			var grundlag = mellemskatGrundlagBeregner.BeregnGrundlag(indkomster, SKATTE_AAR);
 

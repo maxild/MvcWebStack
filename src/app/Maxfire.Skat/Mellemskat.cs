@@ -11,30 +11,55 @@
 
 		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
-			var grundlag = BeregnGrundlag(indkomster, skatteAar);
-			return _skattelovRegistry.GetMellemSkattesats(skatteAar) * grundlag;
-		}
-
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
-		{
-			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			var udnyttetBundfradrag = BeregnSambeskattetBundfradrag(indkomster, skatteAar);
-			return +(bruttoGrundlag - udnyttetBundfradrag);
+			decimal mellemSkattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);
+			decimal mellemskatBundfradrag = _skattelovRegistry.GetMellemskatBundfradrag(skatteAar);
+			
+			var grundlag = BeregnGrundlag(indkomster, mellemskatBundfradrag);
+			return mellemSkattesats * grundlag;
 		}
 
 		/// <summary>
 		/// Beregn mellemskattegrundlaget før bundfradrag.
 		/// </summary>
-		public static ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
+		// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> indkomster)
+		// ReSharper restore MemberCanBeMadeStatic.Global
 		{
-			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
-			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
+			// TODO: Findes også i BundskatBeregner
+			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
+			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 
-			// Hvis en gift person har negativ nettokapitalindkomst, modregnes dette beløb
-			// i den anden ægtefælles positive nettokapitalindkomst, inden mellemskatten beregnes
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
 			return (personligIndkomst + (+nettoKapitalIndkomstEfterModregning));
+		}
+
+		/// <summary>
+		/// Beregn mellemskattegrundlaget efter bundfradrag.
+		/// </summary>
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal mellemskatBundfradrag)
+		{
+			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
+			var udnyttetBundfradrag = bruttoGrundlag.BeregnSambeskattetBundfradrag(mellemskatBundfradrag);
+			return +(bruttoGrundlag - udnyttetBundfradrag);
+		}
+
+		/// <summary>
+		/// Beregn mellemskattegrundlaget efter bundfradrag.
+		/// </summary>
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		{
+			decimal mellemskatBundfradrag = _skattelovRegistry.GetMellemskatBundfradrag(skatteAar);
+			return BeregnGrundlag(indkomster, mellemskatBundfradrag);
+		}
+
+		/// <summary>
+		/// Beregn det udnyttede bundfradrag efter at der er sket overførsel af bundfradrag mellem ægtefæller.
+		/// </summary>
+		public ValueTuple<decimal> BeregnSambeskattetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster, decimal mellemskatBundfradrag)
+		{
+			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
+			return bruttoGrundlag.BeregnSambeskattetBundfradrag(mellemskatBundfradrag);
 		}
 
 		/// <summary>
@@ -42,8 +67,8 @@
 		/// </summary>
 		public ValueTuple<decimal> BeregnSambeskattetBundfradrag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
-			var bruttoGrundlag = BeregnBruttoGrundlag(indkomster);
-			return bruttoGrundlag.BeregnSambeskattetBundfradrag(_skattelovRegistry.GetMellemskatBundfradrag(skatteAar));
+			decimal mellemskatBundfradrag = _skattelovRegistry.GetMellemskatBundfradrag(skatteAar);
+			return BeregnSambeskattetBundfradrag(indkomster, mellemskatBundfradrag);
 		}
 	}
 }

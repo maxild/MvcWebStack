@@ -21,23 +21,36 @@ namespace Maxfire.Skat
 			{"GetAktieIndkomstLavesteSkattesats",           values(0.28m, 0.28m, 0.28m, 0.27m) },
 			{"GetAktieIndkomstMellemsteSkattesats",         values(0.43m, 0.42m) },
 			{"GetAktieIndkomstHoejesteSkattesats",          values(0.45m, 0) }, // Bortfalder fra og med 2010
+			
 			{"GetAMBidragSkattesats",                       values(0.08m) },
+			
 			{"GetSundhedsbidragSkattesats",                 values(0.08m,   0.08m,   0.08m,   0.07m,   0.06m,   0.05m,   0.04m,   0.03m,   0.02m,   0.01m,   0) },
+			
 			{"GetBundSkattesats",                           values(0.0504m, 0.0367m, 0.0367m, 0.0467m, 0.0567m, 0.0667m, 0.0767m, 0.0867m, 0.0967m, 0.1067m, 0.1167m) },
+			
 			{"GetMellemSkattesats",                         values(0.06m, 0) }, // Bortfalder fra og med 2010
-			{"GetTopSkattesats",                            values(0.15m) },
-			{"GetSkatteloftSkattesats",                     values(0.59m, 0.515m) },
-			{"getPersonfradragForVoksne",                   values(42900) },
-			{"getPersonfradragForBoern",                    values(32200) },
-			{"getBundLettelseBundfradragForVoksne",         values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 44800) },
-			{"getBundLettelseBundfradragForBoern",          values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 33600) },
-			{"GetMellemLettelseBundfradrag",                values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) },
-			{"GetTopLettelseBundfradrag",                   values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) },
 			{"GetMellemskatBundfradrag",                    values(347200, decimal.MaxValue) }, // Bortfalder fra og med 2010
+			
+			{"GetTopSkattesats",                            values(0.15m) },
 			{"GetTopskatBundfradrag",                       values(347200, 389900, 409100) },
 			{"GetPositivNettoKapitalIndkomstGrundbeloeb",   values(0, 40000) }, // Indført fra og med 2010
+			
+			{"GetSkatteloftSkattesats",                     values(0.59m, 0.515m) },
+			
+			{"getPersonfradragForVoksne",                   values(42900) },
+			{"getPersonfradragForBoern",                    values(32200) },
+			
+			// Beløb i kompensationsordningen (2012-2019) svarer til de beløbsgrænser, der ville være
+			// gældende i 2010 uden Forårspakke 2.0 og med en opregulering fra 2009 til 2010 på 4,5 pct.
+			{"getBundLettelseBundfradragForVoksne",         values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 44800) },  // De 44.800 svarer til afrundet_til_100(42900 * 1,045)
+			{"getBundLettelseBundfradragForBoern",          values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 33600) },  // De 33.600 svarer til afrundet_til_100(32200 * 1,045)
+			{"GetMellemLettelseBundfradrag",                values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) }, // De 362.800 svarer til afrundet_til_100(347.200 * 1,045)
+			{"GetTopLettelseBundfradrag",                   values(decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, 362800) }, // De 362.800 svarer til afrundet_til_100(347.200 * 1,045)
+			
+			// Nedslag for negativ nettokapitalindkomst (2012-2019)
 			{"GetNegativNettoKapitalIndkomstGrundbeloeb",   values(0, 0, 0, 50000) }, // Indført fra og med 2012 (beløbsgrænsen reguleres ikke efter 2012)
 			{"GetNegativNettoKapitalIndkomstSats",          values(0, 0, 0, 0.01m, 0.02m, 0.03m, 0.04m, 0.05m, 0.06m, 0.07m, 0.08m) }, // Indført fra og med 2012
+			
 			{"GetBeskaeftigelsesfradragGrundbeloeb",        values(13600,   13600,   13600,   14100,  14400,  14900,   15400,  16000, 16600,  17300,  17900) },
 			{"GetBeskaeftigelsesfradragSats",               values(0.0425m, 0.0425m, 0.0425m, 0.044m, 0.045m, 0.0465m, 0.048m, 0.05m, 0.052m, 0.054m, 0.056m) },
 		};
