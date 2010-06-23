@@ -11,8 +11,9 @@
 
 		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
+			decimal amBidragSkattesats = _skattelovRegistry.GetAMBidragSkattesats(skatteAar);
 			var amIndkomst = indkomster.Map(x => x.AMIndkomst);
-			return _skattelovRegistry.GetAMBidragSkattesats(skatteAar) * amIndkomst;
+			return amBidragSkattesats * amIndkomst;
 		}
 	}
 }

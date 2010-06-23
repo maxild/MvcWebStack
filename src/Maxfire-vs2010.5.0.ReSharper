@@ -243,7 +243,11 @@ Voksne
 Boern
 Foedselsdato
 personer
-Skaerpelse</UserWords>
+Skaerpelse
+Skattelettelse
+Skatteskaerpelse
+Fradragene
+</UserWords>
             </CustomDictionary>
           </Dictionaries>
         </CustomDictionaries>
@@ -974,6 +978,7 @@ Skaerpelse</UserWords>
             <ParamDirection>Any</ParamDirection>
           </Match>
         </IdentifiersToSpellCheck>
+        <IdentifiersNotToSpellCheck />
         <PatternsToIgnore>
           <string>(?#email)\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*</string>
           <string>(?#url)http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&amp;=]*)?</string>

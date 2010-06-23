@@ -5,13 +5,24 @@
 	/// </summary>
 	public class PersonligeBeloeb
 	{
+		// TODO: Indkomstopgørelse mangler, og passer ikke helt med den interne definition 
+		// TODO: af PersonligeBeloeb, hvor PersonligIndkomst (og AMIndkomst) tildeles værdier hver for sig.
+		// PersonligIndkomst = (1 - 0,08) * AMIndkomst + IkkeAMIndkomst - Fradrag
+		//
+		//    AMIndkomst     = Løn mv.
+		//    IkkeAMIndkomst = SU + Sygedagpenge + .....
+		//    Fradrag        = PrivatePension + Iværksætterkonto
+
+		/// <summary>
+		/// Den del af den personlige indkomst, som der svares arbejdsmarkedsbidrag af.
+		/// </summary>
 		public decimal AMIndkomst { get; set; }
+
+		public decimal PersonligIndkomst { get; set; }
 
 		public decimal FremfoertUnderskudPersonligIndkomst { get; set; }
 
 		public decimal ModregnetUnderskudPersonligIndkomst { get; set; }
-
-		public decimal PersonligIndkomst { get; set; }
 
 		/// <summary>
 		/// Underskud i personlig indkomst til fremførsel i efterfølgende skatteår.
@@ -84,6 +95,7 @@
 		/// </summary>
 		public decimal AktieIndkomst { get; set; }
 
+		// TODO: Er dette ligningsmæssige fradrag inkl/eksl beskæftigelsesfradrag, der jo beregnes pba. AMIndkomst
 		public decimal LigningsmaessigeFradrag { get; set; }
 
 		/// <summary>

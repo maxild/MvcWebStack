@@ -78,7 +78,6 @@
     <Compile Include="Skatteberegner.cs" />
     <Compile Include="SkatteberegningInput.cs" />
     <Compile Include="SkatteberegningResult.cs" />
-    <Compile Include="Skattesatser.cs" />
     <Compile Include="Topskat.cs" />
     <Compile Include="ValueTupleExtensions.cs" />
   </ItemGroup>

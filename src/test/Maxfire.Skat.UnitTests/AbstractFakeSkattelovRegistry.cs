@@ -107,12 +107,12 @@
 			return 0m;
 		}
 
-		public decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar)
+		public virtual decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar)
 		{
 			return 0;
 		}
 
-		public decimal GetBeskaeftigelsesfradragSats(int skatteAar)
+		public virtual decimal GetBeskaeftigelsesfradragSats(int skatteAar)
 		{
 			return 0;
 		}
