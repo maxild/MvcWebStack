@@ -9,7 +9,14 @@ namespace Maxfire.Skat
 			Foedselsdato = foedselsdato;
 		}
 
+		public Person(DateTime foedselsdato, int antalBoern) : this(foedselsdato)
+		{
+			AntalBoern = antalBoern;
+		}
+
 		public DateTime Foedselsdato { get; private set; }
+
+		public int AntalBoern { get; private set; }
 
 		/// <summary>
 		/// Beregn personens alder ved indkomstårets udløb.

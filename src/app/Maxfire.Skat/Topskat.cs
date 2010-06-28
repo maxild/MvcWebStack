@@ -72,14 +72,14 @@
 			return beregnSkatUnderSkatteloft(topskatteGrundlag, kommunaleSatser, skatteAar);
 		}
 
+
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb=0)
+		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			var grundlagUdenPositivNettoKapitalIndkomst = BeregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
 			var grundlagAfPositivNettoKapitalIndkomst = BeregnGrundlagAfPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag, positivNettoKapitalIndkomstGrundbeloeb);
-			var topskatteGrundlag = grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
-			return topskatteGrundlag;
+			return grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
 		}
 
 		static ValueTuple<decimal> beregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
@@ -107,7 +107,7 @@
 
 			if (samletNettoKapitalIndkomstTilBeskatning <= 0)
 			{
-				return new ValueTuple<decimal>(indkomster.Size, () => 0);
+				return 0m.ToTupleOfSize(indkomster.Size);
 			}
 
 			var grundlagUdenPositivNettoKapitalIndkomst = beregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
@@ -150,7 +150,7 @@
 
 		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			kommunaleSatser = kommunaleSatser ?? new ValueTuple<KommunaleSatser>(grundlag.Size, () => new KommunaleSatser());
+			kommunaleSatser = kommunaleSatser ?? new KommunaleSatser().ToTupleOfSize(grundlag.Size);
 
 			decimal bundskattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
 			decimal mellemskattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);

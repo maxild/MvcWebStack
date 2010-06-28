@@ -2023,34 +2023,39 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
 		}
 
-		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
+		private static KommunaleSatser getKommunaleSatser()
 		{
-			return new ValueTuple<KommunaleSatser>(
-				new KommunaleSatser
-				{
-					Kommuneskattesats = 0.237m,
-					Kirkeskattesats = 0.0059m
-				});
+			return new KommunaleSatser
+			{
+				Kommuneskattesats = 0.237m,
+				Kirkeskattesats = 0.0059m
+			};
 		}
 
+		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
+		{
+			return getKommunaleSatser().ToTuple();
+		}
+
+		
 		private static ValueTuple<KommunaleSatser> getKommunaleSatserForGifte()
 		{
-			return new ValueTuple<KommunaleSatser>(2, 
-				() => new KommunaleSatser
-				{
-					Kommuneskattesats = 0.237m,
-					Kirkeskattesats = 0.0059m
-				});
+			return getKommunaleSatser().ToTupleOfSize(2);
+		}
+
+		private static Person getPerson()
+		{
+			return new Person(new DateTime(1970, 6, 3));
 		}
 
 		private static ValueTuple<Person> getPersonerForUgift()
 		{
-			return new ValueTuple<Person>(new Person(new DateTime(1970, 6, 3)));
+			return getPerson().ToTuple();
 		}
 
 		private static ValueTuple<Person> getPersonerForGifte()
 		{
-			return new ValueTuple<Person>(2, () => new Person(new DateTime(1970, 6, 3)));
+			return getPerson().ToTupleOfSize(2);
 		}
 	}
 

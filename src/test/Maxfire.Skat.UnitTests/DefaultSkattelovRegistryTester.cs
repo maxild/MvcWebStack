@@ -50,6 +50,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.0425m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(0);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(0);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(decimal.MaxValue);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0);
 		}
 
 		[Fact]
@@ -83,6 +87,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.0425m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -116,6 +124,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(13600);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.0425m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -149,6 +161,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.01m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14100);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.044m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -182,6 +198,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.02m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14400);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.045m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -215,6 +235,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.03m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(14900);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.0465m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -248,6 +272,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.04m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(15400);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.048m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -281,6 +309,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.05m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(16000);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.05m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -314,6 +346,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.06m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(16600);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.052m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -347,6 +383,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.07m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(17300);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.054m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]
@@ -380,6 +420,10 @@ namespace Maxfire.Skat.UnitTests
 			_registry.GetNegativNettoKapitalIndkomstSats(aar).ShouldEqual(0.08m);
 			_registry.GetBeskaeftigelsesfradragGrundbeloeb(aar).ShouldEqual(17900);
 			_registry.GetBeskaeftigelsesfradragSats(aar).ShouldEqual(0.056m);
+			_registry.GetGroenCheckPrVoksen(aar).ShouldEqual(1300);
+			_registry.GetGroenCheckPrBarn(aar).ShouldEqual(300);
+			_registry.GetGroenCheckBundfradrag(aar).ShouldEqual(362800);
+			_registry.GetGroenCheckAftrapningssats(aar).ShouldEqual(0.075m);
 		}
 
 		[Fact]

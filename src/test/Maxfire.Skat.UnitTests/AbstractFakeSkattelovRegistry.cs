@@ -116,5 +116,25 @@
 		{
 			return 0;
 		}
+
+		public virtual decimal GetGroenCheckPrVoksen(int skatteAar)
+		{
+			return 0;
+		}
+
+		public virtual decimal GetGroenCheckPrBarn(int skatteAar)
+		{
+			return 0;
+		}
+
+		public virtual decimal GetGroenCheckAftrapningssats(int skatteAar)
+		{
+			return 0;
+		}
+
+		public virtual decimal GetGroenCheckBundfradrag(int skatteAar)
+		{
+			return 0;
+		}
 	}
 }

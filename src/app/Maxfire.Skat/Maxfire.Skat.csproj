@@ -41,6 +41,7 @@
     <Compile Include="Bundskat.cs" />
     <Compile Include="DefaultSkattelovRegistry.cs" />
     <Compile Include="DecimalExtensions.cs" />
+    <Compile Include="GroenCheckBeregner.cs" />
     <Compile Include="ISkattelovRegistry.cs" />
     <Compile Include="ISumable.cs" />
     <Compile Include="KommunaleSatser.cs" />

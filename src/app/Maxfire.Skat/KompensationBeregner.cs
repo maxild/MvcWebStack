@@ -147,8 +147,8 @@
 			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);
 			var topLettelseBundfradrag = _skattelovRegistry.GetTopLettelseBundfradrag(skatteAar);
 			var topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
-			var topskatteGrundlagMedTidligereBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topLettelseBundfradrag);
-			var topskatteGrundlagMedNuvaerendeBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topskatBundfradrag);
+			var topskatteGrundlagMedTidligereBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topLettelseBundfradrag, 0);
+			var topskatteGrundlagMedNuvaerendeBundfradrag = topskatBeregner.BeregnGrundlag(indkomster, topskatBundfradrag, 0);
 			return 0.15m * (topskatteGrundlagMedTidligereBundfradrag - topskatteGrundlagMedNuvaerendeBundfradrag);
 		}
 

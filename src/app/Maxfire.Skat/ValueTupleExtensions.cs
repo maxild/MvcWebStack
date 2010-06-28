@@ -22,6 +22,11 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(coll.ToList());
 		}
 
+		public static ValueTuple<T> ToTupleOfSize<T>(this T value, int size)
+		{
+			return new ValueTuple<T>(size, () => value);
+		}
+
 		public static ValueTuple<TResult> Cast<T, TResult>(this ValueTuple<T> tuple)
 			where T : TResult
 		{
@@ -187,7 +192,7 @@ namespace Maxfire.Skat
 		/// </summary>
 		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
 		{
-			return tuple.DifferencesGreaterThan(new ValueTuple<T>(tuple.Size, () => limit));
+			return tuple.DifferencesGreaterThan(limit.ToTupleOfSize(tuple.Size));
 		}
 
 		/// <summary>

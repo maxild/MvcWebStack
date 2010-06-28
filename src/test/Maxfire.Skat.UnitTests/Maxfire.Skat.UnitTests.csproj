@@ -49,6 +49,7 @@
     <Compile Include="DefaultSkattelovRegistryTester.cs" />
     <Compile Include="Eksempler.cs" />
     <Compile Include="AbstractFakeSkattelovRegistry.cs" />
+    <Compile Include="GroenCheckBeregnerTester.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
     <Compile Include="KompensationBeregnerTester.cs" />

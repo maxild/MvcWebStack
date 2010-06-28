@@ -147,7 +147,7 @@ namespace Maxfire.Skat.UnitTests
 				new Skatter(sundhedsbidrag: 5, kommuneskat: 20, bundskat: 2),
 				new Skatter(sundhedsbidrag: 100, kommuneskat: 500, bundskat: 200));
 
-			var personer = new ValueTuple<Person>(2, () => new Person(new DateTime(1970, 6, 3)));
+			var personer = new Person(new DateTime(1970, 6, 3)).ToTupleOfSize(2);
 
 			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
 				new KommunaleSatser

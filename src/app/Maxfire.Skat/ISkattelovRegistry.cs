@@ -67,6 +67,11 @@
 
 		decimal GetBeskaeftigelsesfradragGrundbeloeb(int skatteAar);
 		decimal GetBeskaeftigelsesfradragSats(int skatteAar);
+
+		decimal GetGroenCheckPrVoksen(int skatteAar);
+		decimal GetGroenCheckPrBarn(int skatteAar);
+		decimal GetGroenCheckAftrapningssats(int skatteAar);
+		decimal GetGroenCheckBundfradrag(int skatteAar);
 	}
 
 	public interface ISkattelovRegistry : IAktieindkomstRegistry, ISkattepligtigIndkomstRegistry

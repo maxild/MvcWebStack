@@ -55,6 +55,11 @@ namespace Maxfire.Skat
 			
 			{"GetBeskaeftigelsesfradragGrundbeloeb",        values(13600,   13600,   13600,   14100,  14400,  14900,   15400,  16000, 16600,  17300,  17900) },
 			{"GetBeskaeftigelsesfradragSats",               values(0.0425m, 0.0425m, 0.0425m, 0.044m, 0.045m, 0.0465m, 0.048m, 0.05m, 0.052m, 0.054m, 0.056m) },
+			
+			{"GetGroenCheckPrVoksen",                       values(0, 1300) },
+			{"GetGroenCheckPrBarn",                         values(0, 300) },
+			{"GetGroenCheckAftrapningssats",                values(0, 0.075m) },
+			{"GetGroenCheckBundfradrag",                    values(decimal.MaxValue, 362800) }
 		};
 
 		static decimal[] values(params decimal[] values)
@@ -238,6 +243,26 @@ namespace Maxfire.Skat
 		}
 
 		public decimal GetBeskaeftigelsesfradragSats(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetGroenCheckPrVoksen(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetGroenCheckPrBarn(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetGroenCheckAftrapningssats(int skatteAar)
+		{
+			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
+		}
+
+		public decimal GetGroenCheckBundfradrag(int skatteAar)
 		{
 			return getValue(MethodBase.GetCurrentMethod().Name, skatteAar);
 		}
