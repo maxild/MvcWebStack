@@ -59,11 +59,11 @@ namespace Maxfire.Skat
 		}
 
 		protected virtual ValueTuple<decimal> GetTopskattegrundlag(ValueTuple<PersonligeBeloeb> indkomster,
-			decimal bundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
+			decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
 		{
 			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);
-			return topskatBeregner.BeregnGrundlag(indkomster, bundfradrag, 
-			                                      positivNettoKapitalIndkomstGrundbeloeb);
+			return topskatBeregner.BeregnGrundlagForGroenCheck(indkomster, topskatBundfradrag, 
+			                                                   positivNettoKapitalIndkomstGrundbeloeb);
 		}
 	}
 }

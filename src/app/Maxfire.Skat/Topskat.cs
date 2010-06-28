@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using System;
+
+namespace Maxfire.Skat
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -82,12 +84,30 @@
 			return grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
 		}
 
+
+		// ReSharper disable MemberCanBeMadeStatic.Global
+		public ValueTuple<decimal> BeregnGrundlagForGroenCheck(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
+		// ReSharper restore MemberCanBeMadeStatic.Global
+		{
+			var grundlagUdenPositivNettoKapitalIndkomst = BeregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
+			// Ved beregning af topskattegrundlaget for "grøn check" bliver ægtefællers samlede grundlag 
+			// opgjort sådan at den samlede positiv nettokapitalindkomst til beskatning, bliver lagt 
+			// medregnet hos den ægtefælle med det største grundlag.
+			var grundlagAfPositivNettoKapitalIndkomst 
+				= beregnGrundlagAfPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag, 
+					positivNettoKapitalIndkomstGrundbeloeb,
+					(indexOfMaxGrundlag, nettoKapitalIndkomstTilBeskatning) => indexOfMaxGrundlag.ToUnitTuple());
+			return grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
+		}
+
 		static ValueTuple<decimal> beregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
 		{
 			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
 			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
 			return personligIndkomst + kapitalPensionsindskud - topskatBundfradrag;
 		}
+
+		
 
 // ReSharper disable MemberCanBeMadeStatic.Global
 		public ValueTuple<decimal> BeregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
@@ -97,8 +117,22 @@
 		}
 
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb = 0)
+		public ValueTuple<decimal> BeregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
 // ReSharper restore MemberCanBeMadeStatic.Global
+		{
+			// Ved beregning af topskattegrundlaget fordeles skat af samlet positiv nettokapitalindkomst 
+			// over bundfradraget ift. fordelingen af ægtefællernes positive nettokapitalindkomst.
+			return beregnGrundlagAfPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag,
+				positivNettoKapitalIndkomstGrundbeloeb,
+				(indexOfMaxGrundlag, nettoKapitalIndkomstTilBeskatning) =>
+				{
+					var positivNettoKapitalIndkomstTilBeskatning 
+						= nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
+					return positivNettoKapitalIndkomstTilBeskatning / positivNettoKapitalIndkomstTilBeskatning.Sum();
+				});
+		}
+
+		private static ValueTuple<decimal> beregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb, Func<int, ValueTuple<decimal>, ValueTuple<decimal>> fordelingsnoegleProvider)
 		{
 			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
@@ -120,8 +154,7 @@
 			decimal samletGrundlagAfPositivNettoKapitalIndkomst
 				= grundlagInklSamletPositivNettoKapitalIndkomst - grundlagUdenPositivNettoKapitalIndkomst[indexOfMaxGrundlag].NonNegative();
 
-			var positivNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
-			var fordelingsnoegle = positivNettoKapitalIndkomstTilBeskatning / positivNettoKapitalIndkomstTilBeskatning.Sum();
+			ValueTuple<decimal> fordelingsnoegle = fordelingsnoegleProvider(indexOfMaxGrundlag, nettoKapitalIndkomstTilBeskatning);
 
 			return fordelingsnoegle * samletGrundlagAfPositivNettoKapitalIndkomst;
 		}

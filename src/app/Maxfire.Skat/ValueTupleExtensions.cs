@@ -27,6 +27,11 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(size, () => value);
 		}
 
+		public static ValueTuple<decimal> ToUnitTuple(this int index)
+		{
+			return index == 0 ? new ValueTuple<decimal>(1, 0) : new ValueTuple<decimal>(0, 1);
+		}
+
 		public static ValueTuple<TResult> Cast<T, TResult>(this ValueTuple<T> tuple)
 			where T : TResult
 		{
