@@ -181,7 +181,7 @@ namespace Maxfire.Skat
 		/// </summary>
 		public static ValueTuple<T> Loft<T>(this ValueTuple<T> tuple, T maksimalOevreGraense)
 		{
-			return tuple.Map(value => Operator<T>.Min(value, maksimalOevreGraense));
+			return tuple.Map(value => value.Loft(maksimalOevreGraense));
 		}
 
 		/// <summary>
@@ -189,23 +189,28 @@ namespace Maxfire.Skat
 		/// </summary>
 		public static ValueTuple<T> Bund<T>(this ValueTuple<T> tuple, T minimalNedreGraense)
 		{
-			return tuple.Map(value => Operator<T>.Max(value, minimalNedreGraense));
+			return tuple.Map(value => value.Bund(minimalNedreGraense));
 		}
 
 		/// <summary>
 		/// Frembring tuple af ikke negative værdier af forskelle, der er større end en angivet grænseværdi.
 		/// </summary>
-		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, T limit)
+		public static ValueTuple<T> DifferenceGreaterThan<T>(this ValueTuple<T> tuple, T limit)
 		{
-			return tuple.DifferencesGreaterThan(limit.ToTupleOfSize(tuple.Size));
+			return tuple.DifferenceGreaterThan(limit.ToTupleOfSize(tuple.Size));
 		}
 
 		/// <summary>
 		/// Frembring tuple af ikke negative værdier af forskelle, der er større end en angivet grænseværdi.
 		/// </summary>
-		public static ValueTuple<T> DifferencesGreaterThan<T>(this ValueTuple<T> tuple, ValueTuple<T> limits)
+		public static ValueTuple<T> DifferenceGreaterThan<T>(this ValueTuple<T> tuple, ValueTuple<T> limits)
 		{
 			return +(tuple - limits);
+		}
+
+		public static ValueTuple<T> NormalizeAndele<T>(this ValueTuple<T> andele)
+		{
+			return andele / andele.Sum();
 		}
 	}
 }

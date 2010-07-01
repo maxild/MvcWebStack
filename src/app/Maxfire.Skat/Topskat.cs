@@ -127,7 +127,7 @@ namespace Maxfire.Skat
 				(indexOfMaxGrundlag, nettoKapitalIndkomstTilBeskatning) =>
 				{
 					var positivNettoKapitalIndkomstTilBeskatning 
-						= nettoKapitalIndkomstTilBeskatning.DifferencesGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
+						= nettoKapitalIndkomstTilBeskatning.DifferenceGreaterThan(positivNettoKapitalIndkomstGrundbeloeb);
 					return positivNettoKapitalIndkomstTilBeskatning / positivNettoKapitalIndkomstTilBeskatning.Sum();
 				});
 		}

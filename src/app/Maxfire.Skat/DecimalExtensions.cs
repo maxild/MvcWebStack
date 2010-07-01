@@ -1,31 +1,46 @@
 ﻿using System;
+using Maxfire.Core;
 
 namespace Maxfire.Skat
 {
 	public static class DecimalExtensions
 	{
-		public static int Sign(this decimal number)
+		public static decimal RoundMoney(this decimal value)
 		{
-			if (number < 0)
-			{
-				return -1;
-			}
-			return number > 0 ? 1 : 0;
+			return Math.Round(value, 2, MidpointRounding.ToEven);
+		}
+	}
+
+	public static class NumberExtensions
+	{
+		public static int Sign<T>(this T number)
+		{
+			return Operator<T>.Sign(number);
 		}
 
-		public static bool DifferentSign(this decimal lhs, decimal rhs)
+		public static bool DifferentSign<T>(this T lhs, T rhs)
 		{
 			return lhs.Sign() * rhs.Sign() == -1;
 		}
 
-		public static decimal NonNegative(this decimal number)
+		public static T NonNegative<T>(this T number)
 		{
-			return Math.Max(0, number);
+			return Operator<T>.Max(Operator<T>.Zero, number);
 		}
 
-		public static decimal RoundMoney(this decimal value)
+		public static T Bund<T>(this T number, T minimalNedreGraense)
 		{
-			return Math.Round(value, 2, MidpointRounding.ToEven);
+			return Operator<T>.Max(number, minimalNedreGraense);
+		}
+
+		public static T Loft<T>(this T number, T maksimalOevreGraense)
+		{
+			return Operator<T>.Min(number, maksimalOevreGraense);
+		}
+
+		public static T DifferenceGreaterThan<T>(this T number, T limit)
+		{
+			return Operator<T>.Subtract(number, limit).NonNegative();
 		}
 	}
 }

@@ -126,7 +126,7 @@
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
 			var bundLettelseBundfradrag 
 				= personer.Map(person => _skattelovRegistry.GetBundLettelseBundfradrag(skatteAar, person.GetAlder(skatteAar), personer.Size > 1));
-			return 0.015m * bundskatBeregner.BeregnBruttoGrundlag(indkomster).DifferencesGreaterThan(bundLettelseBundfradrag);
+			return 0.015m * bundskatBeregner.BeregnBruttoGrundlag(indkomster).DifferenceGreaterThan(bundLettelseBundfradrag);
 		}
 
 		/// <summary>
@@ -195,7 +195,7 @@
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 			// TODO: For ægtefæller er det summen, da ubenyttet grundbeløb kan overføres
 			var negativNettoKapitalIndkomstOverGrundbeloebet = (+(-nettoKapitalIndkomstTilBeskatning))
-				.DifferencesGreaterThan(negativNettoKapitalIndkomstGrundbeloeb);
+				.DifferenceGreaterThan(negativNettoKapitalIndkomstGrundbeloeb);
 			var ligningsmaesigeFradrag = indkomster.Map(x => x.LigningsmaessigeFradrag);
 			return sats * (negativNettoKapitalIndkomstOverGrundbeloebet + ligningsmaesigeFradrag);
 		}
