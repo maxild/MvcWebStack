@@ -26,7 +26,12 @@ namespace Maxfire.Skat
 		public int GetAlder(int skatteAar)
 		{
 			DateTime indkomstAaretsUdloeb = new DateTime(skatteAar, 12, 31);
-			return indkomstAaretsUdloeb.Year - Foedselsdato.Year - (Foedselsdato.DayOfYear < indkomstAaretsUdloeb.DayOfYear ? 0 : 1);
+			return GetAlder(indkomstAaretsUdloeb);
+		}
+
+		public int GetAlder(DateTime atDate)
+		{
+			return atDate.Year - Foedselsdato.Year - (Foedselsdato.DayOfYear < atDate.DayOfYear ? 0 : 1);
 		}
 	}
 }

@@ -71,6 +71,18 @@ namespace Maxfire.Skat
 			return new ValueTuple<TItem>(list);
 		}
 
+		public static bool Any<T>(this ValueTuple<T> tuple, Func<T, bool> predicate)
+		{
+			for (int i = 0; i < tuple.Size; i++)
+			{
+				if (predicate(tuple[i]))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Har tuple værdier modsat fortegn?
 		/// </summary>
