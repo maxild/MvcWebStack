@@ -9,11 +9,10 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<decimal> amIndkomster, int skatteAar)
 		{
 			decimal amBidragSkattesats = _skattelovRegistry.GetAMBidragSkattesats(skatteAar);
-			var amIndkomst = indkomster.Map(x => x.AMIndkomst);
-			return amBidragSkattesats * amIndkomst;
+			return amBidragSkattesats * amIndkomster;
 		}
 	}
 }

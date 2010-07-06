@@ -95,13 +95,14 @@ namespace Maxfire.Skat.UnitTests
 				});
 			
 			var amBidragBeregner = new AMBidragBeregner(skattelovRegistry);
-			var amBidrag = amBidragBeregner.BeregnSkat(_indkomster, SKATTE_AAR);
+			var amIndkomster = _indkomster.Map(x => x.AMIndkomst);
+			var amBidrag = amBidragBeregner.BeregnSkat(amIndkomster, SKATTE_AAR);
 
 			_indkomster[0].PersonligIndkomst.ShouldEqual(368000);
 			amBidrag[0].ShouldEqual(32000);
 
 			var beskaeftigelsesfradragBeregner = new BeskaeftigelsesfradragBeregner(skattelovRegistry);
-			var beskaeftigelsesfradrag = beskaeftigelsesfradragBeregner.BeregnFradrag(_indkomster, SKATTE_AAR);
+			var beskaeftigelsesfradrag = beskaeftigelsesfradragBeregner.BeregnFradrag(amIndkomster, SKATTE_AAR);
 
 			beskaeftigelsesfradrag[0].ShouldEqual(16000);
 			_indkomster[0].LigningsmaessigeFradrag += beskaeftigelsesfradrag[0]; // TODO: Indkomstopgørelse mangler i programmet

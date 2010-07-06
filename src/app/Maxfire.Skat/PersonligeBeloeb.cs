@@ -1,22 +1,25 @@
 ﻿namespace Maxfire.Skat
 {
 	/// <summary>
-	/// Input der varierer pr. person
+	/// Input der varierer pr. person (personlig indkomst, nettokapitalindkomst, 
+	/// skattepligtig indkomst, ligningsmæssige fradrag, aktieindkomst, kapitalpensionsindskud)
 	/// </summary>
 	public class PersonligeBeloeb
 	{
-		// TODO: Indkomstopgørelse mangler, og passer ikke helt med den interne definition 
-		// TODO: af PersonligeBeloeb, hvor PersonligIndkomst (og AMIndkomst) tildeles værdier hver for sig.
-		// PersonligIndkomst = (1 - 0,08) * AMIndkomst + IkkeAMIndkomst - Fradrag
-		//
-		//    AMIndkomst     = Løn mv.
-		//    IkkeAMIndkomst = SU + Sygedagpenge + .....
-		//    Fradrag        = PrivatePension + Iværksætterkonto
+		/// <summary>
+		/// Personlig indkomst før betaling af arbejdsmarkedsbidrag.
+		/// </summary>
+		public decimal PersonligIndkomstFoerAMBidrag { get; set; } // TODO
 
 		/// <summary>
-		/// Den del af den personlige indkomst, som der svares arbejdsmarkedsbidrag af.
+		/// Den del af den personlige indkomst hvoraf der betales AM-bidrag mv.
 		/// </summary>
 		public decimal AMIndkomst { get; set; }
+
+		/// <summary>
+		/// Arbejdsmarkedsbidrag.
+		/// </summary>
+		public decimal AMBidrag { get; set; } // TODO
 
 		/// <summary>
 		/// Personlig indkomst efter betaling af AM-bidrag mv.
@@ -88,7 +91,7 @@
 		{
 			get 
 			{
-				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - ModregnetUnderskudSkattepligtigIndkomst; 
+				return PersonligIndkomst + NettoKapitalIndkomst - LigningsmaessigeFradrag - ModregnetUnderskudSkattepligtigIndkomst;
 			}
 		}
 
@@ -98,8 +101,15 @@
 		/// </summary>
 		public decimal AktieIndkomst { get; set; }
 
-		// TODO: Er dette ligningsmæssige fradrag inkl/eksl beskæftigelsesfradrag, der jo beregnes pba. AMIndkomst
+		/// <summary>
+		/// Ligningsmæssige fradrag (inklusiv beskæftigelsesfradrag).
+		/// </summary>
 		public decimal LigningsmaessigeFradrag { get; set; }
+
+		/// <summary>
+		/// Beregnet beskæftigelsesfradrag
+		/// </summary>
+		public decimal Beskaeftigelsesfradrag { get; set; } // TODO
 
 		/// <summary>
 		/// Modregning af underskud i personlig indkomst i kapitalpensionsindskud.

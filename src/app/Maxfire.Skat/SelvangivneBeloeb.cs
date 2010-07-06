@@ -1,16 +1,17 @@
 ﻿namespace Maxfire.Skat
 {
+	// TODO: Interface vs ABC (måske begge dele)
 	public abstract class SelvangivneBeloeb
 	{
 		/// <summary>
 		/// Den del af den personlige indkomst hvoraf der skal betales arbejdsmarkedsbidrag.
 		/// </summary>
-		public abstract decimal PersonligIndkomstGrundlagForAMBidrag { get; }
+		public abstract decimal PersonligIndkomstAMIndkomst { get; }
 
 		/// <summary>
 		/// Den del af den personlige indkomst hvoraf der ikke skal betales arbejdsmarkedsbidrag.
 		/// </summary>
-		public abstract decimal PersonligIndkomstEjGrundlagForAMBidrag { get; }
+		public abstract decimal PersonligIndkomstEjAMIndkomst { get; }
 
 		/// <summary>
 		/// Fradrag i personlig indkomst.

@@ -167,8 +167,9 @@
 		{
 			var skattesats = 0.08m + kommunaleSatser.Map(x => x.KommuneOgKirkeskattesats);
 			var beskaeftigelsesfradragBeregner = new BeskaeftigelsesfradragBeregner(_skattelovRegistry);
-			var beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(indkomster, 0.0425m, 14200);
-			var beskaeftigelsesfradragMedNuvaerendeSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(indkomster, skatteAar);
+			var amIndkomster = indkomster.Map(x => x.AMIndkomst);
+			var beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(amIndkomster, 0.0425m, 14200);
+			var beskaeftigelsesfradragMedNuvaerendeSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(amIndkomster, skatteAar);
 			return skattesats * (beskaeftigelsesfradragMedNuvaerendeSatsOgGrundbeloeb - beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb);
 		}
 
