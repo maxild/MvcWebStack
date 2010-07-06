@@ -18,6 +18,9 @@
 		/// </summary>
 		public decimal AMIndkomst { get; set; }
 
+		/// <summary>
+		/// Personlig indkomst efter betaling af AM-bidrag mv.
+		/// </summary>
 		public decimal PersonligIndkomst { get; set; }
 
 		public decimal FremfoertUnderskudPersonligIndkomst { get; set; }
