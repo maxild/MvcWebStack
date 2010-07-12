@@ -7,7 +7,7 @@
 	public class PersonligeBeloeb
 	{
 		/// <summary>
-		/// Personlig indkomst før betaling af arbejdsmarkedsbidrag.
+		/// Personlig indkomst før betaling af AM-bidrag mv.
 		/// </summary>
 		public decimal PersonligIndkomstFoerAMBidrag { get; set; } // TODO
 

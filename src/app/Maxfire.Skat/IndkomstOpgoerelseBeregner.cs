@@ -11,7 +11,7 @@ namespace Maxfire.Skat
 		}
 
 		// TODO: Mangler aktieindkomst, restskat, fremførte underskud i selvangivne beløb
-		public ValueTuple<PersonligeBeloeb> BeregnIndkomster(ValueTuple<SelvangivneBeloeb> selvangivneBeloeb, int skatteAar)
+		public ValueTuple<PersonligeBeloeb> BeregnIndkomster(ValueTuple<ISelvangivneBeloeb> selvangivneBeloeb, int skatteAar)
 		{
 			// Personlig indkomst (herunder PBL § 16, stk. 1 indskud til kapitalpensionsordninger, 
 			// hvor der maksimalt kan indbetales 46.000 kr årligt i 2010)
@@ -21,8 +21,7 @@ namespace Maxfire.Skat
 			var personligIndkomstFoerAMBidrag = selvangivneBeloeb.Map(x => 
 				x.PersonligIndkomstAMIndkomst + x.PersonligIndkomstEjAMIndkomst - x.FradragPersonligIndkomst);
 			var personligIndkomstEfterAMBidrag = personligIndkomstFoerAMBidrag - amBidrag;
-			var kapitalPensionsindskud = selvangivneBeloeb.Map(
-				x => x.PrivatTegnetKapitalPensionsindskud + x.ArbejdsgiverAdministreretKapitalPensionsindskud);
+			var kapitalPensionsindskud = selvangivneBeloeb.Map(x => x.KapitalPensionsindskud);
 
 			// Kapital indkomst
 			var nettoKapitalIndkomst = selvangivneBeloeb.Map(x => x.KapitalIndkomst - x.FradragKapitalIndkomst);

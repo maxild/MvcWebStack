@@ -44,6 +44,7 @@
     <Compile Include="EjendomsvaerdiskatBeregner.cs" />
     <Compile Include="GroenCheckBeregner.cs" />
     <Compile Include="IndkomstOpgoerelseBeregner.cs" />
+    <Compile Include="ISelvangivneBeloeb.cs" />
     <Compile Include="ISkattelovRegistry.cs" />
     <Compile Include="ISumable.cs" />
     <Compile Include="KommunaleSatser.cs" />
@@ -63,7 +64,7 @@
     <Compile Include="PersonligeBeloeb.cs" />
     <Compile Include="Kommuneskat.cs" />
     <Compile Include="PersonligIndkomstUnderskudBeregner.cs" />
-    <Compile Include="SelvangivneBeloeb.cs" />
+    <Compile Include="AbstractSelvangivneBeloeb.cs" />
     <Compile Include="SkatterAfPersonligIndkomstBeregner.cs" />
     <Compile Include="SkatterAfSkattepligtigIndkomstBeregner.cs" />
     <Compile Include="SkatteModregner.cs" />

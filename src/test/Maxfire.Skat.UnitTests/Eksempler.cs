@@ -75,20 +75,34 @@ namespace Maxfire.Skat.UnitTests
 		{
 			const decimal indskudPaaPrivatTegnetKapitalPension = 32000;
 
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var selvangivneBeloeb = new ValueTuple<ISelvangivneBeloeb>(
+				new SelvangivneBeloeb
 				{
-					PersonligIndkomst = 368000 - indskudPaaPrivatTegnetKapitalPension,
-					NettoKapitalIndkomst = 28500,
-					KapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension,
-					LigningsmaessigeFradrag = 15000
+					Bruttoloen = 400000,
+					PrivatTegnetKapitalPensionsindskud = indskudPaaPrivatTegnetKapitalPension,
+					AndenKapitalIndkomst = 13500,
+					Renteindt = 25000,
+					Renteudg = 10000,
+					LigningsmaessigeFradrag = 1400 // idet beskæftigelsesfradrag 13.600
 				},
-				new PersonligeBeloeb
+				new SelvangivneBeloeb
 				{
-					PersonligIndkomst = 92000,
-					NettoKapitalIndkomst = 18500,
-					LigningsmaessigeFradrag = 8000
+					Bruttoloen = 100000,
+					Renteindt = 23500,
+					Renteudg = 5000,
+					LigningsmaessigeFradrag = 3750 // idet beskæftigelsesfradrag 4,25 pct af 100.000
 				});
+
+			var indkomstOpgoerelseBeregner = new IndkomstOpgoerelseBeregner(_skattelovRegistry);
+			var indkomster = indkomstOpgoerelseBeregner.BeregnIndkomster(selvangivneBeloeb, SKATTE_AAR);
+
+			indkomster[0].PersonligIndkomst.ShouldEqual(368000 - indskudPaaPrivatTegnetKapitalPension);
+			indkomster[0].NettoKapitalIndkomst.ShouldEqual(28500);
+			indkomster[0].LigningsmaessigeFradrag.ShouldEqual(15000);
+
+			indkomster[1].PersonligIndkomst.ShouldEqual(92000);
+			indkomster[1].NettoKapitalIndkomst.ShouldEqual(18500);
+			indkomster[1].LigningsmaessigeFradrag.ShouldEqual(8000);
 
 			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);
 			var topskat = topskatBeregner.BeregnSkat(indkomster, SKATTE_AAR, getKommunaleSatserForGifte());
@@ -110,6 +124,14 @@ namespace Maxfire.Skat.UnitTests
 
 			var personer = getPersonerForUgift();
 
+			// TODO: Lav den færdig
+			var selvangivneBeloeb = new ValueTuple<ISelvangivneBeloeb>(
+				new SelvangivneBeloeb
+				{
+					Bruttoloen = 463793,
+					AtpEgetBidrag = 1080
+				});
+
 			var indkomster = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
 					{
@@ -118,6 +140,10 @@ namespace Maxfire.Skat.UnitTests
 						LigningsmaessigeFradrag = 24600,
 						KapitalPensionsindskud = 46000
 					});
+
+			indkomster[0].PersonligIndkomst.ShouldEqual(358395);
+			indkomster[0].NettoKapitalIndkomst.ShouldEqual(8500);
+			indkomster[0].LigningsmaessigeFradrag.ShouldEqual(24600);
 
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(342295);
 
@@ -2056,38 +2082,6 @@ namespace Maxfire.Skat.UnitTests
 		private static ValueTuple<Person> getPersonerForGifte()
 		{
 			return getPerson().ToTupleOfSize(2);
-		}
-	}
-
-	public class SkatBeregner
-	{
-		private readonly ISkattelovRegistry _skattelovRegistry;
-
-		public SkatBeregner(ISkattelovRegistry skattelovRegistry)
-		{
-			_skattelovRegistry = skattelovRegistry;
-		}
-
-		public ValueTuple<Skatter> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
-		{
-			var skatAfPersonligIndkomstBeregner = new SkatterAfPersonligIndkomstBeregner(_skattelovRegistry);
-			var skatterAfPersonligIndkomst = skatAfPersonligIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, skatteAar);
-
-			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
-			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, skatteAar);
-
-			return skatterAfPersonligIndkomst.Map(index =>
-				new Skatter(skatterAfPersonligIndkomst[index], skatterAfSkattepligtigIndkomst[index]));
-		}
-
-		public ValueTuple<Skatter> CombineSkat(ValueTuple<SkatterAfPersonligIndkomst> skatterAfPersonligeIndkomster, ValueTuple<SkatterAfSkattepligtigIndkomst> skatterAfSkattepligtigeIndkomster)
-		{
-			return skatterAfPersonligeIndkomster.Size == 1 ?
-				new Skatter(skatterAfPersonligeIndkomster[0], skatterAfSkattepligtigeIndkomster[0]).ToTuple() :
-				new ValueTuple<Skatter>(
-					new Skatter(skatterAfPersonligeIndkomster[0], skatterAfSkattepligtigeIndkomster[0]),
-					new Skatter(skatterAfPersonligeIndkomster[1], skatterAfSkattepligtigeIndkomster[1])
-				);
 		}
 	}
 }
