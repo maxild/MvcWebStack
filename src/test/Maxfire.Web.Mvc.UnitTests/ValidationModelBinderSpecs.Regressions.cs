@@ -95,7 +95,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Fact]
 			public void NameValueDeserializerHandlesImmutableCollection()
 			{
-				NameValueDeserializer nvd = new NameValueDeserializer();
+				var nvd = new NameValueDeserializer();
 
 				var priser = nvd.Deserialize(_requestParams, "Input", typeof(FooImmutableList)) as FooImmutableList;
 
@@ -105,7 +105,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Fact]
 			public void NameValueDeserializerHandlesNonImmutableCollections()
 			{
-				NameValueDeserializer nvd = new NameValueDeserializer();
+				var nvd = new NameValueDeserializer();
 
 				var priser = nvd.Deserialize(_requestParams, "Input", typeof(FooList)) as FooList;
 

@@ -142,6 +142,10 @@
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="RouteValuesHelper.cs" />
     <Compile Include="SimpleModelBinder.cs" />
+    <Compile Include="SimplyRestful\IRestfulActionResolver.cs" />
+    <Compile Include="SimplyRestful\RestfulAction.cs" />
+    <Compile Include="SimplyRestful\RestfulActionResolver.cs" />
+    <Compile Include="SimplyRestful\SimplyRestfulRouteHandler.cs" />
     <Compile Include="TextValuePair.cs" />
     <Compile Include="TypeDescriptorHelper.cs" />
     <Compile Include="UrlBuilder.cs" />

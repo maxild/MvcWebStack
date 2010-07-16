@@ -463,8 +463,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 			[Fact]
 			public void WithoutAnyPostedArrayDataAnArrayPropertyIsInitializedNullWhenUsingNameValueDeserializer()
 			{
-				NameValueDeserializer nvd = new NameValueDeserializer();
-				NameValueCollection collection = new NameValueCollection { { "array.Name", "test" } };
+				var nvd = new NameValueDeserializer();
+				var collection = new NameValueCollection { { "array.Name", "test" } };
 
 				var array = nvd.Deserialize(collection, "array", typeof(ArrayClass)) as ArrayClass;
 
