@@ -35,12 +35,12 @@ namespace Maxfire.Web.Mvc
 			// Q: What about required value logic....?
 		}
 
-		public static List<string> GetSubIndexNames(ControllerContext controllerContext, ModelBindingContext bindingContext, string prefix)
+		public static List<string> GetSubIndexNames(ModelBindingContext bindingContext, string prefix)
 		{
 			var subIndexNames = new List<string>();
 			var subIndexPattern = new Regex("^" + Regex.Escape(prefix) + @"\[([^\]]+)\]", RegexOptions.IgnoreCase);
 
-			foreach (var name in bindingContext.ValueProvider.GetKeys(controllerContext))
+			foreach (var name in bindingContext.ValueProvider.GetKeys())
 			{
 				var match = subIndexPattern.Match(name);
 				if (!match.Success)
@@ -74,7 +74,7 @@ namespace Maxfire.Web.Mvc
 			string prefix = bindingContext.ModelName;
 
 			// Todo: What about the order of the elements (page order, ordinal order, ???)
-			List<string> indices = GetSubIndexNames(controllerContext, bindingContext, prefix);
+			List<string> indices = GetSubIndexNames(bindingContext, prefix);
 
 			foreach (string index in indices)
 			{
@@ -119,7 +119,7 @@ namespace Maxfire.Web.Mvc
 			string prefix = bindingContext.ModelName;
 
 			// Todo: What about the order of the elements (page order, ordinal order, ???)
-			List<string> indices = GetSubIndexNames(controllerContext, bindingContext, prefix);
+			List<string> indices = GetSubIndexNames(bindingContext, prefix);
 
 			foreach (string index in indices)
 			{

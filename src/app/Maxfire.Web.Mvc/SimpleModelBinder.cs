@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc
 				return null;
 			}
 
-			var valueProviderResult = bindingContext.ValueProvider.GetValue(controllerContext, bindingContext.ModelName);
+			var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 			if (valueProviderResult == null)
 			{
 				return null;
