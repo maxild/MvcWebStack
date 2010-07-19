@@ -69,7 +69,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="ContainsException">Thrown when the object is not present in the collection</exception>
 		public static IEnumerable<T> ShouldContain<T>(this IEnumerable<T> collection,
 		                                              T expected,
-		                                              IComparer<T> comparer)
+		                                              IEqualityComparer<T> comparer)
 		{
 			Assert.Contains(expected, collection, comparer);
 			return collection;
@@ -99,7 +99,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="DoesNotContainException">Thrown when the object is present inside the container</exception>
 		public static IEnumerable<T> ShouldNotContain<T>(this IEnumerable<T> collection,
 		                                                 T expected,
-		                                                 IComparer<T> comparer)
+		                                                 IEqualityComparer<T> comparer)
 		{
 			Assert.DoesNotContain(expected, collection, comparer);
 			return collection;
@@ -127,7 +127,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		}
 
 		/// <summary>
-		/// Verifies that the items of a collection are all equal to the items of another collection, and listed in the same order.
+		/// Verifies that the items of a collection are all equal to the items of another collection, and are listed in the same order.
 		/// </summary>
 		/// <typeparam name="T">The type of the object to be compared</typeparam>
 		/// <param name="expectedCollection">The expected collection</param>

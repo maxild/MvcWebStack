@@ -90,7 +90,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 			return actualString;
 		}
 
-		public static string ShouldEqual(this string actualString, string expectedString, IComparer<string> comparer)
+		public static string ShouldEqual(this string actualString, string expectedString, IEqualityComparer<string> comparer)
 		{
 			Assert.Equal(expectedString, actualString, comparer);
 			return actualString;

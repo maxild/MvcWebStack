@@ -11,6 +11,11 @@ COPYRIGHT = 'Copyright 2009 Morten Maxild. All rights reserved.';
 CONFIGURATION = 'debug'
 SOLUTION = 'Maxfire-vs2010.sln'
 
+# 3rd party program paths
+PATHS = {
+	:ncover => "#{File.join(Rake::OSArchitecture.programfiles, 'NCover')}"
+}
+
 ARCHIVE = {
 	:root => 'archive',
 	:build => 'archive/build',
@@ -127,12 +132,15 @@ namespace :build do
 		test_task_names << task_name
 		desc "Run tests in #{test_assembly_name} with coverage"
 		Rake::XUnitTask.new(task_name => :compile) do |xunit|
-			xunit.tool_path = File.join(ROOT, 'tools')
+			xunit.clr_version = '4'
+			xunit.xunit_path = File.join(ROOT, 'tools', 'xunit')
 			xunit.test_assembly = test_assembly
 			xunit.results_folder = ARCHIVE[:results]
 			xunit.test_results_filename = "#{name}UnitTestResults.xml"
 			xunit.test_stylesheet = File.join(ROOT, 'tools', 'xunit', 'xUnitSummary.xsl')
-			xunit.calculate_coverage = true
+			xunit.calculate_coverage = false
+			xunit.coverage_exclude_attrs << 'Maxfire.TestCommons.NoCoverageAttribute'
+			xunit.ncover_path = PATHS[:ncover]
 			coverage_results_filenames << xunit.coverage_results_filename = "#{name}UnitTestCoverage.xml"
 			xunit.coverage_log_filename = "#{name}UnitTestCoverage.log"
 			xunit.coverage_assemblies = FileList["#{File.dirname(test_assembly)}/#{PRODUCT_NS}*.dll"].exclude(/.*Tests.dll$/)

@@ -21,7 +21,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="InRangeException">Thrown when the value is not in the given range</exception>
 		public static T ShouldBeInRange<T>(this T actual,
 		                                   T low,
-		                                   T high)
+		                                   T high) where T : IComparable
 		{
 			Assert.InRange(actual, low, high);
 			return actual;
@@ -121,13 +121,13 @@ namespace Maxfire.TestCommons.AssertExtensions
 		public static T ShouldEqual<T>(this T actual,
 		                               T expected)
 		{
-			Assert.Equal(expected, actual, new AssertComparer<T>());
+			Assert.Equal(expected, actual, new AssertEqualityComparer<T>());
 			return actual;
 		}
 
 		public static T ShouldEqualDefault<T>(this T actual) where T : new()
 		{
-			Assert.Equal(new T(), actual, new AssertComparer<T>());
+			Assert.Equal(new T(), actual, new AssertEqualityComparer<T>());
 			return actual;
 		}
 
@@ -141,7 +141,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		public static T ShouldEqual<T>(this T actual,
 		                               object expected)
 		{
-			Assert.Equal(expected, actual, new AssertComparer<object>());
+			Assert.Equal(expected, actual, new AssertEqualityComparer<object>());
 			return actual;
 		}
 
@@ -155,7 +155,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="EqualException">Thrown when the objects are not equal</exception>
 		public static T ShouldEqual<T>(this T actual,
 		                               T expected,
-		                               IComparer<T> comparer)
+		                               IEqualityComparer<T> comparer)
 		{
 			Assert.Equal(expected, actual, comparer);
 			return actual;
@@ -171,7 +171,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="NotInRangeException">Thrown when the value is in the given range</exception>
 		public static T ShouldNotBeInRange<T>(this T actual,
 		                                      T low,
-		                                      T high)
+		                                      T high) where T : IComparable
 		{
 			Assert.NotInRange(actual, low, high);
 			return actual;
@@ -262,7 +262,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		public static T ShouldNotEqual<T>(this T actual,
 		                                  T expected)
 		{
-			Assert.NotEqual(expected, actual, new AssertComparer<T>());
+			Assert.NotEqual(expected, actual, new AssertEqualityComparer<T>());
 			return actual;
 		}
 
@@ -276,7 +276,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		public static T ShouldNotEqual<T>(this T actual,
 		                                  object expected)
 		{
-			Assert.NotEqual(expected, actual, new AssertComparer<object>());
+			Assert.NotEqual(expected, actual, new AssertEqualityComparer<object>());
 			return actual;
 		}
 
@@ -290,7 +290,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 		/// <exception cref="NotEqualException">Thrown when the objects are equal</exception>
 		public static T ShouldNotEqual<T>(this T actual,
 		                                  T expected,
-		                                  IComparer<T> comparer)
+		                                  IEqualityComparer<T> comparer)
 		{
 			Assert.NotEqual(expected, actual, comparer);
 			return actual;

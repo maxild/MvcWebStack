@@ -5,7 +5,89 @@ require 'rake/tasklib'
 require 'erb'
 
 module Rake
+
+	# Credits to http://blogs.msdn.com/david.wang/archive/2006/03/26/HOWTO-Detect-Process-Bitness.aspx
+	#
+	# The general idea is to check the following environment variables:
+	#     PROCESSOR_ARCHITECTURE - reports the native processor architecture EXCEPT 
+	#                              for WOW64, where it reports x86.
+  	#     PROCESSOR_ARCHITEW6432 - not used EXCEPT for WOW64, where it reports the 
+  	#                              original native processor architecture.
+	#
+	# Environment Variable      32bit Native    64bit Native      WOW64
+	# PROCESSOR_ARCHITECTURE        x86            AMD64           x86
+	# PROCESSOR_ARCHITEW6432     undefined 	     undefined        AMD64
+	#
+	# Notes:
+  	#   - WOW64 = 32bit Program on 64bit OS
+  	#   - Replace AMD64 with IA64 for Itaniums
+	module ProcessArchitecture
+		
+		# 64-bit native process (i.e. 64-bit program running on 64-bit architecture)
+		def self.is_64bit?
+			if !is_wow64? and ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64'
+				true
+			else
+				false
+			end
+		end
+		
+		# 32-bit native process (i.e. 32-bit program running on 32-bit architecure)
+		def self.is_32bit?
+			if !is_wow64? and ENV['PROCESSOR_ARCHITECTURE'] == 'x86'
+				true
+			else
+				false
+			end
+		end
+		
+		# WOW64 process (i.e. 32-bit program running on 64-bit arcitecture)
+		# WOW64 is an x86 emulator that allows 32-bit Windows applications to run on 64-bit Windows
+		def self.is_wow64?
+			if ! (ENV['PROCESSOR_ARCHITEW6432'].nil? or ENV['PROCESSOR_ARCHITEW6432'].empty?)
+				true
+			else
+				false
+			end
+		end
+		
+	end
 	
+	module OSArchitecture
+		
+		def self.is_64bit?
+			if ENV['PROCESSOR_ARCHITECTURE'] == 'AMD64' or ENV['PROCESSOR_ARCHITEW6432'] == 'AMD64'
+				true
+			else
+				false		
+			end
+		end
+		
+		def self.is_32bit? 
+			if ENV['PROCESSOR_ARCHITECTURE'] == 'x86' and (ENV['PROCESSOR_ARCHITEW6432'].nil? or ENV['PROCESSOR_ARCHITEW6432'].empty?)
+				true
+			else
+				false		
+			end
+		end
+		
+		# ProgramFiles environment variable on 64-bit OS depends on process architecture (wow64 vs native64)
+		# Get to 32-bit ProgramFiles on 32-bit OS, and ProgramW6432 on 64-bit OS.
+		# The default location is 'C:\Program Files' on both OS architectures.
+		def self.programfiles
+			# The value ENV['ProgramFiles'] depends on whether the process requesting the environment 
+			# variable is itself 32-bit or 64-bit. Therefore to get 64-bit version of NCover when OS
+			# is 64-bit we need some hacking...
+			if is_64bit? 
+				program_files = ENV['ProgramW6432'] 
+			else 
+				program_files = ENV['ProgramFiles'] 
+			end 
+			TaskUtils::normalize(program_files)
+		end
+		
+	end
+
 	module TaskUtils
 		
 		def self.svn_revision(working_folder=nil)
@@ -533,7 +615,11 @@ using System.Runtime.InteropServices;
 	# with code coverage
 	class XUnitTask < ToolTask
 		remove_tool_attr # hide command_line attribute, and make tool_name readonly
+		private :tool_path= # Hack: make tool_path readonly (actually we dont need it...bad design)
 		#todo: make two helper classes to carry the params
+		attr_accessor :xunit_path
+		attr_accessor :ncover_path
+		attr_accessor :clr_version
 		attr_accessor :calculate_coverage
 		attr_accessor :results_folder
 		attr_accessor :test_assembly, :test_results_filename, :nunit_test_results_filename, :test_stylesheet, :nunit_test_stylesheet
@@ -554,7 +640,8 @@ using System.Runtime.InteropServices;
 			File.join(@results_folder, @coverage_results_filename)
 		end
 		def command
-			fail "No tool_path passed to xunit task" if nil_or_empty? @tool_path
+			fail "No xunit_path passed to xunit task" if nil_or_empty? @xunit_path
+			fail "No ncover_path passed to xunit task" if @calculate_coverage and nil_or_empty?  @ncover_path
 			fail "No test_assembly was passed to xunit task" if nil_or_empty? @test_assembly
 			fail "No results_folder passed to xunit task" if nil_or_empty? @results_folder
 			fail "No test_results_filename passed to xunit task" if nil_or_empty? @test_results_filename
@@ -567,18 +654,21 @@ using System.Runtime.InteropServices;
 			
 			coverage_log_file = File.join(@results_folder, @coverage_log_filename) unless nil_or_empty? @coverage_log_filename
 			
-			xunit_path = File.join(@tool_path, 'xunit')
+			# determine if we are using CLR 2 or CLR 4 test runner
+			test_runner = 'xunit.console.exe'
+			if @clr_version == '4' then test_runner = 'xunit.console.clr4.exe' end
+				 
 			if ! nil_or_empty? nunit_test_results_file
-				xunit_cmd = ToolCommand.new(xunit_path, 'xunit.console.exe', test_asm, ' ', :noshadow => nil, :xml => test_results_file, :nunit => nunit_test_results_file).to_s
+				xunit_cmd = ToolCommand.new(@xunit_path, test_runner, test_asm, ' ', :noshadow => nil, :xml => test_results_file, :nunit => nunit_test_results_file).to_s
 			else
-				xunit_cmd = ToolCommand.new(xunit_path, 'xunit.console.exe', test_asm, ' ', :noshadow => nil, :xml => test_results_file).to_s
+				xunit_cmd = ToolCommand.new(@xunit_path, test_runner, test_asm, ' ', :noshadow => nil, :xml => test_results_file).to_s
 			end
 
 			return xunit_cmd unless @calculate_coverage
 
 			###############################################################################
 			# Note: NCover is expecting assembly names (not filenames) to be passed with 
-			# the //a switch. If filenames are used then an empty coverage.xml file will  
+			# the //a (//ias in ncover 3.x) switch. If filenames are used then an empty coverage.xml file will  
 			# be generated. For more information see:
 			#     http://www.kiwidude.com/blog/2007/04/ncover-problems-fixes-part-2.html
 			#
@@ -589,22 +679,23 @@ using System.Runtime.InteropServices;
 			###############################################################################
 			coverage_assembly_names = @coverage_assemblies.pathmap('%n')
 
-			cmd = File.join(@tool_path, 'ncover', 'NCover.Console.exe')
+			#TODO: quote_path (escape_path) method missing...only prepend/append \" token if not already there (to avoid C:/Program Files/... parse error)
+			cmd =  "\"#{File.join(@ncover_path, 'NCover.Console.exe')}\""
 			cmd += " #{xunit_cmd}"
-			cmd += " //a #{coverage_assembly_names.to_a.join("\;")}" unless nil_or_empty? coverage_assembly_names
+			cmd += " //ias #{coverage_assembly_names.to_a.join("\;")}" unless nil_or_empty? coverage_assembly_names
 			cmd += " //ea #{@coverage_exclude_attrs.join("\;")}" unless nil_or_empty? @coverage_exclude_attrs
 			cmd += " //w #{@working_folder}" unless nil_or_empty? @working_folder
 			cmd += " //l #{coverage_log_file}" unless nil_or_empty? coverage_log_file
-			cmd += " //v" if @coverage_verbose_logging
+			if @coverage_verbose_logging then cmd += " //ll Verbose" else cmd += " //ll Normal" end
 			cmd += " //x #{coverage_results_file}"
 			cmd += " //reg" # see http://www.kiwidude.com/blog/2007/04/ncover-problems-fixes-part-1.html	
 			cmd
 		end
 		def after_execute
-			XslTransform.save(coverage_results_file.ext('html'), :xml => coverage_results_file, :xslt => File.join(tool_path, 'ncover', 'Coverage.xsl')) if @calculate_coverage
+			# todo: remove NCover reporting using XSLT
+			#XslTransform.save(coverage_results_file.ext('html'), :xml => coverage_results_file, :xslt => File.join(tool_path, 'ncover', 'Coverage.xsl')) if @calculate_coverage
 			
 			XslTransform.save(test_results_file.ext('html'), :xml => test_results_file, :xslt => test_stylesheet) unless nil_or_empty? test_stylesheet
-			
 			XslTransform.save(nunit_test_results_file.ext('html'), :xml => nunit_test_results_file, :xslt => nunit_test_stylesheet) unless nil_or_empty? nunit_test_stylesheet
 			
 			fail ("There are test failures. The testrunner exited with code #{exit_code}. Check the logged output to find the failed test(s).") unless exit_code == 0

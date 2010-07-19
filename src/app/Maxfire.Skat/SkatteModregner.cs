@@ -1,6 +1,7 @@
 ﻿using System;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
+using Maxfire.Skat.Reflection;
 
 namespace Maxfire.Skat
 {

@@ -3,17 +3,23 @@ using System.Collections.Generic;
 
 namespace Maxfire.TestCommons.AssertExtensibility
 {
-	public class CollectionEquivalenceComparer<T> : IComparer<IEnumerable<T>>
+	public class CollectionEquivalenceComparer<T> : IEqualityComparer<IEnumerable<T>>
 		where T : IComparable<T>
 	{
-		public int Compare(IEnumerable<T> left, IEnumerable<T> right)
+		public bool Equals(IEnumerable<T> left, IEnumerable<T> right)
 		{
-			List<T> leftList = new List<T>(left);
-			List<T> rightList = new List<T>(right);
+			var leftList = new List<T>(left);
+			var rightList = new List<T>(right);
+
 			leftList.Sort();
 			rightList.Sort();
 
-			return CollectionComparer<T>.Compare(leftList, rightList);
+			return CollectionEqualityComparer<T>.Equals(leftList, rightList);
+		}
+
+		int IEqualityComparer<IEnumerable<T>>.GetHashCode(IEnumerable<T> obj)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

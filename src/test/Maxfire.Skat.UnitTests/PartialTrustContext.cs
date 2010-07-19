@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
+using Maxfire.TestCommons.Extensions;
 
 namespace Maxfire.Skat.UnitTests
 {
@@ -12,9 +12,9 @@ namespace Maxfire.Skat.UnitTests
 		{
 			var setup = new AppDomainSetup
 			{
-				ApplicationBase = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+				ApplicationBase = Assembly.GetExecutingAssembly().GetCodeBaseDirectory()
 			};
-			
+
 			var permissions = new PermissionSet(null);
 			permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
 			if (permissionsSetup != null)

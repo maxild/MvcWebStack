@@ -1,6 +1,9 @@
 using System;
+using System.Reflection;
 using System.Security.Permissions;
 using Maxfire.Core.Reflection;
+using Maxfire.Skat.Reflection;
+using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
 
@@ -81,25 +84,28 @@ namespace Maxfire.Skat.UnitTests
 
 		// NOTE: Since .NET 2 SP1, reflection is available in partial trust, and reflection will demand MemberAccess in this case!
 
-		[Fact]
+		[Fact, NoCoverage]
 		public void PropertyAccessorThrowsMethodAccessExceptionWhenCallingPrivateSetterWhenRunningInPartialTrustWithoutMemberAccess()
 		{
+			Console.WriteLine("ImageRuntimeVersion: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
 			PartialTrustContext.RunTest<CallingPrivateSetter>(
 				runner => Assert.Throws<MethodAccessException>(() => runner.SetAndGetX(12)),
 				permissions => permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.NoFlags)));
 		}
 
-		[Fact]
+		[Fact, NoCoverage]
 		public void PropertyAccessorWorksOnImmutableTypeWithPrivateSetterWhenRunningInPartialTrustWithReflectionPermissionFlagRestrictedMemberAccess()
 		{
+			Console.WriteLine("ImageRuntimeVersion: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
 			PartialTrustContext.RunTest<CallingPrivateSetter>(
 				runner => runner.SetAndGetX(12).ShouldEqual(12),
 				permissions => permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess)));
 		}
 
-		[Fact]
+		[Fact, NoCoverage]
 		public void PropertyAccessorWorksOnImmutableTypeWithPrivateSetterWhenRunningInPartialTrustWithReflectionPermissionFlagMemberAccess()
 		{
+			Console.WriteLine("ImageRuntimeVersion: " + Assembly.GetExecutingAssembly().ImageRuntimeVersion);
 			PartialTrustContext.RunTest<CallingPrivateSetter>(
 				runner => runner.SetAndGetX(12).ShouldEqual(12),
 				permissions => permissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess)));

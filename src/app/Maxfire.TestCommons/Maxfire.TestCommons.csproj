@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="Assert2.cs" />
     <Compile Include="AssertExtensibility\AssertComparer.cs" />
+    <Compile Include="AssertExtensibility\AssertEqualityComparer.cs" />
+    <Compile Include="AssertExtensibility\CollectionComparer.cs" />
     <Compile Include="AssertExtensibility\CollectionEqualityComparer.cs" />
     <Compile Include="AssertExtensibility\CollectionEquivalenceComparer.cs" />
     <Compile Include="AssertExtensibility\DateComparer.cs" />
@@ -46,6 +48,8 @@
     <Compile Include="AssertExtensions\StringAssertionExtensions.cs" />
     <Compile Include="CurrentCultureScope.cs" />
     <Compile Include="Enumerable.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
+    <Compile Include="NoCoverageAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spec.cs" />
     <Compile Include="SpecBase.cs" />
@@ -56,6 +60,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\tools\rhino.mocks\Rhino.Mocks.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>

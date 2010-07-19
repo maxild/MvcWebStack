@@ -1,48 +1,41 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Maxfire.TestCommons.AssertExtensibility
 {
-	// Only used for Assert.InRange and Assert.NotInRange
-	public class AssertComparer<T> : IComparer<T>
+	public class AssertEqualityComparer<T> : IEqualityComparer<T>
 	{
-		public int Compare(T x, T y)
+		static AssertEqualityComparer<object> innerComparer = new AssertEqualityComparer<object>();
+
+		public bool Equals(T x, T y)
 		{
 			Type type = typeof(T);
 
 			// We handle 'null' for Reference types or Nullable types
 			if (!type.IsValueType || (type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>))))
 			{
-				T nullValue = default(T);
-				if (Equals(x, nullValue))
-				{
-					if (Equals(y, nullValue))
-						return 0;
-					return -1;
-				}
+				if (Object.Equals(x, default(T)))
+					return Object.Equals(y, default(T));
 
-				if (Equals(y, nullValue))
-					return -1;
+				if (Object.Equals(y, default(T)))
+					return false;
 			}
-
-			// Implements IComparable<T>?
-			IComparable<T> comparable1 = x as IComparable<T>;
-
-			if (comparable1 != null)
-				return comparable1.CompareTo(y);
-
-			// Implements IComparable?
-			IComparable comparable2 = x as IComparable;
-
-			if (comparable2 != null)
-				return comparable2.CompareTo(y);
 
 			// Implements IEquatable<T>?
 			IEquatable<T> equatable = x as IEquatable<T>;
-
 			if (equatable != null)
-				return equatable.Equals(y) ? 0 : -1;
+				return equatable.Equals(y);
+
+			// Implements IComparable<T>?
+			IComparable<T> comparable1 = x as IComparable<T>;
+			if (comparable1 != null)
+				return comparable1.CompareTo(y) == 0;
+
+			// Implements IComparable?
+			IComparable comparable2 = x as IComparable;
+			if (comparable2 != null)
+				return comparable2.CompareTo(y) == 0;
 
 			// Enumerable?
 			IEnumerable enumerableX = x as IEnumerable;
@@ -59,15 +52,20 @@ namespace Maxfire.TestCommons.AssertExtensibility
 					bool hasNextY = enumeratorY.MoveNext();
 
 					if (!hasNextX || !hasNextY)
-						return (hasNextX == hasNextY ? 0 : -1);
+						return (hasNextX == hasNextY);
 
-					if (!Equals(enumeratorX.Current, enumeratorY.Current))
-						return -1;
+					if (!innerComparer.Equals(enumeratorX.Current, enumeratorY.Current))
+						return false;
 				}
 			}
 
 			// Last case, rely on Object.Equals
-			return Equals(x, y) ? 0 : -1;
+			return Object.Equals(x, y);
+		}
+
+		public int GetHashCode(T obj)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
