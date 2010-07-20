@@ -13,8 +13,7 @@ namespace Maxfire.CommonServiceLocator.CastleAdapter.UnitTests
 		{
 			IKernel container = new DefaultKernel()
 				.Register(
-				AllTypes.Of<ILogger>()
-					.FromAssembly(typeof(ILogger).Assembly)
+				AllTypes.FromAssembly(typeof(ILogger).Assembly).BasedOn<ILogger>()
 					.WithService.FirstInterface()
 				);
 
