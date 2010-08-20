@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Maxfire.Core.Extensions;
 using EnumDisplayNameAttribute = Maxfire.Core.ComponentModel.DisplayNameAttribute;
 
 namespace Maxfire.Core.Reflection
@@ -48,6 +49,15 @@ namespace Maxfire.Core.Reflection
 			return ExpressionHelper.GetProperty(propertyExpression).GetDisplayName();
 		}
 
+		public static string GetDisplayNameOfEnum(this object value, Type enumType)
+		{
+			if (!enumType.IsEnum)
+			{
+				throw new ArgumentException("The generic type argument must be an enum.");
+			}
+			return getDisplayNameOfEnum(value);
+		}
+
 		public static string GetDisplayNameOfEnum<TEnum>(this TEnum value)
 		{
 			Type enumType = typeof(TEnum);
@@ -58,28 +68,27 @@ namespace Maxfire.Core.Reflection
 			return getDisplayNameOfEnum(value);
 		}
 
-		public static string GetDisplayName(this Enum value)
-		{
-			return getDisplayNameOfEnum(value);
-		}
-
 		private static string getDisplayNameOfEnum(object value)
 		{
+			if (value == null)
+			{
+				return string.Empty;
+			}
+
 			var displayName = value.ToString();
+			if (displayName.IsEmpty())
+			{
+				return string.Empty;
+			}
 
 			var field = value.GetType().GetField(displayName, BindingFlags.Static | BindingFlags.GetField | BindingFlags.Public);
 			if (field == null)
 			{
-				return null;
+				return displayName;
 			}
 
 			var displayNameAttribute = field.GetCustomAttribute<EnumDisplayNameAttribute>();
-			if (displayNameAttribute != null)
-			{
-				displayName = displayNameAttribute.DisplayName;
-			}
-
-			return displayName;
+			return displayNameAttribute == null ? displayName : displayNameAttribute.DisplayName;
 		}
 	}
 }
