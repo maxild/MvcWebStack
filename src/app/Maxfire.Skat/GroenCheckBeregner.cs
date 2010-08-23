@@ -28,7 +28,7 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn den skattefrie kompensation, der også kaldes  "grøn check", fremsat i L 198.
 		/// </summary>
-		public ValueTuple<decimal> BeregnKompensation(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnKompensation(ValueTuple<IPerson> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			decimal kompensationPrVoksen = _skattelovRegistry.GetGroenCheckPrVoksen(skatteAar);
 			decimal kompensationPrBarn = _skattelovRegistry.GetGroenCheckPrBarn(skatteAar);

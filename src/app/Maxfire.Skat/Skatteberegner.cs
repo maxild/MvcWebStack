@@ -1,109 +1,53 @@
 namespace Maxfire.Skat
 {
-	// Noter:
-	// Beregnerens API benytter altid en kollektion (IList<T> via ReadOnlyCollection wrapper)
-	// til repræsentere en eller to personer. Konventionen er
-	//		Count == 1: Beregning af ugift person
-	//      Count == 2: beregning af gifte personer (ægtefæller med sambeskatning)
-	// Beregning af to ugifte personer kan laves via facade API
-	//
-
-	public interface IInputBeloeb
+	public class Skatteberegner
 	{
-		/// <summary>
-		/// Lønindkomst mv.
-		/// </summary>
-		/// <remarks>
-		/// Skal være efter fradrag af eget bidrag til arbejdsgiverpensionsordning.
-		/// </remarks>
-		decimal AMIndkomst { get; }
-		
-		/// <summary>
-		/// Pension, sociale ydelser og arbejdsløshedsunderstøttelse mv.
-		/// </summary>
-		/// <remarks>
-		/// Der betales ikke arbejdsmarkedsbidrag af denne del af den personlige indkomst.
-		/// </remarks>
-		decimal IkkeAMIndkomst { get;}
+		private readonly ISkattelovRegistry _skattelovRegistry;
 
-		/// <summary>
-		/// Bidrag og præmier til privattegnede pensionsordninger med løbende udbetalinger og ratepension 
-		/// samt privattegnet kapitalpension dog højest 43.100 kr. i 2007.
-		/// </summary>
-		decimal PrivatPension { get; }
-	}
-
-	public interface IInputSatser
-	{
-		decimal JobFradragSats { get; }
-		decimal AMBidragSats { get; }
-	}
-
-	public static class Skatteberegner
-	{
-		public static SkatteberegningResult Beregn(SkatteberegningInput input)
+		public Skatteberegner(ISkattelovRegistry skattelovRegistry)
 		{
-			IInputBeloeb beloeb = null;
-			IInputSatser satser = null;
+			_skattelovRegistry = skattelovRegistry;
+		}
+
+		public SkatteberegningResult Beregn(
+			ValueTuple<IPerson> personer, 
+			ValueTuple<ISelvangivneBeloeb> selvangivneBeloeb,
+			ValueTuple<KommunaleSatser> kommunaleSatser,
+			int skatteAar
+			)
+		{
+			var indkomstOpgoerelseBeregner = new IndkomstOpgoerelseBeregner(_skattelovRegistry);
+			ValueTuple<PersonligeBeloeb> indkomster = indkomstOpgoerelseBeregner.BeregnIndkomster(selvangivneBeloeb, skatteAar);
+
 			//
-			// 1: Indkomst
-			//
+			// TODO: Ejendomsværdiskat (springes over, da den kan insættes hvorsomhelst)
+			// 
 
-			// TODO: Sondring mellem intern indkomst context (f.eks. skal beskæftigelsesfradrag beregnes, og andre fradrag begrænses) og input-context
+			// Modregning af negativ personlig indkomst
+			var personligIndkomstUnderskudBeregner = new PersonligIndkomstUnderskudBeregner();
+			personligIndkomstUnderskudBeregner.ModregningAfUnderskud(indkomster);
 
-			// TODO: Simpelt interface på de mange rubrikker (kun det højest nødvendige, mindste fællesnævner). Ved at definere dette interface er klienten selv ansvarlig for mapping
+			// Beregn bundskat, mellemskat og topskat samt aktieskat
+			var skatterAfPersonligIndkomstBeregner = new SkatterAfPersonligIndkomstBeregner(_skattelovRegistry);
+			var skatterAfPersonligIndkomst = skatterAfPersonligIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, skatteAar);
 
-			// Beregn beskæftigelsesfradraget (der er et ligningsmæssigt fradrag)
-			decimal jobFradrag = (beloeb.AMIndkomst - beloeb.PrivatPension) * satser.JobFradragSats;
+			// Modregning af negativ skattepligtig indkomst
+			var skattepligtigIndkomstUnderskudBeregner = new SkattepligtigIndkomstUnderskudBeregner(_skattelovRegistry);
+			var modregnResults = skattepligtigIndkomstUnderskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser, skatteAar);
+			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
+
+			// Beregn sundhedsbidrag samt kommuneskat og kirkeskat
+			var skatterAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
+			var skatterAfSkattepligtigIndkomst = skatterAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, skatteAar);
+
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
+																	skatterAfSkattepligtigIndkomst);
 			
-			// Beregn de ligningsmæssige fradrag
 
-
-			// Beregn arbejdsmarkedsbidrag
-			decimal arbejdsmarkedsBidrag = beloeb.AMIndkomst * satser.AMBidragSats;
-
-			// Beregn personlig indkomst 
-			// (Løn - AMBidrag - AllePensionsindbetalinger)
-			// (OBS: AMIndkomst er opgjort efter fradrag af evt. _egne_ bidrag til arbejdsgiver administrerede pensionsordninger,
-			// _MEN_ det er ulogisk!!!!!
-			decimal personligIndkomst = (beloeb.AMIndkomst + beloeb.IkkeAMIndkomst) - beloeb.PrivatPension 
-				- arbejdsmarkedsBidrag;
-
-			// Beregn kapital indkomst
-			//decimal kapitalIndkomst;
-
-			// Beregn skattepligtig indkomst (TODO: Med ægtefælle overførsel)
-			//decimal skattepligtigIndkomst;
-
-			//
-			// 2: Ejendomsværdiskat (springes over, da den kan insættes hvorsomhelst)
-			//
-
-			//
-			// 3: Skatter uden progression (kommune, bund og sundhedsbidrag)
-			//
-
-			//
-			// 4: Topskat
-			//
-
-			//
-			// 5: Aktieskat
-			//
-
-			//
-			// 6: Regulering af skattebeløbene, jf. § 13 i personskatteloven
-			//
-
-			// Hvis den skattepligtige indkomst udviser underskud....
-
-			//
-			// 7: Skatteværdien af personfradraget opgøres pr. skattetype
-			//
-
-			//
-			// 8: Værdien af skatteloftet beregnes
-			//
+			// Nedbring skatter med værdien af personfradraget
+			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
+			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, skatteAar);
+			var skatterEfterPersonfradrag = modregnPersonfradragResults.Map(x => x.ModregnedeSkatter);
 
 			//
 			// 9: Bestem nedslaget i (forårspakke 2.0)
@@ -117,7 +61,7 @@ namespace Maxfire.Skat
 			// 11: Beregn grøn check
 			//
 
-			return null;
+			return new SkatteberegningResult(indkomster, skatterEfterPersonfradrag);
 		}
 	}
 }

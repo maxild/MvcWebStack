@@ -99,7 +99,7 @@ namespace Maxfire.Skat
 		/// For gifte personer kan uudnyttet personfradrag overføres til den anden ægtefælle.
 		/// Et slutteligt ikke udnyttet personfradrag kan ikke overføres til det efterfølgende skatteår.
 		/// </remarks>
-		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradrag(ValueTuple<Person> personer, ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradrag(ValueTuple<IPerson> personer, ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			// Modregning af skatteværdier af personfradraget i egne indkomstskatter.
 			var modregnEgneSkatterResults = ModregningAfPersonfradragEgneSkatter(personer, skatter, kommunaleSatser, skatteAar);
@@ -111,7 +111,7 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn skatter efter modregning af skatteværdier af personfradraget i egne indkomstskatter.
 		/// </summary>
-		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradragEgneSkatter(ValueTuple<Person> personer, ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<ModregnSkatterResultEx<Skatter>> ModregningAfPersonfradragEgneSkatter(ValueTuple<IPerson> personer, ValueTuple<Skatter> skatter, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var skattevaerdier = BeregnSkattevaerdierAfPersonfradrag(personer, kommunaleSatser, skatteAar);
 			return skatter.Map((skat, index) => ModregningAfSkattevaerdier(skat, skattevaerdier[index], kommunaleSatser[index], skatteAar));
@@ -220,7 +220,7 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn skatteværdier af personfradraget for kommuneskat, kirkeskat, bundskat og sundhedsbidrag.
 		/// </summary>
-		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<Person> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<Skatter> BeregnSkattevaerdierAfPersonfradrag(ValueTuple<IPerson> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			return kommunaleSatser.Map((kommunaleSats, index) => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats, skatteAar, personer[index], personer.Size > 1));
 		}
@@ -230,7 +230,7 @@ namespace Maxfire.Skat
 			return kommunaleSatser.Map((kommunaleSats, index) => BeregnSkattevaerdierAfPersonfradrag(kommunaleSats, skatteAar, personfradrag[index]));
 		}
 
-		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser, int skatteAar, Person person, bool gift)
+		public Skatter BeregnSkattevaerdierAfPersonfradrag(KommunaleSatser kommunaleSatser, int skatteAar, IPerson person, bool gift)
 		{
 			// TODO: Personfradrag er individuelt bestemt af alder og civilstand
 			// Personfradrag opgøres efter § 10 og skatteværdien heraf efter § 12.

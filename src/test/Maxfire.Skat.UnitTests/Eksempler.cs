@@ -325,7 +325,7 @@ namespace Maxfire.Skat.UnitTests
 			
 			var underskudBeregner = new SkattepligtigIndkomstUnderskudBeregner(_skattelovRegistry);
 			var modregnResults = underskudBeregner.ModregningAfUnderskud(indkomster, skatterAfPersonligIndkomst, kommunaleSatser, SKATTE_AAR);
-			skatterAfPersonligIndkomst = modregnResults.Map(x => x.ModregnedeSkatter);
+			var skatterAfPersonligIndkomstEfterModregningAfUnderskud = modregnResults.Map(x => x.ModregnedeSkatter);
 
 			// Skattepligtig indkomst efter modregning
 			indkomster[0].SkattepligtigIndkomst.ShouldEqual(0);
@@ -339,8 +339,7 @@ namespace Maxfire.Skat.UnitTests
 			var skatterAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
 			var skatterAfSkattepligtigIndkomst = skatterAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, SKATTE_AAR);
 
-			var skatterFoerPersonfradrag =
-				new ValueTuple<Skatter>(new Skatter(skatterAfPersonligIndkomst[0], skatterAfSkattepligtigIndkomst[0]));
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud, skatterAfSkattepligtigIndkomst);
 
 			// Skatter after modregning af underkud, men før modregning af personfradrag
 			skatterFoerPersonfradrag[0].Bundskat.ShouldEqual(8457); // <--- modregning i bundskatten
@@ -1189,8 +1188,7 @@ namespace Maxfire.Skat.UnitTests
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, SKATTE_AAR);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
 			                                                        skatterAfSkattepligtigIndkomst);
 			
 			skatterFoerPersonfradrag[0].ShouldEqual(Skatter.Nul);
@@ -1278,8 +1276,7 @@ namespace Maxfire.Skat.UnitTests
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, SKATTE_AAR);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
 																	skatterAfSkattepligtigIndkomst);
 
 			// Skatter efter modregning
@@ -1376,8 +1373,7 @@ namespace Maxfire.Skat.UnitTests
 			var skatAfSkattepligtigIndkomstBeregner = new SkatterAfSkattepligtigIndkomstBeregner(_skattelovRegistry);
 			var skatterAfSkattepligtigIndkomst = skatAfSkattepligtigIndkomstBeregner.BeregnSkat(indkomster, kommunaleSatser, SKATTE_AAR);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomstEfterModregningAfUnderskud,
 																	skatterAfSkattepligtigIndkomst);
 
 			// Skatter efter modregning
@@ -1433,8 +1429,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(115275.30m);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1492,8 +1487,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].ShouldEqual(SkatterAfSkattepligtigIndkomst.Nul);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1554,8 +1548,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(63934.20m);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1617,8 +1610,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(58122);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1679,8 +1671,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(65548.70m);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1741,8 +1732,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].ShouldEqual(SkatterAfSkattepligtigIndkomst.Nul);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1800,8 +1790,7 @@ namespace Maxfire.Skat.UnitTests
 
 			skatterAfSkattepligtigIndkomst[0].ShouldEqual(SkatterAfSkattepligtigIndkomst.Nul);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1877,8 +1866,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(12916);
 			skatterAfSkattepligtigIndkomst[1].Sum().ShouldEqual(113337.90m);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -1956,8 +1944,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(0);
 			skatterAfSkattepligtigIndkomst[1].Sum().ShouldEqual(11301.50m);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -2037,8 +2024,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterAfSkattepligtigIndkomst[0].Sum().ShouldEqual(173332.72m);
 			skatterAfSkattepligtigIndkomst[1].ShouldEqual(SkatterAfSkattepligtigIndkomst.Nul);
 
-			var skatBeregner = new SkatBeregner(_skattelovRegistry);
-			var skatterFoerPersonfradrag = skatBeregner.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
+			var skatterFoerPersonfradrag = SkatteUtility.CombineSkat(skatterAfPersonligIndkomst, skatterAfSkattepligtigIndkomst);
 
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var modregnPersonfradragResults = personfradragBeregner.ModregningAfPersonfradrag(personer, skatterFoerPersonfradrag, kommunaleSatser, SKATTE_AAR);
@@ -2069,17 +2055,17 @@ namespace Maxfire.Skat.UnitTests
 			return getKommunaleSatser().ToTupleOfSize(2);
 		}
 
-		private static Person getPerson()
+		private static IPerson getPerson()
 		{
 			return new Person(new DateTime(1970, 6, 3));
 		}
 
-		private static ValueTuple<Person> getPersonerForUgift()
+		private static ValueTuple<IPerson> getPersonerForUgift()
 		{
 			return getPerson().ToTuple();
 		}
 
-		private static ValueTuple<Person> getPersonerForGifte()
+		private static ValueTuple<IPerson> getPersonerForGifte()
 		{
 			return getPerson().ToTupleOfSize(2);
 		}

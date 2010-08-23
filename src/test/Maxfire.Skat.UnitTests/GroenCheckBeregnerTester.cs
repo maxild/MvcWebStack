@@ -94,7 +94,7 @@ namespace Maxfire.Skat.UnitTests
 		{
 			const int skatteAar = 2010;
 			var beregner = new TestableGroenCheckBeregner(new FakeSkattelovRegistry(), () => 0);
-			var personer = new Person(new DateTime(1970, 6, 3), 1).ToTuple();
+			var personer = new Person(new DateTime(1970, 6, 3), 1).ToTuple<IPerson>();
 			var indkomster = new PersonligeBeloeb().ToTuple();
 
 			var aftrapning = beregner.BeregnKompensation(personer, indkomster, skatteAar);
@@ -107,7 +107,7 @@ namespace Maxfire.Skat.UnitTests
 		{
 			const int skatteAar = 2010;
 			var beregner = new TestableGroenCheckBeregner(new FakeSkattelovRegistry(), () => 1000);
-			var personer = new Person(new DateTime(1970, 6, 3), 1).ToTuple();
+			var personer = new Person(new DateTime(1970, 6, 3), 1).ToTuple<IPerson>();
 			var indkomster = new PersonligeBeloeb().ToTuple();
 
 			var aftrapning = beregner.BeregnKompensation(personer, indkomster, skatteAar);

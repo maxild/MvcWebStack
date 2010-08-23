@@ -104,6 +104,26 @@ namespace Maxfire.Core.Extensions
 			return new Range<T>(start, end);
 		}
 
+		public static RangeIterator<int> UpTo(this int start, int end)
+		{
+			return start.To(end).UpBy(1);
+		}
+
+		public static RangeIterator<long> UpTo(this long start, long end)
+		{
+			return start.To(end).UpBy(1);
+		}
+
+		public static RangeIterator<int> DownTo(this int start, int end)
+		{
+			return start.To(end).DownBy(1);
+		}
+
+		public static RangeIterator<long> DownTo(this long start, long end)
+		{
+			return start.To(end).DownBy(1);
+		}
+
 		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey tKey)
 		{
 			return dictionary.GetValueOrDefault(tKey, default(TValue));

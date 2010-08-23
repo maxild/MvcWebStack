@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Maxfire.Skat
 {
@@ -25,7 +24,7 @@ namespace Maxfire.Skat
 		// Input:
 		//
 		// OBS: Hvordan ved vi om personerne er gift, idet ugifte godt kan eje bolig sammen????
-		public ValueTuple<decimal> BeregnSkat(IEjendomsoplysninger ejendomsoplysninger, ValueTuple<Person> ejere, 
+		public ValueTuple<decimal> BeregnSkat(IEjendomsoplysninger ejendomsoplysninger, ValueTuple<IPerson> ejere, 
 			ValueTuple<decimal> ejerandele, bool gift, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			decimal lavsats  = _registry.GetSkattesatsForUnderProgressionsgraense(skatteAar);
@@ -106,17 +105,16 @@ namespace Maxfire.Skat
 			return fordelingsnoegle * (ejendomsvaerdiskat - nedslagVedKoebSenest01071998) - pensionistNedslag;
 		}
 
-		private static bool skalHavePensionistNedslag(ValueTuple<Person> ejere, int skatteAar)
+		private static bool skalHavePensionistNedslag(ValueTuple<IPerson> ejere, int skatteAar)
 		{
 			return ejere.Any(ejer => skalHavePensionistNedslag(ejer, skatteAar));
 		}
 
-		private static bool skalHavePensionistNedslag(Person person, int skatteAar)
+		private static bool skalHavePensionistNedslag(IPerson person, int skatteAar)
 		{
 			// Pensionsalderen nedsættes til 65 år for personer, der fylder 60 år den 1. juli 1999, eller senere.
 			int aldersgraense = person.GetAlder(new DateTime(1999, 7, 1)) <= 60 ? 65 : 67;
 			return person.GetAlder(skatteAar) >= aldersgraense;
-
 		}
 	}
 

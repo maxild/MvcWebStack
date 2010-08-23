@@ -90,7 +90,7 @@
 		/// <summary>
 		/// Beregn det nedslag i skatten der gives som følge af PSL § 26 (kompensationsordning fra forårspakke 2.0)
 		/// </summary>
-		public ValueTuple<decimal> BeregnKompensation(ValueTuple<Person> personer,
+		public ValueTuple<decimal> BeregnKompensation(ValueTuple<IPerson> personer,
 			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			// TODO: Beregn hvert led 1-7 i hver sin funktion/procedure (nemmere at teste sådan)
@@ -121,7 +121,7 @@
 		/// <summary>
 		/// Beregner skattelettelsen af nedsættelsen af bundskattesatsen (pkt. 1 i PSL § 26, stk. 2).
 		/// </summary>
-		public ValueTuple<decimal> GetBundSkattelettelse(ValueTuple<Person> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> GetBundSkattelettelse(ValueTuple<IPerson> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
 		{
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
 			var bundLettelseBundfradrag 
@@ -176,7 +176,7 @@
 		/// <summary>
 		/// Beregn skatteskærpelsen af nulreguleringen af personfradraget (pkt. 6 i PSL § 26, stk. 2).
 		/// </summary>
-		public ValueTuple<decimal> GetPersonfradragSkatteskaerpelse(ValueTuple<Person> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<decimal> GetPersonfradragSkatteskaerpelse(ValueTuple<IPerson> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var personfradragSkaerpelse = personer.Map(person => 
@@ -201,7 +201,7 @@
 			return sats * (negativNettoKapitalIndkomstOverGrundbeloebet + ligningsmaesigeFradrag);
 		}
 
-		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedKompensation(ValueTuple<Skatter> skatter, ValueTuple<Person> personer,
+		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedKompensation(ValueTuple<Skatter> skatter, ValueTuple<IPerson> personer,
 			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var kompensation = BeregnKompensation(personer, indkomster, kommunaleSatser, skatteAar);

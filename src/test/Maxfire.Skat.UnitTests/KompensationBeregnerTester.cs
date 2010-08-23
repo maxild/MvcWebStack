@@ -68,7 +68,7 @@ namespace Maxfire.Skat.UnitTests
 
 		private readonly KompensationBeregner _kompensationBeregner;
 		private readonly ValueTuple<PersonligeBeloeb> _indkomster;
-		private readonly ValueTuple<Person> _personer;
+		private readonly ValueTuple<IPerson> _personer;
 		private readonly ValueTuple<KommunaleSatser> _kommunaleSatser;
 
 		public KompensationBeregnerTester()
@@ -76,7 +76,7 @@ namespace Maxfire.Skat.UnitTests
 			const decimal loen = 400000;
 			var skattelovRegistry = new FakeSkattelovRegistry();
 
-			_personer = new ValueTuple<Person>(new Person(new DateTime(1970, 6, 3)));
+			_personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
 			_indkomster = new ValueTuple<PersonligeBeloeb>(
 				new PersonligeBeloeb
