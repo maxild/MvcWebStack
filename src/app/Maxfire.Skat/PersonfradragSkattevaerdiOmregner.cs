@@ -4,7 +4,7 @@
 	{
 		private readonly Skatter _skattesatser;
 
-		public PersonfradragSkattevaerdiOmregner(KommunaleSatser kommunaleSatser, ISkattelovRegistry skattelovRegistry, int skatteAar)
+		public PersonfradragSkattevaerdiOmregner(IKommunaleSatser kommunaleSatser, ISkattelovRegistry skattelovRegistry, int skatteAar)
 		{
 			_skattesatser = new Skatter(
 				bundskat: skattelovRegistry.GetBundSkattesats(skatteAar),

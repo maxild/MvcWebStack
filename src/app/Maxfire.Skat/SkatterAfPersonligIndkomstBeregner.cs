@@ -9,7 +9,7 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<SkatterAfPersonligIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<SkatterAfPersonligIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var bundskatBeregner = new BundskatBeregner(_skattelovRegistry);
 			var bundskat = bundskatBeregner.BeregnSkat(indkomster, skatteAar);

@@ -53,6 +53,7 @@
     <Compile Include="AbstractFakeSkattelovRegistry.cs" />
     <Compile Include="GroenCheckBeregnerTester.cs" />
     <Compile Include="KirkeskatBeregnerTester.cs" />
+    <Compile Include="KommunaleSatser.cs" />
     <Compile Include="KommuneskatBeregnerTester.cs" />
     <Compile Include="KompensationBeregnerTester.cs" />
     <Compile Include="NegativNettoKapitalIndkomstNedslagBeregnerTester.cs" />

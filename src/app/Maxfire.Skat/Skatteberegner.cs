@@ -12,7 +12,7 @@ namespace Maxfire.Skat
 		public SkatteberegningResult Beregn(
 			ValueTuple<IPerson> personer, 
 			ValueTuple<ISelvangivneBeloeb> selvangivneBeloeb,
-			ValueTuple<KommunaleSatser> kommunaleSatser,
+			ValueTuple<IKommunaleSatser> kommunaleSatser,
 			int skatteAar
 			)
 		{

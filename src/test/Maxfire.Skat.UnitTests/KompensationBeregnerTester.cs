@@ -69,7 +69,7 @@ namespace Maxfire.Skat.UnitTests
 		private readonly KompensationBeregner _kompensationBeregner;
 		private readonly ValueTuple<PersonligeBeloeb> _indkomster;
 		private readonly ValueTuple<IPerson> _personer;
-		private readonly ValueTuple<KommunaleSatser> _kommunaleSatser;
+		private readonly ValueTuple<IKommunaleSatser> _kommunaleSatser;
 
 		public KompensationBeregnerTester()
 		{
@@ -88,7 +88,7 @@ namespace Maxfire.Skat.UnitTests
 					AktieIndkomst = 8000
 				});
 
-			_kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			_kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.255m

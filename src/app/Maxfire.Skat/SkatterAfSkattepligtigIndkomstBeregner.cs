@@ -9,7 +9,7 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var sundhedsbidragBeregner = new SundhedsbidragBeregner(_skattelovRegistry);
 			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(indkomster, skatteAar);

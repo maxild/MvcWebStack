@@ -36,7 +36,7 @@ namespace Maxfire.Skat.UnitTests
 		{
 			var personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
-			ValueTuple<KommunaleSatser> kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -58,7 +58,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -93,7 +93,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -117,7 +117,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,
@@ -149,7 +149,7 @@ namespace Maxfire.Skat.UnitTests
 
 			var personer = new Person(new DateTime(1970, 6, 3)).ToTupleOfSize<IPerson>(2);
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kommuneskattesats = 0.25m,

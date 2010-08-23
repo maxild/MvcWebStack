@@ -64,7 +64,7 @@ namespace Maxfire.Skat
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar, ValueTuple<KommunaleSatser> kommunaleSatser=null)
+		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar, ValueTuple<IKommunaleSatser> kommunaleSatser=null)
 		{
 			decimal topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
 			decimal positivNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetPositivNettoKapitalIndkomstGrundbeloeb(skatteAar);
@@ -181,15 +181,15 @@ namespace Maxfire.Skat
 			return indexOfMaxGrundlag;
 		}
 
-		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			kommunaleSatser = kommunaleSatser ?? new KommunaleSatser().ToTupleOfSize(grundlag.Size);
-
 			decimal bundskattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
 			decimal mellemskattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);
 			decimal topskattesats = _skattelovRegistry.GetTopSkattesats(skatteAar);
 			decimal sundhedsbidragsats = _skattelovRegistry.GetSundhedsbidragSkattesats(skatteAar);
-			var kommunaleskattesatser = kommunaleSatser.Map(x => x.Kommuneskattesats);
+			var kommunaleskattesatser = kommunaleSatser != null ? 
+				kommunaleSatser.Map(x => x.Kommuneskattesats) : 
+				0.0m.ToTupleOfSize(grundlag.Size);
 
 			decimal fastsats = bundskattesats + mellemskattesats + topskattesats + sundhedsbidragsats;
 			var skattesatser = fastsats + kommunaleskattesatser;

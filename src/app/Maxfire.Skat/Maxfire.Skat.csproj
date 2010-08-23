@@ -48,7 +48,8 @@
     <Compile Include="ISelvangivneBeloeb.cs" />
     <Compile Include="ISkattelovRegistry.cs" />
     <Compile Include="ISumable.cs" />
-    <Compile Include="KommunaleSatser.cs" />
+    <Compile Include="IKommunaleSatser.cs" />
+    <Compile Include="KommunaleSatserExtensions.cs" />
     <Compile Include="KompensationBeregner.cs" />
     <Compile Include="Mellemskat.cs" />
     <Compile Include="ModregnIndkomstResult.cs" />

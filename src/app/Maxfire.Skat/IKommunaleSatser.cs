@@ -6,13 +6,9 @@
 	/// folkekirken, eller de er blevet gift og flyttet sammen efter 5. september året forud 
 	/// for indkomståret.
 	/// </summary>
-	public class KommunaleSatser
+	public interface IKommunaleSatser
 	{
-		public decimal Kommuneskattesats { get; set; }
-		public decimal Kirkeskattesats { get; set; }
-		public decimal KommuneOgKirkeskattesats
-		{
-			get { return Kommuneskattesats + Kirkeskattesats; }
-		}
+		decimal Kommuneskattesats { get; }
+		decimal Kirkeskattesats { get; }
 	}
 }

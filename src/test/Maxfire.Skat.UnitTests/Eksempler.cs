@@ -120,7 +120,7 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void Eksempel_6_IngenUnderskud_Ugift()
 		{
-			ValueTuple<KommunaleSatser> kommunaleSatser = getKommunaleSatserForUgift();
+			ValueTuple<IKommunaleSatser> kommunaleSatser = getKommunaleSatserForUgift();
 
 			var personer = getPersonerForUgift();
 
@@ -2035,7 +2035,7 @@ namespace Maxfire.Skat.UnitTests
 			skatterEfterPersonfradrag[1].ShouldEqual(Skatter.Nul);
 		}
 
-		private static KommunaleSatser getKommunaleSatser()
+		private static IKommunaleSatser getKommunaleSatser()
 		{
 			return new KommunaleSatser
 			{
@@ -2044,13 +2044,13 @@ namespace Maxfire.Skat.UnitTests
 			};
 		}
 
-		private static ValueTuple<KommunaleSatser> getKommunaleSatserForUgift()
+		private static ValueTuple<IKommunaleSatser> getKommunaleSatserForUgift()
 		{
 			return getKommunaleSatser().ToTuple();
 		}
 
 		
-		private static ValueTuple<KommunaleSatser> getKommunaleSatserForGifte()
+		private static ValueTuple<IKommunaleSatser> getKommunaleSatserForGifte()
 		{
 			return getKommunaleSatser().ToTupleOfSize(2);
 		}

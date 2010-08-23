@@ -91,7 +91,7 @@
 		/// Beregn det nedslag i skatten der gives som følge af PSL § 26 (kompensationsordning fra forårspakke 2.0)
 		/// </summary>
 		public ValueTuple<decimal> BeregnKompensation(ValueTuple<IPerson> personer,
-			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			// TODO: Beregn hvert led 1-7 i hver sin funktion/procedure (nemmere at teste sådan)
 			// TODO: Satser er hårdkodede, skal benytte ISkattelovRegistry for alle satser og beløb
@@ -163,9 +163,9 @@
 		/// <summary>
 		/// Beregner skattelettelse af forhøjelsen af beskæftigelsesfradraget (pkt. 5 i PSL § 26, stk. 2).
 		/// </summary>
-		public ValueTuple<decimal> GetBeskaeftigelsesfradragSkattelettelse(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<decimal> GetBeskaeftigelsesfradragSkattelettelse(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
-			var skattesats = 0.08m + kommunaleSatser.Map(x => x.KommuneOgKirkeskattesats);
+			var skattesats = 0.08m + kommunaleSatser.Map(x => x.GetKommuneOgKirkeskattesats());
 			var beskaeftigelsesfradragBeregner = new BeskaeftigelsesfradragBeregner(_skattelovRegistry);
 			var amIndkomster = indkomster.Map(x => x.AMIndkomst);
 			var beskaeftigelsesfradragMedTidligereSatsOgGrundbeloeb = beskaeftigelsesfradragBeregner.BeregnFradrag(amIndkomster, 0.0425m, 14200);
@@ -176,7 +176,7 @@
 		/// <summary>
 		/// Beregn skatteskærpelsen af nulreguleringen af personfradraget (pkt. 6 i PSL § 26, stk. 2).
 		/// </summary>
-		public ValueTuple<decimal> GetPersonfradragSkatteskaerpelse(ValueTuple<IPerson> personer, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<decimal> GetPersonfradragSkatteskaerpelse(ValueTuple<IPerson> personer, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var personfradragBeregner = new PersonfradragBeregner(_skattelovRegistry);
 			var personfradragSkaerpelse = personer.Map(person => 
@@ -202,7 +202,7 @@
 		}
 
 		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedKompensation(ValueTuple<Skatter> skatter, ValueTuple<IPerson> personer,
-			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<KommunaleSatser> kommunaleSatser, int skatteAar)
+			ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var kompensation = BeregnKompensation(personer, indkomster, kommunaleSatser, skatteAar);
 			var skatteModeregner = getSkatteModregner();

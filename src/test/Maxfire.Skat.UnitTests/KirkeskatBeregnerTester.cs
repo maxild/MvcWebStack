@@ -15,7 +15,7 @@ namespace Maxfire.Skat.UnitTests
 					}
 				);
 
-			var kommunaleSatser = new ValueTuple<KommunaleSatser>(
+			var kommunaleSatser = new ValueTuple<IKommunaleSatser>(
 				new KommunaleSatser
 				{
 					Kirkeskattesats = 0.01m
