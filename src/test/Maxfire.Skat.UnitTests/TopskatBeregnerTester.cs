@@ -53,8 +53,8 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void UdenSkatteloft_Ugift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					PersonligIndkomst = 336000,
 					NettoKapitalIndkomst = 28500,
@@ -71,8 +71,8 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void MedSkatteloft_Ugift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					PersonligIndkomst = 336000,
 					NettoKapitalIndkomst = 28500,
@@ -95,14 +95,14 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void UdenSkatteloft_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 					{
 						PersonligIndkomst = 336000,
 						NettoKapitalIndkomst = 28500,
 						KapitalPensionsindskud = 32000
 					},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 					{
 						PersonligIndkomst = 92000,
 						NettoKapitalIndkomst = 18500
@@ -130,14 +130,14 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void MedSkatteloft_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					PersonligIndkomst = 336000,
 					NettoKapitalIndkomst = 28500,
 					KapitalPensionsindskud = 32000
 				},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 				{
 					PersonligIndkomst = 92000,
 					NettoKapitalIndkomst = 18500

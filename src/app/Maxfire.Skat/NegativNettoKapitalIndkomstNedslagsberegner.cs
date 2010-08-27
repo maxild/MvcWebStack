@@ -1,3 +1,5 @@
+using Maxfire.Skat.Extensions;
+
 namespace Maxfire.Skat
 {
 	// Note: Skal ses i sammenhæng med udfasningen af sundhedsbidraget (sammenlægning med bundskatten) 
@@ -37,15 +39,18 @@ namespace Maxfire.Skat
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<Skatter> skatter, int skatteAar)
+		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			ValueTuple<Skatter> skatter, 
+			int skatteAar)
 		{
 			var nedslag = BeregnNedslag(indkomster, skatteAar);
 			return ModregnMedNedslag(skatter, nedslag);
 		}
 
-		public ValueTuple<decimal> BeregnNedslag(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnNedslag(IValueTuple<IPersonligeBeloeb> indkomster, int skatteAar)
 		{
-			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomst);
+			var nettoKapitalIndkomst = indkomster.Map(x => x.Skattegrundlag.NettoKapitalIndkomst);
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 			var grundbeloeb = _skattelovRegistry.GetNegativNettoKapitalIndkomstGrundbeloeb(skatteAar);
 			var negativNettoKapitalIndkomstEfterModregningDerIkkeOverstigerGrundbeloeb
@@ -58,7 +63,9 @@ namespace Maxfire.Skat
 		}
 
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(ValueTuple<Skatter> skatter, ValueTuple<decimal> nedslag)
+		public ValueTuple<ModregnSkatterResult<Skatter>> ModregnMedNedslag(
+			ValueTuple<Skatter> skatter, 
+			ValueTuple<decimal> nedslag)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			var skatteModregner = getSkatteModregner();

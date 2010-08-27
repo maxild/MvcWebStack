@@ -1,16 +1,7 @@
-﻿using System;
-using Maxfire.Core;
+﻿using Maxfire.Core;
 
-namespace Maxfire.Skat
+namespace Maxfire.Skat.Extensions
 {
-	public static class DecimalExtensions
-	{
-		public static decimal RoundMoney(this decimal value)
-		{
-			return Math.Round(value, 2, MidpointRounding.ToEven);
-		}
-	}
-
 	public static class NumberExtensions
 	{
 		public static int Sign<T>(this T number)

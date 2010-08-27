@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maxfire.Skat
+namespace Maxfire.Skat.Extensions
 {
 	public static class PersonExtensions
 	{

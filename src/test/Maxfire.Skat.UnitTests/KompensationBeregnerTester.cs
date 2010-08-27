@@ -1,4 +1,5 @@
 using System;
+using Maxfire.Skat.Extensions;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
 
@@ -67,9 +68,9 @@ namespace Maxfire.Skat.UnitTests
 		}
 
 		private readonly KompensationBeregner _kompensationBeregner;
-		private readonly ValueTuple<PersonligeBeloeb> _indkomster;
-		private readonly ValueTuple<IPerson> _personer;
-		private readonly ValueTuple<IKommunaleSatser> _kommunaleSatser;
+		private readonly IValueTuple<FakePersonligeBeloeb> _indkomster;
+		private readonly IValueTuple<IPerson> _personer;
+		private readonly IValueTuple<IKommunaleSatser> _kommunaleSatser;
 
 		public KompensationBeregnerTester()
 		{
@@ -78,10 +79,10 @@ namespace Maxfire.Skat.UnitTests
 
 			_personer = new ValueTuple<IPerson>(new Person(new DateTime(1970, 6, 3)));
 
-			_indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			_indkomster = new ValueTuple<FakePersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
-					AMIndkomst = loen,
+					PersonligIndkomstAMIndkomst = loen,
 					PersonligIndkomst = (1 - 0.08m) * loen, // TODO: Indkomstopgørelse mangler i programmet
 					NettoKapitalIndkomst = -110000,
 					LigningsmaessigeFradrag = 60000, // NOTE: Ligningsmæssige fradrag eksl. beskæftigelsesfradrag
@@ -95,7 +96,7 @@ namespace Maxfire.Skat.UnitTests
 				});
 			
 			var amBidragBeregner = new AMBidragBeregner(skattelovRegistry);
-			var amIndkomster = _indkomster.Map(x => x.AMIndkomst);
+			var amIndkomster = _indkomster.Map(x => x.PersonligIndkomstAMIndkomst);
 			var amBidrag = amBidragBeregner.BeregnSkat(amIndkomster, SKATTE_AAR);
 
 			_indkomster[0].PersonligIndkomst.ShouldEqual(368000);

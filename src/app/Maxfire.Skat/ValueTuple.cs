@@ -10,7 +10,7 @@ namespace Maxfire.Skat
 	// The projection T --> IValueTuple<T> preserves the direction of assignment compatibility. That is
 	// we can assign an IValueTuple<Derived> to a consumer expection an IValueTuple<Base>, because 
 	// assignment compatibility is preserved.
-	public interface IValueTuple<out T>
+	public interface IValueTuple<out T> : IEnumerable<T> 
 	{
 		T this[int index] { get; }
 		T PartnerOf(int index);
@@ -26,7 +26,7 @@ namespace Maxfire.Skat
 	/// where n is a positive integer. There is also one 0-tuple, an empty sequence. An n-tuple is 
 	/// defined inductively using the construction of an ordered pair.
 	/// </summary>
-	public class ValueTuple<T> : IValueTuple<T>, IEnumerable<T>, IEquatable<ValueTuple<T>>
+	public class ValueTuple<T> : IValueTuple<T>, IEquatable<IValueTuple<T>>
 	{
 		private readonly IList<T> _list;
 
@@ -90,7 +90,7 @@ namespace Maxfire.Skat
 			return Equals(obj as ValueTuple<T>);
 		}
 
-		public bool Equals(ValueTuple<T> other)
+		public bool Equals(IValueTuple<T> other)
 		{
 			if (other == null)
 			{
@@ -139,24 +139,7 @@ namespace Maxfire.Skat
 			}
 			return false;
 		}
-
-		public int IndexOf(T value)
-		{
-			return _list.IndexOf(value);
-		}
-
-		public int IndexOf(Func<T, bool> predicate)
-		{
-			for (int i = 0; i < Size; i++)
-			{
-				if (predicate(this[i]))
-				{
-					return i;
-				}
-			}
-			return -1;
-		}
-
+		
 		public T PartnerOf(int index)
 		{
 			if (index == 0 || index == 1)
@@ -164,16 +147,6 @@ namespace Maxfire.Skat
 				return _list[index == 0 ? 1 : 0];
 			}
 			throw new IndexOutOfRangeException();
-		}
-
-		public T PartnerOf(T partner)
-		{
-			int i = _list.IndexOf(partner);
-			if (i >= 0)
-			{
-				return _list[i == 0 ? 1 : 0];
-			}
-			throw new ArgumentException("The object cannot be found in the tuple.");
 		}
 
 		public T Sum()
@@ -194,22 +167,6 @@ namespace Maxfire.Skat
 		IValueTuple<T> IValueTuple<T>.Swap()
 		{
 			return Swap();
-		}
-
-		public ValueTuple<T> Clone()
-		{
-			var list = new List<T>(Size);
-			for (int i = 0; i < Size; i++)
-			{
-				var item = _list[i];
-				var cloneable = item as ICloneable;
-				if (cloneable != null)
-				{
-					item = (T)cloneable.Clone();
-				}
-				list.Add(item);
-			}
-			return new ValueTuple<T>(list);
 		}
 
 		public IEnumerator<T> GetEnumerator()
@@ -243,7 +200,7 @@ namespace Maxfire.Skat
 			return unaryOp(tuple, Operator<T>.Negate);
 		}
 
-		private static ValueTuple<T> unaryOp(ValueTuple<T> tuple, Func<T, T> op)
+		private static ValueTuple<T> unaryOp(IValueTuple<T> tuple, Func<T, T> op)
 		{
 			var list = new List<T>(tuple.Size);
 			for (int i = 0; i < tuple.Size; i++)
@@ -314,7 +271,7 @@ namespace Maxfire.Skat
 			return binaryOp(lhs, rhs, Operator<T>.Divide);
 		}
 
-		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, ValueTuple<T> rhs, Func<T, T, T> op, string s)
+		private static ValueTuple<T> binaryOp(IValueTuple<T> lhs, IValueTuple<T> rhs, Func<T, T, T> op, string s)
 		{
 			if (lhs.Size != rhs.Size)
 			{
@@ -330,7 +287,7 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(list);
 		}
 
-		private static ValueTuple<T> binaryOp(T lhs, ValueTuple<T> rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(T lhs, IValueTuple<T> rhs, Func<T, T, T> op)
 		{
 			var list = new List<T>(rhs.Size);
 			for (int i = 0; i < rhs.Size; i++)
@@ -341,7 +298,7 @@ namespace Maxfire.Skat
 			return new ValueTuple<T>(list);
 		}
 
-		private static ValueTuple<T> binaryOp(ValueTuple<T> lhs, T rhs, Func<T, T, T> op)
+		private static ValueTuple<T> binaryOp(IValueTuple<T> lhs, T rhs, Func<T, T, T> op)
 		{
 			var list = new List<T>(lhs.Size);
 			for (int i = 0; i < lhs.Size; i++)

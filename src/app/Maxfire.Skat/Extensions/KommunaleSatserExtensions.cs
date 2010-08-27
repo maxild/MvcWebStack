@@ -1,4 +1,4 @@
-﻿namespace Maxfire.Skat
+﻿namespace Maxfire.Skat.Extensions
 {
 	public static class KommunaleSatserExtensions
 	{

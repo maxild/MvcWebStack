@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Maxfire.Skat.Extensions;
 
 namespace Maxfire.Skat
 {
@@ -24,8 +26,13 @@ namespace Maxfire.Skat
 		// Input:
 		//
 		// OBS: Hvordan ved vi om personerne er gift, idet ugifte godt kan eje bolig sammen????
-		public ValueTuple<decimal> BeregnSkat(IEjendomsoplysninger ejendomsoplysninger, ValueTuple<IPerson> ejere, 
-			ValueTuple<decimal> ejerandele, bool gift, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnSkat(
+			IEjendomsoplysninger ejendomsoplysninger, 
+			IValueTuple<IPerson> ejere, 
+			ValueTuple<decimal> ejerandele, 
+			bool gift, 
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			int skatteAar)
 		{
 			decimal lavsats  = _registry.GetSkattesatsForUnderProgressionsgraense(skatteAar);
 			decimal hoejsats = _registry.GetSkattesatsForOverProgressionsgraense(skatteAar) - lavsats;
@@ -59,9 +66,9 @@ namespace Maxfire.Skat
 			// Særligt indkomstafhængigt nedslag for alderspensionister (..afhænger af om ejere er gift eller ugift!!!)
 			ValueTuple<decimal> pensionistNedslag;
 
-			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
-			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
-			var aktieIndkomst = indkomster.Map(x => x.AktieIndkomst);
+			var personligIndkomst = indkomster.Map(x => x.Skattegrundlag.PersonligIndkomst);
+			var nettoKapitalIndkomst = indkomster.Map(x => x.Skattegrundlag.NettoKapitalIndkomst);
+			var aktieIndkomst = indkomster.Map(x => x.Skattegrundlag.AktieIndkomst);
 
 			decimal maksPensionstNedslag = ejendomsoplysninger.IsFritidsbolig ? 2000 : 6000;
 			decimal pensionistNedslagFoerReduktion = (0.004m * ejendomsvaerdi).Loft(maksPensionstNedslag);
@@ -105,7 +112,7 @@ namespace Maxfire.Skat
 			return fordelingsnoegle * (ejendomsvaerdiskat - nedslagVedKoebSenest01071998) - pensionistNedslag;
 		}
 
-		private static bool skalHavePensionistNedslag(ValueTuple<IPerson> ejere, int skatteAar)
+		private static bool skalHavePensionistNedslag(IValueTuple<IPerson> ejere, int skatteAar)
 		{
 			return ejere.Any(ejer => skalHavePensionistNedslag(ejer, skatteAar));
 		}

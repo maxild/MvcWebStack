@@ -1,6 +1,6 @@
 ﻿namespace Maxfire.Skat.UnitTests
 {
-	public class SelvangivneBeloeb : AbstractSelvangivneBeloeb
+	public class SelvangivneBeloeb : ISelvangivneBeloeb
 	{
 		public decimal Bruttoloen { get; set; }
 		public decimal AtpEgetBidrag { get; set; }
@@ -10,44 +10,50 @@
 		public decimal AndenKapitalIndkomst { get; set; }
 		public decimal LigningsmaessigeFradrag { get; set; }
 
-		public override decimal PersonligIndkomstAMIndkomst
+		public virtual decimal PersonligIndkomstAMIndkomst
 		{
 			get { return Bruttoloen; }
 		}
 
-		public override decimal PersonligIndkomstEjAMIndkomst
+		public virtual decimal PersonligIndkomstEjAMIndkomst
 		{
 			get { return 0m; }
 		}
 
-		public override decimal FradragPersonligIndkomst
+		public virtual decimal FradragPersonligIndkomst
 		{
-			get { return base.FradragPersonligIndkomst + AtpEgetBidrag; }
+			// TODO: iværksætter konto + atp eget bidrag
+			get { return PrivatTegnetPensionsindskud + AtpEgetBidrag; }
 		}
 
-		public override decimal KapitalIndkomst
+		public virtual decimal KapitalIndkomst
 		{
 			get { return Renteindt + AndenKapitalIndkomst; }
 		}
 
-		public override decimal FradragKapitalIndkomst
+		public virtual decimal FradragKapitalIndkomst
 		{
 			get { return Renteudg; }
 		}
 
-		public override decimal LigningsmaessigeFradragMinusBeskaeftigelsesfradrag
+		public virtual decimal LigningsmaessigeFradragMinusBeskaeftigelsesfradrag
 		{
 			get { return LigningsmaessigeFradrag; }
 		}
 
-		public override decimal KapitalPensionsindskud
+		public virtual decimal KapitalPensionsindskud
 		{
 			get { return PrivatTegnetKapitalPensionsindskud; }
 		}
 
-		public override decimal PrivatTegnetPensionsindskud
+		public virtual decimal PrivatTegnetPensionsindskud
 		{
 			get { return PrivatTegnetKapitalPensionsindskud; }
+		}
+
+		public decimal AktieIndkomst
+		{
+			get { return 0m; }
 		}
 	}
 }

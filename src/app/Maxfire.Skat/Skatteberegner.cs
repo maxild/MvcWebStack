@@ -1,3 +1,5 @@
+using Maxfire.Skat.Extensions;
+
 namespace Maxfire.Skat
 {
 	public class Skatteberegner
@@ -10,14 +12,14 @@ namespace Maxfire.Skat
 		}
 
 		public SkatteberegningResult Beregn(
-			ValueTuple<IPerson> personer, 
-			ValueTuple<ISelvangivneBeloeb> selvangivneBeloeb,
-			ValueTuple<IKommunaleSatser> kommunaleSatser,
+			IValueTuple<IPerson> personer, 
+			IValueTuple<ISelvangivneBeloeb> selvangivneBeloeb,
+			IValueTuple<IKommunaleSatser> kommunaleSatser,
 			int skatteAar
 			)
 		{
 			var indkomstOpgoerelseBeregner = new IndkomstOpgoerelseBeregner(_skattelovRegistry);
-			ValueTuple<PersonligeBeloeb> indkomster = indkomstOpgoerelseBeregner.BeregnIndkomster(selvangivneBeloeb, skatteAar);
+			ValueTuple<IPersonligeBeloeb> indkomster = indkomstOpgoerelseBeregner.BeregnIndkomster(selvangivneBeloeb, skatteAar);
 
 			//
 			// TODO: Ejendomsværdiskat (springes over, da den kan insættes hvorsomhelst)

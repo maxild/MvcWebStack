@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using Maxfire.Skat.Extensions;
+
+namespace Maxfire.Skat
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -21,7 +23,7 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnSkat(IValueTuple<IPersonligeBeloeb> indkomster, int skatteAar)
 		{
 			decimal bundSkattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
 			var grundlag = BeregnBruttoGrundlag(indkomster);
@@ -32,12 +34,12 @@
 		/// Beregn bundskattegrundlaget under hensyn til evt. modregnet negativ negativ nettokapitalindkomst.
 		/// </summary>
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnBruttoGrundlag(ValueTuple<PersonligeBeloeb> input)
+		public ValueTuple<decimal> BeregnBruttoGrundlag(IValueTuple<IPersonligeBeloeb> input)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			// TODO: Findes også i Mellemskatberegner
-			var personligIndkomst = input.Map(x => x.PersonligIndkomstSkattegrundlag);
-			var nettoKapitalIndkomst = input.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
+			var personligIndkomst = input.Map(x => x.Skattegrundlag.PersonligIndkomst);
+			var nettoKapitalIndkomst = input.Map(x => x.Skattegrundlag.NettoKapitalIndkomst);
 
 			var nettoKapitalIndkomstEfterModregning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 

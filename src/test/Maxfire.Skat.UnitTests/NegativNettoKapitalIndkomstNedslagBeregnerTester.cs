@@ -21,8 +21,8 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void IngenNegativNettoKapitalIndkomst_BeregnNedslag_Ugift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 					{
 						NettoKapitalIndkomst = 10000
 					});
@@ -37,8 +37,8 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void NegativNettoKapitalIndkomstUnderGrundbeloeb_BeregnNedslag_Ugift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = -25000
 				});
@@ -53,8 +53,8 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void NegativNettoKapitalIndkomstOverGrundbeloeb_BeregnNedslag_Ugift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = -60000
 				});
@@ -97,12 +97,12 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void IngenNegativNettoKapitalIndkomst_BeregnNedslag_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = 10000
 				},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = 10000
 				});
@@ -118,12 +118,12 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void OverfoerselAfStorPositivTilNegativNettoKapitalIndkomst_BeregnNedslag_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = -5000
 				},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = 10000
 				});
@@ -139,12 +139,12 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void OverfoerselAfLillePositivTilNegativNettoKapitalIndkomst_BeregnNedslag_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = -50000
 				},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = 10000
 				});
@@ -160,12 +160,12 @@ namespace Maxfire.Skat.UnitTests
 		[Fact]
 		public void OverfoerselAfPositivTilNegativNettoKapitalIndkomstOgLoft_BeregnNedslag_Gift()
 		{
-			var indkomster = new ValueTuple<PersonligeBeloeb>(
-				new PersonligeBeloeb
+			var indkomster = new ValueTuple<IPersonligeBeloeb>(
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = -80000
 				},
-				new PersonligeBeloeb
+				new FakePersonligeBeloeb
 				{
 					NettoKapitalIndkomst = 10000
 				});

@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using Maxfire.Skat.Extensions;
+
+namespace Maxfire.Skat
 {
 	public class SkatterAfSkattepligtigIndkomstBeregner
 	{
@@ -9,7 +11,7 @@
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
+		public ValueTuple<SkatterAfSkattepligtigIndkomst> BeregnSkat(IValueTuple<IPersonligeBeloeb> indkomster, IValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
 		{
 			var sundhedsbidragBeregner = new SundhedsbidragBeregner(_skattelovRegistry);
 			var sundhedsbidrag = sundhedsbidragBeregner.BeregnSkat(indkomster, skatteAar);

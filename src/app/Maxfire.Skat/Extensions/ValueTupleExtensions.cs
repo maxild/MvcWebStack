@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Maxfire.Core;
 
-namespace Maxfire.Skat
+namespace Maxfire.Skat.Extensions
 {
 	public static class ValueTupleExtensions
 	{
@@ -30,57 +30,6 @@ namespace Maxfire.Skat
 		public static ValueTuple<decimal> ToUnitTuple(this int index)
 		{
 			return index == 0 ? new ValueTuple<decimal>(1, 0) : new ValueTuple<decimal>(0, 1);
-		}
-
-		public static ValueTuple<TResult> Cast<T, TResult>(this ValueTuple<T> tuple)
-			where T : TResult
-		{
-			return tuple.Map((T value) => (TResult)value);
-		}
-
-		/// <summary>
-		/// Map performs a projection
-		/// </summary>
-		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<TParent, TItem> projection)
-		{
-			var list = new List<TItem>(tuple.Size);
-			for (int i = 0; i < tuple.Size; i++)
-			{
-				list.Add(projection(tuple[i]));
-			}
-			return new ValueTuple<TItem>(list);
-		}
-
-		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<TParent, int, TItem> projectionWithIndex)
-		{
-			var list = new List<TItem>(tuple.Size);
-			for (int i = 0; i < tuple.Size; i++)
-			{
-				list.Add(projectionWithIndex(tuple[i], i));
-			}
-			return new ValueTuple<TItem>(list);
-		}
-
-		public static ValueTuple<TItem> Map<TParent, TItem>(this ValueTuple<TParent> tuple, Func<int, TItem> projectionWithIndex)
-		{
-			var list = new List<TItem>(tuple.Size);
-			for (int i = 0; i < tuple.Size; i++)
-			{
-				list.Add(projectionWithIndex(i));
-			}
-			return new ValueTuple<TItem>(list);
-		}
-
-		public static bool Any<T>(this ValueTuple<T> tuple, Func<T, bool> predicate)
-		{
-			for (int i = 0; i < tuple.Size; i++)
-			{
-				if (predicate(tuple[i]))
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
@@ -135,7 +84,9 @@ namespace Maxfire.Skat
 		/// <remarks>
 		/// Dette princip bliver benyttet ved beregning af mellemskattegrundlaget og topskattegrundlaget.
 		/// </remarks>
-		public static ValueTuple<decimal> NedbringMedSambeskattetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		public static ValueTuple<decimal> NedbringMedSambeskattetBundfradrag(
+			this ValueTuple<decimal> bruttoGrundlag, 
+			decimal bundfradrag)
 		{
 			var nettoGrundlag = bruttoGrundlag - bundfradrag;
 			var modregnetNettoGrundlag = nettoGrundlag.NedbringPositivtMedEvtNegativt();
@@ -151,7 +102,9 @@ namespace Maxfire.Skat
 		/// <remarks>
 		/// Dette princip bliver benyttet ved beregning af mellemskattegrundlaget og topskattegrundlaget.
 		/// </remarks>
-		public static ValueTuple<decimal> BeregnSambeskattetBundfradrag(this ValueTuple<decimal> bruttoGrundlag, decimal bundfradrag)
+		public static ValueTuple<decimal> BeregnSambeskattetBundfradrag(
+			this ValueTuple<decimal> bruttoGrundlag, 
+			decimal bundfradrag)
 		{
 			var modregnetNettoGundlag = bruttoGrundlag.NedbringMedSambeskattetBundfradrag(bundfradrag);
 			var overfoertBundfradrag = bruttoGrundlag - modregnetNettoGundlag;
@@ -164,12 +117,16 @@ namespace Maxfire.Skat
 		/// <param name="indkomster">De beløb, der skal rumme underskuddene</param>
 		/// <param name="underskud">De underskud, der skal rummes i beløbene</param>
 		/// <returns>Den del af underskuddet, der kan rummes i beløbene uden at beløbene ved modregning bliver negative.</returns>
-		public static ValueTuple<decimal> GetMuligeModregninger(this ValueTuple<decimal> indkomster, ValueTuple<decimal> underskud)
+		public static ValueTuple<decimal> GetMuligeModregninger(
+			this ValueTuple<decimal> indkomster, 
+			ValueTuple<decimal> underskud)
 		{
 			return indkomster.Map((beloeb, index) => Math.Min(beloeb, underskud[index]).NonNegative());
 		}
 
-		public static ValueTuple<ModregnIndkomstResult> ModregnUnderskud(this ValueTuple<decimal> indkomster, ValueTuple<decimal> underskud)
+		public static ValueTuple<ModregnIndkomstResult> ModregnUnderskud(
+			this ValueTuple<decimal> indkomster, 
+			ValueTuple<decimal> underskud)
 		{
 			var modregninger = indkomster.GetMuligeModregninger(underskud);
 			return modregninger.Map((modregning, index) => new ModregnIndkomstResult(underskud[index], indkomster[index], modregning));
@@ -186,22 +143,6 @@ namespace Maxfire.Skat
 				list.Add(Math.Round(tuple[i], 2, MidpointRounding.ToEven));
 			}
 			return new ValueTuple<decimal>(list);
-		}
-
-		/// <summary>
-		/// Frembring tuple af værdier, der er mindre eller lig med en en angivet loftværdi.
-		/// </summary>
-		public static ValueTuple<T> Loft<T>(this ValueTuple<T> tuple, T maksimalOevreGraense)
-		{
-			return tuple.Map(value => value.Loft(maksimalOevreGraense));
-		}
-
-		/// <summary>
-		/// Frembring tuple af værdier, der er større eller lig med en angivet bundværdi.
-		/// </summary>
-		public static ValueTuple<T> Bund<T>(this ValueTuple<T> tuple, T minimalNedreGraense)
-		{
-			return tuple.Map(value => value.Bund(minimalNedreGraense));
 		}
 
 		/// <summary>

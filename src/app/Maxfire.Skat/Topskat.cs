@@ -1,4 +1,5 @@
 ﻿using System;
+using Maxfire.Skat.Extensions;
 
 namespace Maxfire.Skat
 {
@@ -64,7 +65,10 @@ namespace Maxfire.Skat
 			_skattelovRegistry = skattelovRegistry;
 		}
 
-		public ValueTuple<decimal> BeregnSkat(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar, ValueTuple<IKommunaleSatser> kommunaleSatser=null)
+		public ValueTuple<decimal> BeregnSkat(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			int skatteAar, 
+			IValueTuple<IKommunaleSatser> kommunaleSatser = null)
 		{
 			decimal topskatBundfradrag = _skattelovRegistry.GetTopskatBundfradrag(skatteAar);
 			decimal positivNettoKapitalIndkomstGrundbeloeb = _skattelovRegistry.GetPositivNettoKapitalIndkomstGrundbeloeb(skatteAar);
@@ -76,7 +80,10 @@ namespace Maxfire.Skat
 
 
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlag(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
+		public ValueTuple<decimal> BeregnGrundlag(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag, 
+			decimal positivNettoKapitalIndkomstGrundbeloeb)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			var grundlagUdenPositivNettoKapitalIndkomst = BeregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
@@ -86,7 +93,10 @@ namespace Maxfire.Skat
 
 
 		// ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlagForGroenCheck(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
+		public ValueTuple<decimal> BeregnGrundlagForGroenCheck(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag, 
+			decimal positivNettoKapitalIndkomstGrundbeloeb)
 		// ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			var grundlagUdenPositivNettoKapitalIndkomst = BeregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
@@ -100,24 +110,29 @@ namespace Maxfire.Skat
 			return grundlagUdenPositivNettoKapitalIndkomst + grundlagAfPositivNettoKapitalIndkomst;
 		}
 
-		static ValueTuple<decimal> beregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
+		static ValueTuple<decimal> beregnGrundlagUdenPositivNettoKapitalIndkomst(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag)
 		{
-			var personligIndkomst = indkomster.Map(x => x.PersonligIndkomstSkattegrundlag);
-			var kapitalPensionsindskud = indkomster.Map(x => x.KapitalPensionsindskudSkattegrundlag);
+			var personligIndkomst = indkomster.Map(x => x.Skattegrundlag.PersonligIndkomst);
+			var kapitalPensionsindskud = indkomster.Map(x => x.Skattegrundlag.KapitalPensionsindskud);
 			return personligIndkomst + kapitalPensionsindskud - topskatBundfradrag;
 		}
 
-		
-
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlagUdenPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag)
+		public ValueTuple<decimal> BeregnGrundlagUdenPositivNettoKapitalIndkomst(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			return +beregnGrundlagUdenPositivNettoKapitalIndkomst(indkomster, topskatBundfradrag);
 		}
 
 // ReSharper disable MemberCanBeMadeStatic.Global
-		public ValueTuple<decimal> BeregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
+		public ValueTuple<decimal> BeregnGrundlagAfPositivNettoKapitalIndkomst(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag, 
+			decimal positivNettoKapitalIndkomstGrundbeloeb)
 // ReSharper restore MemberCanBeMadeStatic.Global
 		{
 			// Ved beregning af topskattegrundlaget fordeles skat af samlet positiv nettokapitalindkomst 
@@ -132,9 +147,14 @@ namespace Maxfire.Skat
 				});
 		}
 
-		private static ValueTuple<decimal> beregnGrundlagAfPositivNettoKapitalIndkomst(ValueTuple<PersonligeBeloeb> indkomster, decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb, Func<int, ValueTuple<decimal>, ValueTuple<decimal>> fordelingsnoegleProvider)
+		private static ValueTuple<decimal> beregnGrundlagAfPositivNettoKapitalIndkomst(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			decimal topskatBundfradrag, 
+			decimal positivNettoKapitalIndkomstGrundbeloeb, 
+			Func<int, ValueTuple<decimal>, 
+			ValueTuple<decimal>> fordelingsnoegleProvider)
 		{
-			var nettoKapitalIndkomst = indkomster.Map(x => x.NettoKapitalIndkomstSkattegrundlag);
+			var nettoKapitalIndkomst = indkomster.Map(x => x.Skattegrundlag.NettoKapitalIndkomst);
 			var nettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomst.NedbringPositivtMedEvtNegativt();
 
 			var samletNettoKapitalIndkomstTilBeskatning = nettoKapitalIndkomstTilBeskatning.Sum() - indkomster.Size * positivNettoKapitalIndkomstGrundbeloeb;
@@ -159,7 +179,9 @@ namespace Maxfire.Skat
 			return fordelingsnoegle * samletGrundlagAfPositivNettoKapitalIndkomst;
 		}
 
-		private static int getIndexOfMaxGrundlag(ValueTuple<PersonligeBeloeb> indkomster, ValueTuple<decimal> grundlagUdenPositivNettoKapitalIndkomst)
+		private static int getIndexOfMaxGrundlag(
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			ValueTuple<decimal> grundlagUdenPositivNettoKapitalIndkomst)
 		{
 			if (grundlagUdenPositivNettoKapitalIndkomst.Size == 1)
 			{
@@ -176,12 +198,15 @@ namespace Maxfire.Skat
 			}
 			else
 			{
-				indexOfMaxGrundlag = indkomster[0].LigningsmaessigeFradrag > indkomster[1].LigningsmaessigeFradrag ? 0 : 1;
+				indexOfMaxGrundlag = indkomster[0].Skattegrundlag.LigningsmaessigeFradrag > indkomster[1].Skattegrundlag.LigningsmaessigeFradrag ? 0 : 1;
 			}
 			return indexOfMaxGrundlag;
 		}
 
-		private ValueTuple<decimal> beregnSkatUnderSkatteloft(ValueTuple<decimal> grundlag, ValueTuple<IKommunaleSatser> kommunaleSatser, int skatteAar)
+		private ValueTuple<decimal> beregnSkatUnderSkatteloft(
+			ValueTuple<decimal> grundlag, 
+			IValueTuple<IKommunaleSatser> kommunaleSatser, 
+			int skatteAar)
 		{
 			decimal bundskattesats = _skattelovRegistry.GetBundSkattesats(skatteAar);
 			decimal mellemskattesats = _skattelovRegistry.GetMellemSkattesats(skatteAar);

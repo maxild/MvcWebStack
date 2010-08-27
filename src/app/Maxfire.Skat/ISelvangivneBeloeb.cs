@@ -1,5 +1,6 @@
 ﻿namespace Maxfire.Skat
 {
+	// TODO: Fremførte underskud ikke understøttet
 	public interface ISelvangivneBeloeb
 	{
 		decimal PersonligIndkomstAMIndkomst { get; }
@@ -13,5 +14,7 @@
 
 		decimal KapitalPensionsindskud { get; }
 		decimal PrivatTegnetPensionsindskud { get; }
+
+		decimal AktieIndkomst { get; }
 	}
 }

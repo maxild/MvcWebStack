@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Maxfire.Skat.Extensions;
 
 namespace Maxfire.Skat
 {

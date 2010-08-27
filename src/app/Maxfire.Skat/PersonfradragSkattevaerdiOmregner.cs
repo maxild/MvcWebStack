@@ -1,4 +1,6 @@
-﻿namespace Maxfire.Skat
+﻿using Maxfire.Skat.Extensions;
+
+namespace Maxfire.Skat
 {
 	public class PersonfradragSkattevaerdiOmregner : ISkattevaerdiOmregner
 	{

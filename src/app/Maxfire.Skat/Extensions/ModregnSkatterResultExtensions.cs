@@ -1,4 +1,4 @@
-﻿namespace Maxfire.Skat
+﻿namespace Maxfire.Skat.Extensions
 {
 	public static class ModregnSkatterResultExtensions
 	{
@@ -12,7 +12,7 @@
 			                          modregnSkatterResult.UdnyttedeSkattevaerdier, underskud, udnyttetUnderskud);
 		}
 
-		public static ValueTuple<ModregnSkatterResultEx<TSkatter>> ToModregnSkatterResultEx<TSkatter>(this ValueTuple<ModregnSkatterResult<TSkatter>> modregnSkatterResults, ValueTuple<ISkattevaerdiOmregner> skattevaerdiOmregnere)
+		public static ValueTuple<ModregnSkatterResultEx<TSkatter>> ToModregnSkatterResultEx<TSkatter>(this ValueTuple<ModregnSkatterResult<TSkatter>> modregnSkatterResults, IValueTuple<ISkattevaerdiOmregner> skattevaerdiOmregnere)
 			where TSkatter : ISumable<decimal>, new()
 		{
 			return modregnSkatterResults.Map((modregResult, index) => modregResult.ToModregnSkatterResultEx(skattevaerdiOmregnere[index]));

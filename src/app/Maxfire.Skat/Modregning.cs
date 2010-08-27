@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Maxfire.Core.Reflection;
 using Maxfire.Skat.Reflection;
 
 namespace Maxfire.Skat

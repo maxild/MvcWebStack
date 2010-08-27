@@ -1,3 +1,5 @@
+using Maxfire.Skat.Extensions;
+
 namespace Maxfire.Skat
 {
 	// Den "grønne check" er ikke en egentlig check, men et beløb, der bliver indregnet
@@ -28,7 +30,10 @@ namespace Maxfire.Skat
 		/// <summary>
 		/// Beregn den skattefrie kompensation, der også kaldes  "grøn check", fremsat i L 198.
 		/// </summary>
-		public ValueTuple<decimal> BeregnKompensation(ValueTuple<IPerson> personer, ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnKompensation(
+			IValueTuple<IPerson> personer, 
+			IValueTuple<IPersonligeBeloeb> indkomster, 
+			int skatteAar)
 		{
 			decimal kompensationPrVoksen = _skattelovRegistry.GetGroenCheckPrVoksen(skatteAar);
 			decimal kompensationPrBarn = _skattelovRegistry.GetGroenCheckPrBarn(skatteAar);
@@ -44,7 +49,7 @@ namespace Maxfire.Skat
 			return kompensation;
 		}
 
-		public ValueTuple<decimal> BeregnAftrapning(ValueTuple<PersonligeBeloeb> indkomster, int skatteAar)
+		public ValueTuple<decimal> BeregnAftrapning(IValueTuple<IPersonligeBeloeb> indkomster, int skatteAar)
 		{
 			decimal bundfradrag = _skattelovRegistry.GetGroenCheckBundfradrag(skatteAar);
 			decimal aftrapningssats = _skattelovRegistry.GetGroenCheckAftrapningssats(skatteAar);
@@ -58,7 +63,7 @@ namespace Maxfire.Skat
 			return aftrapning;
 		}
 
-		protected virtual ValueTuple<decimal> GetTopskattegrundlag(ValueTuple<PersonligeBeloeb> indkomster,
+		protected virtual ValueTuple<decimal> GetTopskattegrundlag(IValueTuple<IPersonligeBeloeb> indkomster,
 			decimal topskatBundfradrag, decimal positivNettoKapitalIndkomstGrundbeloeb)
 		{
 			var topskatBeregner = new TopskatBeregner(_skattelovRegistry);

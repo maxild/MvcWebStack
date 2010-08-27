@@ -8,7 +8,7 @@ namespace Maxfire.Skat.UnitTests
 		//[Fact]
 		//public void Eksempel()
 		//{
-		//    var indkomster = new ValueTuple<PersonligeBeloeb>(
+		//    var indkomster = new ValueTuple<IPersonligeBeloeb>(
 		//        new PersonligeBeloeb
 		//            {
 		//                PersonligIndkomst = 360000,

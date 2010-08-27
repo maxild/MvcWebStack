@@ -1,3 +1,5 @@
+using Maxfire.Skat.Extensions;
+
 namespace Maxfire.Skat
 {
 	public class BeskaeftigelsesfradragBeregner
