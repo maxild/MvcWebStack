@@ -117,7 +117,6 @@
     <Compile Include="IRestfulController.cs" />
     <Compile Include="IRestfulOpinionatedView.cs" />
     <Compile Include="ITempDataContainer.cs" />
-    <Compile Include="ITextValuePair.cs" />
     <Compile Include="IUrlHelper.cs" />
     <Compile Include="IUrlResponseWriter.cs" />
     <Compile Include="IViewContextContainer.cs" />
@@ -146,7 +145,6 @@
     <Compile Include="SimplyRestful\RestfulAction.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolver.cs" />
     <Compile Include="SimplyRestful\SimplyRestfulRouteHandler.cs" />
-    <Compile Include="TextValuePair.cs" />
     <Compile Include="TypeDescriptorHelper.cs" />
     <Compile Include="UrlBuilder.cs" />
     <Compile Include="UrlHelperExtensions.cs" />

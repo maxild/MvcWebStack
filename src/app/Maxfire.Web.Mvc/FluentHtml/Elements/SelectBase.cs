@@ -2,6 +2,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
+using Maxfire.Core;
 using Maxfire.Web.Mvc.FluentHtml.Html;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements

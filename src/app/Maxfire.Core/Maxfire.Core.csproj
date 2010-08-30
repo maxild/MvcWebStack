@@ -56,6 +56,7 @@
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="ITextValuePair.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
     <Compile Include="NullOp.cs" />
     <Compile Include="Operator.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Specifications\OrSpecification.cs" />
     <Compile Include="Specifications\Specification.cs" />
     <Compile Include="SystemTime.cs" />
+    <Compile Include="TextValuePair.cs" />
     <Compile Include="TypePath.cs" />
     <Compile Include="ValueObject.cs" />
   </ItemGroup>

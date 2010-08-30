@@ -1,9 +1,9 @@
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Core
 {
-	public interface ITextValuePair<T>
+	public interface ITextValuePair<TValue>
 	{
 		string Text { get; }
-		T Value { get; }
+		TValue Value { get; }
 	}
 
 	public interface ITextValuePair : ITextValuePair<string>

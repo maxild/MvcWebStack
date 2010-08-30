@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements
 {

@@ -1,30 +1,32 @@
 using System;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Core
 {
-	public class TextValuePair : ITextValuePair, IEquatable<TextValuePair>
+	public class TextValuePair<TValue> : ITextValuePair<TValue>, IEquatable<TextValuePair<TValue>>
 	{
-		public TextValuePair(string text, string value)
+		public TextValuePair(string text, TValue value)
 		{
 			Text = text;
 			Value = value;
 		}
+
 		public string Text { get; private set; }
-		public string Value { get; private set; }
+
+		public TValue Value { get; private set; }
 		
-		public bool Equals(TextValuePair other)
+		public bool Equals(TextValuePair<TValue> other)
 		{
 			if (other == null)
 				return false;
 
 			return GetType() == other.GetType() &&
 			       Text.Equals(other.Text, StringComparison.CurrentCulture) &&
-			       Value.Equals(other.Value, StringComparison.Ordinal);
+			       Value.Equals(other.Value);
 		}
 
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as TextValuePair);
+			return Equals(obj as TextValuePair<TValue>);
 		}
 
 		public override int GetHashCode()
@@ -35,6 +37,13 @@ namespace Maxfire.Web.Mvc
 				hashCode = (hashCode * 397) ^ Value.GetHashCode();
 				return hashCode;
 			}
+		}
+	}
+
+	public class TextValuePair : TextValuePair<string>, ITextValuePair
+	{
+		public TextValuePair(string text, string value) : base(text, value)
+		{
 		}
 	}
 }
