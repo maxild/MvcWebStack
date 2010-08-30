@@ -42,6 +42,16 @@ namespace Maxfire.Core
 
 	public class TextValuePair : TextValuePair<string>, ITextValuePair
 	{
+		public static TextValuePair Create(string text, string value)
+		{
+			return new TextValuePair(text, value);
+		}
+
+		public static TextValuePair<TValue> Create<TValue>(string text, TValue value)
+		{
+			return new TextValuePair<TValue>(text, value);
+		}
+
 		public TextValuePair(string text, string value) : base(text, value)
 		{
 		}
