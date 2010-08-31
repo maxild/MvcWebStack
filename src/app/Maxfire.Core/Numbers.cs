@@ -1,7 +1,10 @@
 using System;
+using System.IO;
+using System.Linq;
 
 namespace Maxfire.Core
 {
+	// BetterMath
 	public static class Numbers
 	{
 		public static T Max<T>(T number, params T[] numbers)
@@ -30,6 +33,14 @@ namespace Maxfire.Core
 			}
 
 			return elem;
+		}
+	}
+
+	public static class BetterPath
+	{
+		public static string Combine(string path, params string[] paths)
+		{
+			return paths == null ? path : paths.Aggregate(path, Path.Combine);
 		}
 	}
 }
