@@ -58,6 +58,7 @@
     <Compile Include="IRepository.cs" />
     <Compile Include="ITextValuePair.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
+    <Compile Include="Numbers.cs" />
     <Compile Include="NullOp.cs" />
     <Compile Include="Operator.cs" />
     <Compile Include="PartialComparer.cs" />
