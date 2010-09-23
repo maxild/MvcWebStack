@@ -34,4 +34,33 @@ namespace Maxfire.Core.Specifications
 			return new NotSpecification<T>(other);
 		}
 	}
+
+	public static class Specification
+	{
+		public static ISpecification<T> True<T>()
+		{
+			return new TrueSpecification<T>();
+		}
+
+		public static ISpecification<T> False<T>()
+		{
+			return new FalseSpecification<T>();
+		}
+
+		class TrueSpecification<T> : Specification<T>
+		{
+			public override bool IsSatisfiedBy(T candidate)
+			{
+				return true;
+			}
+		}
+
+		class FalseSpecification<T> : Specification<T>
+		{
+			public override bool IsSatisfiedBy(T candidate)
+			{
+				return false;
+			}
+		}
+	}
 }
