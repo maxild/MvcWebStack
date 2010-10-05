@@ -9,7 +9,7 @@ using Maxfire.Web.Mvc.FluentHtml.Behaviors;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedSparkView<TViewModel> : SparkView, IOpinionatedView<TViewModel>, ITempDataContainer
+	public abstract class OpinionatedSparkView<TViewModel> : SparkView<TViewModel>, IOpinionatedView<TViewModel>, ITempDataContainer
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
