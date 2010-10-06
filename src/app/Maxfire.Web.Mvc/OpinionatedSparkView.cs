@@ -78,13 +78,5 @@ namespace Maxfire.Web.Mvc
 		}
 
 		public string HtmlNamePrefix { get; set; }
-
-		/// <summary>
-		/// Get display text for a property of an embedded type in the view model (where typeof(T) != typeof(TViewModel))
-		/// </summary>
-		protected string LabelTextFor<T>(Expression<Func<T, object>> expression) where T : class
-		{
-			return expression.GetDisplayName();
-		}
 	}
 }
