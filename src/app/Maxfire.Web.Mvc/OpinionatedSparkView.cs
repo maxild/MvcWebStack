@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Spark.Web.Mvc;
-using Maxfire.Core.Reflection;
 using Maxfire.Web.Mvc.FluentHtml.Behaviors;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedSparkView<TViewModel> : SparkView<TViewModel>, IOpinionatedView<TViewModel>, ITempDataContainer
+	public abstract class OpinionatedSparkView<TViewModel> : SparkView, IOpinionatedView<TViewModel>, ITempDataContainer
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
@@ -54,16 +51,23 @@ namespace Maxfire.Web.Mvc
 		}
 
 		private ViewDataDictionary<TViewModel> _viewData;
-
 		public new ViewDataDictionary<TViewModel> ViewData
 		{
 			get
 			{
 				if (_viewData == null)
+				{
 					SetViewData(new ViewDataDictionary<TViewModel>());
+				}
 				return _viewData;
 			}
 			set { SetViewData(value); }
+		}
+
+		// TODO: Model vs ViewModel (and MVC 3 dynamic property)
+		public TViewModel Model
+		{
+			get { return ViewData.Model; }
 		}
 
 		public TViewModel ViewModel
@@ -78,5 +82,11 @@ namespace Maxfire.Web.Mvc
 		}
 
 		public string HtmlNamePrefix { get; set; }
+
+		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
+		public new OpinionatedHtmlHelper<TViewModel> Html
+		{
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this)); }
+		}
 	}
 }

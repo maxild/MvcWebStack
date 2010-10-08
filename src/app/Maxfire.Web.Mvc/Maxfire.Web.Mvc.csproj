@@ -110,7 +110,7 @@
     <Compile Include="FluentHtml\ViewModelContainerExtensions.cs" />
     <Compile Include="Html\Html401IdUtil.cs" />
     <Compile Include="Html\Extensions\HtmlFieldNameExtensions.cs" />
-    <Compile Include="Html\HtmlHelperExtensions.cs" />
+    <Compile Include="Html\OpinionatedHtmlHelperExtensions.cs" />
     <Compile Include="IEntityViewModel.cs" />
     <Compile Include="IModelUnflattener.cs" />
     <Compile Include="IModelUpdater.cs" />
@@ -129,6 +129,7 @@
     <Compile Include="ModelUnflattener.cs" />
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedControllerActionInvoker.cs" />
+    <Compile Include="OpinionatedHtmlHelper.cs" />
     <Compile Include="OpinionatedListSparkView.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
     <Compile Include="OpinionatedResourceController.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="OpinionatedSubordinateResourceController.cs" />
     <Compile Include="OpinionatedValidatorProvider.cs" />
     <Compile Include="OptionsAdapter.cs" />
+    <Compile Include="OptionsAdapter2.cs" />
     <Compile Include="OptionsTextValueAdapter.cs" />
     <Compile Include="OptionsViewDataWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -10,7 +10,7 @@ using Maxfire.Web.Mvc.Html.Extensions;
 
 namespace Maxfire.Web.Mvc.Html
 {
-	public static class HtmlHelperExtensions
+	public static class OpinionatedHtmlHelperExtensions
 	{
 		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
 			where TModel : class
@@ -53,7 +53,7 @@ namespace Maxfire.Web.Mvc.Html
 
 		// Note: Even though we use SelectListItem the Selected property isn't used at all, because the model is compared to the values to find any selected options
 		// Todo: Maybe use my own ITextValuePair abstraction
-		public static MvcHtmlString RadioButtonListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, 
+		public static MvcHtmlString RadioButtonListFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options,
 			IDictionary<string, object> htmlInputElementAttributes, IDictionary<string, object> htmlLabelElementAttributes) where TModel : class
 		{
@@ -80,7 +80,7 @@ namespace Maxfire.Web.Mvc.Html
 		//   Any SelectListItem in the list of options that has the Selected property set to true 
 		//   does not have any bearing over the <option> element rendered with the selected attribute 
 		//   applied for the item. 
-		public static MvcHtmlString SelectFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, 
+		public static MvcHtmlString SelectFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options, 
 			string optionLabel, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
@@ -132,11 +132,6 @@ namespace Maxfire.Web.Mvc.Html
 			string sanitizedId = Html401IdUtil.CreateSanitizedId(name);
 			var value = (TProperty)modelValue;
 			return htmlHelper.TextBox(name, valueSelector(value), htmlAttributes.GetIdExtendedHtmlAttributes(sanitizedId));
-		}
-
-		private static IEnumerable<SelectListItem> GetOptionsFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
-		{
-			return new OptionsViewDataWrapper(htmlHelper.ViewData).GetOptionsFor(expression);
 		}
 
 		private static string LabelHelper(string forId, string labelText, IDictionary<string, object> htmlAttributes)

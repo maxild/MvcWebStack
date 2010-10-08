@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Maxfire.Core.Collections;
@@ -204,6 +205,23 @@ namespace Maxfire.Core.Extensions
 				dictionary[key] = ret;
 			}
 			return ret;
+		}
+
+		public static IEnumerable<KeyValuePair<string, TValue>> ToPropertyValuePairs<TValue>(this object objectDictionary, Func<object, TValue> valueSelector)
+		{
+			return TypeDescriptor.GetProperties(objectDictionary)
+				.Cast<PropertyDescriptor>()
+				.Select(descriptor => new KeyValuePair<string, TValue>(descriptor.Name, valueSelector(descriptor.GetValue(objectDictionary))));
+		}
+
+		public static IEnumerable<KeyValuePair<string, object>> ToPropertyObjectValuePairs(this object dictionary)
+		{
+			return dictionary.ToPropertyValuePairs(x => x);
+		}
+
+		public static IEnumerable<KeyValuePair<string, string>> ToPropertyStringValuePairs(this object dictionary)
+		{
+			return dictionary.ToPropertyValuePairs(x => x.ToNullSafeString());
 		}
 	}
 }
