@@ -36,14 +36,6 @@ namespace Maxfire.Web.Mvc.FluentHtml
 		}
 
 		/// <summary>
-		/// Get display text for a property of the view model.
-		/// </summary>
-		public static string LabelTextFor<T>(this IViewModelContainer<T> view, Expression<Func<T, object>> expression) where T : class
-		{
-			return expression.GetDisplayName();
-		}
-
-		/// <summary>
 		/// Generate an HTML input element of type 'text' and set its value from the ViewModel based on the expression provided.
 		/// </summary>
 		/// <typeparam name="T">The type of the ViewModel.</typeparam>

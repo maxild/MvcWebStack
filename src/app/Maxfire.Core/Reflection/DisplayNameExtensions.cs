@@ -84,7 +84,7 @@ namespace Maxfire.Core.Reflection
 			var field = value.GetType().GetField(displayName, BindingFlags.Static | BindingFlags.GetField | BindingFlags.Public);
 			if (field == null)
 			{
-				return displayName;
+				return string.Empty;
 			}
 
 			var displayNameAttribute = field.GetCustomAttribute<EnumDisplayNameAttribute>();
