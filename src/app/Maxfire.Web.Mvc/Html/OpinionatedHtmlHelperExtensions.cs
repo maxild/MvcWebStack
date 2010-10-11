@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 
 namespace Maxfire.Web.Mvc.Html
@@ -23,7 +24,12 @@ namespace Maxfire.Web.Mvc.Html
 			Expression<Func<TModel, TValue>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			string labelText = htmlHelper.DisplayNameFor(expression);
-			
+			return htmlHelper.LabelFor(expression, labelText, htmlAttributes);
+		}
+
+		public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
+			Expression<Func<TModel, TValue>> expression, string labelText, IDictionary<string, object> htmlAttributes) where TModel : class
+		{
 			return String.IsNullOrEmpty(labelText) ?
 				MvcHtmlString.Empty :
 				MvcHtmlString.Create(LabelHelper(expression.GetHtmlFieldIdFor(htmlHelper), labelText, htmlAttributes));
@@ -49,6 +55,47 @@ namespace Maxfire.Web.Mvc.Html
 				Expression<Func<TModel, DateTime?>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			return htmlHelper.TextBoxHelper(expression, date => date.HasValue ? date.Value.ToShortDateString() : string.Empty, htmlAttributes);
+		}
+
+		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime>> expression, 
+			string labelText,
+			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
+			) where TModel : class
+		{
+			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
+			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
+
+			var sb = new StringBuilder();
+			
+			string dayName = fullHtmlFieldName + ".Day";
+			string dayId = Html401IdUtil.CreateSanitizedId(dayName);
+			string dayText = labelText + " (dag)";
+			object dayValue = null; if (modelValue != null) dayValue = modelValue.Value.Day;
+			var dayOptions = OptionsAdapter2.FromCollection(1.UpTo(31));
+			
+			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, null, dayValue, htmlSelectElementAttributes));
+
+			string monthName = fullHtmlFieldName + ".Month";
+			string monthId = Html401IdUtil.CreateSanitizedId(monthName);
+			string monthText = labelText + " (måned)";
+			object monthValue = null; if (modelValue != null) monthValue = modelValue.Value.Month;
+			var monthOptions = OptionsAdapter2.Months();
+			
+			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, null, monthValue, htmlSelectElementAttributes));
+
+
+			string yearName = fullHtmlFieldName + ".Year";
+			string yearId = Html401IdUtil.CreateSanitizedId(yearName);
+			string yearText = labelText + " (år)";
+			object yearValue = null; if (modelValue != null) yearValue = modelValue.Value.Year;
+			var yearOptions = OptionsAdapter2.FromCollection(1900.UpTo(2000));
+			
+			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, null, yearValue, htmlSelectElementAttributes));
+
+			return MvcHtmlString.Create(sb.ToString());
 		}
 
 		// Note: Even though we use SelectListItem the Selected property isn't used at all, because the model is compared to the values to find any selected options
@@ -84,17 +131,25 @@ namespace Maxfire.Web.Mvc.Html
 			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options, 
 			string optionLabel, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
-			var sb = new StringBuilder();
 			object modelValue = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);
 			string sanitizedId = Html401IdUtil.CreateSanitizedId(name);
+
+			options = options ?? htmlHelper.GetOptionsFor(expression);
+
+			return MvcHtmlString.Create(SelectHelper(htmlHelper, name, sanitizedId, options, optionLabel, modelValue, htmlAttributes));
+		}
+
+		private static string SelectHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
+			string name, string id, IEnumerable<SelectListItem> options, 
+			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes) where TModel : class
+		{
+			var sb = new StringBuilder();
 			
 			if (optionLabel != null)
 			{
 				sb.AppendLine(OptionHelper(new SelectListItem { Text = optionLabel, Value = String.Empty, Selected = false }));
 			}
-
-			options = options ?? htmlHelper.GetOptionsFor(expression);
 
 			if (options != null)
 			{
@@ -105,12 +160,12 @@ namespace Maxfire.Web.Mvc.Html
 			}
 
 			var tagBuilder = new TagBuilder("select")
-			{
-				InnerHtml = sb.ToString()
-			};
+			                 	{
+			                 		InnerHtml = sb.ToString()
+			                 	};
 			tagBuilder.MergeAttributes(htmlAttributes);
 			tagBuilder.MergeAttribute("name", name, true);
-			tagBuilder.MergeAttribute("id", sanitizedId, true);
+			tagBuilder.MergeAttribute("id", id, true);
 			
 			ModelState modelState;
 			if (htmlHelper.ViewData.ModelState.TryGetValue(name, out modelState))
@@ -121,7 +176,7 @@ namespace Maxfire.Web.Mvc.Html
 				}
 			}
 
-			return MvcHtmlString.Create(tagBuilder.ToString(TagRenderMode.Normal));
+			return tagBuilder.ToString(TagRenderMode.Normal);
 		}
 
 		private static MvcHtmlString TextBoxHelper<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,

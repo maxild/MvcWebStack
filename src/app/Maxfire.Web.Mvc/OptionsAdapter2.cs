@@ -95,6 +95,22 @@ namespace Maxfire.Web.Mvc
 			yield return new SelectListItem { Text = "Ja", Value = "true" };
 			yield return new SelectListItem { Text = "Nej", Value = "false" };
 		}
+
+		public static IEnumerable<SelectListItem> Months()
+		{
+			yield return new SelectListItem { Text = "Januar", Value = "1" };
+			yield return new SelectListItem { Text = "Februar", Value = "2" };
+			yield return new SelectListItem { Text = "Marts", Value = "3" };
+			yield return new SelectListItem { Text = "April", Value = "4" };
+			yield return new SelectListItem { Text = "Maj", Value = "5" };
+			yield return new SelectListItem { Text = "Juni", Value = "6" };
+			yield return new SelectListItem { Text = "Juli", Value = "7" };
+			yield return new SelectListItem { Text = "August", Value = "8" };
+			yield return new SelectListItem { Text = "September", Value = "9" };
+			yield return new SelectListItem { Text = "Oktober", Value = "10" };
+			yield return new SelectListItem { Text = "November", Value = "11" };
+			yield return new SelectListItem { Text = "December", Value = "12" };
+		}
 	}
 
 	public class OptionsAdapter2<T> : IEnumerable<SelectListItem>
