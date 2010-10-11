@@ -11,6 +11,9 @@ using Maxfire.Web.Mvc.Html.Extensions;
 
 namespace Maxfire.Web.Mvc.Html
 {
+	// TODOs:
+	// 1) model values should be fetched first from modelstate and then by model/lambda if not present in modelstate
+	// 2) behaviour should define CSS class for input errors
 	public static class OpinionatedHtmlHelperExtensions
 	{
 		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
@@ -70,16 +73,24 @@ namespace Maxfire.Web.Mvc.Html
 			string dayName = fullHtmlFieldName + ".Day";
 			string dayId = Html401IdUtil.CreateSanitizedId(dayName);
 			string dayText = labelText + " (dag)";
-			object dayValue = null; if (modelValue != null) dayValue = modelValue.Value.Day;
+			object dayValue = htmlHelper.GetModelStateValue(dayName, typeof(int)); 
+			if (dayValue == null && modelValue != null)
+			{
+				dayValue = modelValue.Value.Day;
+			}
 			var dayOptions = OptionsAdapter2.FromCollection(1.UpTo(31));
-			
+
 			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, null, dayValue, htmlSelectElementAttributes));
 
 			string monthName = fullHtmlFieldName + ".Month";
 			string monthId = Html401IdUtil.CreateSanitizedId(monthName);
 			string monthText = labelText + " (måned)";
-			object monthValue = null; if (modelValue != null) monthValue = modelValue.Value.Month;
+			object monthValue = htmlHelper.GetModelStateValue(monthName, typeof(int));
+			if (monthValue == null && modelValue != null)
+			{
+				monthValue = modelValue.Value.Month;
+			}
 			var monthOptions = OptionsAdapter2.Months();
 			
 			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
@@ -89,7 +100,11 @@ namespace Maxfire.Web.Mvc.Html
 			string yearName = fullHtmlFieldName + ".Year";
 			string yearId = Html401IdUtil.CreateSanitizedId(yearName);
 			string yearText = labelText + " (år)";
-			object yearValue = null; if (modelValue != null) yearValue = modelValue.Value.Year;
+			object yearValue = htmlHelper.GetModelStateValue(yearName, typeof(int));
+			if (yearValue == null && modelValue != null)
+			{
+				yearValue = modelValue.Value.Year;
+			}
 			var yearOptions = OptionsAdapter2.FromCollection(1900.UpTo(2000));
 			
 			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
@@ -105,8 +120,8 @@ namespace Maxfire.Web.Mvc.Html
 			IDictionary<string, object> htmlInputElementAttributes, IDictionary<string, object> htmlLabelElementAttributes) where TModel : class
 		{
 			var sb = new StringBuilder();
-			object modelValue = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
-			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
+			object modelValue = htmlHelper.GetModelValueFor(expression);
+			string name = expression.GetHtmlFieldNameFor(htmlHelper);
 			
 			options = options ?? htmlHelper.GetOptionsFor(expression);
 
@@ -114,8 +129,8 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				foreach (var option in options)
 				{
-					string sanitizedId = Html401IdUtil.CreateSanitizedId(fullHtmlFieldName + "_" + option.Value);
-					sb.Append(htmlHelper.RadioButtonHelper(modelValue, sanitizedId, fullHtmlFieldName, option.Value, htmlInputElementAttributes));
+					string sanitizedId = Html401IdUtil.CreateSanitizedId(name + "_" + option.Value);
+					sb.Append(htmlHelper.RadioButtonHelper(modelValue, sanitizedId, name, option.Value, htmlInputElementAttributes));
 					sb.Append(LabelHelper(sanitizedId, option.Text, htmlLabelElementAttributes));
 				}
 			}
@@ -131,7 +146,7 @@ namespace Maxfire.Web.Mvc.Html
 			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options, 
 			string optionLabel, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
-			object modelValue = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
+			object modelValue = htmlHelper.GetModelValueFor(expression);
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);
 			string sanitizedId = Html401IdUtil.CreateSanitizedId(name);
 
@@ -182,7 +197,7 @@ namespace Maxfire.Web.Mvc.Html
 		private static MvcHtmlString TextBoxHelper<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TProperty>> expression, Func<TProperty, string> valueSelector, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
-			object modelValue = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
+			object modelValue = htmlHelper.GetModelValueFor(expression);
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);
 			string sanitizedId = Html401IdUtil.CreateSanitizedId(name);
 			var value = (TProperty)modelValue;
@@ -228,6 +243,30 @@ namespace Maxfire.Web.Mvc.Html
 					.ToDictionary(x => x.Key, x => x.Value);
 			}
 			return htmlAttributes;
+		}
+
+		private static object GetModelValueFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
+		{
+			string name = expression.GetHtmlFieldNameFor(htmlHelper);
+			object modelValue = htmlHelper.GetModelStateValue(name, typeof(TProperty));
+			if (modelValue == null)
+			{
+				modelValue = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
+			}
+			return modelValue;
+		}
+
+		private static object GetModelStateValue(this HtmlHelper htmlHelper, string key, Type destinationType)
+		{
+			ModelState modelState;
+			if (htmlHelper.ViewData.ModelState.TryGetValue(key, out modelState))
+			{
+				if (modelState.Value != null)
+				{
+					return modelState.Value.ConvertTo(destinationType, null /* culture */);
+				}
+			}
+			return null;
 		}
 
 		private static bool GetIsSelected(string value, object modelValue)
