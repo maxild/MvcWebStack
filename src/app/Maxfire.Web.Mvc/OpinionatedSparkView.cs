@@ -6,28 +6,8 @@ using Maxfire.Web.Mvc.FluentHtml.Behaviors;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedSparkView<TViewModel> : SparkView, IOpinionatedView<TViewModel>, ITempDataContainer
-		where TViewModel : class
+	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
 	{
-		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
-
-		protected OpinionatedSparkView()
-		{
-			_behaviors.Add(new ValidationBehavior(() => ViewModelState));
-			_behaviors.Add(new LabelMemberBehavior());
-			_behaviors.Add(new InputTypeBehavior());
-		}
-
-		public IEnumerable<IBehaviorMarker> Behaviors
-		{
-			get { return _behaviors; }
-		}
-
-		public ModelStateDictionary ViewModelState
-		{
-			get { return ViewData.ModelState; }
-		}
-
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
 		{
 			VirtualPathData vpd = RouteTable.Routes.GetVirtualPath(ViewContext.RequestContext, routeValues);
@@ -48,6 +28,29 @@ namespace Maxfire.Web.Mvc
 		public virtual void Render(string html)
 		{
 			ViewContext.HttpContext.Response.Write(html);
+		}
+	}
+
+	public abstract class OpinionatedSparkView<TViewModel> : OpinionatedSparkView, IOpinionatedView<TViewModel>
+		where TViewModel : class
+	{
+		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
+
+		protected OpinionatedSparkView()
+		{
+			_behaviors.Add(new ValidationBehavior(() => ViewModelState));
+			_behaviors.Add(new LabelMemberBehavior());
+			_behaviors.Add(new InputTypeBehavior());
+		}
+
+		public IEnumerable<IBehaviorMarker> Behaviors
+		{
+			get { return _behaviors; }
+		}
+
+		public ModelStateDictionary ViewModelState
+		{
+			get { return ViewData.ModelState; }
 		}
 
 		private ViewDataDictionary<TViewModel> _viewData;
