@@ -49,6 +49,11 @@ namespace Maxfire.Core.Reflection
 			return ExpressionHelper.GetProperty(propertyExpression).GetDisplayName();
 		}
 
+		public static string GetDisplayName<TModel, TProperty>(this Expression<Func<TModel, TProperty>> propertyExpression)
+		{
+			return ExpressionHelper.GetProperty(propertyExpression).GetDisplayName();
+		}
+
 		public static string GetDisplayNameOfEnum(this object value, Type enumType)
 		{
 			if (!enumType.IsEnum)

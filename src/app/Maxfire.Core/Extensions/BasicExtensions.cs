@@ -66,6 +66,26 @@ namespace Maxfire.Core.Extensions
 		}
 
 		[DebuggerStepThrough]
+		public static IEnumerable<TResult> Map<T, TResult>(this IEnumerable<T> values, Func<T, TResult> projection)
+		{
+			foreach (T item in values)
+			{
+				yield return projection(item);
+			}
+		}
+
+		[DebuggerStepThrough]
+		public static IEnumerable<TResult> Map<T, TResult>(this IEnumerable<T> values, Func<T, int, TResult> projectionWithIndex)
+		{
+			int index = 0;
+			foreach (T item in values)
+			{
+				yield return projectionWithIndex(item, index);
+				index++;
+			}
+		}
+
+		[DebuggerStepThrough]
 		public static void Times(this int maxCount, Action<int> eachAction)
 		{
 			for (var idx = 0; idx < maxCount; idx++)
