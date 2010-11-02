@@ -86,7 +86,7 @@ namespace :build do
 	desc "Compile all code"
 	Rake::MsBuildTask.new(:compile => [:init, :version]) do |msbuild|
 		msbuild.tools_version = '4.0'
-		msbuild.target_framework_version = 'v3.5'
+		msbuild.target_framework_version = 'v4.0'
 		msbuild.project = File.join('src', SOLUTION)
 		msbuild.targets << 'Clean'
 		msbuild.targets << 'Build'

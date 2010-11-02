@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
-using MvcContrib;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
@@ -92,45 +91,12 @@ namespace Maxfire.Web.Mvc.UnitTests
 				verify(priser);
 			}
 
-			[Fact]
-			public void NameValueDeserializerHandlesImmutableCollection()
-			{
-				var nvd = new NameValueDeserializer();
-
-				var priser = nvd.Deserialize(_requestParams, "Input", typeof(FooImmutableList)) as FooImmutableList;
-
-				verify(priser);
-			}
-
-			[Fact]
-			public void NameValueDeserializerHandlesNonImmutableCollections()
-			{
-				var nvd = new NameValueDeserializer();
-
-				var priser = nvd.Deserialize(_requestParams, "Input", typeof(FooList)) as FooList;
-
-				verify(priser);
-			}
-
 			private static void verify(FooList priser)
 			{
 				priser.ShouldNotBeNull();
 				priser.Id.ShouldEqual(12);
 				priser.Beregnere.ShouldNotBeNull();
 				priser.Beregnere.Count.ShouldEqual(1);
-				priser.Beregnere[0].DomusGebyrType.ShouldEqual("003");
-				priser.Beregnere[0].Beloeb.ShouldEqual("1000");
-				priser.Beregnere[0].Sats.ShouldEqual("0");
-				priser.Beregnere[0].SatsGrundlag.ShouldEqual("Nul");
-				priser.Beregnere[0].Apply.ShouldBeTrue();
-			}
-
-			private static void verify(FooImmutableList priser)
-			{
-				priser.ShouldNotBeNull();
-				priser.Id.ShouldEqual(12);
-				priser.Beregnere.ShouldNotBeNull();
-				priser.Beregnere.Length.ShouldEqual(1);
 				priser.Beregnere[0].DomusGebyrType.ShouldEqual("003");
 				priser.Beregnere[0].Beloeb.ShouldEqual("1000");
 				priser.Beregnere[0].Sats.ShouldEqual("0");

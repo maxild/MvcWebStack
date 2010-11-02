@@ -25,7 +25,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			}
 			else
 			{
-				builder.AddRawAttribute(HtmlAttribute.Value, NBSP);
+				builder.AddAttribute(HtmlAttribute.Value, string.Empty);
 			}
 			return this;
 		}

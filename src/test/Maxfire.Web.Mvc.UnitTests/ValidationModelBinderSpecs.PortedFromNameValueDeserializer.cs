@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
-using MvcContrib;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
@@ -461,18 +460,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 			}
 
 			[Fact]
-			public void WithoutAnyPostedArrayDataAnArrayPropertyIsInitializedNullWhenUsingNameValueDeserializer()
-			{
-				var nvd = new NameValueDeserializer();
-				var collection = new NameValueCollection { { "array.Name", "test" } };
-
-				var array = nvd.Deserialize(collection, "array", typeof(ArrayClass)) as ArrayClass;
-
-				Assert.NotNull(array);
-				Assert.Equal(0, array.Ids.Length);
-			}
-
-			[Fact]
 			public void DeserializeComplexObject()
 			{
 				var binder = new TestableValidationModelBinder<Employee> { Prefix = "emp" };
@@ -538,18 +525,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 				Assert.False(binder.IsInputValidFor("bool.myBool"));
 				Assert.Equal(1, binder.GetModelErrorsFor("bool.myBool").Count);
 				Assert.Equal("The value 'true,false' is not valid for MyBool.", binder.GetModelErrorsFor("bool.myBool")[0].ErrorMessage);
-			}
-
-			[Fact]
-			public void DeserializeTrueBoolUsingNameValueDeserializer()
-			{
-				var nvd = new NameValueDeserializer();
-				var collection = new NameValueCollection { { "bool.myBool", "true,false" } };
-
-				var boolClass = nvd.Deserialize(collection, "bool", typeof(BoolClass)) as BoolClass;
-
-				Assert.NotNull(boolClass);
-				Assert.True(boolClass.MyBool);
 			}
 
 			[Fact]

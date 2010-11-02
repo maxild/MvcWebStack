@@ -14,14 +14,6 @@ namespace Maxfire.Web.Mvc.FluentHtml.Extensions
 			}
 		}
 
-		public static void AddRawAttribute(this TagBuilder tagBuilder, string name, string value)
-		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				tagBuilder.MergeRawAttribute(name, value, true);
-			}
-		}
-
 		public static void AddCssClassOnlyOnce(this TagBuilder tagBuilder, string @class)
 		{
 			if (!tagBuilder.cssClasses().Contains(@class))
