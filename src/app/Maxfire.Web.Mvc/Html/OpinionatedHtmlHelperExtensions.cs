@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using System.Web.Routing;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 
@@ -16,6 +17,19 @@ namespace Maxfire.Web.Mvc.Html
 	// 2) behaviour should define CSS class for input errors
 	public static class OpinionatedHtmlHelperExtensions
 	{
+		public static MvcHtmlString ActionLink<TController>(this HtmlHelper helper,
+			Expression<Action<TController>> action, string linkText, IDictionary<string, object> htmlAttributes) where TController : Controller
+		{
+			var controller = helper.ViewContext.Controller as OpinionatedController;
+			IQueryStringSerializer queryStringSerializer = null;
+			if (controller != null)
+			{
+				queryStringSerializer = controller.QueryStringSerializer;
+			}
+			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, queryStringSerializer);
+			return helper.RouteLink(linkText, routeValues, htmlAttributes);
+		}
+
 		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
 			where TModel : class
 		{

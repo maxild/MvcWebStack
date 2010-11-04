@@ -116,7 +116,7 @@ namespace :build do
 	
 	test_task_names = []
 	coverage_results_filenames = []
-	build_assemblies = []
+	build_assemblies = [] # BUG: We need to distribute NewtonSoft.Json and freinds as well (this is a hack)
 	
 	FileList["src/test/**/bin/#{CONFIGURATION}/#{PRODUCT_NS}.*.UnitTests.dll"].each do |test_assembly|
 		# get the name of the assembly without extension (e.g. Maxfire.Web.Mvc.UnitTests)

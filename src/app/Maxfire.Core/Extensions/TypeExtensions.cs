@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 
 namespace Maxfire.Core.Extensions
 {
@@ -19,6 +20,12 @@ namespace Maxfire.Core.Extensions
 		public static bool AllowsNullValue(this Type type)
 		{
 			return (!type.IsValueType || IsNullableValueType(type));
+		}
+
+		public static Type MatchesGenericInterface(this Type type, Type genericInterfaceType)
+		{
+			Func<Type, bool> matchesInterface = t => t.IsGenericType && t.GetGenericTypeDefinition() == genericInterfaceType;
+			return (matchesInterface(type)) ? type : type.GetInterfaces().FirstOrDefault(matchesInterface);
 		}
 
 		public static bool IsSimpleType(this Type propertyType)

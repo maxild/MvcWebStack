@@ -8,9 +8,20 @@ namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedController : Controller, ITempDataContainer, IUrlHelper
 	{
-		public new object ViewData
+		private readonly IQueryStringSerializer _queryStringSerializer;
+
+		protected OpinionatedController() : this(new DefaultQueryStringSerializer())
 		{
-			get { throw new InvalidOperationException("By **convention** we don't use the viewdata dictionary."); }
+		}
+
+		protected OpinionatedController(IQueryStringSerializer queryStringSerializer)
+		{
+			_queryStringSerializer = queryStringSerializer;
+		}
+
+		public IQueryStringSerializer QueryStringSerializer
+		{
+			get { return _queryStringSerializer; }
 		}
 
 		public new object TempData

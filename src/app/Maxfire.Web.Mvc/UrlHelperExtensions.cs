@@ -9,13 +9,13 @@ namespace Maxfire.Web.Mvc
 	{
 		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action) where TController : Controller
 		{
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action);
+			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.QueryStringSerializer);
 			return new UrlBuilder(urlHelper, routeValues);
 		}
 
 		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action, string controllerName) where TController : Controller
 		{
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, controllerName);
+			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.QueryStringSerializer, controllerName);
 			return new UrlBuilder(urlHelper, routeValues);
 		}
 

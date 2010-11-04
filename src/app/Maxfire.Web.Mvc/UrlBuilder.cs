@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web.Routing;
 
 namespace Maxfire.Web.Mvc
@@ -41,14 +42,15 @@ namespace Maxfire.Web.Mvc
 			return this;
 		}
 
-		public UrlBuilder RouteValues(object values)
+		public UrlBuilder RouteValues(object model)
 		{
 			RouteValueDictionary routeValues = new RouteValueDictionary();
-			routeValues.AddValuesWithDotNotation(values);
+			var values = _urlHelper.QueryStringSerializer.GetValues(model, string.Empty);
+			routeValues.Merge(values);
 			return RouteValues(routeValues);
 		}
 
-		public UrlBuilder RouteValues(RouteValueDictionary routeValues)
+		public UrlBuilder RouteValues(IDictionary<string, object> routeValues)
 		{
 			_routeValues.Merge(routeValues);
 			return this;

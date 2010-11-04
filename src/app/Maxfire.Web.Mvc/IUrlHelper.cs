@@ -6,5 +6,6 @@ namespace Maxfire.Web.Mvc
 	{
 		string GetVirtualPath(RouteValueDictionary routeValues);
 		string ApplicationPath { get; }
+		IQueryStringSerializer QueryStringSerializer { get; }
 	}
 }

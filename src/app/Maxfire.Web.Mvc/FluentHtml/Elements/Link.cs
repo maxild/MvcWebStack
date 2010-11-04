@@ -35,9 +35,9 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			return this;
 		}
 
-		public Link RouteValues(object values)
+		public Link RouteValues(object model)
 		{
-			_urlBuilder.RouteValues(values);
+			_urlBuilder.RouteValues(model);
 			return this;
 		}
 

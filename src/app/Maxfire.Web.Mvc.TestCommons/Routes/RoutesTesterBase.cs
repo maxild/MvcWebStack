@@ -16,6 +16,22 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 	// Todo: Should be done by a fixture, because this is the context. This way duplicate setting up the routes are removed
 	public abstract class RoutesTesterBase
 	{
+		private readonly IQueryStringSerializer _queryStringSerializer;
+
+		protected RoutesTesterBase() : this(new DefaultQueryStringSerializer())
+		{
+		}
+
+		protected RoutesTesterBase(IQueryStringSerializer queryStringSerializer)
+		{
+			_queryStringSerializer = queryStringSerializer;
+		}
+
+		public IQueryStringSerializer QueryStringSerializer
+		{
+			get { return _queryStringSerializer; }
+		}
+
 		private RouteCollection _routes;
 		public RouteCollection Routes
 		{
@@ -82,37 +98,37 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 		protected UriPathRecognizeOptions GetRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Get);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Get);
 		}
 
 		protected UriPathRecognizeOptions DeleteRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Delete);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Delete);
 		}
 
 		protected UriPathRecognizeOptions PseudoDeleteRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Post, HttpVerbs.Delete);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Delete);
 		}
 
 		protected UriPathRecognizeOptions PutRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Put);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Put);
 		}
 
 		protected UriPathRecognizeOptions PseudoPutRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Post, HttpVerbs.Put);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Put);
 		}
 
 		protected UriPathRecognizeOptions PostRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(Routes, url, HttpVerbs.Post);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, HttpVerbs.Post);
 		}
 
 		protected UriPathRecognizeOptions RequestFor(string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 		{
-			return new UriPathRecognizeOptions(Routes, url, httpMethod, formMethod);
+			return new UriPathRecognizeOptions(_queryStringSerializer, Routes, url, httpMethod, formMethod);
 		}
 
 		protected UriPathGenerationOptions UrlGeneration
@@ -167,7 +183,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			// and carefully read the discussion (in the comments) about the following 2 views:
 			//		1) The MVC team is in favour of string based route values (controller, action, parameters, etc.)
 			//		2) Others are in favour of strongly typed route values (controller, action, parameters, etc.)
-			RouteValueDictionary values = RouteValuesHelper.GetRouteValuesFromExpression(action);
+			RouteValueDictionary values = RouteValuesHelper.GetRouteValuesFromExpression(action, _queryStringSerializer);
 
 			// This is a hack to map to the action alias defined by the ActionName attribute
 			if (hack == UrlGenerationHack.MapToActionName) values["action"] = getActionName(action);
@@ -190,9 +206,11 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		{
 			private readonly RouteData _routeData;
 			private readonly NameValueCollection _queryData;
+			private readonly IQueryStringSerializer _queryStringSerializer;
 
-			public UriPathRecognizeOptions(RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
+			public UriPathRecognizeOptions(IQueryStringSerializer queryStringSerializer, RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 			{
+				_queryStringSerializer = queryStringSerializer;
 				var result = recognizePath(routes, url, httpMethod, formMethod);
 				_routeData = result.RouteData;
 				_queryData = result.QueryData;
@@ -206,7 +224,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathRecognizeOptions ShouldMatch<TController>(Expression<Action<TController>> action) where TController : Controller
 			{
-				var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action);
+				var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, _queryStringSerializer);
 
 				string controllerAsString = routeValues["Controller"].ToString();
 				routeValues.Remove("Controller");

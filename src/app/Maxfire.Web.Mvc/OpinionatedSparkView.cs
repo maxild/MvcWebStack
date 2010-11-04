@@ -8,6 +8,17 @@ namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
 	{
+		private readonly IQueryStringSerializer _queryStringSerializer;
+
+		protected OpinionatedSparkView() : this(new DefaultQueryStringSerializer())
+		{
+		}
+
+		protected OpinionatedSparkView(IQueryStringSerializer queryStringSerializer)
+		{
+			_queryStringSerializer = queryStringSerializer;
+		}
+
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
 		{
 			VirtualPathData vpd = RouteTable.Routes.GetVirtualPath(ViewContext.RequestContext, routeValues);
@@ -23,6 +34,11 @@ namespace Maxfire.Web.Mvc
 		public virtual string ApplicationPath
 		{
 			get { return ViewContext.RequestContext.HttpContext.Request.ApplicationPath; }
+		}
+
+		public IQueryStringSerializer QueryStringSerializer
+		{
+			get { return _queryStringSerializer; }
 		}
 
 		public virtual void Render(string html)

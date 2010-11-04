@@ -42,6 +42,19 @@ namespace Maxfire.Core.Extensions
 		}
 
 		[DebuggerStepThrough]
+		public static IEnumerable Each(this IEnumerable values, Action<object, int> eachAction)
+		{
+			int i = 0;
+			foreach (var item in values)
+			{
+				eachAction(item, i);
+				i++;
+			}
+
+			return values;
+		}
+
+		[DebuggerStepThrough]
 		public static IEnumerable<T> Each<T>(this IEnumerable<T> values, Action<T> eachAction)
 		{
 			foreach (var item in values)
