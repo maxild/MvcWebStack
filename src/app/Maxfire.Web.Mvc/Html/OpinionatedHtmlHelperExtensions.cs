@@ -6,7 +6,6 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using System.Web.Routing;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 
@@ -82,6 +81,25 @@ namespace Maxfire.Web.Mvc.Html
 			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
 
+			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
+		}
+
+		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression, 
+			string labelText,
+			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
+			) where TModel : class
+		{
+			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
+			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
+
+			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
+		}
+
+		private static MvcHtmlString DateSelectsHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
+			string fullHtmlFieldName, string labelText, DateTime? modelValue,
+			IDictionary<string, object> htmlLabelElementAttributes, IDictionary<string, object> htmlSelectElementAttributes
+			) where TModel : class
+		{
 			var sb = new StringBuilder();
 			
 			string dayName = fullHtmlFieldName + ".Day";
