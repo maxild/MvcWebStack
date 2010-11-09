@@ -101,9 +101,13 @@ namespace Maxfire.Web.Mvc
 			}
 
 			// 3. Binder attribute defined on the type
-			serializer = modelType.GetCustomAttribute<CustomModelBinderAttribute>() as IQueryStringSerializer;
+			var modelBinderAttribute = modelType.GetCustomAttribute<CustomModelBinderAttribute>();
+			if (modelBinderAttribute != null)
+			{
+				return modelBinderAttribute.GetBinder() as IQueryStringSerializer;
+			}
 
-			return serializer;
+			return null;
 		}
 	}
 }
