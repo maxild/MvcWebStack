@@ -1,40 +1,34 @@
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Core.Reflection
 {
 	public static class AttributeExtensions
 	{
-		public static bool HasSingleCustomAttribute<T>(this ICustomAttributeProvider member) where T : Attribute
-		{
-			return member.HasSingleCustomAttribute<T>(false);
-		}
-
-		public static bool HasSingleCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit) where T : Attribute
+		public static bool HasSingleCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit = false) where T : Attribute
 		{
 			return member.GetCustomAttributes(typeof(T), inherit).Length == 1;
 		}
 
-		public static bool HasCustomAttribute<T>(this Type type)
+		public static bool HasCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit = false) 
+			where T : Attribute
 		{
-			return type.HasCustomAttribute(typeof(T));
+			return member.GetCustomAttributes<T>(inherit).IsNotEmpty();
 		}
 
-		public static bool HasCustomAttribute(this Type type, Type attributeType)
+		public static T GetCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit = false) 
+			where T : Attribute
 		{
-			return TypeDescriptor.GetAttributes(type)[attributeType] != null;
+			return member.GetCustomAttributes<T>(inherit).FirstOrDefault();
 		}
 
-		public static T GetCustomAttribute<T>(this ICustomAttributeProvider member) where T : Attribute
+		public static IEnumerable<T> GetCustomAttributes<T>(this ICustomAttributeProvider member, bool inherit = false) 
+			where T : Attribute
 		{
-			return member.GetCustomAttribute<T>(false);
-		}
-
-		public static T GetCustomAttribute<T>(this ICustomAttributeProvider member, bool inherit) where T : Attribute
-		{
-			return member.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
+			return member.GetCustomAttributes(typeof (T), inherit).Cast<T>();
 		}
 	}
 }
