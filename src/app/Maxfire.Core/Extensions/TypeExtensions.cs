@@ -49,6 +49,11 @@ namespace Maxfire.Core.Extensions
 
 			TypeConverter typeConverter = TypeDescriptor.GetConverter(propertyType);
 
+			if (typeConverter == null)
+			{
+				return false;
+			}
+				
 			return typeConverter.CanConvertFrom(typeof(String));
 		}
 
@@ -75,8 +80,8 @@ namespace Maxfire.Core.Extensions
 			try
 			{
 				object convertedValue = canConvertFrom ?
-				                                       	converter.ConvertFrom(null, culture, value) :
-				                                       	                                            	converter.ConvertTo(null, culture, value, destinationType);
+					converter.ConvertFrom(null, culture, value) :
+					converter.ConvertTo(null, culture, value, destinationType);
 				return convertedValue;
 			}
 			catch (Exception ex)

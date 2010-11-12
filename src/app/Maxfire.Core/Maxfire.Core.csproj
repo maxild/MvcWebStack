@@ -50,8 +50,11 @@
     <Compile Include="Enumeration.cs" />
     <Compile Include="EnumerationConverter.cs" />
     <Compile Include="Extensions\BasicExtensions.cs" />
+    <Compile Include="Extensions\CastExtenions.cs" />
+    <Compile Include="Extensions\DictionaryExtenions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\PrimitiveExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\ThrowGuardExtension.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="IEntity.cs" />
