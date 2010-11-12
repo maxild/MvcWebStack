@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Maxfire.Core;
 using Maxfire.TestCommons.AssertExtensibility;
 using Xunit;
 using Xunit.Sdk;
@@ -42,6 +43,54 @@ namespace Maxfire.TestCommons.AssertExtensions
 		                                   IComparer<T> comparer)
 		{
 			Assert.InRange(actual, low, high, comparer);
+			return actual;
+		}
+
+		public static T ShouldBeGreaterThanZero<T>(this T actual)
+		{
+			Assert.True(Operator<T>.GreaterThanZero(actual));
+			return actual;
+		}
+
+		public static T ShouldBeLessThanZero<T>(this T actual)
+		{
+			Assert.True(Operator<T>.LessThanZero(actual));
+			return actual;
+		}
+
+		public static T ShouldBeLessThanOrEqualToZero<T>(this T actual)
+		{
+			Assert.True(Operator<T>.LessThanOrEqualToZero(actual));
+			return actual;
+		}
+
+		public static T ShouldBeGreaterThanOrEqualToZero<T>(this T actual)
+		{
+			Assert.True(Operator<T>.GreaterThanOrEqualToZero(actual));
+			return actual;
+		}
+
+		public static T ShouldBeGreaterThan<T>(this T actual, T lowerBound)
+		{
+			Assert.True(Operator<T>.GreaterThan(actual, lowerBound));
+			return actual;
+		}
+
+		public static T ShouldBeLessThan<T>(this T actual, T upperBound)
+		{
+			Assert.True(Operator<T>.LessThan(actual, upperBound));
+			return actual;
+		}
+
+		public static T ShouldBeLessThanOrEqualTo<T>(this T actual, T upperBound)
+		{
+			Assert.True(Operator<T>.LessThanOrEqual(actual, upperBound));
+			return actual;
+		}
+
+		public static T ShouldBeGreaterThanOrEqualTo<T>(this T actual, T lowerBound)
+		{
+			Assert.True(Operator<T>.GreaterThanOrEqual(actual, lowerBound));
 			return actual;
 		}
 
