@@ -295,10 +295,51 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				if (modelState.Value != null)
 				{
+					// TODO: GetNonDefaultBinder
+					IModelBinder binder = ModelBinders.Binders.GetBinder(destinationType);
+					if (binder != null)
+					{
+						ModelBindingContext bindingContext = new ModelBindingContext
+						{
+							ValueProvider = new ValueProvider(modelState.Value),
+							ModelState = htmlHelper.ViewData.ModelState,
+							ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, destinationType),
+						};
+						return binder.BindModel(htmlHelper.ViewContext, bindingContext);
+					}
+					
+					// If dedicated binder hasn't been registered fallback to simple type conversion
 					return modelState.Value.ConvertTo(destinationType, null /* culture */);
 				}
 			}
 			return null;
+		}
+
+		class ValueProvider : IValueProvider
+		{
+			private readonly ValueProviderResult _valueProviderResult;
+
+			public ValueProvider(ValueProviderResult valueProviderResult)
+			{
+				_valueProviderResult = valueProviderResult;
+			}
+
+			public bool ContainsPrefix(string prefix)
+			{
+				if (prefix == null) throw new ArgumentNullException("prefix");
+				return prefix.Length == 0;
+			}
+
+			public ValueProviderResult GetValue(string key)
+			{
+				if (key == null) throw new ArgumentNullException("key");
+				return key.Length == 0 ? _valueProviderResult : null;
+			}
+
+			public IEnumerable<string> GetKeys()
+			{
+				yield return string.Empty;
+			}
 		}
 
 		private static bool GetIsSelected(string value, object modelValue)
