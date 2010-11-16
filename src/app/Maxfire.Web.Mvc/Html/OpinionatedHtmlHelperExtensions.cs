@@ -74,29 +74,29 @@ namespace Maxfire.Web.Mvc.Html
 		}
 
 		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime>> expression, 
-			string labelText,
+			string labelText, string optionLabel,
 			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
 			) where TModel : class
 		{
 			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
 
-			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
+			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}
 
 		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression, 
-			string labelText,
+			string labelText, string optionLabel,
 			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
 			) where TModel : class
 		{
 			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
 
-			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
+			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}
 
 		private static MvcHtmlString DateSelectsHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
-			string fullHtmlFieldName, string labelText, DateTime? modelValue,
+			string fullHtmlFieldName, string labelText, string optionLabel, DateTime? modelValue,
 			IDictionary<string, object> htmlLabelElementAttributes, IDictionary<string, object> htmlSelectElementAttributes
 			) where TModel : class
 		{
@@ -113,7 +113,7 @@ namespace Maxfire.Web.Mvc.Html
 			var dayOptions = OptionsAdapter2.FromCollection(1.UpTo(31));
 
 			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, null, dayValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes));
 
 			string monthName = fullHtmlFieldName + ".Month";
 			string monthId = Html401IdUtil.CreateSanitizedId(monthName);
@@ -126,7 +126,7 @@ namespace Maxfire.Web.Mvc.Html
 			var monthOptions = OptionsAdapter2.Months();
 			
 			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, null, monthValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, optionLabel, monthValue, htmlSelectElementAttributes));
 
 
 			string yearName = fullHtmlFieldName + ".Year";
@@ -140,7 +140,7 @@ namespace Maxfire.Web.Mvc.Html
 			var yearOptions = OptionsAdapter2.FromCollection(1900.UpTo(2000));
 			
 			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, null, yearValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, optionLabel, yearValue, htmlSelectElementAttributes));
 
 			return MvcHtmlString.Create(sb.ToString());
 		}
