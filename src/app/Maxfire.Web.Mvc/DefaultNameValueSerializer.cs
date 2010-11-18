@@ -20,11 +20,6 @@ namespace Maxfire.Web.Mvc
 			_provider = provider;
 		}
 
-		public IDictionary<string, object> GetValues(object model)
-		{
-			return GetValues(model, string.Empty);
-		}
-
 		public IDictionary<string, object> GetValues(object model, string prefix)
 		{
 			Type modelType = model.GetType();

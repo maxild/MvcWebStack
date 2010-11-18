@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -11,22 +12,23 @@ using Maxfire.Web.Mvc.Html.Extensions;
 
 namespace Maxfire.Web.Mvc.Html
 {
-	// TODOs:
-	// 1) model values should be fetched first from modelstate and then by model/lambda if not present in modelstate
-	// 2) behaviour should define CSS class for input errors
+	// Requirements:
+	// 1) model values should be fetched first from modelstate and then by model/lambda if not present in modelstate...but Why?
+	// 2) ApplyBehaviours (behaviour support) should define CSS class for input errors. ToString should have no side-effects
+	// 3) HTML 5 webforms 2.0 support
+	// 4) Must use metadata (especially TemplateInfo: FormattedModelValue, HtmlFieldPrefix)
+	// 5) INameValueSerializer resolution through NameValueSerializerProvider architecture (ModelBinderProvider...IoC)
+	// 6) Make base class for all input helpers
+	// 7) Support for bindings.xml in spark...dictionaries
+	// 8) jQuery like API for defining DOM of form/html helpers
 	public static class OpinionatedHtmlHelperExtensions
 	{
-		public static MvcHtmlString ActionLink<TController>(this HtmlHelper helper,
+		public static MvcHtmlString ActionLink<TController>(this HtmlHelper htmlHelper,
 			Expression<Action<TController>> action, string linkText, IDictionary<string, object> htmlAttributes) where TController : Controller
 		{
-			var controller = helper.ViewContext.Controller as OpinionatedController;
-			INameValueSerializer nameValueSerializer = null;
-			if (controller != null)
-			{
-				nameValueSerializer = controller.NameValueSerializer;
-			}
+			var nameValueSerializer = htmlHelper.GetNameValueSerializer();
 			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, nameValueSerializer);
-			return helper.RouteLink(linkText, routeValues, htmlAttributes);
+			return htmlHelper.RouteLink(linkText, routeValues, htmlAttributes);
 		}
 
 		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
@@ -192,17 +194,19 @@ namespace Maxfire.Web.Mvc.Html
 			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			var sb = new StringBuilder();
-			
+
+			var nameValueSerializer = htmlHelper.GetNameValueSerializer();
+
 			if (optionLabel != null)
 			{
-				sb.AppendLine(OptionHelper(new SelectListItem { Text = optionLabel, Value = String.Empty, Selected = false }));
+				sb.AppendLine(OptionHelper(new SelectListItem { Text = optionLabel, Value = String.Empty, Selected = false }, nameValueSerializer));
 			}
 
 			if (options != null)
 			{
 				foreach (var option in options)
 				{
-					sb.AppendLine(OptionHelper(option, modelValue));
+					sb.AppendLine(OptionHelper(option, nameValueSerializer, modelValue));
 				}
 			}
 
@@ -224,6 +228,17 @@ namespace Maxfire.Web.Mvc.Html
 			}
 
 			return tagBuilder.ToString(TagRenderMode.Normal);
+		}
+
+		private static INameValueSerializer GetNameValueSerializer(this HtmlHelper htmlHelper)
+		{
+			var controller = htmlHelper.ViewContext.Controller as OpinionatedController;
+			INameValueSerializer nameValueSerializer = null;
+			if (controller != null)
+			{
+				nameValueSerializer = controller.NameValueSerializer;
+			}
+			return nameValueSerializer;
 		}
 
 		private static MvcHtmlString TextBoxHelper<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
@@ -251,18 +266,19 @@ namespace Maxfire.Web.Mvc.Html
 			return tag.ToString(TagRenderMode.Normal);
 		}
 
-		private static string OptionHelper(SelectListItem item, object modelValue = null)
+		private static string OptionHelper(SelectListItem item, INameValueSerializer nameValueSerializer, object modelValue = null)
 		{
 			var tagBuilder = new TagBuilder("option") { InnerHtml = HttpUtility.HtmlEncode(item.Text) };
 			if (item.Value != null) tagBuilder.Attributes["value"] = item.Value;
-			if (GetIsSelected(item.Value, modelValue)) tagBuilder.Attributes["selected"] = "selected";
+			if (GetIsSelected(item.Value, nameValueSerializer, modelValue)) tagBuilder.Attributes["selected"] = "selected";
 			return tagBuilder.ToString(TagRenderMode.Normal);
 		}
 
 		private static MvcHtmlString RadioButtonHelper(this HtmlHelper htmlHelper,
 			object modelValue, string id, string name, string value, IDictionary<string, object> htmlAttributes)
 		{
-			bool isChecked = GetIsSelected(value, modelValue);
+			var nameValueSerializer = htmlHelper.GetNameValueSerializer();
+			bool isChecked = GetIsSelected(value, nameValueSerializer, modelValue);
 			return htmlHelper.RadioButton(name, value, isChecked, htmlAttributes.GetIdExtendedHtmlAttributes(id));
 		}
 
@@ -295,8 +311,7 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				if (modelState.Value != null)
 				{
-					// TODO: GetNonDefaultBinder
-					IModelBinder binder = ModelBinders.Binders.GetBinder(destinationType);
+					IModelBinder binder = ModelBinders.Binders.GetNonDefaultBinder(destinationType);
 					if (binder != null)
 					{
 						ModelBindingContext bindingContext = new ModelBindingContext
@@ -342,9 +357,18 @@ namespace Maxfire.Web.Mvc.Html
 			}
 		}
 
-		private static bool GetIsSelected(string value, object modelValue)
+		private static bool GetIsSelected(string value, INameValueSerializer nameValueSerializer, object modelValue)
 		{
-			return modelValue != null && string.Equals(modelValue.ToString(), value, StringComparison.OrdinalIgnoreCase);
+			return modelValue != null && string.Equals(modelValue.GetValueString(nameValueSerializer), value, StringComparison.OrdinalIgnoreCase);
+		}
+
+		private static string GetValueString(this object value, INameValueSerializer nameValueSerializer)
+		{
+			if (nameValueSerializer != null)
+			{
+				value = nameValueSerializer.GetValues(value).Map(x => x.Value).FirstOrDefault();
+			}
+			return Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
 		}
 	}
 }
