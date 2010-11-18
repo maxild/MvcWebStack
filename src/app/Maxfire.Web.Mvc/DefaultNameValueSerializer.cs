@@ -3,14 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Web.Mvc;
 using Maxfire.Core.Extensions;
-using Maxfire.Core.Reflection;
 
 namespace Maxfire.Web.Mvc
 {
 	public class DefaultNameValueSerializer : INameValueSerializer
 	{
+		private readonly INameValueSerializerProvider _provider;
+
+		public DefaultNameValueSerializer() :this(new DefaultNameValueSerializerProvider())
+		{
+		}
+
+		public DefaultNameValueSerializer(INameValueSerializerProvider provider)
+		{
+			_provider = provider;
+		}
+
 		public IDictionary<string, object> GetValues(object model)
 		{
 			return GetValues(model, string.Empty);
@@ -23,16 +32,8 @@ namespace Maxfire.Web.Mvc
 
 			if (modelType.IsSimpleType())
 			{
-				var serializer = GetSerializerCore(modelType);
-				if (serializer != null)
-				{
-					AddRange(values, serializer.GetValues(model, prefix));
-				}
-				else
-				{
-					object value = TypeExtensions.ConvertSimpleType(CultureInfo.InvariantCulture, model, typeof (string));
-					values.Add(prefix, value);
-				}
+				var serializer = GetSerializer(modelType);
+				values.AddRange(serializer.GetValues(model, prefix));
 				return values;
 			}
 
@@ -48,7 +49,7 @@ namespace Maxfire.Web.Mvc
 			{
 				Type itemType = enumerableType.GetGenericArguments()[0];
 				var serializer = GetSerializer(itemType);
-				((IEnumerable)model).Each((item, index) => AddRange(values, serializer.GetValues(item, prefix + "[" + index + "]")));
+				((IEnumerable)model).Each((item, index) => values.AddRange(serializer.GetValues(item, prefix + "[" + index + "]")));
 				return values;
 			}
 
@@ -65,49 +66,24 @@ namespace Maxfire.Web.Mvc
 
 				Type propertyType = descriptor.PropertyType;
 				var serializer = GetSerializer(propertyType);
-				AddRange(values, serializer.GetValues(value, name));
+				values.AddRange(serializer.GetValues(value, name));
 			}
 
 			return values;
 		}
 
-		private static void AddRange(IDictionary<string, object> values, IDictionary<string, object> valuesToAdd)
+		protected virtual INameValueSerializer GetSerializer(Type modelType)
 		{
-			foreach (var kvp in valuesToAdd)
-			{
-				values.Add(kvp.Key, kvp.Value);
-			}
+			return _provider.GetSerializer(modelType) ?? new FallbackNameValueSerializer();
 		}
 
-		private INameValueSerializer GetSerializer(Type modelType)
+		class FallbackNameValueSerializer : INameValueSerializer
 		{
-			return GetSerializerCore(modelType) ?? this;
-		}
-
-		protected virtual INameValueSerializer GetSerializerCore(Type modelType)
-		{
-			// 1. Binder returned from provider
-			INameValueSerializer serializer = ModelBinderProviders.BinderProviders.GetBinder(modelType) as INameValueSerializer;
-			if (serializer != null)
+			public IDictionary<string, object> GetValues(object model, string prefix)
 			{
-				return serializer;
+				object value = TypeExtensions.ConvertSimpleType(CultureInfo.InvariantCulture, model, typeof(string));
+				return new Dictionary<string, object>{{prefix, value}};
 			}
-
-			// 2. Binder registered in the global table
-			IModelBinder binder;
-			if (ModelBinders.Binders.TryGetValue(modelType, out binder) && binder is INameValueSerializer)
-			{
-				return binder as INameValueSerializer;
-			}
-
-			// 3. Binder attribute defined on the type
-			var modelBinderAttribute = modelType.GetCustomAttribute<CustomModelBinderAttribute>();
-			if (modelBinderAttribute != null)
-			{
-				return modelBinderAttribute.GetBinder() as INameValueSerializer;
-			}
-
-			return null;
 		}
 	}
 }

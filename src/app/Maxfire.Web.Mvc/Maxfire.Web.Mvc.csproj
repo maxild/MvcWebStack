@@ -59,6 +59,7 @@
     <Compile Include="CastleModelValidatorProvider.cs" />
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="DefaultNameValueSerializer.cs" />
+    <Compile Include="DefaultNameValueSerializerProvider.cs" />
     <Compile Include="EditModelFor.cs" />
     <Compile Include="EntityViewModel.cs" />
     <Compile Include="EnumerationModelBinder.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="IEntityViewModel.cs" />
     <Compile Include="IModelUnflattener.cs" />
     <Compile Include="IModelUpdater.cs" />
+    <Compile Include="INameValueSerializerProvider.cs" />
     <Compile Include="IOpinionatedView.cs" />
     <Compile Include="INameValueSerializer.cs" />
     <Compile Include="IResponseWriter.cs" />
@@ -132,6 +134,7 @@
     <Compile Include="ModelBinderProviderExtensions.cs" />
     <Compile Include="ModelStateExtensions.cs" />
     <Compile Include="ModelUnflattener.cs" />
+    <Compile Include="NameValueSerializerProviderExtensions.cs" />
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedControllerActionInvoker.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />

@@ -35,14 +35,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		private RouteCollection _routes;
 		public RouteCollection Routes
 		{
-			get
-			{
-				if (_routes == null)
-				{
-					_routes = GetRoutes();
-				}
-				return _routes;
-			}
+			get { return _routes ?? (_routes = GetRoutes()); }
 		}
 
 		protected RouteCollection GetRoutes()

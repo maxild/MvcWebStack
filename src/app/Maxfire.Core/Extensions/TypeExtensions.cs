@@ -65,11 +65,11 @@ namespace Maxfire.Core.Extensions
 			}
 
 			TypeConverter converter = TypeDescriptor.GetConverter(destinationType);
-			bool canConvertFrom = converter.CanConvertFrom(value.GetType());
+			bool canConvertFrom = converter!= null && converter.CanConvertFrom(value.GetType());
 			if (!canConvertFrom)
 			{
 				converter = TypeDescriptor.GetConverter(value.GetType());
-				if (!converter.CanConvertTo(destinationType))
+				if (converter== null || !converter.CanConvertTo(destinationType))
 				{
 					string message = String.Format("No converter exists that can convert from type '{0}' to type '{1}'.",
 					                               value.GetType().FullName, destinationType.FullName);
@@ -80,8 +80,10 @@ namespace Maxfire.Core.Extensions
 			try
 			{
 				object convertedValue = canConvertFrom ?
+// ReSharper disable AssignNullToNotNullAttribute
 					converter.ConvertFrom(null, culture, value) :
 					converter.ConvertTo(null, culture, value, destinationType);
+// ReSharper restore AssignNullToNotNullAttribute
 				return convertedValue;
 			}
 			catch (Exception ex)

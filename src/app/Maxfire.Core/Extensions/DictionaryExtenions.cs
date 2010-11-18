@@ -7,6 +7,14 @@ namespace Maxfire.Core.Extensions
 {
 	public static class DictionaryExtenions
 	{
+		public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> values, IEnumerable<KeyValuePair<TKey, TValue>> valuesToAdd)
+		{
+			foreach (var kvp in valuesToAdd)
+			{
+				values.Add(kvp.Key, kvp.Value);
+			}
+		}
+
 		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey tKey)
 		{
 			return dictionary.GetValueOrDefault(tKey, default(TValue));
