@@ -79,7 +79,7 @@ namespace Maxfire.Web.Mvc
 				var data = JsonUtil.Message(new { redirectUrl = url });
 				return JsonUtil.JsonNetResult(data);
 			}
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, controller.QueryStringSerializer, controllerName);
+			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, controller.NameValueSerializer, controllerName);
 			return new RedirectToRouteResult(routeValues);
 		}
 	}

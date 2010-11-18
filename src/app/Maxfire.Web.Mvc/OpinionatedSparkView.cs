@@ -8,15 +8,15 @@ namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
 	{
-		private readonly IQueryStringSerializer _queryStringSerializer;
+		private readonly INameValueSerializer _nameValueSerializer;
 
-		protected OpinionatedSparkView() : this(new DefaultQueryStringSerializer())
+		protected OpinionatedSparkView() : this(new DefaultNameValueSerializer())
 		{
 		}
 
-		protected OpinionatedSparkView(IQueryStringSerializer queryStringSerializer)
+		protected OpinionatedSparkView(INameValueSerializer nameValueSerializer)
 		{
-			_queryStringSerializer = queryStringSerializer;
+			_nameValueSerializer = nameValueSerializer;
 		}
 
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
@@ -36,9 +36,9 @@ namespace Maxfire.Web.Mvc
 			get { return ViewContext.RequestContext.HttpContext.Request.ApplicationPath; }
 		}
 
-		public IQueryStringSerializer QueryStringSerializer
+		public INameValueSerializer NameValueSerializer
 		{
-			get { return _queryStringSerializer; }
+			get { return _nameValueSerializer; }
 		}
 
 		public virtual void Render(string html)

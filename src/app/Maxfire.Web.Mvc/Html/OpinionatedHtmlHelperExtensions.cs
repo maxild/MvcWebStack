@@ -20,12 +20,12 @@ namespace Maxfire.Web.Mvc.Html
 			Expression<Action<TController>> action, string linkText, IDictionary<string, object> htmlAttributes) where TController : Controller
 		{
 			var controller = helper.ViewContext.Controller as OpinionatedController;
-			IQueryStringSerializer queryStringSerializer = null;
+			INameValueSerializer nameValueSerializer = null;
 			if (controller != null)
 			{
-				queryStringSerializer = controller.QueryStringSerializer;
+				nameValueSerializer = controller.NameValueSerializer;
 			}
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, queryStringSerializer);
+			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, nameValueSerializer);
 			return helper.RouteLink(linkText, routeValues, htmlAttributes);
 		}
 

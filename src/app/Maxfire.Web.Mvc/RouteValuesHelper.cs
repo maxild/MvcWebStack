@@ -9,19 +9,19 @@ namespace Maxfire.Web.Mvc
 {
 	public static class RouteValuesHelper
 	{
-		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, IQueryStringSerializer queryStringSerializer)
+		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, INameValueSerializer nameValueSerializer)
 			where TController : Controller
 		{
-			return GetRouteValuesFromExpression(action, queryStringSerializer, null, string.Empty);
+			return GetRouteValuesFromExpression(action, nameValueSerializer, null, string.Empty);
 		}
 
-		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, IQueryStringSerializer queryStringSerializer, string controllerName)
+		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, INameValueSerializer nameValueSerializer, string controllerName)
 			where TController : Controller
 		{
-			return GetRouteValuesFromExpression(action, queryStringSerializer, controllerName, string.Empty);
+			return GetRouteValuesFromExpression(action, nameValueSerializer, controllerName, string.Empty);
 		}
 
-		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, IQueryStringSerializer queryStringSerializer, string controllerName, string prefix) 
+		public static RouteValueDictionary GetRouteValuesFromExpression<TController>(Expression<Action<TController>> action, INameValueSerializer nameValueSerializer, string controllerName, string prefix) 
 			where TController : Controller
 		{
 			action.ThrowIfNull("action");
@@ -46,16 +46,16 @@ namespace Maxfire.Web.Mvc
 
 			var routeValues = new RouteValueDictionary { { "Controller", controllerName }, { "Action", call.Method.Name } };
 
-			if (queryStringSerializer != null)
+			if (nameValueSerializer != null)
 			{
-				addParameterValuesFromExpressionToDictionary(routeValues, call, prefix, queryStringSerializer);
+				addParameterValuesFromExpressionToDictionary(routeValues, call, prefix, nameValueSerializer);
 			}
 
 			return routeValues;
 		}
 
 		private static void addParameterValuesFromExpressionToDictionary(RouteValueDictionary routeValues,
-																		 MethodCallExpression call, string prefix, IQueryStringSerializer queryStringSerializer)
+																		 MethodCallExpression call, string prefix, INameValueSerializer nameValueSerializer)
 		{
 			ParameterInfo[] parameters = call.Method.GetParameters();
 
@@ -79,7 +79,7 @@ namespace Maxfire.Web.Mvc
 						Func<object> func = lambdaExpression.Compile();
 						value = func();
 					}
-					var values = queryStringSerializer.GetValues(value, prefix);
+					var values = nameValueSerializer.GetValues(value, prefix);
 					routeValues.Merge(values);
 				}
 			}

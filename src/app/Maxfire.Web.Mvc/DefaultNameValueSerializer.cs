@@ -9,7 +9,7 @@ using Maxfire.Core.Reflection;
 
 namespace Maxfire.Web.Mvc
 {
-	public class DefaultQueryStringSerializer : IQueryStringSerializer
+	public class DefaultNameValueSerializer : INameValueSerializer
 	{
 		public IDictionary<string, object> GetValues(object model)
 		{
@@ -79,15 +79,15 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		private IQueryStringSerializer GetSerializer(Type modelType)
+		private INameValueSerializer GetSerializer(Type modelType)
 		{
 			return GetSerializerCore(modelType) ?? this;
 		}
 
-		protected virtual IQueryStringSerializer GetSerializerCore(Type modelType)
+		protected virtual INameValueSerializer GetSerializerCore(Type modelType)
 		{
 			// 1. Binder returned from provider
-			IQueryStringSerializer serializer = ModelBinderProviders.BinderProviders.GetBinder(modelType) as IQueryStringSerializer;
+			INameValueSerializer serializer = ModelBinderProviders.BinderProviders.GetBinder(modelType) as INameValueSerializer;
 			if (serializer != null)
 			{
 				return serializer;
@@ -95,16 +95,16 @@ namespace Maxfire.Web.Mvc
 
 			// 2. Binder registered in the global table
 			IModelBinder binder;
-			if (ModelBinders.Binders.TryGetValue(modelType, out binder) && binder is IQueryStringSerializer)
+			if (ModelBinders.Binders.TryGetValue(modelType, out binder) && binder is INameValueSerializer)
 			{
-				return binder as IQueryStringSerializer;
+				return binder as INameValueSerializer;
 			}
 
 			// 3. Binder attribute defined on the type
 			var modelBinderAttribute = modelType.GetCustomAttribute<CustomModelBinderAttribute>();
 			if (modelBinderAttribute != null)
 			{
-				return modelBinderAttribute.GetBinder() as IQueryStringSerializer;
+				return modelBinderAttribute.GetBinder() as INameValueSerializer;
 			}
 
 			return null;

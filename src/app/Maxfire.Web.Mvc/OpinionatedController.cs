@@ -8,20 +8,20 @@ namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedController : Controller, ITempDataContainer, IUrlHelper
 	{
-		private readonly IQueryStringSerializer _queryStringSerializer;
+		private readonly INameValueSerializer _nameValueSerializer;
 
-		protected OpinionatedController() : this(new DefaultQueryStringSerializer())
+		protected OpinionatedController() : this(new DefaultNameValueSerializer())
 		{
 		}
 
-		protected OpinionatedController(IQueryStringSerializer queryStringSerializer)
+		protected OpinionatedController(INameValueSerializer nameValueSerializer)
 		{
-			_queryStringSerializer = queryStringSerializer;
+			_nameValueSerializer = nameValueSerializer;
 		}
 
-		public IQueryStringSerializer QueryStringSerializer
+		public INameValueSerializer NameValueSerializer
 		{
-			get { return _queryStringSerializer; }
+			get { return _nameValueSerializer; }
 		}
 
 		public new object TempData

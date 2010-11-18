@@ -58,7 +58,7 @@
     <Compile Include="CastleModelValidator.cs" />
     <Compile Include="CastleModelValidatorProvider.cs" />
     <Compile Include="ControllerExtensions.cs" />
-    <Compile Include="DefaultQueryStringSerializer.cs" />
+    <Compile Include="DefaultNameValueSerializer.cs" />
     <Compile Include="EditModelFor.cs" />
     <Compile Include="EntityViewModel.cs" />
     <Compile Include="EnumerationModelBinder.cs" />
@@ -117,7 +117,7 @@
     <Compile Include="IModelUnflattener.cs" />
     <Compile Include="IModelUpdater.cs" />
     <Compile Include="IOpinionatedView.cs" />
-    <Compile Include="IQueryStringSerializer.cs" />
+    <Compile Include="INameValueSerializer.cs" />
     <Compile Include="IResponseWriter.cs" />
     <Compile Include="IRestfulController.cs" />
     <Compile Include="IRestfulOpinionatedView.cs" />
@@ -151,7 +151,7 @@
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="RouteValuesHelper.cs" />
     <Compile Include="SimpleModelBinder.cs" />
-    <Compile Include="SimpleQueryStringSerializer.cs" />
+    <Compile Include="SimpleNameValueSerializer.cs" />
     <Compile Include="SimplyRestful\IRestfulActionResolver.cs" />
     <Compile Include="SimplyRestful\RestfulAction.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolver.cs" />

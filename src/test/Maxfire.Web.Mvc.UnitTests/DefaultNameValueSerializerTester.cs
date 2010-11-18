@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
-	public class DefaultQueryStringSerializerTester
+	public class DefaultNameValueSerializerTester
 	{
-		private readonly TestableDefaultQueryStringSerializer _serializer;
+		private readonly TestableDefaultNameValueSerializer _serializer;
 
-		public DefaultQueryStringSerializerTester()
+		public DefaultNameValueSerializerTester()
 		{
-			_serializer = new TestableDefaultQueryStringSerializer();
+			_serializer = new TestableDefaultNameValueSerializer();
 		}
 
 		[Fact]
@@ -96,20 +96,20 @@ namespace Maxfire.Web.Mvc.UnitTests
 			public int Alder { get; set; }
 		}
 
-		class TestableDefaultQueryStringSerializer : DefaultQueryStringSerializer
+		class TestableDefaultNameValueSerializer : DefaultNameValueSerializer
 		{
-			protected override IQueryStringSerializer GetSerializerCore(Type modelType)
+			protected override INameValueSerializer GetSerializerCore(Type modelType)
 			{
 				if (modelType == typeof(DateTime))
 				{
-					return new DateTimeQueryStringSerializer();
+					return new DateTimeNameValueSerializer();
 				}
 
 				return null;
 			}
 		}
 
-		class DateTimeQueryStringSerializer : SimpleQueryStringSerializer<DateTime>
+		class DateTimeNameValueSerializer : SimpleNameValueSerializer<DateTime>
 		{
 			protected override IDictionary<string, object> GetValuesCore(DateTime value, string prefix)
 			{

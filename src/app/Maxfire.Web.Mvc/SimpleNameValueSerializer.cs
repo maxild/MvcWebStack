@@ -2,7 +2,7 @@
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class SimpleQueryStringSerializer<T> : IQueryStringSerializer
+	public abstract class SimpleNameValueSerializer<T> : INameValueSerializer
 	{
 		public IDictionary<string, object> GetValues(object model, string prefix)
 		{
