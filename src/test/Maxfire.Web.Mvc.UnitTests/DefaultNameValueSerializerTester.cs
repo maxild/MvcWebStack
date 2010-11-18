@@ -98,14 +98,14 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 		class TestableDefaultNameValueSerializer : DefaultNameValueSerializer
 		{
-			protected override INameValueSerializer GetSerializer(Type modelType)
+			protected override INameValueSerializer GetSerializerCore(Type modelType)
 			{
 				if (modelType == typeof(DateTime))
 				{
 					return new DateTimeNameValueSerializer();
 				}
 
-				return null;
+				return base.GetSerializerCore(modelType);
 			}
 		}
 

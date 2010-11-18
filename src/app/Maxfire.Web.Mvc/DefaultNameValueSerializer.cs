@@ -32,7 +32,7 @@ namespace Maxfire.Web.Mvc
 
 			if (modelType.IsSimpleType())
 			{
-				var serializer = GetSerializer(modelType);
+				var serializer = GetSerializerForSimpleType(modelType);
 				values.AddRange(serializer.GetValues(model, prefix));
 				return values;
 			}
@@ -72,9 +72,21 @@ namespace Maxfire.Web.Mvc
 			return values;
 		}
 
-		protected virtual INameValueSerializer GetSerializer(Type modelType)
+		private INameValueSerializer GetSerializer(Type modelType)
 		{
-			return _provider.GetSerializer(modelType) ?? new FallbackNameValueSerializer();
+			// See if provider knows how to handle type, otherwise fallback to recursion
+			return GetSerializerCore(modelType) ?? this;
+		}
+
+		private INameValueSerializer GetSerializerForSimpleType(Type modelType)
+		{
+			// See if provider knows how to handle type, otherwise fallback to simple type conversion
+			return GetSerializerCore(modelType) ?? new FallbackNameValueSerializer();
+		}
+
+		protected virtual INameValueSerializer GetSerializerCore(Type modelType)
+		{
+			return _provider.GetSerializer(modelType);
 		}
 
 		class FallbackNameValueSerializer : INameValueSerializer
