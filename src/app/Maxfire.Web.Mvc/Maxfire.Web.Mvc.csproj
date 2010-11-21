@@ -111,6 +111,11 @@
     <Compile Include="FluentHtml\RestfulViewModelContainerExtensions.cs" />
     <Compile Include="FluentHtml\TempDataContainerExtensions.cs" />
     <Compile Include="FluentHtml\ViewModelContainerExtensions.cs" />
+    <Compile Include="Html5\Element.cs" />
+    <Compile Include="Html5\FormElement.cs" />
+    <Compile Include="Html5\HtmlAttribute.cs" />
+    <Compile Include="Html5\HtmlElement.cs" />
+    <Compile Include="Html5\InputElement.cs" />
     <Compile Include="Html\Html401IdUtil.cs" />
     <Compile Include="Html\Extensions\HtmlFieldNameExtensions.cs" />
     <Compile Include="Html\OpinionatedHtmlHelperExtensions.cs" />

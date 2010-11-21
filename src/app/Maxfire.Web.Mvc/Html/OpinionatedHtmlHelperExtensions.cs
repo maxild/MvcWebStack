@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
+using Maxfire.Web.Mvc.Html5;
 
 namespace Maxfire.Web.Mvc.Html
 {
@@ -63,7 +64,8 @@ namespace Maxfire.Web.Mvc.Html
 	// 1a) In MVC core: CachedExpressionCompiler.Process(expression)(Model) <---- Don't know how much this optimization is buying us???
 	// 1b) In Maxfire.FluentHtml: expression.Compile()(Model)
 	// OBS: Using ModelMetadata.FromLambdaExpression(expression, ViewData).Model is the public surface to the CachedExpressionCompiler to do fast compiles of expression trees
-	// 
+	// Note: I have made the CachedExpressionCompiler public!!!!
+	//
 	// 2a) In MVC core: ExpressionHelper.GetExpressionText(expression) ---> name
 	// 2b) In Maxfire.FluentHtml: expression.GetNameFor() ---> name
 
@@ -108,11 +110,11 @@ namespace Maxfire.Web.Mvc.Html
 	
 	public static class OpinionatedHtmlHelperExtensions
 	{
-		public static MvcHtmlString InputFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
-			string inputType, Expression<Action<TModel, TValue>> expression, string value)
+		public static Input InputFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
+			string type, Expression<Func<TModel, TValue>> expression, string value) where TModel : class
 		{
-			// todo
-			return null;
+			string name = expression.GetHtmlFieldNameFor(htmlHelper);
+			return new Input(type, name, () => ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData));
 		}
 
 		public static MvcHtmlString ActionLink<TController>(this HtmlHelper htmlHelper,
