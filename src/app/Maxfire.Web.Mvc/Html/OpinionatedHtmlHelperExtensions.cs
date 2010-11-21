@@ -62,6 +62,7 @@ namespace Maxfire.Web.Mvc.Html
 	// Performance notes:
 	// 1a) In MVC core: CachedExpressionCompiler.Process(expression)(Model) <---- Don't know how much this optimization is buying us???
 	// 1b) In Maxfire.FluentHtml: expression.Compile()(Model)
+	// OBS: Using ModelMetadata.FromLambdaExpression(expression, ViewData).Model is the public surface to the CachedExpressionCompiler to do fast compiles of expression trees
 	// 
 	// 2a) In MVC core: ExpressionHelper.GetExpressionText(expression) ---> name
 	// 2b) In Maxfire.FluentHtml: expression.GetNameFor() ---> name
