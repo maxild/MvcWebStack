@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Maxfire.Core.Reflection
 {
@@ -24,10 +26,28 @@ namespace Maxfire.Core.Reflection
 			}
 		}
 
-		public static bool IsIndexerProperty(this MethodCallExpression expression)
+		public static bool IsArrayGetMethod(this MethodCallExpression methodExpression)
 		{
-			//TODO: Is there a more certain way to determine if this is an indexed property?
-			return expression != null && expression.Method.Name == "get_Item" && expression.Arguments.Count == 1;
+			if (methodExpression == null || methodExpression.Arguments.Count < 2)
+			{
+				return false;
+			}
+
+			return methodExpression.Method.DeclaringType.IsArray && methodExpression.Method.Name.Equals("Get");
+		}
+
+		public static bool IsIndexerProperty(this MethodCallExpression methodExpression)
+		{
+			if (methodExpression == null || methodExpression.Arguments.Count == 0)
+			{
+				return false;
+			}
+			// Does any property getters of the declaring type annotated with DefaultMemberAttribute correspond to this method
+			return methodExpression.Method
+								   .DeclaringType
+								   .GetDefaultMembers()
+								   .OfType<PropertyInfo>()
+								   .Any(p => p.GetGetMethod() == methodExpression.Method);
 		}
 	}
 }

@@ -1,11 +1,15 @@
+using System;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Core.Reflection
 {
 	public class ExpressionNameVisitor
 	{
 		protected StringBuilder Builder { get; private set; }
+		protected bool LambdaParameterHasBeenSeen { get; private set; }
 
 		public string ToString(Expression expression)
 		{
@@ -15,11 +19,18 @@ namespace Maxfire.Core.Reflection
 			}
 
 			Builder = new StringBuilder();
-
+			LambdaParameterHasBeenSeen = false;
 			try
 			{
 				visit(expression);
-				return Builder.ToString();
+				string expressionName = Builder.ToString();
+				// Remove Model at the front of the expression name unless lambda parameter 
+				// has been used (we do not want to remove Model property of Model)
+				if (!LambdaParameterHasBeenSeen && expressionName.StartsWith(".model", StringComparison.OrdinalIgnoreCase))
+				{
+					expressionName = expressionName.Substring(6, expressionName.Length - 6);
+				}
+				return expressionName.TrimStart('.');
 			}
 			finally
 			{
@@ -52,6 +63,17 @@ namespace Maxfire.Core.Reflection
 			{
 				visitLambda((LambdaExpression)expression);
 			}
+			else if (expression is ParameterExpression)
+			{
+				visitParameter((ParameterExpression)expression);
+			}
+		}
+
+		private void visitParameter(ParameterExpression expression)
+		{
+			// When the expression is parameter based (m => m.Something...), we remember 
+			// it to make sure that we do not accidentally cut off too much of m => m.Model....
+			LambdaParameterHasBeenSeen = true;
 		}
 
 		private void visitLambda(LambdaExpression expression)
@@ -69,8 +91,13 @@ namespace Maxfire.Core.Reflection
 
 		private void visitConstant(ConstantExpression expression)
 		{
+			// Captured references declared as compiler generated types of closures are excluded
+			if (expression.Type.HasCustomAttribute<CompilerGeneratedAttribute>())
+			{
+				return;
+			}
 			var index = Expression.Lambda(expression).Compile().DynamicInvoke();
-			Builder.Append(index.ToString());
+			Builder.Append(index.ToNullSafeString());
 		}
 
 		private void visitMemberAccess(MemberExpression expression)
@@ -83,11 +110,8 @@ namespace Maxfire.Core.Reflection
 			{
 				Builder.Append(expression.Member.DeclaringType.Name);
 			}
-
-			if (Builder.Length > 0)
-			{
-				Builder.Append(".");
-			}
+			// We always prepend dot operator and remember to clean up before returning final result
+			Builder.Append(".");
 			Builder.Append(expression.Member.Name);
 		}
 
@@ -95,52 +119,40 @@ namespace Maxfire.Core.Reflection
 		{
 			visit(expression.Object);
 
-			if (expression.IsIndexerProperty())
+			if (expression.IsIndexerProperty() || expression.IsArrayGetMethod())
 			{
 				Builder.Append("[");
-				visitMethodCallArgument(expression.Arguments[0]);
+				visitMethodCallArguments(expression);
 				Builder.Append("]");
 			}
 			else
 			{
+				Builder.Append(".");
 				Builder.Append(expression.Method.Name);
 				Builder.Append("(");
-				for (int i = 0; i < expression.Arguments.Count; i++)
-				{
-					visitMethodCallArgument(expression.Arguments[i]);
-					if (i < expression.Arguments.Count - 1)
-					{
-						Builder.Append(", ");
-					}
-				}
+				visitMethodCallArguments(expression);
 				Builder.Append(")");
+			}
+		}
+
+		private void visitMethodCallArguments(MethodCallExpression expression)
+		{
+			for (int i = 0; i < expression.Arguments.Count; i++)
+			{
+				visitMethodCallArgument(expression.Arguments[i]);
+				if (i < expression.Arguments.Count - 1)
+				{
+					Builder.Append(", ");
+				}
 			}
 		}
 
 		private void visitMethodCallArgument(Expression expression)
 		{
 			// Because arguments to indexers and/or methods are often captured (as in closures) each argument needs special handling...
-			var argumentValue = Expression.Lambda(expression).Compile().DynamicInvoke();
+			object argumentValue = Expression.Lambda(expression).Compile().DynamicInvoke();
 			// ...and whatever is resolved by the late-bound call to the 'block' is stringified according to the standard ToString member.
-			Builder.Append(argumentValue.ToString());
+			Builder.Append(argumentValue.ToNullSafeString());
 		}
-
-		//class BuilderScope : IDisposable
-		//{
-		//    private readonly ExpressionNameVisitor _visitor;
-		//    private readonly StringBuilder _previous;
-			
-		//    public BuilderScope(ExpressionNameVisitor visitor, StringBuilder builder)
-		//    {
-		//        _visitor = visitor;
-		//        _previous = visitor.Builder;
-		//        visitor.Builder = builder;
-		//    }
-
-		//    public void Dispose()
-		//    {
-		//        _visitor.Builder = _previous;
-		//    }
-		//}
 	}
 }

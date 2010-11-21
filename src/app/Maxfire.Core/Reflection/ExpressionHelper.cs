@@ -6,6 +6,12 @@ namespace Maxfire.Core.Reflection
 {
 	public static class ExpressionHelper
 	{
+		public static string GetExpressionText(LambdaExpression expression)
+		{
+			string expressionText = new ExpressionNameVisitor().ToString(expression.Body);
+			return expressionText;
+		}
+
 		public static PropertyInfo GetProperty<TObject>(Expression<Func<TObject, object>> expression)
 		{
 			MemberExpression memberExpression = GetMemberExpression(expression);

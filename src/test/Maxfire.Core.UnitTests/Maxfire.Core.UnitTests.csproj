@@ -12,7 +12,8 @@
     <AssemblyName>Maxfire.Core.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,9 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ExpressionNameVisitorTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\lib\aspnetmvc3\System.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="xunit, Version=1.5.0.1479, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
@@ -44,6 +49,10 @@
     <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
+      <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
+      <Name>Maxfire.TestCommons</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
