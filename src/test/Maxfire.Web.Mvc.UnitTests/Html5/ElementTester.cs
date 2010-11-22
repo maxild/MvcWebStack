@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5;
+using Maxfire.Web.Mvc.Html5.Elements;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5

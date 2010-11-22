@@ -8,8 +8,10 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Maxfire.Core.Extensions;
+using Maxfire.Core.Reflection;
 using Maxfire.Web.Mvc.Html.Extensions;
 using Maxfire.Web.Mvc.Html5;
+using Maxfire.Web.Mvc.Html5.Elements;
 
 namespace Maxfire.Web.Mvc.Html
 {
@@ -110,13 +112,6 @@ namespace Maxfire.Web.Mvc.Html
 	
 	public static class OpinionatedHtmlHelperExtensions
 	{
-		public static Input InputFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
-			string type, Expression<Func<TModel, TValue>> expression, string value) where TModel : class
-		{
-			string name = expression.GetHtmlFieldNameFor(htmlHelper);
-			return new Input(type, name, () => ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData));
-		}
-
 		public static MvcHtmlString ActionLink<TController>(this HtmlHelper htmlHelper,
 			Expression<Action<TController>> action, string linkText, IDictionary<string, object> htmlAttributes) where TController : Controller
 		{

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc.Html5
+namespace Maxfire.Web.Mvc.Html5.Elements
 {
 	public abstract class Element<T> : IHtmlString
 		where T : Element<T>
@@ -27,21 +27,6 @@ namespace Maxfire.Web.Mvc.Html5
 		public string TagName
 		{
 			get { return _tagBuilder.TagName; }
-		}
-
-		/// <summary>
-		/// Set the 'id' attribute.
-		/// </summary>
-		/// <param name="value">The value of the 'id' attribute.</param>
-		public T Id(string value)
-		{
-			SetId(value);
-			return self;
-		}
-
-		protected void SetId(string value)
-		{
-			Attr(HtmlAttribute.Id, value);
 		}
 
 		/// <summary>
@@ -231,11 +216,6 @@ namespace Maxfire.Web.Mvc.Html5
 			return _classNames.Contains(className);
 		}
 
-		private string GetClass()
-		{
-			return  _classNames.Aggregate((className, sum) => sum + " " + className).TrimEnd();
-		}
-
 		public override string ToString()
 		{
 			return ToHtmlString();
@@ -248,6 +228,16 @@ namespace Maxfire.Web.Mvc.Html5
 				_tagBuilder.MergeAttribute(HtmlAttribute.Class, GetClass());
 			}
 			return _tagBuilder.ToString(TagRenderMode.SelfClosing);
+		}
+
+		private string GetClass()
+		{
+			return _classNames.Aggregate((className, sum) => sum + " " + className).TrimEnd();
+		}
+
+		protected void SetId(string value)
+		{
+			Attr(HtmlAttribute.Id, value);
 		}
 	}
 }

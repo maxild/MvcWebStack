@@ -13,7 +13,7 @@
 		//public const string Rows = "rows";
 		//public const string Cols = "cols";
 		//public const string MaxLength = "maxlength";
-		//public const string Value = "value";
+		public const string Value = "value";
 		//public const string Title = "title";
 		//public const string Style = "style";
 		public const string Class = "class";

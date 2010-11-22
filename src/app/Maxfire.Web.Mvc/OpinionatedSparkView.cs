@@ -105,7 +105,7 @@ namespace Maxfire.Web.Mvc
 		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
 		public new OpinionatedHtmlHelper<TViewModel> Html
 		{
-			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this)); }
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
 		}
 	}
 }
