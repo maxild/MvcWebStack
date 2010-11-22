@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {

@@ -118,6 +118,7 @@
     <Compile Include="Html5\HtmlTokens\HtmlAttribute.cs" />
     <Compile Include="Html5\HtmlTokens\HtmlElement.cs" />
     <Compile Include="Html5\Elements\InputElement.cs" />
+    <Compile Include="Html5\HtmlTokens\HtmlInputType.cs" />
     <Compile Include="Html5\IModelState.cs" />
     <Compile Include="Html5\IModelStateContainer.cs" />
     <Compile Include="Html\Html401IdUtil.cs" />
@@ -160,7 +161,6 @@
     <Compile Include="OptionsAdapter.cs" />
     <Compile Include="OptionsAdapter2.cs" />
     <Compile Include="OptionsTextValueAdapter.cs" />
-    <Compile Include="OptionsViewDataWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="RouteValuesHelper.cs" />
@@ -197,6 +197,7 @@
     <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
     <Compile Include="MicroKernelExtensions.cs" />
+    <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=0.4.0.140, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">

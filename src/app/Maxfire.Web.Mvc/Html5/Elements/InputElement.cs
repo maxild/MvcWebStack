@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
@@ -18,7 +19,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public override T Value(object value)
 		{
-			Attr(HtmlAttribute.Value, value);
+			if (value == null)
+			{
+				RemoveAttr(HtmlAttribute.Value);
+			}
+			else
+			{
+				Attr(HtmlAttribute.Value, value);
+			}
 			return self;
 		}
 

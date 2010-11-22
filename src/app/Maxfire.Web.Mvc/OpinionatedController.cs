@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -9,7 +11,7 @@ namespace Maxfire.Web.Mvc
 	public abstract class OpinionatedController : Controller, ITempDataContainer, IUrlHelper
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
-
+		
 		protected OpinionatedController() : this(new DefaultNameValueSerializer())
 		{
 		}
@@ -22,6 +24,30 @@ namespace Maxfire.Web.Mvc
 		public INameValueSerializer NameValueSerializer
 		{
 			get { return _nameValueSerializer; }
+		}
+
+		private ViewDataWrapper<IEnumerable<SelectListItem>> _optionsWrapper;
+		private ViewDataWrapper<IEnumerable<SelectListItem>> OptionsWrapper
+		{
+			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<SelectListItem>>(ViewData)); }
+		}
+
+		protected void SetOptionsFor<TViewModel>(Expression<Func<TViewModel, object>> expression, IEnumerable<SelectListItem> options) 
+			where TViewModel : class
+		{
+			OptionsWrapper.SetDataFor(expression, options);
+		}
+
+		private ViewDataWrapper<string> _labelTextWrapper;
+		private ViewDataWrapper<string> LabelTextWrapper
+		{
+			get { return _labelTextWrapper ?? (_labelTextWrapper = new ViewDataWrapper<string>(ViewData)); }
+		}
+
+		protected void SetLabelTextFor<TViewModel>(Expression<Func<TViewModel, object>> expression, string labelText)
+			where TViewModel : class
+		{
+			LabelTextWrapper.SetDataFor(expression, labelText);
 		}
 
 		public new object TempData

@@ -1,4 +1,4 @@
-﻿namespace Maxfire.Web.Mvc.Html5
+﻿namespace Maxfire.Web.Mvc.Html5.HtmlTokens
 {
 	public static class HtmlAttribute
 	{

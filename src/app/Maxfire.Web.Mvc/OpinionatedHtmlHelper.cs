@@ -5,11 +5,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
+using Maxfire.Web.Mvc.Html.Extensions;
 using Maxfire.Web.Mvc.Html5;
 
 namespace Maxfire.Web.Mvc
 {
-	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IModelNameValueAccessor<TModel> where TModel: class
+	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IModelMetadataAccessor<TModel> where TModel: class
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
 
@@ -20,13 +21,13 @@ namespace Maxfire.Web.Mvc
 
 		public virtual IEnumerable<SelectListItem> GetOptionsFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
-			return OptionsWrapper.GetOptionsFor(expression) ?? GetOptionsOfType<TValue>();
+			return OptionsWrapper.GetDataFor(expression) ?? GetOptionsOfType<TValue>();
 		}
 
-		private OptionsViewDataWrapper _optionsWrapper;
-		protected OptionsViewDataWrapper OptionsWrapper
+		private ViewDataWrapper<IEnumerable<SelectListItem>> _optionsWrapper;
+		private ViewDataWrapper<IEnumerable<SelectListItem>> OptionsWrapper
 		{
-			get { return _optionsWrapper ?? (_optionsWrapper = new OptionsViewDataWrapper(ViewData)); }
+			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<SelectListItem>>(ViewData)); }
 		}
 
 		private static IEnumerable<SelectListItem> GetOptionsOfType<T>()
@@ -43,67 +44,91 @@ namespace Maxfire.Web.Mvc
 			return null;
 		}
 
+		public virtual string GetLabelTextFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		{
+			return LabelTextWrapper.GetDataFor(expression) ?? GetDisplayNameFor(expression);
+		}
+
+		private string GetDisplayNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		{
+			var self = ((IModelMetadataAccessor<TModel>) this);
+			string modelName = self.GetModelNameFor(expression);
+			ModelMetadata modelMetadata = self.GetModelMetadata(modelName);
+			return modelMetadata.DisplayName ?? modelMetadata.PropertyName ?? expression.GetHtmlFieldNameFor().Split('.').Last();
+		}
+
+		private ViewDataWrapper<string> _labelTextWrapper;
+		private ViewDataWrapper<string> LabelTextWrapper
+		{
+			get { return _labelTextWrapper ?? (_labelTextWrapper = new ViewDataWrapper<string>(ViewData)); }
+		}
+
 		public INameValueSerializer NameValueSerializer
 		{
 			get { return _nameValueSerializer; }
 		}
+
+		#region IModelMetadataAccessor Explicit Members
 
 		ModelStateDictionary IModelStateContainer.ModelState
 		{
 			get { return ViewData.ModelState; }
 		}
 
-		TModel IModelNameValueAccessor<TModel>.Model
-		{
-			get { return ViewData.Model; }
-		}
-
-		string IModelNameValueAccessor<TModel>.GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		string IModelMetadataAccessor<TModel>.GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
 			string key = ExpressionHelper.GetExpressionText(expression);
-			return GetOrAdd(key, () => new ModelInfo(key, ModelMetadata.FromLambdaExpression(expression, ViewData))).Name;
+			TryAdd(key, () => ModelMetadata.FromLambdaExpression(expression, ViewData));
+			return key;
 		}
 
 		public string GetAttemptedModelValue(string modelName)
 		{
-			object value = _cachedModelValues[modelName].Value;
+			object value = GetModelMetadata(modelName).Model;
+			if (value == null)
+			{
+				return null;
+			}
 			if (NameValueSerializer != null)
 			{
 				value = NameValueSerializer.GetValues(value).Map(x => x.Value).FirstOrDefault();
 			}
-			return Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
+			return Convert.ToString(value, CultureInfo.InvariantCulture);
 		}
 
 		public ModelMetadata GetModelMetadata(string modelName)
 		{
-			return _cachedModelValues[modelName].Metadata;
+			if (modelName == null)
+			{
+				throw new ArgumentNullException("modelName");
+			}
+			if (!_cachedModelValues.ContainsKey(modelName))
+			{
+				if (string.IsNullOrEmpty(modelName))
+				{
+					throw new ArgumentException(
+						"The empty modelName does not exist in the cache. Did you remember to call GetModelNameFor(m => m) to populate the cache.");
+				}
+
+				throw new ArgumentException(
+					"The modelName does not exist in the cache. Did you remember to call GetModelNameFor(m => m.{0}) to populate the cache."
+						.FormatWith(modelName));
+			}
+			return _cachedModelValues[modelName];
 		}
 
-		private readonly Dictionary<string, ModelInfo> _cachedModelValues = new Dictionary<string, ModelInfo>(StringComparer.Ordinal);
-		private ModelInfo GetOrAdd(string key, Func<ModelInfo> factory)
+		private readonly Dictionary<string, ModelMetadata> _cachedModelValues = new Dictionary<string, ModelMetadata>(StringComparer.Ordinal);
+		private void TryAdd(string key, Func<ModelMetadata> factory)
 		{
-			ModelInfo item;
+			ModelMetadata item;
 			if (!_cachedModelValues.TryGetValue(key, out item))
 			{
 				item = factory();
 				_cachedModelValues.Add(key, item);
 			}
-			return item;
+			return;
 		}
 
-		class ModelInfo
-		{
-			public ModelInfo(string name, ModelMetadata metadata)
-			{
-				Name = name;
-				Metadata = metadata;
-			}
-
-			public string Name { get; private set; }
-
-			public object Value { get { return Metadata.Model; } }
-
-			public ModelMetadata Metadata { get; private set; }
-		}
+		#endregion
 	}
 }
