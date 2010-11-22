@@ -4,7 +4,7 @@
 	{
 		public const string Id = "id";
 		//public const string Disabled = "disabled";
-		//public const string Checked = "checked";
+		public const string Checked = "checked";
 		public const string Name = "name";
 		public const string Type = "type";
 		//public const string Size = "size";

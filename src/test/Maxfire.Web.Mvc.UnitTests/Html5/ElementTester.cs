@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5.Elements;

@@ -12,11 +12,13 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		where T : Element<T>
 	{
 		// TODO: Behaviours
+		private TagRenderMode _tagRenderMode;
 		private readonly TagBuilder _tagBuilder;
 		readonly HashSet<string> _classNames = new HashSet<string>(StringComparer.Ordinal);
 
 		protected Element(string tagName)
 		{
+			_tagRenderMode = TagRenderMode.SelfClosing;
 			_tagBuilder = new TagBuilder(tagName);
 		}
 
@@ -28,6 +30,17 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public string TagName
 		{
 			get { return _tagBuilder.TagName; }
+		}
+
+		public T RenderAs(TagRenderMode tagRenderMode)
+		{
+			_tagRenderMode = tagRenderMode;
+			return self;
+		}
+
+		public TagRenderMode RenderAs()
+		{
+			return _tagRenderMode;
 		}
 
 		/// <summary>
@@ -120,6 +133,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return _tagBuilder.Attributes.ContainsKey(attributeName);
 		}
 
+		/// <summary>
+		/// Add inner text that is HTML encoded.
+		/// </summary>
+		/// <param name="innerText">Text to add inside the opening and closing tags of this element.</param>
 		public T InnerText(string innerText)
 		{
 			if (string.IsNullOrWhiteSpace(innerText))
@@ -130,6 +147,16 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				_tagBuilder.SetInnerText(innerText);
 			}
+			return self;
+		}
+
+		/// <summary>
+		/// Add inner HTML (that is off course not HTML encoded)
+		/// </summary>
+		/// <param name="innerHtml">HTML text fragment to add inside the opening and closing tags of this element.</param>
+		public T InnerHtml(string innerHtml)
+		{
+			_tagBuilder.InnerHtml = innerHtml;
 			return self;
 		}
 
@@ -219,16 +246,16 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public override string ToString()
 		{
-			return ToHtmlString();
-		}
-
-		public string ToHtmlString()
-		{
 			if (_classNames.Count > 0)
 			{
 				_tagBuilder.MergeAttribute(HtmlAttribute.Class, GetClass());
 			}
-			return _tagBuilder.ToString(TagRenderMode.SelfClosing);
+			return _tagBuilder.ToString(_tagRenderMode);
+		}
+
+		public string ToHtmlString()
+		{
+			return ToString();
 		}
 
 		private string GetClass()

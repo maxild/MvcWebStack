@@ -20,10 +20,12 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				throw new ArgumentException("The argument cannot be empty.", "name");
 			}
+			// TODO: Can model metatada be null??
 			_modelMetadata = modelMetadata;
 			Name(name);
 		}
 
+		// TODO: What API surface does behaviors need?
 		public ModelMetadata ModelMetadata
 		{
 			get { return _modelMetadata; }
@@ -57,23 +59,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			return Attr(HtmlAttribute.Name);
 		}
-
-		/// <summary>
-		/// Set the 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public abstract T Value(object value);
-
-		/// <summary>
-		/// Get the current value of this form element.
-		/// </summary>
-		/// <returns></returns>
-		/// <remarks>
-		/// In the case of &lt;select multiple="multiple"&gt; elements or a radio button set,
-		/// this  method returns an array containing the value of each selected option.
-		/// </remarks>
-		public abstract object Value();
 
 		public override string ToString()
 		{

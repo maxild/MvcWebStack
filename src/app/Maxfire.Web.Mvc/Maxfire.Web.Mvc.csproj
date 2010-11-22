@@ -111,9 +111,16 @@
     <Compile Include="FluentHtml\RestfulViewModelContainerExtensions.cs" />
     <Compile Include="FluentHtml\TempDataContainerExtensions.cs" />
     <Compile Include="FluentHtml\ViewModelContainerExtensions.cs" />
+    <Compile Include="Html5\Elements\CheckBox.cs" />
     <Compile Include="Html5\Elements\Element.cs" />
+    <Compile Include="Html5\Elements\ElementWithValue.cs" />
     <Compile Include="Html5\Elements\FormElement.cs" />
+    <Compile Include="Html5\Elements\FormElementWithValue.cs" />
+    <Compile Include="Html5\Elements\Hidden.cs" />
     <Compile Include="Html5\Elements\Input.cs" />
+    <Compile Include="Html5\Elements\Option.cs" />
+    <Compile Include="Html5\Elements\OptionsElement.cs" />
+    <Compile Include="Html5\Elements\Select.cs" />
     <Compile Include="Html5\HtmlExtension.cs" />
     <Compile Include="Html5\HtmlTokens\HtmlAttribute.cs" />
     <Compile Include="Html5\HtmlTokens\HtmlElement.cs" />

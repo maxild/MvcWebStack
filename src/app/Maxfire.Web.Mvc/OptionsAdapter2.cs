@@ -120,14 +120,14 @@ namespace Maxfire.Web.Mvc
 		private readonly Func<T, string> _textSelector;
 		private readonly Func<T, string> _valueSelector;
 
-		public OptionsAdapter2(IEnumerable<T> options, Func<T, string> textSelector, Func<T, string> valueSelector, string selectedValue = null)
+		public OptionsAdapter2(IEnumerable<T> options, Func<T, string> textSelector, Func<T, string> valueSelector)
 		{
 			if (textSelector == null) throw new ArgumentNullException("textSelector");
 			if (valueSelector == null) throw new ArgumentNullException("valueSelector");
 			_options = options;
 			_textSelector = textSelector;
 			_valueSelector = valueSelector;
-			_selectedValue = selectedValue;
+			_selectedValue = null; // selectedValue;
 		}
 
 		public IEnumerator<SelectListItem> GetEnumerator()
