@@ -116,11 +116,15 @@
     <Compile Include="Html5\Elements\ElementList.cs" />
     <Compile Include="Html5\Elements\ElementWithValue.cs" />
     <Compile Include="Html5\Elements\FormElement.cs" />
+    <Compile Include="Html5\Elements\FormElementList.cs" />
     <Compile Include="Html5\Elements\FormElementWithValue.cs" />
+    <Compile Include="Html5\Elements\Fragment.cs" />
     <Compile Include="Html5\Elements\Hidden.cs" />
     <Compile Include="Html5\Elements\Input.cs" />
     <Compile Include="Html5\Elements\Option.cs" />
+    <Compile Include="Html5\Elements\OptionElementList.cs" />
     <Compile Include="Html5\Elements\OptionsContainerElement.cs" />
+    <Compile Include="Html5\Elements\OptionsFormElement.cs" />
     <Compile Include="Html5\Elements\RadioButtonList.cs" />
     <Compile Include="Html5\Elements\Select.cs" />
     <Compile Include="Html5\HtmlExtension.cs" />

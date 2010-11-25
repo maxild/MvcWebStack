@@ -36,7 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DefaultNameValueSerializerTester.cs" />
-    <Compile Include="Html5\ElementTester.cs" />
+    <Compile Include="Html5\ElementListTester.cs" />
+    <Compile Include="Html5\FragmentTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedirectToActionTester.cs" />
     <Compile Include="SimplyRestful\AreaRestfulRoutesSpecs.cs" />

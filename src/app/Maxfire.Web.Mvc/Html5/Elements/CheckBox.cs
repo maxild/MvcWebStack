@@ -59,10 +59,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 		}
 
-		public override string ToString()
+		public override string ToHtmlString()
 		{
-			string checkbox = base.Value("true").ToString();
-			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor).Value("false").ToString();
+			string checkbox = base.Value("true").ToHtmlString();
+			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor).Value("false").ToHtmlString();
 			return string.Concat(checkbox, hidden);
 		}
 	}
