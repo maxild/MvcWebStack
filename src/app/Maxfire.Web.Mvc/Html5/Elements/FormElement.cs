@@ -6,32 +6,52 @@ using Maxfire.Web.Mvc.Html5.HtmlTokens;
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
 	/// <summary>
-	/// Form element bound to a model/member that is a control in the sense 
-	/// that it takes part of form submission if it is a succesful control.
+	/// Base class for form elements that are associated with a model.
 	/// </summary>
 	public abstract class FormElement<T> : Element<T> where T : FormElement<T>
 	{
-		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
-		private readonly ModelMetadata _modelMetadata;
+		private const string DEFAULT_VALIDATION_CSS_CLASS = "input-validation-error";
 
-		protected FormElement(string tagName, string name, ModelMetadata modelMetadata) : base(tagName)
+		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
+		private readonly IModelMetadataAccessor _accessor;
+
+		protected FormElement(string tagName, string name, IModelMetadataAccessor accessor) : base(tagName)
 		{
 			if (string.IsNullOrEmpty(name))
 			{
 				throw new ArgumentException("The argument cannot be empty.", "name");
 			}
-			// TODO: Can model metatada be null??
-			_modelMetadata = modelMetadata;
-			Name(name);
+			// TODO: Can accessor be null?
+			_accessor = accessor;
+			Attr(HtmlAttribute.Name, name);
 		}
 
-		// TODO: What API surface does behaviors need?
-		public ModelMetadata ModelMetadata
+		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
+
+		protected virtual void ApplyModelState()
 		{
-			get { return _modelMetadata; }
+			var name = Attr(HtmlAttribute.Name);
+			if (name == null || _accessor == null)
+			{
+				return;
+			}
+
+			ModelState modelState = _accessor.GetModelState(name);
+			if (modelState != null)
+			{
+				if (modelState.IsInvalid())
+				{
+					AddClass(DEFAULT_VALIDATION_CSS_CLASS);
+				}
+				if (modelState.Value != null)
+				{
+					ApplyModelStateAttemptedValue(modelState.Value);
+				}
+			}
+
 		}
 
-		protected virtual void InferIdFromName()
+		private void InferIdFromName()
 		{
 			if (!HasAttr(HtmlAttribute.Id))
 			{
@@ -40,29 +60,12 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 		}
 
-		/// <summary>
-		/// Set the value of the name attribute for this form element.
-		/// </summary>
-		/// <param name="name">The value of the name attribute for this form element.</param>
-		/// <returns>The element.</returns>
-		public T Name(string name)
-		{
-			Attr(HtmlAttribute.Name, name);
-			return self;
-		}
-
-		/// <summary>
-		/// Get the value of the name attribute for this form elememt.
-		/// </summary>
-		/// <returns></returns>
-		public string Name()
-		{
-			return Attr(HtmlAttribute.Name);
-		}
+		protected abstract void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue);
 
 		public override string ToString()
 		{
 			InferIdFromName();
+			ApplyModelState();
 			return base.ToString();
 		}
 	}

@@ -8,17 +8,23 @@ using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	public abstract class OptionsElement<T> : FormElement<T> where T : OptionsElement<T>
+	/// <summary>
+	/// Base class for elements that contain a list of otions (e.g. select).
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public abstract class OptionsContainerElement<T> : FormElement<T> where T : OptionsContainerElement<T>
 	{
 		// LINQ Cast<object> has super duper perf on .NET 4 due to contra-variance (only 
 		// ArrayList or old-time IEnumerable impl need iterator to do the safe cast).
+#pragma warning disable 649
 		private IEnumerable _options;
 		private Func<object, string> _textSelector;
 		private Func<object, string> _valueSelector;
 		private IEnumerable _selectedValues;
+#pragma warning restore 649
 
-		protected OptionsElement(string tagName, string name, ModelMetadata modelMetadata) 
-			: base(tagName, name, modelMetadata)
+		protected OptionsContainerElement(string tagName, string name, IModelMetadataAccessor accessor) 
+			: base(tagName, name, accessor)
 		{
 		}
 
@@ -55,6 +61,23 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			RenderAs(TagRenderMode.Normal);
 			InnerHtml(RenderOptions());
 			return base.ToString();
+		}
+
+		protected IEnumerable<object> SelectedValues()
+		{
+			return _selectedValues.Cast<object>() ?? Enumerable.Empty<object>();
+		}
+
+		protected T SelectedValues(params object[] selectedValue)
+		{
+			_selectedValues = selectedValue;
+			return self;
+		}
+
+		protected T SelectedValues(IEnumerable selectedValues)
+		{
+			_selectedValues = selectedValues;
+			return self;
 		}
 
 		protected abstract string RenderOptions();

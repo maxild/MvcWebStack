@@ -97,7 +97,7 @@ namespace Maxfire.Web.Mvc.Html5
 		{
 			string name = accessor.GetModelNameFor(expression);
 			string value = accessor.GetValue(name, explicitValue);
-			return new Input(type, name, accessor.GetModelMetadata(name)).Value(value).Attr(attributes);
+			return new Input(type, name, accessor).Value(value).Attr(attributes);
 		}
 
 		private static string GetValue<TModel>(this IModelMetadataAccessor<TModel> accessor, string name, object explicitValue)
@@ -114,20 +114,17 @@ namespace Maxfire.Web.Mvc.Html5
 			       accessor.GetAttemptedModelValue(name);                         // Value from model (we do not use ViewData.Eval("name") here)
 		}
 
-		private static TDestinationType GetModelStateAttemptedValue<TDestinationType>(this IModelStateContainer container, string key)
+		private static TDestinationType GetModelStateAttemptedValue<TDestinationType>(this IModelStateAccessor accessor, string key)
 		{
-			return (TDestinationType) container.GetModelStateAttemptedValue(key, typeof (TDestinationType));
+			return (TDestinationType) accessor.GetModelStateAttemptedValue(key, typeof (TDestinationType));
 		}
 
-		private static object GetModelStateAttemptedValue(this IModelStateContainer container, string key, Type destinationType)
+		private static object GetModelStateAttemptedValue(this IModelStateAccessor accessor, string key, Type destinationType)
 		{
-			ModelState modelState;
-			if (container.ModelState.TryGetValue(key, out modelState))
+			ModelState modelState = accessor.GetModelState(key);
+			if (modelState !=null && modelState.Value != null)
 			{
-				if (modelState.Value != null)
-				{
-					return modelState.Value.ConvertTo(destinationType, culture: null);
-				}
+				return modelState.Value.ConvertTo(destinationType);
 			}
 			return null;
 		}

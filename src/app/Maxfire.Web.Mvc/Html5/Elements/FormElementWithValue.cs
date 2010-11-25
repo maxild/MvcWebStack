@@ -1,13 +1,12 @@
-﻿using System.Web.Mvc;
-using Maxfire.Core.Extensions;
+﻿using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
 	public abstract class FormElementWithValue<T> : FormElement<T> where T : FormElementWithValue<T>
 	{
-		protected FormElementWithValue(string tagName, string name, ModelMetadata modelMetadata) 
-			: base(tagName, name, modelMetadata)
+		protected FormElementWithValue(string tagName, string name, IModelMetadataAccessor accessor) 
+			: base(tagName, name, accessor)
 		{
 		}
 

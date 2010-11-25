@@ -1,38 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	/// <summary>
-	/// Base class for a single element.
-	/// </summary>
-	public abstract class Element<T> : IHtmlString
-		where T : Element<T>
-	{
-		// TODO: Behaviours
-		private TagRenderMode _tagRenderMode;
-		private readonly TagBuilder _tagBuilder;
-		readonly HashSet<string> _classNames = new HashSet<string>(StringComparer.Ordinal);
+	// TODO: Finish this class and RadioButtonList
 
-		protected Element(string tagName)
+	// Common base class for element and elementlist
+	public abstract class Fragment
+	{
+		
+	}
+
+	/// <summary>
+	/// Base class for a list of elements with the same tagName where only text/value attributes can vary.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public abstract class ElementList<T> where T : ElementList<T>
+	{
+		private readonly string _tagName;
+		private TagRenderMode _tagRenderMode;
+
+		protected ElementList(string tagName)
 		{
-			_tagRenderMode = TagRenderMode.SelfClosing;
-			_tagBuilder = new TagBuilder(tagName);
+			_tagName = tagName;
 		}
 
-		protected T self { get { return (T) this; }}
+		protected T self { get { return (T)this; } }
 
 		/// <summary>
 		/// Get the tag name of this element.
 		/// </summary>
 		public string TagName
 		{
-			get { return _tagBuilder.TagName; }
+			get { return _tagName; }
 		}
 
 		public T RenderAs(TagRenderMode tagRenderMode)
@@ -53,12 +53,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>The value of the attribute, if found, otherwise null.</returns>
 		public string Attr(string attributeName)
 		{
-			if (attributeName == HtmlAttribute.Class)
-			{
-				return _classNames.Count > 0 ? GetClass() : null;
-			}
-			string value;
-			return _tagBuilder.Attributes.TryGetValue(attributeName, out value) ? value : null;
+			return null;
 		}
 
 		/// <summary>
@@ -69,15 +64,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>The element.</returns>
 		public T Attr(string attributeName, object value)
 		{
-			string valueAsString = Convert.ToString(value, CultureInfo.InvariantCulture);
-			if (attributeName == HtmlAttribute.Class)
-			{
-				AddClass(valueAsString);
-			}
-			else
-			{
-				_tagBuilder.MergeAttribute(attributeName, valueAsString, true);
-			}
 			return self;
 		}
 
@@ -88,13 +74,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>The element.</returns>
 		public T Attr(IDictionary<string, object> attributes)
 		{
-			if (attributes != null)
-			{
-				foreach (var entry in attributes)
-				{
-					Attr(entry.Key, entry.Value);
-				}
-			}
 			return self;
 		}
 
@@ -115,14 +94,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>The element.</returns>
 		public T RemoveAttr(string attributeName)
 		{
-			if (attributeName == HtmlAttribute.Class)
-			{
-				_classNames.Clear();
-			}
-			else
-			{
-				_tagBuilder.Attributes.Remove(attributeName);
-			}
 			return self;
 		}
 
@@ -133,7 +104,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns></returns>
 		public bool HasAttr(string attributeName)
 		{
-			return _tagBuilder.Attributes.ContainsKey(attributeName);
+			return false;
 		}
 
 		/// <summary>
@@ -142,14 +113,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="innerText">Text to add inside the opening and closing tags of this element.</param>
 		public T InnerText(string innerText)
 		{
-			if (string.IsNullOrWhiteSpace(innerText))
-			{
-				_tagBuilder.InnerHtml = null;
-			}
-			else
-			{
-				_tagBuilder.SetInnerText(innerText);
-			}
 			return self;
 		}
 
@@ -159,7 +122,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="innerHtml">HTML text fragment to add inside the opening and closing tags of this element.</param>
 		public T InnerHtml(string innerHtml)
 		{
-			_tagBuilder.InnerHtml = innerHtml;
 			return self;
 		}
 
@@ -170,23 +132,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>The element.</returns>
 		public T AddClass(params string[] className)
 		{
-			foreach (string part in className.SelectMany(splitClassName))
-			{
-				_classNames.Add(part);
-			}
 			return self;
-		}
-
-		private static IEnumerable<string> splitClassName(string className)
-		{
-			if (string.IsNullOrEmpty(className))
-			{
-				yield break;
-			}
-			foreach (string part in className.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				yield return part;
-			}
 		}
 
 		/// <summary>
@@ -200,17 +146,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// </remarks>
 		public T RemoveClass(params string[] className)
 		{
-			if (className == null || className.Length == 0)
-			{
-				_classNames.Clear();
-			}
-			else
-			{
-				foreach (string part in className.SelectMany(splitClassName))
-				{
-					_classNames.Remove(part);
-				}
-			}
 			return self;
 		}
 
@@ -225,15 +160,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns></returns>
 		public T ToggleClass(string className, bool? @switch = null)
 		{
-			bool addOrRemove = @switch.HasValue ? @switch.Value : !HasClass(className);
-			if (addOrRemove) 
-			{
-				AddClass(className);
-			}
-			else
-			{
-				RemoveClass(className);
-			}
 			return self;
 		}
 
@@ -244,31 +170,17 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <returns>True, if this element is assigned the given class, otherwise false.</returns>
 		public bool HasClass(string className)
 		{
-			return _classNames.Contains(className);
+			return false;
 		}
 
 		public override string ToString()
 		{
-			if (_classNames.Count > 0)
-			{
-				_tagBuilder.MergeAttribute(HtmlAttribute.Class, GetClass());
-			}
-			return _tagBuilder.ToString(_tagRenderMode);
+			return null;
 		}
 
 		public string ToHtmlString()
 		{
 			return ToString();
-		}
-
-		private string GetClass()
-		{
-			return _classNames.Aggregate((className, sum) => sum + " " + className).TrimEnd();
-		}
-
-		protected void SetId(string value)
-		{
-			Attr(HtmlAttribute.Id, value);
 		}
 	}
 }

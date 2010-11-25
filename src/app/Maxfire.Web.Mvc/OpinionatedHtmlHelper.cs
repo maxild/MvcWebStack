@@ -70,19 +70,30 @@ namespace Maxfire.Web.Mvc
 
 		#region IModelMetadataAccessor Explicit Members
 
-		ModelStateDictionary IModelStateContainer.ModelState
+		ModelState IModelStateAccessor.GetModelState(string modelName)
 		{
-			get { return ViewData.ModelState; }
+			ModelState modelState;
+			return (ViewData.ModelState.TryGetValue(modelName, out modelState)) ? modelState : null;
 		}
 
-		string IModelMetadataAccessor<TModel>.GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		string IModelNameResolver<TModel>.GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		{
+			return GetModelNameFor(expression);
+		}
+
+		protected virtual string GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
 			string key = ExpressionHelper.GetExpressionText(expression);
 			TryAdd(key, () => ModelMetadata.FromLambdaExpression(expression, ViewData));
 			return key;
 		}
 
-		public string GetAttemptedModelValue(string modelName)
+		string IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
+		{
+			return GetAttemptedModelValue(modelName);
+		}
+
+		protected virtual string GetAttemptedModelValue(string modelName)
 		{
 			object value = GetModelMetadata(modelName).Model;
 			if (value == null)
@@ -96,7 +107,12 @@ namespace Maxfire.Web.Mvc
 			return Convert.ToString(value, CultureInfo.InvariantCulture);
 		}
 
-		public ModelMetadata GetModelMetadata(string modelName)
+		ModelMetadata IModelMetadataAccessor.GetModelMetadata(string modelName)
+		{
+			return GetModelMetadata(modelName);
+		}
+
+		protected virtual ModelMetadata GetModelMetadata(string modelName)
 		{
 			if (modelName == null)
 			{
@@ -115,6 +131,16 @@ namespace Maxfire.Web.Mvc
 						.FormatWith(modelName));
 			}
 			return _cachedModelValues[modelName];
+		}
+
+		IEnumerable<SelectListItem> IModelMetadataAccessor.GetOptions(string modelName)
+		{
+			return OptionsWrapper.GetData(modelName);
+		}
+
+		string IModelMetadataAccessor.GetLabelText(string modelName)
+		{
+			return LabelTextWrapper.GetData(modelName);
 		}
 
 		private readonly Dictionary<string, ModelMetadata> _cachedModelValues = new Dictionary<string, ModelMetadata>(StringComparer.Ordinal);

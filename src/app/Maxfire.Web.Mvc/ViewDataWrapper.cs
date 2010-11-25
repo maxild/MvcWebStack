@@ -18,6 +18,11 @@ namespace Maxfire.Web.Mvc
 			_key = "ViewDataWrapper<{0}>".FormatWith(typeof(T).FullName);
 		}
 
+		public T GetData(string key)
+		{
+			return Hash.GetValueOrDefault(key);
+		}
+
 		public T GetDataFor<TModel, TValue>(Expression<Func<TModel, TValue>> expression)
 			where TModel : class
 		{

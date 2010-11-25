@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -7,11 +6,22 @@ using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	public class Select : OptionsElement<Select>
+	public class Select : OptionsContainerElement<Select>
 	{
-		public Select(string name, ModelMetadata modelMetadata) 
-			: base(HtmlElement.Select, name, modelMetadata)
+		public Select(string name, IModelMetadataAccessor accessor) 
+			: base(HtmlElement.Select, name, accessor)
 		{
+		}
+
+		public object SelectedValue()
+		{
+			return SelectedValues().FirstOrDefault();
+		}
+
+		public Select SelectedValue(object value)
+		{
+			SelectedValues(value);
+			return self;
 		}
 
 		protected override string RenderOptions()
@@ -20,6 +30,11 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				.Map(item => new Option().Value(item.Value).InnerText(item.Text))
 				.Aggregate(new StringBuilder(), (sb, option) => sb.Append(option))
 				.ToString();
+		}
+
+		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		{
+			SelectedValue(attemptedValue.ConvertTo<string>());
 		}
 	}
 }

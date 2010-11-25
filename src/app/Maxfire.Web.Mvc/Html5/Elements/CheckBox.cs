@@ -8,8 +8,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	/// </summary>
 	public class CheckBox : InputElement<CheckBox>
 	{
-		public CheckBox(string name, ModelMetadata modelMetadata)
-			: base(HtmlInputType.Checkbox, name, modelMetadata)
+		public CheckBox(string name, IModelMetadataAccessor accessor)
+			: base(HtmlInputType.Checkbox, name, accessor)
 		{
 		}
 
@@ -50,10 +50,19 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return self;
 		}
 
+		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		{
+			var isChecked = attemptedValue.ConvertTo<bool?>();
+			if (isChecked.HasValue)
+			{
+				Checked(isChecked.Value);
+			}
+		}
+
 		public override string ToString()
 		{
 			string checkbox = base.Value("true").ToString();
-			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadata).Value("false").ToString();
+			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor).Value("false").ToString();
 			return string.Concat(checkbox, hidden);
 		}
 	}
