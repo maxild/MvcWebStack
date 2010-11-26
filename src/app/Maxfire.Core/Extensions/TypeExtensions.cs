@@ -7,6 +7,21 @@ namespace Maxfire.Core.Extensions
 {
 	public static class TypeExtensions
 	{
+		public static bool IsNotAssignableFrom(this Type type, Type otherType)
+		{
+			return !type.IsAssignableFrom(otherType);
+		}
+
+		public static bool IsAssignableTo(this Type type, Type otherType)
+		{
+			return otherType.IsAssignableFrom(type);
+		}
+
+		public static bool IsNotAssignableTo(this Type type, Type otherType)
+		{
+			return !otherType.IsAssignableFrom(type);
+		}
+
 		public static object GetDefaultValue(this Type type)
 		{
 			return (type.AllowsNullValue()) ? null : Activator.CreateInstance(type);

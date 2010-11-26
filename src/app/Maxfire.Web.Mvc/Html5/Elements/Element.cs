@@ -5,9 +5,9 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	/// <summary>
 	/// Base class for a single element.
 	/// </summary>
-	public abstract class Element<T> : Fragment<T> where T : Element<T>
+	public class Element<T> : Fragment<T> where T : class, IHtmlFragment<T>
 	{
-		protected Element(string tagName) : base(tagName)
+		public Element(string tagName) : base(tagName)
 		{
 		}
 		

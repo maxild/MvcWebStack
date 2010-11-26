@@ -50,6 +50,7 @@
     <Compile Include="ValidationModelBinderSpecs.PortedFromNameValueDeserializer.cs" />
     <Compile Include="ValidationModelBinderSpecs.Regressions.cs" />
     <Compile Include="ValidationModelBinderTester.cs" />
+    <Compile Include="Validators\EnumerationValidatorTester.cs" />
     <Compile Include="Validators\ErrorMessageSpecs.cs" />
     <Compile Include="Validators\RequiredTester.cs" />
     <Compile Include="Validators\ValidatorConstructor.cs" />

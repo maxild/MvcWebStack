@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
@@ -16,6 +17,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public override string ToHtmlString()
 		{
+			RemoveClass().AddClass(Attr(HtmlAttribute.Class));
 			var stringBuilder = new StringBuilder();
 			while (PreRender())
 			{

@@ -1,5 +1,6 @@
 using System;
 using Maxfire.Core;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Web.Mvc.Validators
 {
@@ -19,7 +20,7 @@ namespace Maxfire.Web.Mvc.Validators
 
 		public EnumerationValidator(Type enumerationType)
 		{
-			if (enumerationType.IsAssignableFrom(typeof(Enumeration)) || enumerationType.IsAbstract)
+			if (enumerationType.IsNotAssignableTo(typeof(Enumeration)) || enumerationType.IsAbstract)
 			{
 				throw new ArgumentException("The argument is not a concrete Enumeration derived type.", "enumerationType");
 			}

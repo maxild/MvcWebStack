@@ -9,7 +9,7 @@
 		public const string Type = "type";
 		//public const string Size = "size";
 		//public const string Multiple = "multiple";
-		//public const string Selected = "selected";
+		public const string Selected = "selected";
 		//public const string Rows = "rows";
 		//public const string Cols = "cols";
 		//public const string MaxLength = "maxlength";

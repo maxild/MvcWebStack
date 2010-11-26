@@ -49,7 +49,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 					ApplyModelStateAttemptedValue(modelState.Value);
 				}
 			}
-
 		}
 
 		private void InferIdFromName()

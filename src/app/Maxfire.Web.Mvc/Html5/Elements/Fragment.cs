@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
@@ -11,7 +10,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	/// <summary>
 	/// A Fragment is either an element og a list of elements with identical tag names.
 	/// </summary>
-	public abstract class Fragment<T> : IHtmlString where T : Fragment<T>
+	public abstract class Fragment<T> : IHtmlFragment<T> where T : class, IHtmlFragment<T>
 	{
 		// TODO: Behaviours
 		private readonly TagBuilder _tagBuilder;
@@ -24,7 +23,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			_tagBuilder = new TagBuilder(tagName);
 		}
 
-		protected T self { get { return (T) this; }}
+		protected T self { get { return this as T; }}
 
 		/// <summary>
 		/// Get the tag name of this/each element.
