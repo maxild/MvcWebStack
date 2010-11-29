@@ -5,30 +5,28 @@ using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	// TODO: Make FormElement a mixin
 	/// <summary>
 	/// Base class for form elements that are associated with a model.
 	/// </summary>
-	public abstract class FormElementList<T> : ElementList<T> where T : FormElementList<T>
+	public abstract class FormFragment<T> : Fragment<T> where T : FormFragment<T>
 	{
 		private const string DEFAULT_VALIDATION_CSS_CLASS = "input-validation-error";
 
 		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
 		private readonly IModelMetadataAccessor _accessor;
 
-		protected FormElementList(string tagName, string name, IModelMetadataAccessor accessor) 
-			: base(tagName)
+		protected FormFragment(string tagName, string name, IModelMetadataAccessor accessor) : base(tagName)
 		{
 			if (string.IsNullOrEmpty(name))
 			{
 				throw new ArgumentException("The argument cannot be empty.", "name");
 			}
-			Attr(HtmlAttribute.Name, name);
 			// TODO: Can accessor be null?
 			_accessor = accessor;
+			Attr(HtmlAttribute.Name, name);
 		}
 
-		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; } }
+		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
 
 		protected virtual void ApplyModelState()
 		{
@@ -63,11 +61,11 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected abstract void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue);
 
-		public override string ToHtmlString()
+		protected override string ToTagString()
 		{
 			InferIdFromName();
 			ApplyModelState();
-			return base.ToHtmlString();
+			return base.ToTagString();
 		}
 	}
 }

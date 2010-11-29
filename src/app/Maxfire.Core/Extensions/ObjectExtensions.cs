@@ -4,9 +4,36 @@ namespace Maxfire.Core.Extensions
 {
 	public static class ObjectExtenions
 	{
+		/// <summary>
+		/// Get a (possibly null) string representation of a possible null object.
+		/// </summary>
+		public static string ToNullString(this object value)
+		{
+			return value == null ? null : value.ToString();
+		}
+
+		/// <summary>
+		/// Get a non-null string representation of a possible null object.
+		/// </summary>
 		public static string ToNullSafeString(this object value)
 		{
 			return value == null ? String.Empty : value.ToString();
+		}
+
+		/// <summary>
+		/// Get a (possibly null) string representation of a possible null object.
+		/// </summary>
+		public static string ToNullString(this object value, IFormatProvider formatProvider)
+		{
+			return value == null ? null : Convert.ToString(value, formatProvider);
+		}
+
+		/// <summary>
+		/// Get a non-null string representation of a possible null object.
+		/// </summary>
+		public static string ToNullSafeString(this object value, IFormatProvider formatProvider)
+		{
+			return Convert.ToString(value, formatProvider);
 		}
 
 		public static object GetPropertyValueOf(this object @object, string propertyName)

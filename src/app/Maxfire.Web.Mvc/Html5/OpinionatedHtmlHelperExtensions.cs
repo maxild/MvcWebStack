@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
-using System.Web.Mvc;
+using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.Elements;
 
 namespace Maxfire.Web.Mvc.Html5
@@ -89,44 +89,15 @@ namespace Maxfire.Web.Mvc.Html5
 	//    }
 	//}
 
-	public static class HtmlExtension
+	public static class OpinionatedHtmlHelperExtensions
 	{
 		public static Input InputFor<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor,
 			string type, Expression<Func<TModel, TValue>> expression, 
 			object explicitValue, IDictionary<string, object> attributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			string value = accessor.GetValue(name, explicitValue);
+			string value = explicitValue.ToNullString(CultureInfo.CurrentCulture) ?? accessor.GetAttemptedModelValue(name);
 			return new Input(type, name, accessor).Value(value).Attr(attributes);
-		}
-
-		private static string GetValue<TModel>(this IModelMetadataAccessor<TModel> accessor, string name, object explicitValue)
-		{
-			string valueParameter = null;
-			if (explicitValue != null)
-			{
-				valueParameter = Convert.ToString(explicitValue, CultureInfo.CurrentCulture);
-			}
-
-			// Determine value by the frameworks convention
-			return accessor.GetModelStateAttemptedValue<string>(name) ?? // Attempted value recorded in ModelState["name"].Value.AttemptedValue
-				   valueParameter ??                                     // Explicitly provided value in the call to the view helper in the page
-			       accessor.GetAttemptedModelValue(name);                         // Value from model (we do not use ViewData.Eval("name") here)
-		}
-
-		private static TDestinationType GetModelStateAttemptedValue<TDestinationType>(this IModelStateAccessor accessor, string key)
-		{
-			return (TDestinationType) accessor.GetModelStateAttemptedValue(key, typeof (TDestinationType));
-		}
-
-		private static object GetModelStateAttemptedValue(this IModelStateAccessor accessor, string key, Type destinationType)
-		{
-			ModelState modelState = accessor.GetModelState(key);
-			if (modelState !=null && modelState.Value != null)
-			{
-				return modelState.Value.ConvertTo(destinationType);
-			}
-			return null;
 		}
 	}
 }

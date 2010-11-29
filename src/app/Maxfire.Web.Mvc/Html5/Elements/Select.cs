@@ -14,13 +14,11 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			SelectedValue(accessor.GetModelMetadata(name).Model);
 		}
 
-		// TODO: Can be made private??
 		public object SelectedValue()
 		{
 			return Selected().FirstOrDefault();
 		}
 
-		// TODO: Can be made private??
 		public Select SelectedValue(object value)
 		{
 			Selected(value != null ? new[] {value} : null);
@@ -29,9 +27,9 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override string RenderOptions()
 		{
-			return Options()
+			return GetOptions()
 				.Map(item => new Option().Value(item.Value).InnerText(item.Text))
-				.Aggregate(new StringBuilder(), (sb, option) => sb.Append(option))
+				.Aggregate(new StringBuilder(), (sb, option) => sb.Append(option.ToHtmlString()))
 				.ToString();
 		}
 
