@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
-using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5.Elements;
+using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
@@ -15,7 +15,19 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 			                        new SelectListItem { Text = "text0", Value="value0" },
 			                        new SelectListItem { Text = "text1", Value="value1", Selected = true}
 			                    });
-			options.ToHtmlString().ShouldEqual(@"<input id=""country"" name=""country"" type=""radio"" value=""value0"">text0</input><input checked=""checked"" id=""country"" name=""country"" type=""radio"" value=""value1"">text1</input>");
+			options.VerifyThatElementList().HasCount(2)
+				.ElementAt(0).HasName("input")
+					.HasAttribute("id", "country")
+					.HasAttribute("name", "country")
+					.HasAttribute("type", "radio")
+					.HasAttribute("value", "value0")
+					.HasInnerText("text0")
+				.ElementAt(1).HasName("input")
+					.HasAttribute("id", "country")
+					.HasAttribute("name", "country")
+					.HasAttribute("type", "radio")
+					.HasAttribute("value", "value1")
+					.HasInnerText("text1");
 		}
 	}
 }

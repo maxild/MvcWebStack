@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5.Elements;
+using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
@@ -20,7 +21,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		public void TagName()
 		{
 			var element = new TestableFragment("input");
-			element.TagName.ShouldEqual("input");
+			element.VerifyThatElement().HasName("input");
 		}
 
 		[Fact]
@@ -85,7 +86,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		public void Render_Attr()
 		{
 			var element = new TestableFragment("input").Attr("id", "firstName");
-			element.ToString().ShouldEqual(@"<input id=""firstName"" />");
+			element.VerifyThatElement().HasName("input").HasAttribute("id", "firstName");
 		}
 
 		[Fact]

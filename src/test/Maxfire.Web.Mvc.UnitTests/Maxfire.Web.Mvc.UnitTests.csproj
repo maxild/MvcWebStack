@@ -36,6 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DefaultNameValueSerializerTester.cs" />
+    <Compile Include="Html5\AssertionExtensions\FragmentVerifier.cs" />
+    <Compile Include="Html5\AssertionExtensions\ElementVerifier.cs" />
+    <Compile Include="Html5\AssertionExtensions\ElementListVerifier.cs" />
+    <Compile Include="Html5\AssertionExtensions\HtmlStringAssertionExtensions.cs" />
     <Compile Include="Html5\RadioButtonListTester.cs" />
     <Compile Include="Html5\FragmentTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,6 +84,7 @@
     <Reference Include="System.Web.Routing">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="xunit, Version=1.5.0.1479, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\tools\xunit\xunit.dll</HintPath>
