@@ -89,23 +89,19 @@ namespace Maxfire.Web.Mvc
 			return key;
 		}
 
-		string IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
+		object IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
 		{
 			return GetAttemptedModelValue(modelName);
 		}
 
-		protected virtual string GetAttemptedModelValue(string modelName)
+		protected virtual object GetAttemptedModelValue(string modelName)
 		{
 			object value = GetModelMetadata(modelName).Model;
-			if (value == null)
-			{
-				return null;
-			}
-			if (NameValueSerializer != null)
+			if (value != null && NameValueSerializer != null)
 			{
 				value = NameValueSerializer.GetValues(value).Map(x => x.Value).FirstOrDefault();
 			}
-			return Convert.ToString(value, CultureInfo.InvariantCulture);
+			return value;
 		}
 
 		ModelMetadata IModelMetadataAccessor.GetModelMetadata(string modelName)

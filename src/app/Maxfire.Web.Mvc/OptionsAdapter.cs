@@ -170,7 +170,7 @@ namespace Maxfire.Web.Mvc
 			{
 				return Enumerable.Empty<TextValuePair>();
 			}
-			var textValuePairs = from item in _items select new TextValuePair(_valueSelector(item), _textSelector(item));
+			var textValuePairs = from item in _items select new TextValuePair(_textSelector(item), _valueSelector(item));
 			return textValuePairs;
 		}
 

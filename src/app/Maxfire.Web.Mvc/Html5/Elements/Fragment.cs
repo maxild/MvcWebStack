@@ -30,7 +30,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <summary>
 		/// Get the element name of this/each element.
 		/// </summary>
-		public string Name
+		public string ElementName
 		{
 			get { return _tagBuilder.TagName; }
 		}
@@ -57,7 +57,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="value">A value to set for the attribute.</param>
 		public T Attr(string attributeName, object value)
 		{
-			string valueAsString = Convert.ToString(value, CultureInfo.InvariantCulture);
+			string valueAsString = value.ToNullSafeString(CultureInfo.CurrentCulture);
 			if (attributeName == HtmlAttribute.Class)
 			{
 				AddClass(valueAsString);

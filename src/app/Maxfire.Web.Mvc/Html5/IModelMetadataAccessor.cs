@@ -13,7 +13,7 @@ namespace Maxfire.Web.Mvc.Html5
 		/// <param name="modelName">The model name.</param>
 		/// <returns>Normally the string-based value that the model binding system would resolve (or bind)
 		/// to the current model value. If the model is null, it returns null.</returns>
-		string GetAttemptedModelValue(string modelName);
+		object GetAttemptedModelValue(string modelName);
 
 		/// <summary>
 		/// Get the metadata of the root Model or descendant properties in the model object graph.
