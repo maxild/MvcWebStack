@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 
@@ -103,7 +104,7 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				dayValue = modelValue.Value.Day;
 			}
-			var dayOptions = OptionsAdapter2.FromCollection(1.UpTo(31));
+			var dayOptions = OptionsAdapter.FromCollection(1.UpTo(31));
 
 			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes));
@@ -116,7 +117,7 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				monthValue = modelValue.Value.Month;
 			}
-			var monthOptions = OptionsAdapter2.Months();
+			var monthOptions = OptionsAdapter.Months();
 			
 			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, optionLabel, monthValue, htmlSelectElementAttributes));
@@ -130,7 +131,7 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				yearValue = modelValue.Value.Year;
 			}
-			var yearOptions = OptionsAdapter2.FromCollection(1900.UpTo(2000));
+			var yearOptions = OptionsAdapter.FromCollection(1900.UpTo(2000));
 			
 			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, optionLabel, yearValue, htmlSelectElementAttributes));
@@ -141,7 +142,7 @@ namespace Maxfire.Web.Mvc.Html
 		// Note: Even though we use SelectListItem the Selected property isn't used at all, because the model is compared to the values to find any selected options
 		// Todo: Maybe use my own ITextValuePair abstraction
 		public static MvcHtmlString RadioButtonListFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
-			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options,
+			Expression<Func<TModel, TProperty>> expression, IEnumerable<TextValuePair> options,
 			IDictionary<string, object> htmlInputElementAttributes, IDictionary<string, object> htmlLabelElementAttributes) where TModel : class
 		{
 			var sb = new StringBuilder();
@@ -168,7 +169,7 @@ namespace Maxfire.Web.Mvc.Html
 		//   does not have any bearing over the <option> element rendered with the selected attribute 
 		//   applied for the item. 
 		public static MvcHtmlString SelectFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
-			Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> options, 
+			Expression<Func<TModel, TProperty>> expression, IEnumerable<TextValuePair> options, 
 			string optionLabel, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			object modelValue = htmlHelper.GetModelValueFor(expression);
@@ -181,7 +182,7 @@ namespace Maxfire.Web.Mvc.Html
 		}
 
 		private static string SelectHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
-			string name, string id, IEnumerable<SelectListItem> options, 
+			string name, string id, IEnumerable<TextValuePair> options, 
 			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			var sb = new StringBuilder();
@@ -190,7 +191,7 @@ namespace Maxfire.Web.Mvc.Html
 
 			if (optionLabel != null)
 			{
-				sb.AppendLine(OptionHelper(new SelectListItem { Text = optionLabel, Value = String.Empty, Selected = false }, nameValueSerializer));
+				sb.AppendLine(OptionHelper(new TextValuePair(optionLabel, String.Empty), nameValueSerializer));
 			}
 
 			if (options != null)
@@ -257,7 +258,7 @@ namespace Maxfire.Web.Mvc.Html
 			return tag.ToString(TagRenderMode.Normal);
 		}
 
-		private static string OptionHelper(SelectListItem item, INameValueSerializer nameValueSerializer, object modelValue = null)
+		private static string OptionHelper(TextValuePair item, INameValueSerializer nameValueSerializer, object modelValue = null)
 		{
 			var tagBuilder = new TagBuilder("option") { InnerHtml = HttpUtility.HtmlEncode(item.Text) };
 			if (item.Value != null) tagBuilder.Attributes["value"] = item.Value;

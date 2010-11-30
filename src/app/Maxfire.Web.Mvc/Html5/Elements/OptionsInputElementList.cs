@@ -16,7 +16,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public override string ToHtmlString()
 		{
-			return RemoveClass().AddClass(Attr(HtmlAttribute.Class)).RenderAs(TagRenderMode.Normal).GetOptions()
+			return RemoveClass().AddClass(Attr(HtmlAttribute.Class)).GetOptions()
 				.Map(item => Value(item.Value).ToggleAttr(HtmlAttribute.Checked, item.Selected).InnerText(item.Text))
 				.Aggregate(new StringBuilder(), (sb, me) => sb.Append(me.ToTagString()))
 				.ToString();

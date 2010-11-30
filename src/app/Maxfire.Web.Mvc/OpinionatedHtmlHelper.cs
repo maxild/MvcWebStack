@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 using Maxfire.Web.Mvc.Html5;
@@ -19,26 +20,26 @@ namespace Maxfire.Web.Mvc
 			_nameValueSerializer = nameValueSerializer;
 		}
 
-		public virtual IEnumerable<SelectListItem> GetOptionsFor<TValue>(Expression<Func<TModel, TValue>> expression)
+		public virtual IEnumerable<TextValuePair> GetOptionsFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
 			return OptionsWrapper.GetDataFor(expression) ?? GetOptionsOfType<TValue>();
 		}
 
-		private ViewDataWrapper<IEnumerable<SelectListItem>> _optionsWrapper;
-		private ViewDataWrapper<IEnumerable<SelectListItem>> OptionsWrapper
+		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
+		private ViewDataWrapper<IEnumerable<TextValuePair>> OptionsWrapper
 		{
-			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<SelectListItem>>(ViewData)); }
+			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<TextValuePair>>(ViewData)); }
 		}
 
-		private static IEnumerable<SelectListItem> GetOptionsOfType<T>()
+		private static IEnumerable<TextValuePair> GetOptionsOfType<T>()
 		{
 			if (typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
 			{
-				return OptionsAdapter2.Boolean();
+				return OptionsAdapter.Boolean();
 			}
 			if (typeof(T).IsEnum)
 			{
-				return OptionsAdapter2.FromEnumTexts<T>();
+				return OptionsAdapter.FromEnumTexts<T>();
 			}
 
 			return null;
@@ -133,7 +134,7 @@ namespace Maxfire.Web.Mvc
 			return _cachedModelValues[modelName];
 		}
 
-		IEnumerable<SelectListItem> IModelMetadataAccessor.GetOptions(string modelName)
+		IEnumerable<TextValuePair> IModelMetadataAccessor.GetOptions(string modelName)
 		{
 			return OptionsWrapper.GetData(modelName);
 		}

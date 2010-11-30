@@ -4,15 +4,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
+using OptionsAdapterUtility = Maxfire.Web.Mvc.OptionsAdapter;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	// TODOs:
-	// Q: What core type should GetOptionsFor/SetOptionsFor use? IEnumerable<TextValuePair>, because SelectedValues cannot be defined
-	// Q: What core type should GetOptionsFor/SetOptionsFor use? IEnumerable<SelectListItem>, because SelectedValues can be defined
-
 	public abstract class OptionsFormFragment<T> : FormFragment<T> where T : OptionsFormFragment<T>
 	{
 		private IEnumerable<SelectListItem> _options;
@@ -38,8 +36,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected T SetOptions(IEnumerable<SelectListItem> options)
 		{
-			// TODO: Hvad med selected values?
-			// TODO: Sondring mellem når Builder kalder og klient kalder
 			_options = options;
 			return self;
 		}
@@ -66,22 +62,22 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 			public TOptionsFormFragment FromEnumValues(Type enumType)
 			{
-				return FromEnumHelper(enumType, x => Convert.ToInt32(x).ToString());
+				return FromEnumHelper(enumType, item => Convert.ToInt32(item).ToString());
 			}
 
 			public TOptionsFormFragment FromEnumValues<TEnum>()
 			{
-				return FromEnumHelper<TEnum>(x => Convert.ToInt32(x).ToString());
+				return FromEnumHelper<TEnum>(item => Convert.ToInt32(item).ToString());
 			}
 
 			public TOptionsFormFragment FromEnumTexts(Type enumType)
 			{
-				return FromEnumHelper(enumType, x => x.ToString());
+				return FromEnumHelper(enumType, item => item.ToString());
 			}
 
 			public TOptionsFormFragment FromEnumTexts<TEnum>()
 			{
-				return FromEnumHelper<TEnum>(x => x.ToString());
+				return FromEnumHelper<TEnum>(item => item.ToString());
 			}
 
 			private TOptionsFormFragment FromEnumHelper<TEnum>(Func<TEnum, string> valueSelector)
@@ -92,7 +88,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 					throw new ArgumentException("The generic type argument must be an enum.");
 				}
 				var values = Enum.GetValues(enumType).Cast<TEnum>();
-				return ToOptions(values, x => x.GetDisplayNameOfEnum(), valueSelector);
+				return ToOptions(values, item => item.GetDisplayNameOfEnum(), valueSelector);
 			}
 
 			private TOptionsFormFragment FromEnumHelper(Type enumType, Func<object, string> valueSelector)
@@ -102,106 +98,95 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 					throw new ArgumentException("The generic type argument must be an enum.");
 				}
 				var values = Enum.GetValues(enumType).Cast<object>();
-				return ToOptions(values, x => x.GetDisplayNameOfEnum(enumType), valueSelector);
+				return ToOptions(values, item => item.GetDisplayNameOfEnum(enumType), valueSelector);
 			}
 
-			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> options, Func<TItem, string> textSelector, Func<TItem, object> valueSelector)
+			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, object> valueSelector)
 			{
-				return ToOptions(options, textSelector, option => valueSelector(option).ToString());
+				return ToOptions(items, textSelector, item => valueSelector(item).ToNullSafeString(CultureInfo.CurrentCulture));
 			}
 
-			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> options, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
+			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
 			{
-				return ToOptions(options, textSelector, valueSelector);
+				return ToOptions(items, textSelector, valueSelector);
 			}
 
-			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> options)
+			public TOptionsFormFragment FromCollection<TItem>(IEnumerable<TItem> items)
 			{
-				return ToOptions(options, x => x.ToString(), x => x.ToString());
+				return ToOptions(items, item => item.ToNullSafeString(CultureInfo.CurrentCulture), item => item.ToNullSafeString(CultureInfo.CurrentCulture));
 			}
 
-			public TOptionsFormFragment FromSelectListItems(IEnumerable<SelectListItem> options)
+			public TOptionsFormFragment FromSelectListItems(IEnumerable<SelectListItem> items)
 			{
-				return ToOptions(options);
+				return ToOptions(items);
 			}
 
-			public TOptionsFormFragment FromTextValuePairs<TItem>(IEnumerable<TItem> options)
+			public TOptionsFormFragment FromTextValuePairs(IEnumerable<TextValuePair> items)
 			{
-				return ToOptions(new SelectList(options, "Value", "Text"));
+				return ToOptions(items, item => item.Text, item => item.Value);
 			}
 
-			public TOptionsFormFragment FromDictionary<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> options)
+			public TOptionsFormFragment FromDictionary<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> items)
 			{
-				return ToOptions(options, kvp => kvp.Key.ToString(), kvp => kvp.Value.ToString());
+				return ToOptions(items, kvp => kvp.Key.ToNullSafeString(CultureInfo.CurrentCulture), kvp => kvp.Value.ToNullSafeString(CultureInfo.CurrentCulture));
 			}
 
-			public TOptionsFormFragment FromDictionary(object options)
+			public TOptionsFormFragment FromDictionary(object items)
 			{
-				return FromDictionary(options.ToPropertyStringValuePairs());
+				return FromDictionary(items.ToPropertyStringValuePairs());
 			}
 
-			public TOptionsFormFragment FromDictionary(params Func<string, string>[] options)
+			public TOptionsFormFragment FromDictionary(params Func<string, string>[] items)
 			{
-				return ToOptions(options, func => func.Method.GetParameters()[0].Name, func => func(null));
+				return ToOptions(items, func => func.Method.GetParameters()[0].Name, func => func(null));
 			}
 
 			public TOptionsFormFragment Boolean()
 			{
-				return ToOptions(boolean());
-			}
-
-			private static IEnumerable<SelectListItem> boolean()
-			{
-				yield return new SelectListItem { Text = "Ja", Value = "true" };
-				yield return new SelectListItem { Text = "Nej", Value = "false" };
+				return ToOptions(OptionsAdapterUtility.Boolean(), item => item.Text, item => item.Value);
 			}
 
 			public TOptionsFormFragment Months()
 			{
-				return ToOptions(months());
+				return ToOptions(OptionsAdapterUtility.Months(), item => item.Text, item => item.Value);
 			}
  
-			private static IEnumerable<SelectListItem> months()
+			private TOptionsFormFragment ToOptions<TItem>(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
 			{
-				yield return new SelectListItem { Text = "Januar", Value = "1" };
-				yield return new SelectListItem { Text = "Februar", Value = "2" };
-				yield return new SelectListItem { Text = "Marts", Value = "3" };
-				yield return new SelectListItem { Text = "April", Value = "4" };
-				yield return new SelectListItem { Text = "Maj", Value = "5" };
-				yield return new SelectListItem { Text = "Juni", Value = "6" };
-				yield return new SelectListItem { Text = "Juli", Value = "7" };
-				yield return new SelectListItem { Text = "August", Value = "8" };
-				yield return new SelectListItem { Text = "September", Value = "9" };
-				yield return new SelectListItem { Text = "Oktober", Value = "10" };
-				yield return new SelectListItem { Text = "November", Value = "11" };
-				yield return new SelectListItem { Text = "December", Value = "12" };
-			}
-
-			private TOptionsFormFragment ToOptions<TItem>(IEnumerable<TItem> options, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
-			{
-				return _optionsFormFragment.SetOptions(new OptionsAdapter<TItem>(options, textSelector, valueSelector,
+				return _optionsFormFragment.SetOptions(new OptionsAdapter<TItem>(items, textSelector, valueSelector,
 																	   () => _optionsFormFragment.Selected()));
 			}
 
-			private TOptionsFormFragment ToOptions(IEnumerable<SelectListItem> options)
+			private TOptionsFormFragment ToOptions(IEnumerable<SelectListItem> items)
 			{
-				// TODO: Hvad med IsSelected???
-				return _optionsFormFragment.SetOptions(options);
+				if (items != null)
+				{
+					HashSet<object> selectedValues = new HashSet<object>(_optionsFormFragment.Selected());
+					selectedValues.UnionWith(items.Where(item => item.Selected).Map(item => item.Value));
+					_optionsFormFragment.Selected(selectedValues);
+				}
+				return _optionsFormFragment.SetOptions(items);
 			}
 		}
 
-		public class OptionsAdapter<TItem> : IEnumerable<SelectListItem>
+		/// <summary>
+		/// Create a list of text-value-selected tuples that clients can use to render
+		/// select, radiobuttonlist and/or checkboxlist widgets.
+		/// </summary>
+		sealed class OptionsAdapter<TItem> : IEnumerable<SelectListItem>
 		{
-			private readonly IEnumerable<TItem> _options;
+			private readonly IEnumerable<TItem> _items;
 			private readonly Func<IEnumerable> _selectedValuesThunk;
 			private readonly Func<TItem, string> _textSelector;
 			private readonly Func<TItem, string> _valueSelector;
 
-			public OptionsAdapter(IEnumerable<TItem> options, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<IEnumerable> selectedValuesThunk)
+			public OptionsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<IEnumerable> selectedValuesThunk)
 			{
-				if (textSelector == null) throw new ArgumentNullException("textSelector");
-				if (valueSelector == null) throw new ArgumentNullException("valueSelector");
-				_options = options;
+				if (textSelector == null)
+				{
+					throw new ArgumentNullException("textSelector");
+				}
+				_items = items;
 				_textSelector = textSelector;
 				_valueSelector = valueSelector;
 				_selectedValuesThunk = selectedValuesThunk;
@@ -209,40 +194,65 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 			public IEnumerator<SelectListItem> GetEnumerator()
 			{
-				if (_options == null)
+				return getListItems().GetEnumerator();
+			}
+
+			private IEnumerable<SelectListItem> getListItems()
+			{
+				if (_items == null)
 				{
-					return Enumerable.Empty<SelectListItem>().GetEnumerator();
+					return Enumerable.Empty<SelectListItem>();
 				}
-				IEnumerable<object> selectedValues = GetSelectedValues();
-				var listItems = from option in _options
-								let valueText = _valueSelector(option)
-								select new SelectListItem
-								{
-									Value = valueText,
-									Text = _textSelector(option),
-									Selected = IsSelectedValue(selectedValues, valueText)
-								};
-				return listItems.GetEnumerator();
+				
+				ISet<string> selectedValues = getSelectedValues();
+
+				return _valueSelector != null ? 
+					getListItemsWithValueField(selectedValues) :
+					getListItemsWithoutValueField(selectedValues);
+			}
+
+			ISet<string> getSelectedValues()
+			{
+				var selectedValueSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				if (_selectedValuesThunk != null)
+				{
+					IEnumerable selectedValues = _selectedValuesThunk();
+					if (selectedValues != null)
+					{
+						selectedValueSet.UnionWith(from object value in selectedValues select value.ToNullSafeString(CultureInfo.CurrentCulture));
+					}
+				}
+				return selectedValueSet;
+			}
+
+			private IEnumerable<SelectListItem> getListItemsWithoutValueField(ISet<string> selectedValueSet)
+			{
+				var listItems = from item in _items
+				                let text = _textSelector(item)
+				                select new SelectListItem
+				                {
+				                    Text = text,
+				                    Selected = selectedValueSet.Contains(text) // HTML spec says text is the value, if value is not present
+				                };
+				return listItems.ToList();
+			}
+
+			private IEnumerable<SelectListItem> getListItemsWithValueField(ISet<string> selectedValues)
+			{
+				var listItems = from item in _items
+				                let value = _valueSelector(item)
+				                select new SelectListItem
+				                {
+				                    Value = value,
+				                    Text = _textSelector(item),
+				                    Selected = selectedValues.Contains(value)
+				                };
+				return listItems;
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return GetEnumerator();
-			}
-
-			IEnumerable<object> GetSelectedValues()
-			{
-				if (_selectedValuesThunk == null)
-				{
-					return Enumerable.Empty<object>();
-				}
-				IEnumerable selectedValues = _selectedValuesThunk();
-				return selectedValues == null ? Enumerable.Empty<object>() : selectedValues.Cast<object>();
-			}
-
-			static bool IsSelectedValue(IEnumerable<object> selectedValues, string value)
-			{
-				return selectedValues.Any(selectedValue => value.Equals(Convert.ToString(selectedValue, CultureInfo.InvariantCulture), StringComparison.Ordinal));
 			}
 		}
 	}

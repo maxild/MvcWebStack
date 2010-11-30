@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc.Html5
 {
@@ -25,7 +26,7 @@ namespace Maxfire.Web.Mvc.Html5
 		/// Get any options associated with this model.
 		/// </summary>
 		/// <param name="modelName">The model name.</param>
-		IEnumerable<SelectListItem> GetOptions(string modelName);
+		IEnumerable<TextValuePair> GetOptions(string modelName);
 		
 		/// <summary>
 		/// Get any label text associated with this model.

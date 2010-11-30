@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5.Elements;
 using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
@@ -41,13 +40,6 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		{
 			var element = new TestableFragment("input");
 			element.ToString().ShouldEqual("<input />");
-		}
-
-		[Fact]
-		public void Render_EmptyNormalTag()
-		{
-			var element = new TestableFragment("input").RenderAs(TagRenderMode.Normal);
-			element.ToString().ShouldEqual("<input></input>");
 		}
 
 		[Fact]

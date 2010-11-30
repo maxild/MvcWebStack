@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override string ToTagString()
 		{
-			RenderAs(TagRenderMode.Normal).InnerHtml(RenderOptions());
+			InnerHtml(RenderOptions());
 			return base.ToTagString();
 		}
 

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Maxfire.Core;
 using Newtonsoft.Json;
 
 namespace Maxfire.Web.Mvc
@@ -26,13 +27,13 @@ namespace Maxfire.Web.Mvc
 			get { return _nameValueSerializer; }
 		}
 
-		private ViewDataWrapper<IEnumerable<SelectListItem>> _optionsWrapper;
-		private ViewDataWrapper<IEnumerable<SelectListItem>> OptionsWrapper
+		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
+		private ViewDataWrapper<IEnumerable<TextValuePair>> OptionsWrapper
 		{
-			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<SelectListItem>>(ViewData)); }
+			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<TextValuePair>>(ViewData)); }
 		}
 
-		protected void SetOptionsFor<TViewModel>(Expression<Func<TViewModel, object>> expression, IEnumerable<SelectListItem> options) 
+		protected void SetOptionsFor<TViewModel>(Expression<Func<TViewModel, object>> expression, IEnumerable<TextValuePair> options) 
 			where TViewModel : class
 		{
 			OptionsWrapper.SetDataFor(expression, options);

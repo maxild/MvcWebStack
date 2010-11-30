@@ -19,39 +19,20 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		private readonly ISet<string> _classNames = new SortedSet<string>(StringComparer.Ordinal);
 		private TagRenderMode _tagRenderMode;
 
-		protected Fragment(string tagName)
+		protected Fragment(string elementName)
 		{
 			_tagRenderMode = TagRenderMode.SelfClosing;
-			_tagBuilder = new TagBuilder(tagName);
+			_tagBuilder = new TagBuilder(elementName);
 		}
 
 		protected T self { get { return this as T; }}
 
 		/// <summary>
-		/// Get the tag name of this/each element.
+		/// Get the element name of this/each element.
 		/// </summary>
-		public string TagName
+		public string Name
 		{
 			get { return _tagBuilder.TagName; }
-		}
-
-		/// <summary>
-		/// How should this/each element be rendered.
-		/// </summary>
-		/// <param name="tagRenderMode">The tag render mode of this/each element.</param>
-		public T RenderAs(TagRenderMode tagRenderMode)
-		{
-			_tagRenderMode = tagRenderMode;
-			return self;
-		}
-
-		/// <summary>
-		/// Get the tag render mode of this/each element.
-		/// </summary>
-		/// <returns>The tag render mode of this/each element</returns>
-		public TagRenderMode RenderAs()
-		{
-			return _tagRenderMode;
 		}
 
 		/// <summary>
@@ -168,10 +149,12 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			if (string.IsNullOrWhiteSpace(innerText))
 			{
 				_tagBuilder.InnerHtml = null;
+				_tagRenderMode = TagRenderMode.SelfClosing;
 			}
 			else
 			{
 				_tagBuilder.SetInnerText(innerText);
+				_tagRenderMode = TagRenderMode.Normal;
 			}
 			return self;
 		}
@@ -183,7 +166,16 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="innerHtml">The HTML text fragment to add inside the opening and closing tags of this/each element.</param>
 		public T InnerHtml(string innerHtml)
 		{
-			_tagBuilder.InnerHtml = innerHtml;
+			if (string.IsNullOrWhiteSpace(innerHtml))
+			{
+				_tagBuilder.InnerHtml = null;
+				_tagRenderMode = TagRenderMode.SelfClosing;
+			}
+			else
+			{
+				_tagBuilder.InnerHtml = innerHtml;
+				_tagRenderMode = TagRenderMode.Normal;
+			}
 			return self;
 		}
 
