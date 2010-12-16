@@ -13,26 +13,16 @@ namespace Maxfire.Core
 		public static IEnumerable<TEnumeration> GetAll<TEnumeration>() 
 			where TEnumeration : Enumeration
 		{
-			foreach (var field in getFields(typeof(TEnumeration)))
-			{
-				var fieldValue = field.GetValue(null) as TEnumeration;
-				if (fieldValue != null)
-				{
-					yield return fieldValue;
-				}
-			}
+			return getFields(typeof(TEnumeration))
+				.Select(field => field.GetValue(null))
+				.OfType<TEnumeration>();
 		}
 
 		public static IEnumerable GetAll(Type enumerationType)
 		{
-			foreach (var field in getFields(enumerationType))
-			{
-				var fieldValue = field.GetValue(null);
-				if (fieldValue != null)
-				{
-					yield return fieldValue;
-				}
-			}
+			return getFields(enumerationType)
+				.Select(field => field.GetValue(null))
+				.Where(fieldValue => fieldValue != null);
 		}
 
 		public static IEnumerable<string> GetAllNames<TEnumeration>() 
@@ -43,14 +33,10 @@ namespace Maxfire.Core
 
 		public static IEnumerable<string> GetAllNames(Type enumerationType)
 		{
-			foreach (var field in getFields(enumerationType))
-			{
-				var fieldValue = field.GetValue(null) as Enumeration;
-				if (fieldValue != null)
-				{
-					yield return fieldValue.Name;
-				}
-			}
+			return getFields(enumerationType)
+				.Select(field => field.GetValue(null))
+				.OfType<Enumeration>()
+				.Select(fieldValue => fieldValue.Name);
 		}
 
 		public static TEnumeration FromValueOrDefault<TEnumeration>(long value)
@@ -104,18 +90,12 @@ namespace Maxfire.Core
 			return String.Compare(name1, name2, StringComparison.InvariantCultureIgnoreCase) == 0;
 		}
 
-		private static FieldInfo[] getFields(Type type)
+		private static IEnumerable<FieldInfo> getFields(Type type)
 		{
 			return type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
 		}
 
-		private static TEnumeration parse<TEnumeration, TValue>(TValue value, string description, Func<TEnumeration, bool> predicate)
-			where TEnumeration : Enumeration
-		{
-			return parse(value, description, predicate, true);
-		}
-
-		private static TEnumeration parse<TEnumeration, TValue>(TValue value, string description, Func<TEnumeration, bool> predicate, bool enforceCheck)
+		private static TEnumeration parse<TEnumeration, TValue>(TValue value, string description, Func<TEnumeration, bool> predicate, bool enforceCheck = true)
 			where TEnumeration : Enumeration
 		{
 			TEnumeration matchingItem = GetAll<TEnumeration>().FirstOrDefault(predicate);
@@ -131,15 +111,9 @@ namespace Maxfire.Core
 
 		private static Enumeration parse<TValue>(Type enumerationType, TValue value, string description, Func<Enumeration, bool> predicate, bool enforceCheck)
 		{
-			Enumeration matchingItem = null;
-			foreach (Enumeration item in GetAll(enumerationType))
-			{
-				if (predicate(item))
-				{
-					matchingItem = item;
-					break;
-				}
-			}
+			Enumeration matchingItem = GetAll(enumerationType)
+				.Cast<Enumeration>()
+				.FirstOrDefault(predicate);
 
 			if (enforceCheck && matchingItem == null)
 			{
