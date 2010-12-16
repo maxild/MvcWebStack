@@ -160,12 +160,9 @@
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedControllerActionInvoker.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />
-    <Compile Include="OpinionatedListSparkView.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
     <Compile Include="OpinionatedResourceController.cs" />
-    <Compile Include="OpinionatedResourceSparkView.cs" />
     <Compile Include="OpinionatedRestfulController.cs" />
-    <Compile Include="OpinionatedSparkView.cs" />
     <Compile Include="OpinionatedSubordinateResourceController.cs" />
     <Compile Include="OpinionatedValidatorProvider.cs" />
     <Compile Include="OptionsAdapter.cs" />
@@ -228,13 +225,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Spark, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7f8549eed921a12c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\spark\Spark.dll</HintPath>
-    </Reference>
-    <Reference Include="Spark.Web.Mvc">
-      <HintPath>..\..\..\lib\spark\Spark.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

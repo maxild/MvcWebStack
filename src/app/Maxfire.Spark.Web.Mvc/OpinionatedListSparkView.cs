@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Spark.Web.Mvc
 {
-	public abstract class OpinionatedListSparkView<TViewModelElement> : OpinionatedSparkView<IEnumerable<TViewModelElement>>
+	public abstract class OpinionatedListSparkView<TViewModelElement> :
+		OpinionatedSparkView<IEnumerable<TViewModelElement>>
 	{
 		private HtmlHelper<TViewModelElement> _htmlHelper;
 

@@ -10,7 +10,13 @@
             <CustomDictionary>
               <Name>en-US</Name>
               <CaseSensitive>false</CaseSensitive>
-              <UserWords>Maxfire</UserWords>
+              <UserWords>Maxfire
+Precompile
+Bootstrapper
+Bootstrapper
+precompiled
+Serializer
+html</UserWords>
             </CustomDictionary>
           </Dictionaries>
         </CustomDictionaries>

@@ -213,18 +213,5 @@ namespace Maxfire.Web.Mvc.FluentHtml
 			return new SubmitButton(text)
 				.ApplyBehaviors(view.Behaviors);
 		}
-
-		// Todo: Overvej at skrive hele FluentHtml extension methods om til at benytte resource view, og benyt kun FluentHtml som form helpers
-		public static string Method<TEditModel, TInputModel, TId>(this OpinionatedResourceSparkView<TEditModel, TInputModel, TId> resourceView)
-			where TEditModel : EditModelFor<TInputModel>
-			where TInputModel : class, IEntityViewModel<TId>
-		{
-			string html = string.Empty;
-			if (!resourceView.ViewModel.Input.IsTransient)
-			{
-				html = new Method().ToString();
-			}
-			return html;
-		}
 	}
 }

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Spark.Web.Mvc;
+using Maxfire.Web.Mvc;
 using Maxfire.Web.Mvc.FluentHtml.Behaviors;
+using Spark.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Spark.Web.Mvc
 {
 	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
 	{
@@ -51,6 +52,9 @@ namespace Maxfire.Web.Mvc
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
+		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
+
+		private ViewDataDictionary<TViewModel> _viewData;
 
 		protected OpinionatedSparkView()
 		{
@@ -59,17 +63,6 @@ namespace Maxfire.Web.Mvc
 			_behaviors.Add(new InputTypeBehavior());
 		}
 
-		public IEnumerable<IBehaviorMarker> Behaviors
-		{
-			get { return _behaviors; }
-		}
-
-		public ModelStateDictionary ViewModelState
-		{
-			get { return ViewData.ModelState; }
-		}
-
-		private ViewDataDictionary<TViewModel> _viewData;
 		public new ViewDataDictionary<TViewModel> ViewData
 		{
 			get
@@ -89,23 +82,32 @@ namespace Maxfire.Web.Mvc
 			get { return ViewData.Model; }
 		}
 
+		public new OpinionatedHtmlHelper<TViewModel> Html
+		{
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
+		}
+
+		public IEnumerable<IBehaviorMarker> Behaviors
+		{
+			get { return _behaviors; }
+		}
+
+		public ModelStateDictionary ViewModelState
+		{
+			get { return ViewData.ModelState; }
+		}
+
 		public TViewModel ViewModel
 		{
 			get { return ViewData.Model; }
 		}
 
+		public string HtmlNamePrefix { get; set; }
+
 		protected override void SetViewData(ViewDataDictionary viewData)
 		{
 			_viewData = new ViewDataDictionary<TViewModel>(viewData);
 			base.SetViewData(_viewData);
-		}
-
-		public string HtmlNamePrefix { get; set; }
-
-		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
-		public new OpinionatedHtmlHelper<TViewModel> Html
-		{
-			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
 		}
 	}
 }

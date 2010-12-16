@@ -11,44 +11,6 @@ namespace Maxfire.Web.Mvc.FluentHtml
 	public static class RestfulViewModelContainerExtensions
 	{
 		[UsedImplicitly]
-		public static HtmlFormEndTagWriter BeginResourceForm<TRestfulController, TEditModel, TInputModel, TId>
-			(this OpinionatedResourceSparkView<TEditModel, TInputModel, TId> view, Expression<Func<TEditModel, object>> id) 
-			where TRestfulController : Controller, IRestfulController<TInputModel, TId>
-			where TInputModel: class, IEntityViewModel<TId>
-			where TEditModel : EditModelFor<TInputModel>
-		{
-			string url = view.ViewModel.Input.IsTransient ?
-			                                              	view.UrlFor<TRestfulController>(x => x.Create(null)).ToString() :
-			                                              	                                                                	view.UrlFor<TRestfulController>(x => x.Update(null)).Id(view.ViewModel.Input.Id).ToString();
-
-			// Todo: Create HtmlTag.Form, HtmlAttribute.Action and Method
-			TagBuilder formBuilder = new TagBuilder("form");
-			formBuilder.MergeAttribute("action", url);
-			formBuilder.MergeAttribute("method", "post");
-
-			view.Render(formBuilder.ToString(TagRenderMode.StartTag));
-			view.Render("\n");
-
-			string innerHtml = view.Hidden(id).ToString();
-			if (!view.ViewModel.Input.IsTransient)
-			{
-				TagBuilder methodBuilder = new TagBuilder(HtmlTag.Input);
-				methodBuilder.MergeAttribute(HtmlAttribute.Type, "hidden");
-				methodBuilder.MergeAttribute(HtmlAttribute.Name, "_method");
-				methodBuilder.MergeAttribute(HtmlAttribute.Value, "PUT");
-				innerHtml += methodBuilder.ToString(TagRenderMode.SelfClosing);
-			}
-
-			TagBuilder fieldsetBuilder = new TagBuilder("div");
-			fieldsetBuilder.AddCssClass("hidden");
-			fieldsetBuilder.InnerHtml = innerHtml;
-
-			view.Render(fieldsetBuilder.ToString(TagRenderMode.Normal));
-			
-			return new HtmlFormEndTagWriter(view);
-		}
-
-		[UsedImplicitly]
 		public static HtmlFormDescriptor BeginForm<TController>(this IUrlResponseWriter view, Expression<Action<TController>> action, FormMethod method)
 			where TController : Controller
 		{
