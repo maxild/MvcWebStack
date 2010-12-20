@@ -22,9 +22,14 @@ namespace Maxfire.Web.Mvc
 
 		public IDictionary<string, object> GetValues(object model, string prefix)
 		{
-			Type modelType = model.GetType();
 			var values = new Dictionary<string, object>();
 
+			if (model == null)
+			{
+				return values;
+			}
+
+			Type modelType = model.GetType();
 			if (modelType.IsSimpleType())
 			{
 				var serializer = GetSerializerForSimpleType(modelType);
