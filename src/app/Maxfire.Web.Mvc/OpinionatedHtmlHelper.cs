@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
@@ -10,13 +11,56 @@ using Maxfire.Web.Mvc.Html5;
 
 namespace Maxfire.Web.Mvc
 {
-	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IModelMetadataAccessor<TModel> where TModel: class
+	public class OpinionatedHtmlHelper : HtmlHelper, IUrlHelper
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
-
-		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) : base(viewContext, viewDataContainer)
+		
+		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) 
+			: base(viewContext, viewDataContainer)
 		{
 			_nameValueSerializer = nameValueSerializer;
+		}
+
+		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		{
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
+		}
+
+		string IUrlHelper.ApplicationPath
+		{
+			get { return UrlHelperUtil.GetApplicationPath(ViewContext.RequestContext); }
+		}
+
+		public INameValueSerializer NameValueSerializer
+		{
+			get { return _nameValueSerializer; }
+		}
+	}
+
+	// NOTE: Because we have to derive from HtmlHelper<TModel> we cannot avoid duplication of IUrlHelper impl
+	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IUrlHelper, IModelMetadataAccessor<TModel> where TModel: class
+	{
+		private readonly INameValueSerializer _nameValueSerializer;
+		
+		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) 
+			: base(viewContext, viewDataContainer)
+		{
+			_nameValueSerializer = nameValueSerializer;
+		}
+
+		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		{
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
+		}
+
+		string IUrlHelper.ApplicationPath
+		{
+			get { return UrlHelperUtil.GetApplicationPath(ViewContext.RequestContext); }
+		}
+
+		public INameValueSerializer NameValueSerializer
+		{
+			get { return _nameValueSerializer; }
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)
@@ -66,11 +110,6 @@ namespace Maxfire.Web.Mvc
 		private ViewDataWrapper<string> LabelTextWrapper
 		{
 			get { return _labelTextWrapper ?? (_labelTextWrapper = new ViewDataWrapper<string>(ViewData)); }
-		}
-
-		public INameValueSerializer NameValueSerializer
-		{
-			get { return _nameValueSerializer; }
 		}
 
 		#region IModelMetadataAccessor Explicit Members

@@ -20,6 +20,12 @@ namespace Maxfire.Spark.Web.Mvc
 			_nameValueSerializer = nameValueSerializer;
 		}
 
+		private OpinionatedHtmlHelper _htmlHelper;
+		public new OpinionatedHtmlHelper Html
+		{
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper(ViewContext, this, NameValueSerializer)); }
+		}
+
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
 		{
 			VirtualPathData vpd = RouteTable.Routes.GetVirtualPath(ViewContext.RequestContext, routeValues);
@@ -52,10 +58,7 @@ namespace Maxfire.Spark.Web.Mvc
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
-		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
-
-		private ViewDataDictionary<TViewModel> _viewData;
-
+		
 		protected OpinionatedSparkView()
 		{
 			_behaviors.Add(new ValidationBehavior(() => ViewModelState));
@@ -63,6 +66,7 @@ namespace Maxfire.Spark.Web.Mvc
 			_behaviors.Add(new InputTypeBehavior());
 		}
 
+		private ViewDataDictionary<TViewModel> _viewData;
 		public new ViewDataDictionary<TViewModel> ViewData
 		{
 			get
@@ -76,12 +80,18 @@ namespace Maxfire.Spark.Web.Mvc
 			set { SetViewData(value); }
 		}
 
-		// TODO: Model vs ViewModel (and MVC 3 dynamic property)
+		protected override void SetViewData(ViewDataDictionary viewData)
+		{
+			_viewData = new ViewDataDictionary<TViewModel>(viewData);
+			base.SetViewData(_viewData);
+		}
+
 		public TViewModel Model
 		{
 			get { return ViewData.Model; }
 		}
 
+		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
 		public new OpinionatedHtmlHelper<TViewModel> Html
 		{
 			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
@@ -103,11 +113,5 @@ namespace Maxfire.Spark.Web.Mvc
 		}
 
 		public string HtmlNamePrefix { get; set; }
-
-		protected override void SetViewData(ViewDataDictionary viewData)
-		{
-			_viewData = new ViewDataDictionary<TViewModel>(viewData);
-			base.SetViewData(_viewData);
-		}
 	}
 }

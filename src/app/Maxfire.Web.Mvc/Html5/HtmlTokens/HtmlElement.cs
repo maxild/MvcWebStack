@@ -6,5 +6,6 @@
 		public const string Label = "label";
 		public const string Select = "select";
 		public const string Option = "option";
+		public const string Anchor = "a";
 	}
 }

@@ -22,11 +22,6 @@ namespace Maxfire.Web.Mvc
 			_nameValueSerializer = nameValueSerializer;
 		}
 
-		public INameValueSerializer NameValueSerializer
-		{
-			get { return _nameValueSerializer; }
-		}
-
 		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
 		private ViewDataWrapper<IEnumerable<TextValuePair>> OptionsWrapper
 		{
@@ -37,6 +32,12 @@ namespace Maxfire.Web.Mvc
 			where TViewModel : class
 		{
 			OptionsWrapper.SetDataFor(expression, options);
+		}
+
+		protected void SetOptionsFor<TViewModel>(Expression<Func<TViewModel, object>> expression, string prefix, IEnumerable<TextValuePair> options)
+			where TViewModel : class
+		{
+			OptionsWrapper.SetDataFor(expression, prefix, options);
 		}
 
 		private ViewDataWrapper<string> _labelTextWrapper;
@@ -69,19 +70,17 @@ namespace Maxfire.Web.Mvc
 
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
 		{
-			VirtualPathData vpd = RouteTable.Routes.GetVirtualPath(ControllerContext.RequestContext, routeValues);
-
-			if (vpd != null)
-			{
-				return vpd.VirtualPath;
-			}
-
-			return null;
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ControllerContext.RequestContext, routeValues);
 		}
 
-		public string ApplicationPath
+		string IUrlHelper.ApplicationPath
 		{
-			get { return ControllerContext.RequestContext.HttpContext.Request.ApplicationPath; }
+			get { return UrlHelperUtil.GetApplicationPath(ControllerContext.RequestContext); }
+		}
+
+		public INameValueSerializer NameValueSerializer
+		{
+			get { return _nameValueSerializer; }
 		}
 
 		protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)

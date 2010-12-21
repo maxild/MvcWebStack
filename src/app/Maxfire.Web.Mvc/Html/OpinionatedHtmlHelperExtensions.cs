@@ -15,14 +15,6 @@ namespace Maxfire.Web.Mvc.Html
 {
 	public static class OpinionatedHtmlHelperExtensions
 	{
-		public static MvcHtmlString ActionLink<TController>(this HtmlHelper htmlHelper,
-			Expression<Action<TController>> action, string linkText, IDictionary<string, object> htmlAttributes) where TController : Controller
-		{
-			var nameValueSerializer = htmlHelper.GetNameValueSerializer();
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, nameValueSerializer);
-			return htmlHelper.RouteLink(linkText, routeValues, htmlAttributes);
-		}
-
 		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
 			where TModel : class
 		{
@@ -74,17 +66,19 @@ namespace Maxfire.Web.Mvc.Html
 		{
 			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
+			labelText = labelText ?? htmlHelper.GetLabelTextFor(expression);
 
 			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}
 
-		public static MvcHtmlString DateSelectsFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression, 
+		public static MvcHtmlString DateSelectsFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression,
 			string labelText, string optionLabel,
 			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
 			) where TModel : class
 		{
 			var modelValue = (DateTime?)ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
 			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(htmlHelper);
+			labelText = labelText ?? htmlHelper.GetLabelTextFor(expression);
 
 			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}

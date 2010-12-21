@@ -2,16 +2,10 @@
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	public class Option : Fragment<Option>
+	public class Option : Element<Option>
 	{
 		public Option() : base(HtmlElement.Option)
 		{
-		}
-
-		protected override string ToTagString()
-		{
-			RemoveClass().AddClass(Attr(HtmlAttribute.Class));
-			return base.ToTagString();
 		}
 	}
 }

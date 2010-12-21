@@ -40,14 +40,34 @@ namespace Maxfire.Web.Mvc
 		public void SetDataFor<TModel, TValue>(Expression<Func<TModel, TValue>> expression, T data)
 			where TModel : class
 		{
-			string key = expression.GetHtmlFieldNameFor(_viewData);
-			Hash[key] = data;
+			SetDataFor(expression, null, data);
 		}
 
 		public void SetDataFor<TModel>(Expression<Func<TModel, object>> expression, T data)
 			where TModel : class
 		{
+			SetDataFor(expression, null, data);
+		}
+
+		public void SetDataFor<TModel, TValue>(Expression<Func<TModel, TValue>> expression, string prefix, T data)
+			where TModel : class
+		{
 			string key = expression.GetHtmlFieldNameFor(_viewData);
+			if (!string.IsNullOrEmpty(prefix))
+			{
+				key += prefix;
+			}
+			Hash[key] = data;
+		}
+
+		public void SetDataFor<TModel>(Expression<Func<TModel, object>> expression, string prefix, T data)
+			where TModel : class
+		{
+			string key = expression.GetHtmlFieldNameFor(_viewData);
+			if (!string.IsNullOrEmpty(prefix))
+			{
+				key += prefix;
+			}
 			Hash[key] = data;
 		}
 
