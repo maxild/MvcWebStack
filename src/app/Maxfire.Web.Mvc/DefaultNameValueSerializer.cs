@@ -10,13 +10,22 @@ namespace Maxfire.Web.Mvc
 	public class DefaultNameValueSerializer : INameValueSerializer
 	{
 		private readonly INameValueSerializerProvider _provider;
+		private readonly CultureInfo _culture;
 
-		public DefaultNameValueSerializer() :this(new DefaultNameValueSerializerProvider())
+
+		public DefaultNameValueSerializer()
+			: this(CultureInfo.InvariantCulture)
 		{
 		}
 
-		public DefaultNameValueSerializer(INameValueSerializerProvider provider)
+		public DefaultNameValueSerializer(CultureInfo culture) 
+			: this(culture, new DefaultNameValueSerializerProvider())
 		{
+		}
+
+		public DefaultNameValueSerializer(CultureInfo culture, INameValueSerializerProvider provider)
+		{
+			_culture = culture;
 			_provider = provider;
 		}
 
@@ -81,7 +90,7 @@ namespace Maxfire.Web.Mvc
 		private INameValueSerializer GetSerializerForSimpleType(Type modelType)
 		{
 			// See if provider knows how to handle type, otherwise fallback to simple type conversion
-			return GetSerializerCore(modelType) ?? new FallbackNameValueSerializer();
+			return GetSerializerCore(modelType) ?? new FallbackNameValueSerializer(_culture);
 		}
 
 		protected virtual INameValueSerializer GetSerializerCore(Type modelType)
@@ -91,9 +100,16 @@ namespace Maxfire.Web.Mvc
 
 		class FallbackNameValueSerializer : INameValueSerializer
 		{
+			private readonly CultureInfo _culture;
+
+			public FallbackNameValueSerializer(CultureInfo culture)
+			{
+				_culture = culture;
+			}
+
 			public IDictionary<string, object> GetValues(object model, string prefix)
 			{
-				object value = TypeExtensions.ConvertSimpleType(CultureInfo.InvariantCulture, model, typeof(string));
+				object value = TypeExtensions.ConvertSimpleType(_culture, model, typeof(string));
 				return new Dictionary<string, object>{{prefix, value}};
 			}
 		}

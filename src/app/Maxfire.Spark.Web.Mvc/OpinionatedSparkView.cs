@@ -58,8 +58,12 @@ namespace Maxfire.Spark.Web.Mvc
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
-		
-		protected OpinionatedSparkView()
+
+		protected OpinionatedSparkView() : this(new DefaultNameValueSerializer())
+		{
+		}
+
+		protected OpinionatedSparkView(INameValueSerializer nameValueSerializer) : base(nameValueSerializer)
 		{
 			_behaviors.Add(new ValidationBehavior(() => ViewModelState));
 			_behaviors.Add(new LabelMemberBehavior());
