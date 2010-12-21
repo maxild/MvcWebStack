@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
@@ -18,6 +17,11 @@ namespace Maxfire.Web.Mvc
 		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) : base(viewContext, viewDataContainer)
 		{
 			_nameValueSerializer = nameValueSerializer;
+		}
+
+		public virtual IEnumerable<TextValuePair> GetOptions(string key)
+		{
+			return OptionsWrapper.GetData(key);
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptionsFor<TValue>(Expression<Func<TModel, TValue>> expression)

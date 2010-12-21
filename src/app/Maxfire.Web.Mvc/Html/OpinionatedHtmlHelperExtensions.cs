@@ -67,7 +67,7 @@ namespace Maxfire.Web.Mvc.Html
 			return htmlHelper.TextBoxHelper(expression, date => date.HasValue ? date.Value.ToShortDateString() : string.Empty, htmlAttributes);
 		}
 
-		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime>> expression, 
+		public static MvcHtmlString DateSelectsFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime>> expression, 
 			string labelText, string optionLabel,
 			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
 			) where TModel : class
@@ -78,7 +78,7 @@ namespace Maxfire.Web.Mvc.Html
 			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}
 
-		public static MvcHtmlString DateSelectsFor<TModel>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression, 
+		public static MvcHtmlString DateSelectsFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, DateTime?>> expression, 
 			string labelText, string optionLabel,
 			IDictionary<string, object> htmlSelectElementAttributes, IDictionary<string, object> htmlLabelElementAttributes
 			) where TModel : class
@@ -89,7 +89,7 @@ namespace Maxfire.Web.Mvc.Html
 			return DateSelectsHelper(htmlHelper, fullHtmlFieldName, labelText, optionLabel, modelValue, htmlLabelElementAttributes, htmlSelectElementAttributes);
 		}
 
-		private static MvcHtmlString DateSelectsHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
+		private static MvcHtmlString DateSelectsHelper<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			string fullHtmlFieldName, string labelText, string optionLabel, DateTime? modelValue,
 			IDictionary<string, object> htmlLabelElementAttributes, IDictionary<string, object> htmlSelectElementAttributes
 			) where TModel : class
@@ -131,7 +131,7 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				yearValue = modelValue.Value.Year;
 			}
-			var yearOptions = OptionsAdapter.FromCollection(1900.UpTo(2000));
+			var yearOptions = htmlHelper.GetOptions(yearName) ?? OptionsAdapter.FromCollection(1950.UpTo(2050));
 			
 			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, optionLabel, yearValue, htmlSelectElementAttributes));

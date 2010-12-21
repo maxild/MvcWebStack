@@ -41,7 +41,7 @@ namespace Maxfire.Web.Mvc
 			if (dictionaryType != null)
 			{
 				// todo
-				throw new NotSupportedException("TODO: Implement disctionary support");
+				throw new NotSupportedException("TODO: Implement dictionary support");
 			}
 
 			Type enumerableType = modelType.MatchesGenericInterface(typeof(IEnumerable<>));
