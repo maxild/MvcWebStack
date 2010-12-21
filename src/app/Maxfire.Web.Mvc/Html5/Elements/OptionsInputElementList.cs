@@ -18,7 +18,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			// TODO: Skal radio og checkboc have InnerText? Nej, kun value...
 			// TODO: AutoLabel med item.Text og særskilte attributer
 			// TODO: Unique id på hver radio/checkbox
-			return RemoveClass().AddClass(Attr(HtmlAttribute.Class)).GetOptions()
+			return GetOptions()
 				.Map(item => Value(item.Value).ToggleAttr(HtmlAttribute.Checked, item.Selected).InnerText(item.Text))
 				.Aggregate(new StringBuilder(), (sb, me) => sb.Append(me.ToTagString()))
 				.ToString();

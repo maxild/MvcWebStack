@@ -15,12 +15,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			Value(attemptedValue.ConvertTo<string>());
 		}
-
-		protected override string ToTagString()
-		{
-			RemoveClass().AddClass(Attr(HtmlAttribute.Class));
-			return base.ToTagString();
-		}
 	}
 
 	public class Input : InputElement<Input> 

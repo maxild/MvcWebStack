@@ -2,7 +2,7 @@
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
-	public class Option : Element<Option>
+	public class Option : Fragment<Option>
 	{
 		public Option() : base(HtmlElement.Option)
 		{

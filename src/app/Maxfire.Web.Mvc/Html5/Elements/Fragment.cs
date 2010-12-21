@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -44,7 +45,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			if (attributeName == HtmlAttribute.Class)
 			{
-				return _classNames.Count > 0 ? getClass() : null;
+				if (_classNames.Count == 0)
+				{
+					return null;
+				}
+				return _classNames
+					.Aggregate(new StringBuilder(), (sb, className) =>  sb.Append(className).Append(" "))
+					.ToString()
+					.TrimEnd();
 			}
 			string value;
 			return _tagBuilder.Attributes.TryGetValue(attributeName, out value) ? value : null;
@@ -304,7 +312,22 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// </summary>
 		protected virtual string ToTagString()
 		{
-			return _tagBuilder.ToString(_tagRenderMode);
+			string classNames = Attr(HtmlAttribute.Class);
+			try
+			{
+				if (classNames != null)
+				{
+					_tagBuilder.MergeAttribute(HtmlAttribute.Class, classNames);
+				}
+				return _tagBuilder.ToString(_tagRenderMode);
+			}
+			finally
+			{
+				if (classNames != null)
+				{
+					_tagBuilder.Attributes.Remove(HtmlAttribute.Class);
+				}
+			}
 		}
 
 		private static IEnumerable<string> splitClassName(string className)
@@ -317,11 +340,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				yield return part;
 			}
-		}
-
-		private string getClass()
-		{
-			return _classNames.Aggregate((className, sum) => sum + " " + className).TrimEnd();
 		}
 	}
 }

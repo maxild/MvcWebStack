@@ -114,7 +114,6 @@
     <Compile Include="Html5\Elements\Anchor.cs" />
     <Compile Include="Html5\Elements\CheckBox.cs" />
     <Compile Include="Html5\Elements\CheckBoxList.cs" />
-    <Compile Include="Html5\Elements\Element.cs" />
     <Compile Include="Html5\Elements\OptionsInputElementList.cs" />
     <Compile Include="Html5\Elements\OptionsFormElement.cs" />
     <Compile Include="Html5\Elements\FormFragment.cs" />

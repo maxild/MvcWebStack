@@ -88,6 +88,36 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		}
 
 		[Fact]
+		public void Render_SingleClass()
+		{
+			new TestableFragment("input").AddClass("myclass")
+				.ToHtmlString().ShouldEqual(@"<input class=""myclass"" />");
+		}
+
+		[Fact]
+		public void Render_SingleClass_MultipleTimes()
+		{
+			var sut = new TestableFragment("input").AddClass("myclass");
+			sut.ToHtmlString().ShouldEqual(@"<input class=""myclass"" />");
+			sut.ToHtmlString().ShouldEqual(@"<input class=""myclass"" />");
+		}
+
+		[Fact]
+		public void Render_MultipleClasses()
+		{
+			new TestableFragment("input").AddClass("myclass anotherclass", "yetanotherclass")
+				.ToHtmlString().ShouldEqual(@"<input class=""anotherclass myclass yetanotherclass"" />");
+		}
+
+		[Fact]
+		public void Render_MultipleClasses_MultipleTimes()
+		{
+			var sut = new TestableFragment("input").AddClass("myclass anotherclass", "yetanotherclass");
+			sut.ToHtmlString().ShouldEqual(@"<input class=""anotherclass myclass yetanotherclass"" />");
+			sut.ToHtmlString().ShouldEqual(@"<input class=""anotherclass myclass yetanotherclass"" />");
+		}
+
+		[Fact]
 		public void AddMultipleClassUsingOneArg()
 		{
 			var element = new TestableFragment("input").AddClass("myclass anotherclass");
