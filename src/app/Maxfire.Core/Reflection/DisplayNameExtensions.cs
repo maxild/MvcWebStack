@@ -56,6 +56,10 @@ namespace Maxfire.Core.Reflection
 
 		public static string GetDisplayNameOfEnum(this object value, Type enumType)
 		{
+			if (enumType.IsGenericType && enumType.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				enumType = enumType.GetGenericArguments()[0];
+			}
 			if (!enumType.IsEnum)
 			{
 				throw new ArgumentException("The generic type argument must be an enum.");
@@ -66,6 +70,10 @@ namespace Maxfire.Core.Reflection
 		public static string GetDisplayNameOfEnum<TEnum>(this TEnum value)
 		{
 			Type enumType = typeof(TEnum);
+			if (enumType.IsGenericType && enumType.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				enumType = enumType.GetGenericArguments()[0];
+			}
 			if (!enumType.IsEnum)
 			{
 				throw new ArgumentException("The generic type argument must be an enum.");
