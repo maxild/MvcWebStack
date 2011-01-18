@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -8,7 +9,20 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		protected InputElement(string type, string name, IModelMetadataAccessor accessor)
 			: base(HtmlElement.Input, name, accessor)
 		{
-			Attr(HtmlAttribute.Type, type);
+			if (type.IsNotEmpty())
+			{
+				Attr(HtmlAttribute.Type, type);
+			}
+		}
+
+		public override string Attr(string attributeName)
+		{
+			string value = base.Attr(attributeName);
+			if (attributeName == HtmlAttribute.Type)
+			{
+				return value ?? "text";
+			}
+			return value;
 		}
 
 		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)

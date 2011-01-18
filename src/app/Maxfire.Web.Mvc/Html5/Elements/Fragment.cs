@@ -41,7 +41,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// </summary>
 		/// <param name="attributeName">The name of the attribute to get.</param>
 		/// <returns>The value of the attribute, if found, otherwise null.</returns>
-		public string Attr(string attributeName)
+		public virtual string Attr(string attributeName)
 		{
 			if (attributeName == HtmlAttribute.Class)
 			{
