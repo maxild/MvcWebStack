@@ -81,13 +81,20 @@ namespace Maxfire.Web.Mvc
 
 		private static IEnumerable<TextValuePair> GetOptionsOfType<T>()
 		{
-			if (typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
+			Type type = typeof (T);
+
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				type = type.GetGenericArguments()[0];
+			}
+
+			if (type == typeof(bool))
 			{
 				return OptionsAdapter.Boolean();
 			}
-			if (typeof(T).IsEnum)
+			if (type.IsEnum)
 			{
-				return OptionsAdapter.FromEnumTexts<T>();
+				return OptionsAdapter.FromEnumTexts(type);
 			}
 
 			return null;
