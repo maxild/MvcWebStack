@@ -34,6 +34,7 @@
     <Compile Include="IPrecompileSparkSettings.cs" />
     <Compile Include="OpinionatedListSparkView.cs" />
     <Compile Include="OpinionatedResourceSparkView.cs" />
+    <Compile Include="OpinionatedSparkHtmlHelper.cs" />
     <Compile Include="OpinionatedSparkView.cs" />
     <Compile Include="PrecompileSparkSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

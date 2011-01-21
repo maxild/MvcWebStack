@@ -20,10 +20,10 @@ namespace Maxfire.Spark.Web.Mvc
 			_nameValueSerializer = nameValueSerializer;
 		}
 
-		private OpinionatedHtmlHelper _htmlHelper;
-		public new OpinionatedHtmlHelper Html
+		private OpinionatedSparkHtmlHelper _htmlHelper;
+		public new OpinionatedSparkHtmlHelper Html
 		{
-			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper(ViewContext, this, NameValueSerializer)); }
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedSparkHtmlHelper(ViewContext, this, NameValueSerializer)); }
 		}
 
 		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
@@ -38,6 +38,7 @@ namespace Maxfire.Spark.Web.Mvc
 			return null;
 		}
 
+		// TODO: SiteRoot as defined by SparkView
 		public virtual string ApplicationPath
 		{
 			get { return ViewContext.RequestContext.HttpContext.Request.ApplicationPath; }
@@ -95,10 +96,10 @@ namespace Maxfire.Spark.Web.Mvc
 			get { return ViewData.Model; }
 		}
 
-		private OpinionatedHtmlHelper<TViewModel> _htmlHelper;
-		public new OpinionatedHtmlHelper<TViewModel> Html
+		private OpinionatedSparkHtmlHelper<TViewModel> _htmlHelper;
+		public new OpinionatedSparkHtmlHelper<TViewModel> Html
 		{
-			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
+			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedSparkHtmlHelper<TViewModel>(ViewContext, this, NameValueSerializer)); }
 		}
 
 		public IEnumerable<IBehaviorMarker> Behaviors

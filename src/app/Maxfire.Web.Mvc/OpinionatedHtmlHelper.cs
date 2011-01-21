@@ -35,10 +35,21 @@ namespace Maxfire.Web.Mvc
 		{
 			get { return _nameValueSerializer; }
 		}
+
+		public virtual string SiteRoot
+		{
+			get { return UrlHelperUtil.GetSiteRoot(ViewContext.RequestContext); }
+		}
+
+		public virtual string SiteResource(string path)
+		{
+			return UrlHelper.GenerateContentUrl(path, ViewContext.HttpContext);
+		}
 	}
 
 	// NOTE: Because we have to derive from HtmlHelper<TModel> we cannot avoid duplication of IUrlHelper impl
-	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IUrlHelper, IModelMetadataAccessor<TModel> where TModel: class
+	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IUrlHelper, IModelMetadataAccessor<TModel> 
+		where TModel: class
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
 		
@@ -61,6 +72,16 @@ namespace Maxfire.Web.Mvc
 		public INameValueSerializer NameValueSerializer
 		{
 			get { return _nameValueSerializer; }
+		}
+
+		public virtual string SiteRoot
+		{
+			get { return UrlHelperUtil.GetSiteRoot(ViewContext.RequestContext); }
+		}
+
+		public virtual string SiteResource(string path)
+		{
+			return UrlHelper.GenerateContentUrl(path, ViewContext.HttpContext);
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)

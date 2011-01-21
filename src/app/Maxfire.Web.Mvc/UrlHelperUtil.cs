@@ -18,5 +18,21 @@ namespace Maxfire.Web.Mvc
 		{
 			return requestContext.HttpContext.Request.ApplicationPath;
 		}
+
+		public static string GetSiteRoot(RequestContext requestContext)
+		{
+			var appPath = GetApplicationPath(requestContext);
+			string siteRoot;
+			// SiteRoot acts as a safe prefix to relative url
+			if (string.IsNullOrEmpty(appPath) || string.Equals(appPath, "/"))
+			{
+				siteRoot = string.Empty;
+			}
+			else
+			{
+				siteRoot = "/" + appPath.Trim('/');
+			}
+			return siteRoot;
+		}
 	}
 }

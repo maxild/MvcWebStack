@@ -21,7 +21,8 @@ Metadata
 accessor
 Util
 Nullable
-Attr</UserWords>
+Attr
+Enum</UserWords>
             </CustomDictionary>
           </Dictionaries>
         </CustomDictionaries>
