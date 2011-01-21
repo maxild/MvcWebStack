@@ -3,6 +3,7 @@ using System.Web.Mvc;
 
 namespace Maxfire.Spark.Web.Mvc
 {
+	// TODO: Skal fjernes da den benytter HtmlHelper<TModel> og ikke OpinionatedHtmlHelper<TModel>
 	public abstract class OpinionatedListSparkView<TViewModelElement> :
 		OpinionatedSparkView<IEnumerable<TViewModelElement>>
 	{

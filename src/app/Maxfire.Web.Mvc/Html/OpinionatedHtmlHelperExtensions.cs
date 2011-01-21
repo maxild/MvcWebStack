@@ -15,7 +15,7 @@ namespace Maxfire.Web.Mvc.Html
 {
 	public static class OpinionatedHtmlHelperExtensions
 	{
-		public static string DisplayNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		public static string DisplayNameFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
 			where TModel : class
 		{
 			var modelMetadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -29,7 +29,7 @@ namespace Maxfire.Web.Mvc.Html
 			return htmlHelper.LabelFor(expression, labelText, htmlAttributes);
 		}
 
-		public static MvcHtmlString LabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
+		public static MvcHtmlString LabelFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TValue>> expression, string labelText, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			return String.IsNullOrEmpty(labelText) ?
@@ -37,7 +37,7 @@ namespace Maxfire.Web.Mvc.Html
 				MvcHtmlString.Create(LabelHelper(expression.GetHtmlFieldIdFor(htmlHelper), labelText, htmlAttributes));
 		}
 
-		public static MvcHtmlString LegendFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper,
+		public static MvcHtmlString LegendFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TValue>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			string labelText = htmlHelper.DisplayNameFor(expression);
@@ -47,13 +47,13 @@ namespace Maxfire.Web.Mvc.Html
 				MvcHtmlString.Create(LegendHelper(labelText, htmlAttributes));
 		}
 
-		public static MvcHtmlString DateBoxFor<TModel>(this HtmlHelper<TModel> htmlHelper,
+		public static MvcHtmlString DateBoxFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 				Expression<Func<TModel, DateTime>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			return htmlHelper.TextBoxHelper(expression, date => date.ToShortDateString(), htmlAttributes);
 		}
 
-		public static MvcHtmlString DateBoxFor<TModel>(this HtmlHelper<TModel> htmlHelper,
+		public static MvcHtmlString DateBoxFor<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 				Expression<Func<TModel, DateTime?>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			return htmlHelper.TextBoxHelper(expression, date => date.HasValue ? date.Value.ToShortDateString() : string.Empty, htmlAttributes);
@@ -175,7 +175,7 @@ namespace Maxfire.Web.Mvc.Html
 			return MvcHtmlString.Create(SelectHelper(htmlHelper, name, sanitizedId, options, optionLabel, modelValue, htmlAttributes));
 		}
 
-		private static string SelectHelper<TModel>(this HtmlHelper<TModel> htmlHelper, 
+		private static string SelectHelper<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			string name, string id, IEnumerable<TextValuePair> options, 
 			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
@@ -227,7 +227,7 @@ namespace Maxfire.Web.Mvc.Html
 			return nameValueSerializer;
 		}
 
-		private static MvcHtmlString TextBoxHelper<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
+		private static MvcHtmlString TextBoxHelper<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TProperty>> expression, Func<TProperty, string> valueSelector, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
 			object modelValue = htmlHelper.GetModelValueFor(expression);
@@ -279,7 +279,7 @@ namespace Maxfire.Web.Mvc.Html
 			return htmlAttributes;
 		}
 
-		private static object GetModelValueFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
+		private static object GetModelValueFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
 		{
 			// BUG: Here INameValueSerializer should be used to convert model ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model to string/object
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);

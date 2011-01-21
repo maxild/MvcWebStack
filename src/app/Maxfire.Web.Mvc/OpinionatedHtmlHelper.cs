@@ -47,41 +47,20 @@ namespace Maxfire.Web.Mvc
 		}
 	}
 
-	// NOTE: Because we have to derive from HtmlHelper<TModel> we cannot avoid duplication of IUrlHelper impl
-	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IUrlHelper, IModelMetadataAccessor<TModel> 
+	public class OpinionatedHtmlHelper<TModel> : OpinionatedHtmlHelper, IModelMetadataAccessor<TModel> 
 		where TModel: class
 	{
-		private readonly INameValueSerializer _nameValueSerializer;
-		
+		private readonly ViewDataDictionary<TModel> _viewData;
+
 		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) 
-			: base(viewContext, viewDataContainer)
+			: base(viewContext, viewDataContainer, nameValueSerializer)
 		{
-			_nameValueSerializer = nameValueSerializer;
+			_viewData = new ViewDataDictionary<TModel>(viewDataContainer.ViewData);
 		}
 
-		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		public new ViewDataDictionary<TModel> ViewData
 		{
-			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
-		}
-
-		string IUrlHelper.ApplicationPath
-		{
-			get { return UrlHelperUtil.GetApplicationPath(ViewContext.RequestContext); }
-		}
-
-		public INameValueSerializer NameValueSerializer
-		{
-			get { return _nameValueSerializer; }
-		}
-
-		public virtual string SiteRoot
-		{
-			get { return UrlHelperUtil.GetSiteRoot(ViewContext.RequestContext); }
-		}
-
-		public virtual string SiteResource(string path)
-		{
-			return UrlHelper.GenerateContentUrl(path, ViewContext.HttpContext);
+			get { return _viewData; }
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)
