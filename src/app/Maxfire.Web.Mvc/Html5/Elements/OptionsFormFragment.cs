@@ -16,8 +16,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		private IEnumerable<SelectListItem> _options;
 		private IEnumerable _selectedValues;
 		
-		protected OptionsFormFragment(string tagName, string name, IModelMetadataAccessor accessor)
-			: base(tagName, name, accessor)
+		protected OptionsFormFragment(string elementName, string name, IModelMetadataAccessor accessor)
+			: base(elementName, name, accessor)
 		{
 		}
 

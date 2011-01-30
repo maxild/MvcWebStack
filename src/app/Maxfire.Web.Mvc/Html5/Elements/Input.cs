@@ -20,6 +20,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			string value = base.Attr(attributeName);
 			if (attributeName == HtmlAttribute.Type)
 			{
+				// Even though type attribute is not rendered we fallback to 'text' as this is the default.
 				return value ?? "text";
 			}
 			return value;

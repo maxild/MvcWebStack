@@ -7,17 +7,18 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 	{
 		public static ElementVerifier VerifyThatElement(this IHtmlString fragment)
 		{
-			return new ElementVerifier(fragment.ToXmlDoc());
+			string xhtml = fragment.ToHtmlString();
+			return new ElementVerifier(xhtml, xhtml.ToXmlDoc());
 		}
 
 		public static ElementListVerifier VerifyThatElementList(this IHtmlString fragment)
 		{
-			return new ElementListVerifier(fragment.ToXmlDoc(true));
+			string xhtml = fragment.ToHtmlString();
+			return new ElementListVerifier(xhtml, xhtml.ToXmlDoc(true));
 		}
 
-		private static XmlDocument ToXmlDoc(this IHtmlString fragment, bool wrap = false)
+		private static XmlDocument ToXmlDoc(this string xhtml, bool wrap = false)
 		{
-			string xhtml = fragment.ToHtmlString();
 			if (wrap)
 			{
 				xhtml = string.Concat("<wrap>", xhtml, "</wrap>");

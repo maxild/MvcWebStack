@@ -8,7 +8,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 		private readonly XmlElement _rootElement;
 		private XmlElement _currentElement;
 		
-		public ElementVerifier(XmlDocument document)
+		public ElementVerifier(string xhtml, XmlDocument document) : base(xhtml)
 		{
 			if (document == null || document.DocumentElement == null)
 			{

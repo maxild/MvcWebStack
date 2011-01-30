@@ -65,6 +65,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="value">A value to set for the attribute.</param>
 		public T Attr(string attributeName, object value)
 		{
+			// TODO: Skal dette være CurrentCulture?
 			string valueAsString = value.ToNullSafeString(CultureInfo.CurrentCulture);
 			if (attributeName == HtmlAttribute.Class)
 			{
@@ -145,7 +146,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="attributeName">The name of the attribute to search for.</param>
 		public bool HasAttr(string attributeName)
 		{
-			return _tagBuilder.Attributes.ContainsKey(attributeName);
+			return attributeName == HtmlAttribute.Class ? HasClass() : _tagBuilder.Attributes.ContainsKey(attributeName);
 		}
 
 		/// <summary>
@@ -246,13 +247,17 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		}
 
 		/// <summary>
-		/// Determine whether this/each element is assigned the given class.
+		/// Determine whether this/each element is assigned any, one or more class names.
 		/// </summary>
-		/// <param name="className">The class name to search for.</param>
-		/// <returns>True, if this/each element is/are assigned the given class, otherwise false.</returns>
-		public bool HasClass(string className = null)
+		/// <param name="className">The class name(s) to search for.</param>
+		/// <returns>True, if this/each element is/are assigned the given class names, otherwise false.</returns>
+		public bool HasClass(params string[] className)
 		{
-			return className == null ? _classNames.Count > 0 : _classNames.Contains(className);
+			if (className == null || className.Length == 0)
+			{
+				return _classNames.Count > 0;
+			}
+			return className.SelectMany(splitClassName).All(_classNames.Contains);
 		}
 
 		/// <summary>

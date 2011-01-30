@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 	{
 		public class TestableFragment : Fragment<TestableFragment>
 		{
-			public TestableFragment(string tagName) : base(tagName)
+			public TestableFragment(string elementName) : base(elementName)
 			{
 			}
 		}
@@ -158,6 +158,14 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 			new TestableFragment("input").AddClass("someclass").ToggleClass("someclass", false).HasClass("someclass").ShouldBeFalse();
 			new TestableFragment("input").ToggleClass("someclass", true).HasClass("someclass").ShouldBeTrue();
 			new TestableFragment("input").ToggleClass("someclass", false).HasClass("someclass").ShouldBeFalse();
+		}
+
+		[Fact]
+		public void Attr_MergeClassNames()
+		{
+			var element = new TestableFragment("input").AddClass("someclass").Attr(new {@class = "anotherclass someclass xfiles"});
+			element.HasClass("anotherclass xfiles someclass").ShouldBeTrue();
+			element.HasAttr("class").ShouldBeTrue();
 		}
 	}
 }

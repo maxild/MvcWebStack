@@ -9,7 +9,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 		private readonly XmlNodeList _nodeList;
 		private XmlElement _currentElement;
 		
-		public ElementListVerifier(XmlDocument document)
+		public ElementListVerifier(string xhtml, XmlDocument document) : base(xhtml)
 		{
 			if (document == null || document.DocumentElement == null)
 			{

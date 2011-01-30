@@ -15,7 +15,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
 		private readonly IModelMetadataAccessor _accessor;
 
-		protected FormFragment(string tagName, string name, IModelMetadataAccessor accessor) : base(tagName)
+		protected FormFragment(string elementName, string name, IModelMetadataAccessor accessor) : base(elementName)
 		{
 			if (string.IsNullOrEmpty(name))
 			{
@@ -24,11 +24,13 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			// TODO: Can accessor be null?
 			_accessor = accessor;
 			Attr(HtmlAttribute.Name, name);
+			Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
 		}
 
 		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
 
-		protected virtual void ApplyModelState()
+		// TODO: Maybe virtual?
+		protected void ApplyModelState()
 		{
 			var name = Attr(HtmlAttribute.Name);
 			if (name == null || _accessor == null)
@@ -39,6 +41,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			ModelState modelState = _accessor.GetModelState(name);
 			if (modelState != null)
 			{
+				// TODO: ApplyModelStateErrors
 				if (modelState.IsInvalid())
 				{
 					AddClass(DEFAULT_VALIDATION_CSS_CLASS);
@@ -63,7 +66,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override string ToTagString()
 		{
-			InferIdFromName();
+			//InferIdFromName();
 			ApplyModelState();
 			return base.ToTagString();
 		}

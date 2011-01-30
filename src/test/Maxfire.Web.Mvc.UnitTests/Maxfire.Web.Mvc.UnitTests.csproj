@@ -40,6 +40,7 @@
     <Compile Include="Html5\AssertionExtensions\ElementVerifier.cs" />
     <Compile Include="Html5\AssertionExtensions\ElementListVerifier.cs" />
     <Compile Include="Html5\AssertionExtensions\HtmlStringAssertionExtensions.cs" />
+    <Compile Include="Html5\FormFragmentTester.cs" />
     <Compile Include="Html5\RadioButtonListTester.cs" />
     <Compile Include="Html5\FragmentTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

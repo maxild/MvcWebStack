@@ -7,6 +7,13 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 {
 	public abstract class FragmentVerifier<T> where T : FragmentVerifier<T>
 	{
+		private readonly string _xhtml;
+
+		protected FragmentVerifier(string xhtml)
+		{
+			_xhtml = xhtml;
+		}
+
 		protected T self { get { return (T) this; }}
 
 		public T HasName(string expectedTagName)
@@ -39,5 +46,10 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 		}
 
 		protected abstract XmlElement CurrentElement { get; }
+
+		public override string ToString()
+		{
+			return _xhtml;
+		}
 	}
 }
