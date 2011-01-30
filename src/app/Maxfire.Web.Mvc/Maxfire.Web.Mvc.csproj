@@ -131,6 +131,7 @@
     <Compile Include="Html5\IModelMetadataAccessor.cs" />
     <Compile Include="Html5\IModelNameResolver.cs" />
     <Compile Include="Html5\IModelStateAccessor.cs" />
+    <Compile Include="HtmlHelperExtensions.cs" />
     <Compile Include="Html\Html401IdUtil.cs" />
     <Compile Include="Html\Extensions\HtmlFieldNameExtensions.cs" />
     <Compile Include="Html\OpinionatedHtmlHelperExtensions.cs" />

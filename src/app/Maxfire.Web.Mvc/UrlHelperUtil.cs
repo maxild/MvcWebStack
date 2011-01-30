@@ -23,7 +23,7 @@ namespace Maxfire.Web.Mvc
 		{
 			var appPath = GetApplicationPath(requestContext);
 			string siteRoot;
-			// SiteRoot acts as a safe prefix to relative url
+			// SiteRoot acts as a safe prefix to a relative/virtual path
 			if (string.IsNullOrEmpty(appPath) || string.Equals(appPath, "/"))
 			{
 				siteRoot = string.Empty;

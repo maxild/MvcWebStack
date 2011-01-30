@@ -338,13 +338,13 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public void ShouldGenerateUriPathOf(string path)
 			{
-				string uriPath = generateUrl(_routes, null, _values);
+				string uriPath = generateUrl(_routes, _values);
 				assertStringsEquivalent(path, uriPath);
 			}
 
 			public string GenerateUriPathOf()
 			{
-				string uriPath = generateUrl(_routes, null, _values);
+				string uriPath = generateUrl(_routes, _values);
 				return uriPath;
 			}
 
@@ -354,14 +354,10 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			}
 
 			// Todo: Could use a mocked IUrlHelper instead
-			// Note: We do not use the routeName argument yet (it enables to use a specific route to generate the url)
-			private static string generateUrl(RouteCollection routes, string routeName, RouteValueDictionary values)
+			private static string generateUrl(RouteCollection routes, RouteValueDictionary values)
 			{
 				var requestContext = RouteUtil.GetRequestContext();
-
-				VirtualPathData vpd = routes.GetVirtualPath(requestContext, routeName, values);
-
-				return (vpd != null) ? vpd.VirtualPath : null;
+				return UrlHelperUtil.GetVirtualPath(routes, requestContext, values);
 			}
 		}
 	}

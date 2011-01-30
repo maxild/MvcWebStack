@@ -7,7 +7,7 @@ namespace Maxfire.Spark.Web.Mvc
 	{
 		private readonly OpinionatedSparkView _view;
 
-		public OpinionatedSparkHtmlHelper(ViewContext viewContext, OpinionatedSparkView view, INameValueSerializer nameValueSerializer) 
+		public OpinionatedSparkHtmlHelper(ViewContext viewContext, OpinionatedSparkView view, INameValueSerializer nameValueSerializer)
 			: base(viewContext, view, nameValueSerializer)
 		{
 			_view = view;
@@ -27,7 +27,7 @@ namespace Maxfire.Spark.Web.Mvc
 	public class OpinionatedSparkHtmlHelper<TViewModel> : OpinionatedHtmlHelper<TViewModel>
 		where TViewModel : class
 	{
-		private readonly OpinionatedSparkView _view;
+		private readonly OpinionatedSparkView<TViewModel> _view;
 
 		public OpinionatedSparkHtmlHelper(ViewContext viewContext, OpinionatedSparkView<TViewModel> view, INameValueSerializer nameValueSerializer)
 			: base(viewContext, view, nameValueSerializer)

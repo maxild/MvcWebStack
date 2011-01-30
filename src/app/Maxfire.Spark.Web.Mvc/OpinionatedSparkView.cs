@@ -26,22 +26,9 @@ namespace Maxfire.Spark.Web.Mvc
 			get { return _htmlHelper ?? (_htmlHelper = new OpinionatedSparkHtmlHelper(ViewContext, this, NameValueSerializer)); }
 		}
 
-		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		public string GetVirtualPath(RouteValueDictionary routeValues)
 		{
-			VirtualPathData vpd = RouteTable.Routes.GetVirtualPath(ViewContext.RequestContext, routeValues);
-
-			if (vpd != null)
-			{
-				return vpd.VirtualPath;
-			}
-
-			return null;
-		}
-
-		// TODO: SiteRoot as defined by SparkView
-		public virtual string ApplicationPath
-		{
-			get { return ViewContext.RequestContext.HttpContext.Request.ApplicationPath; }
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
 		}
 
 		public INameValueSerializer NameValueSerializer

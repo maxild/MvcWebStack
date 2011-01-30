@@ -68,14 +68,19 @@ namespace Maxfire.Web.Mvc
 			(this as ITempDataContainer).TempData["flash-notice"] = string.Format(message, args);
 		}
 
-		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		public virtual string SiteRoot
 		{
-			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ControllerContext.RequestContext, routeValues);
+			get { return UrlHelperUtil.GetSiteRoot(ControllerContext.RequestContext); }
 		}
 
-		string IUrlHelper.ApplicationPath
+		public virtual string SiteResource(string path)
 		{
-			get { return UrlHelperUtil.GetApplicationPath(ControllerContext.RequestContext); }
+			return UrlHelper.GenerateContentUrl(path, ControllerContext.HttpContext);
+		}
+
+		public string GetVirtualPath(RouteValueDictionary routeValues)
+		{
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ControllerContext.RequestContext, routeValues);
 		}
 
 		public INameValueSerializer NameValueSerializer

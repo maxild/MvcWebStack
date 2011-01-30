@@ -14,26 +14,16 @@ namespace Maxfire.Web.Mvc
 	public class OpinionatedHtmlHelper : HtmlHelper, IUrlHelper
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
-		
-		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) 
+
+		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer)
 			: base(viewContext, viewDataContainer)
 		{
 			_nameValueSerializer = nameValueSerializer;
 		}
 
-		string IUrlHelper.GetVirtualPath(RouteValueDictionary routeValues)
+		public string GetVirtualPath(RouteValueDictionary routeValues)
 		{
 			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
-		}
-
-		string IUrlHelper.ApplicationPath
-		{
-			get { return UrlHelperUtil.GetApplicationPath(ViewContext.RequestContext); }
-		}
-
-		public INameValueSerializer NameValueSerializer
-		{
-			get { return _nameValueSerializer; }
 		}
 
 		public virtual string SiteRoot
@@ -45,22 +35,44 @@ namespace Maxfire.Web.Mvc
 		{
 			return UrlHelper.GenerateContentUrl(path, ViewContext.HttpContext);
 		}
+
+		public INameValueSerializer NameValueSerializer
+		{
+			get { return _nameValueSerializer; }
+		}
 	}
 
-	public class OpinionatedHtmlHelper<TModel> : OpinionatedHtmlHelper, IModelMetadataAccessor<TModel> 
+	// Note : OpinionatedHtmlHelper<TModel> has to derive from HtmlHelper<T> (This is Liskov's substitution 
+	// principle and enables us to use Html.ValidationMessage and other System-defined view helpers).
+	public class OpinionatedHtmlHelper<TModel> : HtmlHelper<TModel>, IModelMetadataAccessor<TModel>, IUrlHelper
 		where TModel: class
 	{
-		private readonly ViewDataDictionary<TModel> _viewData;
-
+		private readonly INameValueSerializer _nameValueSerializer;
+		
 		public OpinionatedHtmlHelper(ViewContext viewContext, IViewDataContainer viewDataContainer, INameValueSerializer nameValueSerializer) 
-			: base(viewContext, viewDataContainer, nameValueSerializer)
+			: base(viewContext, viewDataContainer)
 		{
-			_viewData = new ViewDataDictionary<TModel>(viewDataContainer.ViewData);
+			_nameValueSerializer = nameValueSerializer;
 		}
 
-		public new ViewDataDictionary<TModel> ViewData
+		public string GetVirtualPath(RouteValueDictionary routeValues)
 		{
-			get { return _viewData; }
+			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
+		}
+
+		public virtual string SiteRoot
+		{
+			get { return UrlHelperUtil.GetSiteRoot(ViewContext.RequestContext); }
+		}
+
+		public virtual string SiteResource(string path)
+		{
+			return UrlHelper.GenerateContentUrl(path, ViewContext.HttpContext);
+		}
+
+		public INameValueSerializer NameValueSerializer
+		{
+			get { return _nameValueSerializer; }
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)
@@ -203,5 +215,6 @@ namespace Maxfire.Web.Mvc
 		}
 
 		#endregion
+
 	}
 }
