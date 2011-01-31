@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -11,7 +12,12 @@ namespace Maxfire.Web.Mvc
 	{
 		public static bool IsInvalid(this ModelStateDictionary modelStateDictionary)
 		{
-			return !modelStateDictionary.IsValid;
+			return modelStateDictionary.IsValid == false;
+		}
+
+		public static bool IsInvalid(this ModelStateDictionary modelStateDictionary, Func<string, bool> includeField)
+		{
+			return modelStateDictionary.Any(kvp => includeField(kvp.Key) && kvp.Value.Errors.Count > 0);
 		}
 
 		public static void AddValidationErrors(this ModelStateDictionary state, IDictionary<string, string[]> validationErrors)
