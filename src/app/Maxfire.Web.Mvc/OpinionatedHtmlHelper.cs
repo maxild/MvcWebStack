@@ -151,6 +151,16 @@ namespace Maxfire.Web.Mvc
 			return key;
 		}
 
+		string IModelMetadataAccessor.GetFullHtmlFieldName(string modelName)
+		{
+			return GetFullHtmlFieldName(modelName);
+		}
+
+		protected virtual string GetFullHtmlFieldName(string modelName)
+		{
+			return ViewData.TemplateInfo.GetFullHtmlFieldName(modelName);
+		}
+
 		object IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
 		{
 			return GetAttemptedModelValue(modelName);

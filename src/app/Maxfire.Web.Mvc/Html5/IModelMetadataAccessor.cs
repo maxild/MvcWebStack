@@ -7,6 +7,17 @@ namespace Maxfire.Web.Mvc.Html5
 	public interface IModelMetadataAccessor : IModelStateAccessor
 	{
 		/// <summary>
+		/// Get the full html field name (model name prefixed with <c>TemplateInfo.HtmlFieldPrefix</c>) 
+		/// of the root Model or descendant properties in the model object graph.
+		/// </summary>
+		/// <param name="modelName">The model name.</param>
+		/// <returns>
+		/// The full html field name of the requested model. It returns the value of 
+		/// <c>TemplateInfo.HtmlFieldPrefix</c> for the root Model (i.e. GetFullHtmlFieldNameFor(m=&gt; m))
+		/// </returns>
+		string GetFullHtmlFieldName(string modelName);
+
+		/// <summary>
 		/// Get the string-based value that the model binding system would resolve (or bind)
 		/// to the current model value.
 		/// </summary>
