@@ -20,6 +20,13 @@ namespace Maxfire.Web.Mvc
 			return modelStateDictionary.Any(kvp => includeField(kvp.Key) && kvp.Value.Errors.Count > 0);
 		}
 
+		public static void RemoveValidationErrors(this ModelStateDictionary modelState, Func<string, bool> includeField)
+		{
+			modelState.Keys
+				.Where(includeField)
+				.Each(field => modelState[field].Errors.Clear());
+		}
+
 		public static void AddValidationErrors(this ModelStateDictionary state, IDictionary<string, string[]> validationErrors)
 		{
 			state.AddValidationErrors(validationErrors, string.Empty);
