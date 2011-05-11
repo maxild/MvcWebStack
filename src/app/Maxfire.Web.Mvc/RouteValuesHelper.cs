@@ -79,6 +79,13 @@ namespace Maxfire.Web.Mvc
 						Func<object> func = lambdaExpression.Compile();
 						value = func();
 					}
+
+					// Simple argumenter uden prefix bliver navngivet ved navnet på parameteren
+					if (value.GetType().IsSimpleType() && prefix.IsEmpty())
+					{
+						prefix = parameters[i].Name;
+					}
+
 					var values = nameValueSerializer.GetValues(value, prefix);
 					routeValues.Merge(values);
 				}
