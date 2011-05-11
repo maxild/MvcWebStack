@@ -45,12 +45,12 @@ namespace Maxfire.Web.Mvc
 			return FromEnumHelper(enumType, item => item.ToString());
 		}
 
-		public static IEnumerable<TextValuePair> FromEnumTexts<TEnum>()
+		public static IEnumerable<TextValuePair> FromEnumTexts<TEnum>(Func<TEnum, bool> predicate = null)
 		{
-			return FromEnumHelper<TEnum>(item => item.ToString());
+			return FromEnumHelper<TEnum>(item => item.ToString(), predicate);
 		}
 
-		private static IEnumerable<TextValuePair> FromEnumHelper<TEnum>(Func<TEnum, string> valueSelector)
+		private static IEnumerable<TextValuePair> FromEnumHelper<TEnum>(Func<TEnum, string> valueSelector, Func<TEnum, bool> predicate = null)
 		{
 			var enumType = typeof (TEnum);
 			if (!enumType.IsEnum)
@@ -58,7 +58,7 @@ namespace Maxfire.Web.Mvc
 				throw new ArgumentException("The generic type argument must be an enum.");
 			}
 			var values = Enum.GetValues(enumType).Cast<TEnum>();
-			return new OptionsAdapter<TEnum>(values, item => item.GetDisplayNameOfEnum(), valueSelector);
+			return new OptionsAdapter<TEnum>(values, item => item.GetDisplayNameOfEnum(), valueSelector, predicate);
 		}
 
 		private static IEnumerable<TextValuePair> FromEnumHelper(Type enumType, Func<object, string> valueSelector)
@@ -149,14 +149,16 @@ namespace Maxfire.Web.Mvc
 		private readonly IEnumerable<TItem> _items;
 		private readonly Func<TItem, string> _textSelector;
 		private readonly Func<TItem, string> _valueSelector;
+		private readonly Func<TItem, bool> _predicate;
 
-		public OptionsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
+		public OptionsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<TItem, bool> predicate = null)
 		{
 			if (textSelector == null) throw new ArgumentNullException("textSelector");
 			if (valueSelector == null) throw new ArgumentNullException("valueSelector");
 			_items = items;
 			_textSelector = textSelector;
 			_valueSelector = valueSelector;
+			_predicate = predicate;
 		}
 
 		public IEnumerator<TextValuePair> GetEnumerator()
@@ -170,7 +172,12 @@ namespace Maxfire.Web.Mvc
 			{
 				return Enumerable.Empty<TextValuePair>();
 			}
-			var textValuePairs = from item in _items select new TextValuePair(_textSelector(item), _valueSelector(item));
+			IEnumerable<TextValuePair> textValuePairs = _predicate != null ? 
+				_items
+					.Where(_predicate)
+					.Select(item => new TextValuePair(_textSelector(item), _valueSelector(item))) :
+				_items
+					.Select(item => new TextValuePair(_textSelector(item), _valueSelector(item)));
 			return textValuePairs;
 		}
 
