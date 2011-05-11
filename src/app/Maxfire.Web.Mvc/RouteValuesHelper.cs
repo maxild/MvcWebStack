@@ -80,6 +80,11 @@ namespace Maxfire.Web.Mvc
 						value = func();
 					}
 
+					if (value == null)
+					{
+						continue;
+					}
+
 					// Simple argumenter uden prefix bliver navngivet ved navnet på parameteren
 					if (value.GetType().IsSimpleType() && prefix.IsEmpty())
 					{
