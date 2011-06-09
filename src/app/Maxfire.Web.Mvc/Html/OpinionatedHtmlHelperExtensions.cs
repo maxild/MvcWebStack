@@ -162,7 +162,7 @@ namespace Maxfire.Web.Mvc.Html
 		//   Any SelectListItem in the list of options that has the Selected property set to true 
 		//   does not have any bearing over the <option> element rendered with the selected attribute 
 		//   applied for the item. 
-		public static MvcHtmlString SelectFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
+		public static MvcHtmlString DropDownListFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			Expression<Func<TModel, TProperty>> expression, IEnumerable<TextValuePair> options, 
 			string optionLabel, IDictionary<string, object> htmlAttributes) where TModel : class
 		{

@@ -7,7 +7,7 @@ namespace Maxfire.Web.Mvc.Html5
 		/// <summary>
 		/// Try get the model state associated with this model.
 		/// </summary>
-		/// <param name="modelName">The named part of the model graph</param>
+		/// <param name="modelName">The fully qualified model name (see HtmlFieldPrefix).</param>
 		/// <returns>The model state associated with the named part of the model graph, 
 		/// or null if no model state have been set for this named part of the model graph.</returns>
 		/// <remarks>

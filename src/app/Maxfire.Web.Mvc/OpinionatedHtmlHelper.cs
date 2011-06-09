@@ -77,12 +77,12 @@ namespace Maxfire.Web.Mvc
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)
 		{
-			return OptionsWrapper.GetData(key);
+			return OptionsWrapper.GetData(key) ?? GetDefaultOptions(key);
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptionsFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
-			return OptionsWrapper.GetDataFor(expression) ?? GetOptionsOfType<TValue>();
+			return OptionsWrapper.GetDataFor(expression) ?? GetDefaultOptions<TValue>();
 		}
 
 		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
@@ -91,9 +91,19 @@ namespace Maxfire.Web.Mvc
 			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<TextValuePair>>(ViewData)); }
 		}
 
-		private static IEnumerable<TextValuePair> GetOptionsOfType<T>()
+		private IEnumerable<TextValuePair> GetDefaultOptions(string key)
 		{
-			Type type = typeof (T);
+			ModelMetadata modelMetadata = _cachedModelMetadataHash.GetValueOrDefault(key);
+			Type type = modelMetadata != null ? modelMetadata.ModelType : null;
+			return GetDefaultOptions(type);
+		}
+
+		private static IEnumerable<TextValuePair> GetDefaultOptions(Type type)
+		{
+			if (type == null)
+			{
+				return null;
+			}
 
 			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
 			{
@@ -110,6 +120,11 @@ namespace Maxfire.Web.Mvc
 			}
 
 			return null;
+		}
+
+		private static IEnumerable<TextValuePair> GetDefaultOptions<T>()
+		{
+			return GetDefaultOptions(typeof (T));
 		}
 
 		public virtual string GetLabelTextFor<TValue>(Expression<Func<TModel, TValue>> expression)
@@ -146,19 +161,10 @@ namespace Maxfire.Web.Mvc
 
 		protected virtual string GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
-			string key = ExpressionHelper.GetExpressionText(expression);
-			TryAdd(key, () => ModelMetadata.FromLambdaExpression(expression, ViewData));
-			return key;
-		}
-
-		string IModelMetadataAccessor.GetFullHtmlFieldName(string modelName)
-		{
-			return GetFullHtmlFieldName(modelName);
-		}
-
-		protected virtual string GetFullHtmlFieldName(string modelName)
-		{
-			return ViewData.TemplateInfo.GetFullHtmlFieldName(modelName);
+			string modelName = ExpressionHelper.GetExpressionText(expression);
+			string fullHtmlFieldName = ViewData.TemplateInfo.GetFullHtmlFieldName(modelName);
+			TryAdd(fullHtmlFieldName, () => ModelMetadata.FromLambdaExpression(expression, ViewData));
+			return fullHtmlFieldName;
 		}
 
 		object IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
@@ -187,7 +193,7 @@ namespace Maxfire.Web.Mvc
 			{
 				throw new ArgumentNullException("modelName");
 			}
-			if (!_cachedModelValues.ContainsKey(modelName))
+			if (!_cachedModelMetadataHash.ContainsKey(modelName))
 			{
 				if (string.IsNullOrEmpty(modelName))
 				{
@@ -199,12 +205,12 @@ namespace Maxfire.Web.Mvc
 					"The modelName does not exist in the cache. Did you remember to call GetModelNameFor(m => m.{0}) to populate the cache."
 						.FormatWith(modelName));
 			}
-			return _cachedModelValues[modelName];
+			return _cachedModelMetadataHash[modelName];
 		}
 
 		IEnumerable<TextValuePair> IModelMetadataAccessor.GetOptions(string modelName)
 		{
-			return OptionsWrapper.GetData(modelName);
+			return GetOptions(modelName);
 		}
 
 		string IModelMetadataAccessor.GetLabelText(string modelName)
@@ -212,14 +218,14 @@ namespace Maxfire.Web.Mvc
 			return LabelTextWrapper.GetData(modelName);
 		}
 
-		private readonly Dictionary<string, ModelMetadata> _cachedModelValues = new Dictionary<string, ModelMetadata>(StringComparer.Ordinal);
+		private readonly Dictionary<string, ModelMetadata> _cachedModelMetadataHash = new Dictionary<string, ModelMetadata>(StringComparer.Ordinal);
 		private void TryAdd(string key, Func<ModelMetadata> factory)
 		{
 			ModelMetadata item;
-			if (!_cachedModelValues.TryGetValue(key, out item))
+			if (!_cachedModelMetadataHash.TryGetValue(key, out item))
 			{
 				item = factory();
-				_cachedModelValues.Add(key, item);
+				_cachedModelMetadataHash.Add(key, item);
 			}
 			return;
 		}

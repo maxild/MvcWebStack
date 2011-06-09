@@ -66,6 +66,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override string ToTagString()
 		{
+			// Id is inferred in ctor and therefore commented out below
 			//InferIdFromName();
 			ApplyModelState();
 			return base.ToTagString();
