@@ -39,7 +39,7 @@
     <Compile Include="AssertExtensions\ModelStateAssertExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routes\RoutesFixture.cs" />
-    <Compile Include="Routes\RoutesFixtureBase.cs" />
+    <Compile Include="Routes\RoutesRegisteredBy.cs" />
     <Compile Include="Routes\RoutesTesterBase.cs" />
     <Compile Include="Routes\RouteUtil.cs" />
   </ItemGroup>

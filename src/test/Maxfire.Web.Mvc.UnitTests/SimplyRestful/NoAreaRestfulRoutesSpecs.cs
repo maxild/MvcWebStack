@@ -12,13 +12,8 @@ namespace Maxfire.Web.Mvc.UnitTests.SimplyRestful
 			SimplyRestfulRouteHandler.BuildRoutes(routes);
 		}
 
-		public class UrlGeneration : RoutesFixtureBase, IUseFixture<NoAreaRestfulRoutesSpecs>
+		public class UrlGeneration : RoutesRegisteredBy<NoAreaRestfulRoutesSpecs>
 		{
-			public void SetFixture(NoAreaRestfulRoutesSpecs fixture)
-			{
-				Fixture = fixture;
-			}
-
 			[Fact]
 			public void Index()
 			{
@@ -76,13 +71,8 @@ namespace Maxfire.Web.Mvc.UnitTests.SimplyRestful
 			}
 		}
 
-		public class UrlRecognition : RoutesFixtureBase, IUseFixture<NoAreaRestfulRoutesSpecs>
+		public class UrlRecognition : RoutesRegisteredBy<NoAreaRestfulRoutesSpecs>
 		{
-			public void SetFixture(NoAreaRestfulRoutesSpecs fixture)
-			{
-				Fixture = fixture;
-			}
-
 			[Fact]
 			public void Index()
 			{

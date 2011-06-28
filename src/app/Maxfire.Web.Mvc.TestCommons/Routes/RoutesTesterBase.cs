@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.SessionState;
 using Maxfire.Core.Extensions;
 using Xunit;
 using Xunit.Sdk;
@@ -14,9 +15,10 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 {
 	// Todo: If a FakeRoutingContextContainer is injected everything works. Then both routes and mocked httpcontext is contained in this instance
 	// Todo: Should be done by a fixture, because this is the context. This way duplicate setting up the routes are removed
-	public abstract class RoutesTesterBase
+	public abstract class RoutesTesterBase : IDisposable
 	{
 		private readonly INameValueSerializer _nameValueSerializer;
+		private readonly IControllerFactory _controllerFactory;
 
 		protected RoutesTesterBase() : this(new DefaultNameValueSerializer())
 		{
@@ -25,6 +27,19 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		protected RoutesTesterBase(INameValueSerializer nameValueSerializer)
 		{
 			_nameValueSerializer = nameValueSerializer;
+			
+			// Because when testing Url recognition we have a call to IRouteHandler.GetHttpHandler,
+			// and the standard MvcRouteHandler will call IControllerFactory.GetControllerSessionBehavior
+			// that will use the 'ASP.NET pipeline' based BuildManager. This will throw during testinf, and
+			// therefore we use a fake controller factory.
+			
+			_controllerFactory = ControllerBuilder.Current.GetControllerFactory();
+			ControllerBuilder.Current.SetControllerFactory(new FakeControllerFactory());
+		}
+
+		void IDisposable.Dispose()
+		{
+			ControllerBuilder.Current.SetControllerFactory(_controllerFactory);
 		}
 
 		public INameValueSerializer NameValueSerializer
@@ -46,6 +61,23 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		}
 
 		protected abstract void RegisterRoutes(RouteCollection routes);
+
+		class FakeControllerFactory : IControllerFactory
+		{
+			public IController CreateController(RequestContext requestContext, string controllerName)
+			{
+				return null;
+			}
+
+			public SessionStateBehavior GetControllerSessionBehavior(RequestContext requestContext, string controllerName)
+			{
+				return SessionStateBehavior.Default;
+			}
+
+			public void ReleaseController(IController controller)
+			{
+			}
+		}
 
 		// Todo: This method should get a better name
 		protected void CheckRequestForRestResource(string controllerPath, string controller)

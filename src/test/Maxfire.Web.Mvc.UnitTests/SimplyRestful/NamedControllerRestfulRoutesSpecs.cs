@@ -1,4 +1,6 @@
+using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.SessionState;
 using Maxfire.Web.Mvc.SimplyRestful;
 using Maxfire.Web.Mvc.TestCommons.Routes;
 using Xunit;
@@ -12,13 +14,9 @@ namespace Maxfire.Web.Mvc.UnitTests.SimplyRestful
 			SimplyRestfulRouteHandler.BuildRoutes(routes, "prices", SimplyRestfulRouteHandler.MatchPositiveInteger, "Priser");
 		}
 
-		public class UrlGeneration : RoutesFixtureBase, IUseFixture<NamedControllerRestfulRoutesSpecs>
+		
+		public class UrlGeneration : RoutesRegisteredBy<NamedControllerRestfulRoutesSpecs>
 		{
-			public void SetFixture(NamedControllerRestfulRoutesSpecs fixture)
-			{
-				Fixture = fixture;
-			}
-
 			[Fact]
 			public void Index()
 			{
@@ -76,13 +74,8 @@ namespace Maxfire.Web.Mvc.UnitTests.SimplyRestful
 			}
 		}
 
-		public class UrlRecognition : RoutesFixtureBase, IUseFixture<NamedControllerRestfulRoutesSpecs>
+		public class UrlRecognition : RoutesRegisteredBy<NamedControllerRestfulRoutesSpecs>
 		{
-			public void SetFixture(NamedControllerRestfulRoutesSpecs fixture)
-			{
-				Fixture = fixture;
-			}
-
 			[Fact]
 			public void Index()
 			{

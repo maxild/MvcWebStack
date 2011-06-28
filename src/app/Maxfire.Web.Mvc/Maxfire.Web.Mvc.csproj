@@ -159,6 +159,7 @@
     <Compile Include="NameValueSerializerExtensions.cs" />
     <Compile Include="NameValueSerializerProviderExtensions.cs" />
     <Compile Include="NullableModelBinder.cs" />
+    <Compile Include="NullableModelBinderWrapper.cs" />
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedControllerActionInvoker.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />
@@ -243,6 +244,10 @@
     </Reference>
     <Reference Include="System.Web.Routing">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\aspnetmvc3\System.Web.WebPages.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
