@@ -6,6 +6,17 @@ namespace Maxfire.Core
 {
 	public class EnumerationConverter<TEnumeration> : TypeConverter where TEnumeration : Enumeration
 	{
+		private readonly Func<TEnumeration, string> _convertToString;
+
+		public EnumerationConverter()
+		{
+		}
+
+		protected EnumerationConverter(Func<TEnumeration, string> converter)
+		{
+			_convertToString = converter;
+		}
+
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			return (sourceType == typeof(string) || base.CanConvertFrom(context, sourceType));
@@ -42,9 +53,17 @@ namespace Maxfire.Core
 					throw new ArgumentException(String.Format("The value to convert to a string is not of type '{0}'.",
 					                                          typeof(TEnumeration).Name), "value");
 				}
-				return enumeration.Name;
+				return _convertToString != null ? _convertToString(enumeration) : enumeration.Name;
 			}
 			return base.ConvertTo(context, culture, value, destinationType);
+		}
+	}
+
+	public class EnumerationToValueConverter<TEnumeration> : EnumerationConverter<TEnumeration> 
+		where TEnumeration : Enumeration
+	{
+		public EnumerationToValueConverter() : base(e => e.Value.ToString())
+		{
 		}
 	}
 }

@@ -30,6 +30,24 @@ namespace Maxfire.Web.Mvc
 			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Name);
 		}
 
+		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>()
+			where TEnumeration : Enumeration
+		{
+			return FromEnumerationValues(Enumeration.GetAll<TEnumeration>());
+		}
+
+		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>(params TEnumeration[] items)
+			where TEnumeration : Enumeration
+		{
+			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Value.ToString());
+		}
+
+		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>(IEnumerable<TEnumeration> items)
+			where TEnumeration : Enumeration
+		{
+			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Value.ToString());
+		}
+
 		public static IEnumerable<TextValuePair> FromEnumValues(Type enumType)
 		{
 			return FromEnumHelper(enumType, item => Convert.ToInt32(item).ToString());
