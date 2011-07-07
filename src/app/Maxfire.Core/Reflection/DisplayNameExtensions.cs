@@ -12,6 +12,11 @@ namespace Maxfire.Core.Reflection
 	{
 		public static string GetDisplayName(this MemberInfo property)
 		{
+			if (property == null)
+			{
+				return null;
+			}
+
 			var displayNameAttribute = property.GetCustomAttribute<DisplayNameAttribute>();
 			if (displayNameAttribute != null)
 			{
@@ -29,6 +34,11 @@ namespace Maxfire.Core.Reflection
 
 		public static string GetDisplayName(this PropertyDescriptor descriptor)
 		{
+			if (descriptor == null)
+			{
+				return null;
+			}
+			
 			var displayNameAttribute = descriptor.Attributes.OfType<DisplayNameAttribute>().FirstOrDefault();
 			if (displayNameAttribute != null)
 			{
