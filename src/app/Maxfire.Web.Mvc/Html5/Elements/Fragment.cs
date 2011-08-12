@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -19,6 +18,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		private readonly TagBuilder _tagBuilder;
 		private readonly ISet<string> _classNames = new SortedSet<string>(StringComparer.Ordinal);
 		private TagRenderMode _tagRenderMode;
+		private string _formatValueWith;
 
 		protected Fragment(string elementName)
 		{
@@ -65,8 +65,16 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="value">A value to set for the attribute.</param>
 		public T Attr(string attributeName, object value)
 		{
-			// TODO: Skal dette være CurrentCulture?
-			string valueAsString = value.ToNullSafeString(CultureInfo.CurrentCulture);
+			string valueAsString;
+			if (attributeName == HtmlAttribute.Value && _formatValueWith != null)
+			{
+				valueAsString = _formatValueWith.FormatWith(value);
+			}
+			else
+			{
+				valueAsString = value.ToNullSafeString();
+			}
+
 			if (attributeName == HtmlAttribute.Class)
 			{
 				AddClass(valueAsString);
@@ -273,6 +281,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 			else
 			{
+				if (_formatValueWith != null)
+				{
+					value = _formatValueWith.FormatWith(value);
+				}
 				Attr(HtmlAttribute.Value, value);
 			}
 			return self;
@@ -284,6 +296,25 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public virtual object Value()
 		{
 			return Attr(HtmlAttribute.Value);
+		}
+
+		/// <summary>
+		/// Specify a format string for the value of the 'value' attribute.
+		/// </summary>
+		/// <param name="format">A format string.</param>
+		public virtual T FormatValueWith(string format)
+		{
+			if (format != null)
+			{
+				_formatValueWith = "{0:" + format + "}";
+				object value = Value();
+				if (value != null)
+				{
+					string formattedValue = _formatValueWith.FormatWith(value);
+					Value(formattedValue);
+				}
+			}
+			return (T)this;
 		}
 
 		/// <summary>
