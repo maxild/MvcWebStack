@@ -17,19 +17,23 @@ namespace Maxfire.Web.Mvc
 
 			// 2. Binder registered in the global table
 			IModelBinder binder;
-			if (ModelBinders.Binders.TryGetValue(modelType, out binder) && binder is INameValueSerializer)
+			if (ModelBinders.Binders.TryGetValue(modelType, out binder))
 			{
-				return binder as INameValueSerializer;
+				serializer = binder as INameValueSerializer;
+				if (serializer != null)
+				{
+					return serializer;
+				}
 			}
 
 			// 3. Binder attribute defined on the type
 			var modelBinderAttribute = modelType.GetCustomAttribute<CustomModelBinderAttribute>();
 			if (modelBinderAttribute != null)
 			{
-				return modelBinderAttribute.GetBinder() as INameValueSerializer;
+				serializer = modelBinderAttribute.GetBinder() as INameValueSerializer;
 			}
 
-			return null;
+			return serializer;
 		}
 	}
 }
