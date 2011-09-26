@@ -153,7 +153,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
  
 			private TOptionsFormFragment ToOptions<TItem>(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
 			{
-				return _optionsFormFragment.SetOptions(new OptionsAdapter<TItem>(items, textSelector, valueSelector,
+				return _optionsFormFragment.SetOptions(new SelectListItemsAdapter<TItem>(items, textSelector, valueSelector,
 																	   () => _optionsFormFragment.Selected()));
 			}
 
@@ -173,14 +173,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// Create a list of text-value-selected tuples that clients can use to render
 		/// select, radiobuttonlist and/or checkboxlist widgets.
 		/// </summary>
-		sealed class OptionsAdapter<TItem> : IEnumerable<SelectListItem>
+		sealed class SelectListItemsAdapter<TItem> : IEnumerable<SelectListItem>
 		{
 			private readonly IEnumerable<TItem> _items;
 			private readonly Func<IEnumerable> _selectedValuesThunk;
 			private readonly Func<TItem, string> _textSelector;
 			private readonly Func<TItem, string> _valueSelector;
 
-			public OptionsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<IEnumerable> selectedValuesThunk)
+			public SelectListItemsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<IEnumerable> selectedValuesThunk)
 			{
 				if (textSelector == null)
 				{
@@ -219,7 +219,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 					IEnumerable selectedValues = _selectedValuesThunk();
 					if (selectedValues != null)
 					{
-						selectedValueSet.UnionWith(from object value in selectedValues select value.ToNullSafeString(CultureInfo.CurrentCulture));
+						selectedValueSet.UnionWith(
+							from object value in selectedValues 
+							select TypeExtensions.ConvertSimpleType(CultureInfo.InvariantCulture, value, typeof(string)).ToNullSafeString()
+						);
 					}
 				}
 				return selectedValueSet;
