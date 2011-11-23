@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Castle.MicroKernel;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Castle.Web.Mvc
 {
 	public class CastleControllerFactory : DefaultControllerFactory
 	{
@@ -36,10 +36,10 @@ namespace Maxfire.Web.Mvc
 
 		private void injectOpinionatedActionInvoker(IController controller)
 		{
-			var opinionatedController = controller as OpinionatedController;
+			var opinionatedController = controller as Controller;
 			if (opinionatedController != null)
 			{
-				opinionatedController.ActionInvoker = new OpinionatedControllerActionInvoker(_kernel);
+				opinionatedController.ActionInvoker = new CastleControllerActionInvoker(_kernel);
 			}
 		}
 

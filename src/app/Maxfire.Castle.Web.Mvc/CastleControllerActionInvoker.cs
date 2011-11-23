@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using Castle.MicroKernel;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Castle.Web.Mvc
 {
-	public class OpinionatedControllerActionInvoker : ControllerActionInvoker
+	public class CastleControllerActionInvoker : ControllerActionInvoker
 	{
 		private readonly IKernel _kernel;
 
-		public OpinionatedControllerActionInvoker(IKernel kernel)
+		public CastleControllerActionInvoker(IKernel kernel)
 		{
 			_kernel = kernel;
 		}

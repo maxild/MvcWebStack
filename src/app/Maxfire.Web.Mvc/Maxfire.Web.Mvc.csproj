@@ -54,10 +54,10 @@
     <Compile Include="AutoMapper\IConventionsTypeConverter.cs" />
     <Compile Include="AutoMapper\MachineDecimalFormatter.cs" />
     <Compile Include="AutoMapper\ValueFormatter.cs" />
-    <Compile Include="CastleControllerFactory.cs" />
     <Compile Include="CastleModelValidator.cs" />
     <Compile Include="CastleModelValidatorProvider.cs" />
     <Compile Include="ControllerExtensions.cs" />
+    <Compile Include="DateModelBinder.cs" />
     <Compile Include="DefaultNameValueSerializer.cs" />
     <Compile Include="DefaultNameValueSerializerProvider.cs" />
     <Compile Include="EditModelFor.cs" />
@@ -161,7 +161,6 @@
     <Compile Include="NullableModelBinder.cs" />
     <Compile Include="NullableModelBinderWrapper.cs" />
     <Compile Include="OpinionatedController.cs" />
-    <Compile Include="OpinionatedControllerActionInvoker.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
     <Compile Include="OpinionatedResourceController.cs" />
@@ -206,7 +205,6 @@
     <Compile Include="Validators\LabeledValidatePostNrAttribute.cs" />
     <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
     <Compile Include="Validators\ValidationResult.cs" />
-    <Compile Include="MicroKernelExtensions.cs" />
     <Compile Include="ValueProviderResultExtensions.cs" />
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
@@ -218,14 +216,6 @@
     <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\castle\NET35\Castle.Components.Validator.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Core, Version=1.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\castle\NET35\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Windsor, Version=2.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\castle\NET35\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>
