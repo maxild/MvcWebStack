@@ -105,7 +105,7 @@ namespace Maxfire.Web.Mvc
 				return null;
 			}
 
-			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			if (type.IsGenericType && !type.IsGenericTypeDefinition && type.GetGenericTypeDefinition() == typeof(Nullable<>))
 			{
 				type = type.GetGenericArguments()[0];
 			}
