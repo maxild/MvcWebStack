@@ -135,6 +135,7 @@
     <Compile Include="Html\Html401IdUtil.cs" />
     <Compile Include="Html\Extensions\HtmlFieldNameExtensions.cs" />
     <Compile Include="Html\OpinionatedHtmlHelperExtensions.cs" />
+    <Compile Include="HttpVerbsExtensions.cs" />
     <Compile Include="IEntityViewModel.cs" />
     <Compile Include="IModelUnflattener.cs" />
     <Compile Include="IModelUpdater.cs" />
