@@ -86,12 +86,13 @@ namespace Maxfire.Web.Mvc
 					}
 
 					// Simple argumenter uden prefix bliver navngivet ved navnet på parameteren
+					string prefixToUse = prefix;
 					if (value.GetType().IsSimpleType() && prefix.IsEmpty())
 					{
-						prefix = parameters[i].Name;
+						prefixToUse = parameters[i].Name;
 					}
 
-					var values = nameValueSerializer.GetValues(value, prefix);
+					var values = nameValueSerializer.GetValues(value, prefixToUse);
 					routeValues.Merge(values);
 				}
 			}
