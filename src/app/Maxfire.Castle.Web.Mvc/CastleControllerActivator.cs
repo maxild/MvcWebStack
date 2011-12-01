@@ -14,12 +14,12 @@ namespace Maxfire.Castle.Web.Mvc
 			_kernel = kernel;
 		}
 
-		public IController Create(RequestContext requestContext, Type controllerType)
+		public virtual IController Create(RequestContext requestContext, Type controllerType)
 		{
 			return _kernel.TryResolve(controllerType) as IController;
 		}
 
-		public void Release(IController controller)
+		public virtual void Release(IController controller)
 		{
 			var disposable = controller as IDisposable;
 			if (disposable != null)
