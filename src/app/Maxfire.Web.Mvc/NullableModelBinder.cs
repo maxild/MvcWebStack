@@ -14,7 +14,9 @@ namespace Maxfire.Web.Mvc
 			}
 
 			// Complex model type with no values to be bound should return null (instead of no-arg ctor value)
-			if (bindingContext.ValueProvider.GetKeys().All(IsRequiredRouteValue))
+// ReSharper disable AccessToModifiedClosure
+			if (bindingContext.ValueProvider.GetKeys().All(key => bindingContext.IsRequiredRouteValue(key)))
+// ReSharper restore AccessToModifiedClosure
 			{
 				return null;
 			}
@@ -49,11 +51,6 @@ namespace Maxfire.Web.Mvc
 		{
 			// In MVC 3 binder returned from provider is consulted first
 			return ModelBinders.Binders.GetBinder(modelType);
-		}
-
-		private static bool IsRequiredRouteValue(string value)
-		{
-			return new[] {"area", "controller", "action"}.Any(s => value.Equals(s, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }

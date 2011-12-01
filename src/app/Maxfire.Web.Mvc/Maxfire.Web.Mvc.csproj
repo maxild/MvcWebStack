@@ -54,6 +54,7 @@
     <Compile Include="AutoMapper\IConventionsTypeConverter.cs" />
     <Compile Include="AutoMapper\MachineDecimalFormatter.cs" />
     <Compile Include="AutoMapper\ValueFormatter.cs" />
+    <Compile Include="BetterControllerActionInvoker.cs" />
     <Compile Include="CastleModelValidator.cs" />
     <Compile Include="CastleModelValidatorProvider.cs" />
     <Compile Include="ControllerExtensions.cs" />
@@ -154,6 +155,8 @@
     <Compile Include="MappingConventions.cs" />
     <Compile Include="ModelBinderDictionaryExtensions.cs" />
     <Compile Include="ModelBinderProviderExtensions.cs" />
+    <Compile Include="ModelBindingContextExtensions.cs" />
+    <Compile Include="ModelMetadataExtensions.cs" />
     <Compile Include="ModelStateDictionaryExtensions.cs" />
     <Compile Include="ModelStateExtensions.cs" />
     <Compile Include="ModelUnflattener.cs" />
