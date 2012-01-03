@@ -279,7 +279,7 @@ namespace Maxfire.Web.Mvc.Html
 			return htmlAttributes;
 		}
 
-		private static object GetModelValueFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
+		public static object GetModelValueFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
 		{
 			// BUG: Here INameValueSerializer should be used to convert model ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model to string/object
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);
