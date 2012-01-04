@@ -9,6 +9,117 @@ namespace Maxfire.Web.Mvc.UnitTests
 {
 	public class DateModelBinderTester
 	{
+		public DateModelBinderTester()
+		{
+			Sut = new DateModelBinder(new CultureInfo("da-DK"));
+		}
+
+		public DateModelBinder Sut { get; private set; }
+
+		[Fact]
+		public void NoFieldReturnsNullWithNoBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider();
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldBeNull();
+		}
+
+		[Fact]
+		public void SingleEmptyFieldReturnsNullWithNoBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday", "" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldBeNull();
+		}
+
+		[Fact]
+		public void YearMonthDayEmptyFieldsReturnsNullWithNoBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday.year", "" }, { "birthday.month", "" }, { "birthday.day", "" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldBeNull();
+		}
+
+		[Fact]
+		public void YearMonthDayMissingOrEmptyFieldsReturnsNullWithNoBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday.month", "" }, { "birthday.day", "" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldBeNull();
+		}
+
+		[Fact]
+		public void SomeMissingFieldsReturnsNullWithBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday.month", "12" }, { "birthday.day", "1" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsInvalid(field => field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeTrue();
+			bindingContext.ModelState.IsInvalid(field => !field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeFalse();
+			result.ShouldBeNull();
+		}
+
+		[Fact]
+		public void SomeEmptyFieldsReturnsNullWithBindingErrors()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday.year", "" }, { "birthday.month", "12" }, { "birthday.day", "1" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			object result = Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsInvalid(field => field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeTrue();
+			bindingContext.ModelState.IsInvalid(field => !field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeFalse();
+			result.ShouldBeNull();
+		}
+
 		[Fact]
 		public void CanHandleSingleField()
 		{
@@ -21,10 +132,10 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = valueProvider
 			};
 
-			var dateAndTimeModelBinder = new DateModelBinder(new CultureInfo("da-DK"));
+			DateTime? result = (DateTime?)Sut.BindModel(null, bindingContext);
 
-			DateTime? result = (DateTime?)dateAndTimeModelBinder.BindModel(null, bindingContext);
-			Assert.Equal(new DateTime(1970, 6, 3), result);
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1970, 6, 3));
 		}
 
 		[Fact]
@@ -38,10 +149,10 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = valueProvider
 			};
 
-			var dateAndTimeModelBinder = new DateModelBinder(new CultureInfo("da-DK"));
+			DateTime? result = (DateTime?)Sut.BindModel(null, bindingContext);
 
-			DateTime? result = (DateTime?)dateAndTimeModelBinder.BindModel(null, bindingContext);
-			Assert.Equal(new DateTime(1970, 6, 3), result);
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1970, 6, 3));
 		}
 
 		[Fact]
@@ -61,15 +172,10 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = valueProvider
 			};
 
-			var dateAndTimeModelBinder = new DateModelBinder
-			{
-				Day = "day",
-				Month = "month",
-				Year = "year"
-			};
+			var result = (DateTime?)Sut.BindModel(null, bindingContext);
 
-			var result = (DateTime?)dateAndTimeModelBinder.BindModel(null, bindingContext);
-			Assert.Equal(new DateTime(1964, 2, 12), result);
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1964, 2, 12));
 		}
 
 		[Fact]
@@ -88,23 +194,16 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = valueProvider
 			};
 
-			var dateAndTimeModelBinder = new DateModelBinder
-			{
-				Day = "day",
-				Month = "month",
-				Year = "year"
-			};
+			var result = (DateTime?)Sut.BindModel(null, bindingContext);
 
-			var result = (DateTime?)dateAndTimeModelBinder.BindModel(null, bindingContext);
-			Assert.Equal(new DateTime(1964, 2, 12), result);
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1964, 2, 12));
 		}
 
 		[Fact]
 		public void CanSerialize()
 		{
-			var serializer = new DateModelBinder();
-
-			var values = serializer.GetValues(new DateTime(1970, 6, 3), string.Empty);
+			var values = Sut.GetValues(new DateTime(1970, 6, 3), string.Empty);
 
 			values.Count.ShouldEqual(3);
 			values["Day"].ShouldEqual("3");
@@ -115,14 +214,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void CanSerializeWithPrefix()
 		{
-			var serializer = new DateModelBinder
-			{
-				Day = "day",
-				Month = "month",
-				Year = "year"
-			};
-
-			var values = serializer.GetValues(new DateTime(1970, 6, 3), "foedselsdato");
+			var values = Sut.GetValues(new DateTime(1970, 6, 3), "foedselsdato");
 
 			values.Count.ShouldEqual(3);
 			values["foedselsdato.day"].ShouldEqual("3");

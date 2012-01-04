@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
 
@@ -33,39 +34,58 @@ namespace Maxfire.Web.Mvc
 				return dateTimeAttempt.Value;
 			}
 
-			// If the prefix is present among the values all parts are required
+			// Missing values (parts) will show up as entries in the dictionary where kvp.Value == null
+			IDictionary<string, ValueProviderResult> parts = GetParts(bindingContext, Year, Month, Day);
 
-			int? year = GetPart(bindingContext, Year, y => y > 0, "Værdien '{0}' er ikke et validt år.");
-			int? month = GetPart(bindingContext, Month, m => 1 <= m && m <= 12, "Værdien '{0}' er ikke en valid måned.");
-
-			if (month == null || year == null)
-			{
-				if (month != null)
-				{
-					// We validate the day component using the given month in a leap year (31)
-					GetPart(bindingContext, Day, d => 1 <= d && d <= DateTime.DaysInMonth(2012, month.Value),
-							"Værdien '{0}' er ikke en valid dag for den valgte måned.");
-				}
-				else
-				{
-					// We validate the day component using the largest possible day in any month or year (31)
-					GetPart(bindingContext, Day, d => 1 <= d && d <= 31,
-							"Værdien '{0}' er ikke en valid dag for den valgte måned.");
-				}
-				return null;
-			}
-
-			// We validate the day component using the valid year and month
-			int? day = GetPart(bindingContext, Day,
-				d => 1 <= d && d <= DateTime.DaysInMonth(year.Value, month.Value),
-				"Værdien '{0}' er ikke en valid dag for den valgte måned.");
-
-			if (day == null)
+			// We do not differentiate between being missing (not being posted) and 
+			// being empty (posted as an empty value). This way a set of partial request
+			// params (e.g. 'birthday.day' and 'birthday.month') will bind to a nullable 
+			// DateTime without any errors, if the values of the partial params are empty.
+			if (parts.Values.All(IsMissingOrEmpty))
 			{
 				return null;
 			}
 
-			return new DateTime(year.Value, month.Value, day.Value);
+			bool nullResult = false;
+
+			parts.Where(kvp => IsMissingOrEmpty(kvp.Value)).Each(kvp =>
+			{
+				bindingContext.ModelState.AddModelError(kvp.Key, "Værdien for '{0}' mangler.".FormatWith(kvp.Key));
+				nullResult = true;
+			});
+			
+			if (nullResult)
+			{
+				return null;
+			}
+
+			var values = GetValues(bindingContext, parts);
+			var keys = parts.Map(x => x.Key).ToList();
+			
+			if (values[0] != null && values[0] <= 0)
+			{
+				bindingContext.ModelState.AddModelError(keys[0], "Værdien '{0}' er ikke et validt år.".FormatWith(values[0]));
+				nullResult = true;
+			}
+
+			if (values[1] != null && (values[1] < 1 || values[1] > 12))
+			{
+				bindingContext.ModelState.AddModelError(keys[1], "Værdien '{0}' er ikke en valid måned.".FormatWith(values[1]));
+				nullResult = true;
+			}
+
+			if (values[2] != null && (values[2] < 1 || values[2] > DateTime.DaysInMonth(values[0] ?? 2012, values[1] ?? 1)))
+			{
+				bindingContext.ModelState.AddModelError(keys[2], "Værdien '{0}' er ikke en valid dag for den valgte måned.".FormatWith(values[2]));
+				nullResult = true;
+			}
+
+			if (nullResult || values.Any(val => val == null))
+			{
+				return null;
+			}
+
+			return new DateTime(values[0].GetValueOrDefault(), values[1].GetValueOrDefault(), values[2].GetValueOrDefault());
 		}
 
 		private DateTime? GetDateTime(ModelBindingContext bindingContext)
@@ -88,7 +108,12 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		private static int? GetPart(ModelBindingContext bindingContext, string key, Func<int, bool> validator, string errorMessage)
+		private static IDictionary<string, ValueProviderResult> GetParts(ModelBindingContext bindingContext, params string[] keys)
+		{
+			return keys.Map(key => GetPart(bindingContext, key)).ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+		}
+
+		private static Tuple<string, ValueProviderResult> GetPart(ModelBindingContext bindingContext, string key)
 		{
 			string name = bindingContext.ModelName + "." + key;
 			ValueProviderResult valueResult = bindingContext.ValueProvider.GetValue(name);
@@ -104,12 +129,16 @@ namespace Maxfire.Web.Mvc
 				bindingContext.ModelState.SetModelValue(name, valueResult);
 			}
 
-			if (valueResult == null || string.IsNullOrWhiteSpace(valueResult.AttemptedValue))
-			{
-				bindingContext.ModelState.AddModelError(name, "Værdien for '{0}' mangler.".FormatWith(name));
-				return null;
-			}
+			return new Tuple<string, ValueProviderResult>(name, valueResult);
+		}
 
+		private static IList<int?> GetValues(ModelBindingContext bindingContext, IEnumerable<KeyValuePair<string, ValueProviderResult>> parts)
+		{
+			return parts.Map(kvp => GetValue(bindingContext, kvp.Key, kvp.Value)).ToList();
+		}
+
+		private static int? GetValue(ModelBindingContext bindingContext, string key, ValueProviderResult valueResult)
+		{
 			int value;
 			try
 			{
@@ -117,17 +146,16 @@ namespace Maxfire.Web.Mvc
 			}
 			catch (Exception ex)
 			{
-				bindingContext.ModelState.AddModelError(name, ex);
-				return null;
-			}
-
-			if (validator(value) == false)
-			{
-				bindingContext.ModelState.AddModelError(name, errorMessage.FormatWith(value));
+				bindingContext.ModelState.AddModelError(key, ex);
 				return null;
 			}
 
 			return value;
+		}
+
+		private static bool IsMissingOrEmpty(ValueProviderResult valueResult)
+		{
+			return valueResult == null || string.IsNullOrWhiteSpace(valueResult.AttemptedValue);
 		}
 
 		private string _day;
@@ -154,8 +182,8 @@ namespace Maxfire.Web.Mvc
 		protected override IDictionary<string, object> GetValuesCore(DateTime value, string prefix)
 		{
 			return string.IsNullOrEmpty(prefix) ?
-					new Dictionary<string, object> { { Day, value.Day.ToString() }, { Month, value.Month.ToString() }, { Year, value.Year.ToString() } } :
-					new Dictionary<string, object> { { prefix + "." + Day, value.Day.ToString() }, { prefix + "." + Month, value.Month.ToString() }, { prefix + "." + Year, value.Year.ToString() } };
+					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { Day, value.Day.ToString() }, { Month, value.Month.ToString() }, { Year, value.Year.ToString() } } :
+					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { prefix + "." + Day, value.Day.ToString() }, { prefix + "." + Month, value.Month.ToString() }, { prefix + "." + Year, value.Year.ToString() } };
 		}
 	}
 
@@ -164,6 +192,7 @@ namespace Maxfire.Web.Mvc
 		/// <summary>
 		/// The key used for the day part (as in 'birthday.Day')
 		/// </summary>
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 		public string Day { get; set; }
 
 		/// <summary>
@@ -175,6 +204,7 @@ namespace Maxfire.Web.Mvc
 		/// The key used for the year part (as in 'birthday.Year')
 		/// </summary>
 		public string Year { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
 		private IModelBinder _binder;
 		public override IModelBinder GetBinder()
