@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Castle.Components.Validator;
+using Maxfire.Castle.Validation;
 using Maxfire.Core.Reflection;
 using Rhino.Mocks;
 

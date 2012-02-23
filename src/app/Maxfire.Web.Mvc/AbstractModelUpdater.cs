@@ -1,5 +1,4 @@
 using Maxfire.Core.Extensions;
-using Maxfire.Web.Mvc.Validators;
 
 namespace Maxfire.Web.Mvc
 {

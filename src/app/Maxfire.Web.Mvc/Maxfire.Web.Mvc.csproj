@@ -55,8 +55,6 @@
     <Compile Include="AutoMapper\MachineDecimalFormatter.cs" />
     <Compile Include="AutoMapper\ValueFormatter.cs" />
     <Compile Include="BetterControllerActionInvoker.cs" />
-    <Compile Include="CastleModelValidator.cs" />
-    <Compile Include="CastleModelValidatorProvider.cs" />
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="DateModelBinder.cs" />
     <Compile Include="DefaultNameValueSerializer.cs" />
@@ -72,7 +70,6 @@
     <Compile Include="FluentHtml\Behaviors\ISupportsMaxLength.cs" />
     <Compile Include="FluentHtml\Behaviors\ISupportsModelState.cs" />
     <Compile Include="FluentHtml\Behaviors\LabelMemberBehavior.cs" />
-    <Compile Include="FluentHtml\Behaviors\RequiredMemberBehavior.cs" />
     <Compile Include="FluentHtml\Behaviors\ValidationBehavior.cs" />
     <Compile Include="FluentHtml\Elements\CheckBox.cs" />
     <Compile Include="FluentHtml\Elements\CheckBoxList.cs" />
@@ -138,6 +135,7 @@
     <Compile Include="Html\OpinionatedHtmlHelperExtensions.cs" />
     <Compile Include="HttpVerbsExtensions.cs" />
     <Compile Include="IEntityViewModel.cs" />
+    <Compile Include="IFormValidator.cs" />
     <Compile Include="IModelUnflattener.cs" />
     <Compile Include="IModelUpdater.cs" />
     <Compile Include="INameValueSerializerProvider.cs" />
@@ -187,28 +185,9 @@
     <Compile Include="UrlHelperExtensions.cs" />
     <Compile Include="UrlHelperUtil.cs" />
     <Compile Include="ValidateInputModelAttribute.cs" />
+    <Compile Include="ValidationException.cs" />
     <Compile Include="ValidationModelBinder.cs" />
-    <Compile Include="Validators\BaseValidationAttribute.cs" />
-    <Compile Include="Validators\BaseValidator.cs" />
-    <Compile Include="Validators\Extensions\ValidatorExtensions.cs" />
-    <Compile Include="Validators\LabeledRegexValidatorAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateAarstalAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateBooleanAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateCollectionNotEmptyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateDateAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateDecimalAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateEnumAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateEnumerationAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateLengthAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateMaxLengthAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateMoneyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateNonEmptyAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateNonNegativeIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidatePositiveIntegerAttribute.cs" />
-    <Compile Include="Validators\LabeledValidatePostNrAttribute.cs" />
-    <Compile Include="Validators\LabeledValidateRangeAttribute.cs" />
-    <Compile Include="Validators\ValidationResult.cs" />
+    <Compile Include="ValidationResult.cs" />
     <Compile Include="ValueProviderResultExtensions.cs" />
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
@@ -216,10 +195,6 @@
     <Reference Include="AutoMapper, Version=0.4.0.140, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\automapper\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\castle\NET35\Castle.Components.Validator.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>

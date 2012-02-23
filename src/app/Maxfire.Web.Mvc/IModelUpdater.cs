@@ -1,5 +1,3 @@
-using Maxfire.Web.Mvc.Validators;
-
 namespace Maxfire.Web.Mvc
 {
 	public interface IModelUpdater<TInputModel, TModel>

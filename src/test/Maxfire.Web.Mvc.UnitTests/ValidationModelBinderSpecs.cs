@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Maxfire.Castle.Validation.Validators;
 using Maxfire.Core;
 using Maxfire.TestCommons;
 using Maxfire.Web.Mvc.TestCommons.AssertExtensions;
-using Maxfire.Web.Mvc.Validators;
 using Specification = Xunit.FactAttribute;
 using Context = System.Diagnostics.CodeAnalysis.UsedImplicitlyAttribute;
 

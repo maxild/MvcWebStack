@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Maxfire.Core;
-using Maxfire.Web.Mvc.Validators.Extensions;
+using Maxfire.Core.Extensions;
 
 namespace Maxfire.Web.Mvc
 {

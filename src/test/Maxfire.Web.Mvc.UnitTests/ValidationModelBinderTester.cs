@@ -8,10 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Castle.Components.Validator;
+using Maxfire.Castle.Validation.Validators;
 using Maxfire.Core.Reflection;
 using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
-using Maxfire.Web.Mvc.Validators;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests

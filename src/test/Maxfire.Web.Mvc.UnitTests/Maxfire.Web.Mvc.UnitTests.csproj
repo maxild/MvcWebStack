@@ -57,11 +57,6 @@
     <Compile Include="ValidationModelBinderSpecs.PortedFromNameValueDeserializer.cs" />
     <Compile Include="ValidationModelBinderSpecs.Regressions.cs" />
     <Compile Include="ValidationModelBinderTester.cs" />
-    <Compile Include="Validators\EnumerationValidatorTester.cs" />
-    <Compile Include="Validators\ErrorMessageSpecs.cs" />
-    <Compile Include="Validators\RequiredTester.cs" />
-    <Compile Include="Validators\ValidatorConstructor.cs" />
-    <Compile Include="Validators\ValidatorSpec.cs" />
     <Compile Include="when_model_binding_to_lists.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +89,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Maxfire.Castle.Validation\Maxfire.Castle.Validation.csproj">
+      <Project>{BE55DBB5-36FC-4F87-8429-E69742C7E460}</Project>
+      <Name>Maxfire.Castle.Validation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Maxfire.Core;
-using Maxfire.Web.Mvc.Validators;
 
 namespace Maxfire.Web.Mvc
 {
