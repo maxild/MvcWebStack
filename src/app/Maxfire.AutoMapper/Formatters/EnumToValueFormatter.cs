@@ -1,6 +1,6 @@
 using System;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public class EnumToValueFormatter<TEnum> : ValueFormatter<TEnum>
 	{

@@ -2,7 +2,7 @@ using AutoMapper;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public abstract class AbstractEnumerationFormatter : IValueFormatter
 	{

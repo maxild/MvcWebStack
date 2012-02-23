@@ -1,4 +1,6 @@
-namespace Maxfire.Web.Mvc.AutoMapper
+using Maxfire.Web.Mvc;
+
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public abstract class ConventionsValueFormatter<T> : ValueFormatter<T>
 	{

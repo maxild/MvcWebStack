@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using AutoMapper;
 using Maxfire.Core;
+using Maxfire.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.AutoMapper.Web.Mvc
 {
 	public abstract class OpinionatedResourceControllerWithoutNewMethod<TController, TInputModel, TViewModel, TShowModel, TEditModel, TModel, TId> 
 		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>

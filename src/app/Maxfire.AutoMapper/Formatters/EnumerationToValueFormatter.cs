@@ -1,6 +1,6 @@
 using Maxfire.Core;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public class EnumerationToValueFormatter : AbstractEnumerationFormatter
 	{

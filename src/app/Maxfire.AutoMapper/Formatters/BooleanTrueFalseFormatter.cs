@@ -1,4 +1,4 @@
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public class BooleanTrueFalseFormatter : ConventionsValueFormatter<bool>
 	{

@@ -1,6 +1,7 @@
 using AutoMapper;
+using Maxfire.Web.Mvc;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc
 {
 	public abstract class ConventionsValueResolver<TSource, TDestination> : ValueResolver<TSource, TDestination>
 	{

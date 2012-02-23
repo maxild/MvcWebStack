@@ -1,6 +1,7 @@
 using AutoMapper;
+using Maxfire.Web.Mvc;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public abstract class ConventionsTypeConverter<TSource, TDest> : TypeConverter<TSource, TDest>, IConventionsTypeConverter<TSource, TDest>
 	{

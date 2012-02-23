@@ -1,7 +1,7 @@
 using System;
 using Maxfire.Core.Reflection;
 
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public class EnumToTextFormatter<TEnum> : ValueFormatter<TEnum>
 	{

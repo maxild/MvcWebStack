@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C61CB3EB-0D56-413C-8936-5921E9EDC3D5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Maxfire.AutoMapper.Web.Mvc</RootNamespace>
+    <AssemblyName>Maxfire.AutoMapper.Web.Mvc</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\..\..\lib\automapper\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\aspnetmvc3\System.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Formatters\AbstractEnumerationFormatter.cs" />
+    <Compile Include="Formatters\BooleanJaNejFormatter.cs" />
+    <Compile Include="Formatters\BooleanTrueFalseFormatter.cs" />
+    <Compile Include="Formatters\ConventionsTypeConverter.cs" />
+    <Compile Include="Formatters\ConventionsValueFormatter.cs" />
+    <Compile Include="ConventionsValueResolver.cs" />
+    <Compile Include="Formatters\DateFormatter.cs" />
+    <Compile Include="Formatters\DecimalFormatter.cs" />
+    <Compile Include="Formatters\EnumerationToNameFormatter.cs" />
+    <Compile Include="Formatters\EnumerationToTextFormatter.cs" />
+    <Compile Include="Formatters\EnumerationToValueFormatter.cs" />
+    <Compile Include="Formatters\EnumToTextFormatter.cs" />
+    <Compile Include="Formatters\EnumToValueFormatter.cs" />
+    <Compile Include="Formatters\HtmlEncodeFormatter.cs" />
+    <Compile Include="IConventionsTypeConverter.cs" />
+    <Compile Include="Formatters\MachineDecimalFormatter.cs" />
+    <Compile Include="OpinionatedResourceController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Formatters\ValueFormatter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">
+      <Project>{1C61E0E9-B998-4894-9DA9-21561F341FE1}</Project>
+      <Name>Maxfire.Web.Mvc</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

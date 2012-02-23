@@ -1,4 +1,4 @@
-namespace Maxfire.Web.Mvc.AutoMapper
+namespace Maxfire.AutoMapper.Web.Mvc.Formatters
 {
 	public class DecimalFormatter : ConventionsValueFormatter<decimal>
 	{

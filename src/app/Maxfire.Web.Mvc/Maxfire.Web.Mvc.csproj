@@ -37,23 +37,6 @@
   <ItemGroup>
     <Compile Include="AbstractModelUpdater.cs" />
     <Compile Include="ActionFilterExtensions.cs" />
-    <Compile Include="AutoMapper\AbstractEnumerationFormatter.cs" />
-    <Compile Include="AutoMapper\BooleanJaNejFormatter.cs" />
-    <Compile Include="AutoMapper\BooleanTrueFalseFormatter.cs" />
-    <Compile Include="AutoMapper\ConventionsTypeConverter.cs" />
-    <Compile Include="AutoMapper\ConventionsValueFormatter.cs" />
-    <Compile Include="AutoMapper\ConventionsValueResolver.cs" />
-    <Compile Include="AutoMapper\DateFormatter.cs" />
-    <Compile Include="AutoMapper\DecimalFormatter.cs" />
-    <Compile Include="AutoMapper\EnumerationToNameFormatter.cs" />
-    <Compile Include="AutoMapper\EnumerationToTextFormatter.cs" />
-    <Compile Include="AutoMapper\EnumerationToValueFormatter.cs" />
-    <Compile Include="AutoMapper\EnumToTextFormatter.cs" />
-    <Compile Include="AutoMapper\EnumToValueFormatter.cs" />
-    <Compile Include="AutoMapper\HtmlEncodeFormatter.cs" />
-    <Compile Include="AutoMapper\IConventionsTypeConverter.cs" />
-    <Compile Include="AutoMapper\MachineDecimalFormatter.cs" />
-    <Compile Include="AutoMapper\ValueFormatter.cs" />
     <Compile Include="BetterControllerActionInvoker.cs" />
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="DateModelBinder.cs" />
@@ -165,7 +148,6 @@
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
-    <Compile Include="OpinionatedResourceController.cs" />
     <Compile Include="OpinionatedRestfulController.cs" />
     <Compile Include="OpinionatedSubordinateResourceController.cs" />
     <Compile Include="OpinionatedValidatorProvider.cs" />
@@ -192,10 +174,6 @@
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=0.4.0.140, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\automapper\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>
     </Reference>
