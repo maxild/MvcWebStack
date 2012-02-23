@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Maxfire.Core;
-using Newtonsoft.Json;
 
 namespace Maxfire.Web.Mvc
 {
@@ -88,19 +86,15 @@ namespace Maxfire.Web.Mvc
 			get { return _nameValueSerializer; }
 		}
 
-		protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)
-		{
-			return Json(data, contentType, contentEncoding, behavior, Formatting.None);
-		}
-
-		protected virtual JsonNetResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior, Formatting formatting)
-		{
-			return JsonUtil.JsonNetResult(data, contentType, contentEncoding, behavior, formatting);
-		}
-
 		public bool IsAjaxRequest
 		{
 			get { return Request != null ? Request.IsAjaxRequest() : false; }
+		}
+
+		public virtual ActionResult RedirectAjaxRequest(string url)
+		{
+			// Derived class can override. Null signals do nothing.
+			return null;
 		}
 	}
 }

@@ -131,8 +131,6 @@
     <Compile Include="IUrlHelper.cs" />
     <Compile Include="IUrlResponseWriter.cs" />
     <Compile Include="IViewContextContainer.cs" />
-    <Compile Include="JsonMessage.cs" />
-    <Compile Include="JsonNetResult.cs" />
     <Compile Include="MappingConventions.cs" />
     <Compile Include="ModelBinderDictionaryExtensions.cs" />
     <Compile Include="ModelBinderProviderExtensions.cs" />
@@ -174,9 +172,6 @@
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\lib\json\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

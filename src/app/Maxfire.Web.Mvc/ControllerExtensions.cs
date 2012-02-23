@@ -76,8 +76,11 @@ namespace Maxfire.Web.Mvc
 			if (controller.IsAjaxRequest)
 			{
 				string url = controller.UrlFor(action, controllerName);
-				var data = JsonUtil.Message(new { redirectUrl = url });
-				return JsonUtil.JsonNetResult(data);
+				ActionResult redirectBrowserResult = controller.RedirectAjaxRequest(url);
+				if (redirectBrowserResult != null)
+				{
+					return redirectBrowserResult;
+				}
 			}
 			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, controller.NameValueSerializer, controllerName);
 			return new RedirectToRouteResult(routeValues);

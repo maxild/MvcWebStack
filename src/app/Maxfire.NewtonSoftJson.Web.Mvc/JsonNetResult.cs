@@ -2,9 +2,8 @@ using System.Web;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
 using Newtonsoft.Json;
-using JsonSerializerSettings=Newtonsoft.Json.JsonSerializerSettings;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.NewtonSoftJson.Web.Mvc
 {
 	public class JsonNetResult : JsonResult
 	{

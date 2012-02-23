@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.NewtonSoftJson.Web.Mvc
 {
 	public static class JsonUtil
 	{
