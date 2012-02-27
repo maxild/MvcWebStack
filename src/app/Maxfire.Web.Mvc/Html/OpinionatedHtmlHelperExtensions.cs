@@ -89,7 +89,9 @@ namespace Maxfire.Web.Mvc.Html
 			) where TModel : class
 		{
 			var sb = new StringBuilder();
-			
+
+			bool modelIsInvalid = !htmlHelper.ViewData.ModelState.IsValidField(fullHtmlFieldName);
+
 			string dayName = fullHtmlFieldName + ".Day";
 			string dayId = Html401IdUtil.CreateSanitizedId(dayName);
 			string dayText = labelText + " (dag)";
@@ -101,7 +103,7 @@ namespace Maxfire.Web.Mvc.Html
 			var dayOptions = OptionsAdapter.FromCollection(1.UpTo(31));
 
 			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes, modelIsInvalid));
 
 			string monthName = fullHtmlFieldName + ".Month";
 			string monthId = Html401IdUtil.CreateSanitizedId(monthName);
@@ -114,7 +116,7 @@ namespace Maxfire.Web.Mvc.Html
 			var monthOptions = OptionsAdapter.Months();
 			
 			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, optionLabel, monthValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, optionLabel, monthValue, htmlSelectElementAttributes, modelIsInvalid));
 
 
 			string yearName = fullHtmlFieldName + ".Year";
@@ -128,7 +130,7 @@ namespace Maxfire.Web.Mvc.Html
 			var yearOptions = htmlHelper.GetOptions(yearName) ?? OptionsAdapter.FromCollection(1950.UpTo(2050));
 			
 			sb.Append(LabelHelper(yearId, yearText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, optionLabel, yearValue, htmlSelectElementAttributes));
+			sb.Append(htmlHelper.SelectHelper(yearName, yearId, yearOptions, optionLabel, yearValue, htmlSelectElementAttributes, modelIsInvalid));
 
 			return MvcHtmlString.Create(sb.ToString());
 		}
@@ -177,7 +179,7 @@ namespace Maxfire.Web.Mvc.Html
 
 		private static string SelectHelper<TModel>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
 			string name, string id, IEnumerable<TextValuePair> options, 
-			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes) where TModel : class
+			string optionLabel, object modelValue, IDictionary<string, object> htmlAttributes, bool modelIsInvalid = false) where TModel : class
 		{
 			var sb = new StringBuilder();
 
@@ -204,17 +206,15 @@ namespace Maxfire.Web.Mvc.Html
 			tagBuilder.MergeAttribute("name", name, true);
 			tagBuilder.MergeAttribute("id", id, true);
 			
-			ModelState modelState;
-			if (htmlHelper.ViewData.ModelState.TryGetValue(name, out modelState))
+			if (modelIsInvalid || false == htmlHelper.ViewData.ModelState.IsValidField(name))
 			{
-				if (modelState.Errors.Count > 0)
-				{
-					tagBuilder.AddCssClass(HtmlHelper.ValidationInputCssClassName);
-				}
+				tagBuilder.AddCssClass(HtmlHelper.ValidationInputCssClassName);
 			}
 
 			return tagBuilder.ToString(TagRenderMode.Normal);
 		}
+
+		
 
 		private static INameValueSerializer GetNameValueSerializer(this HtmlHelper htmlHelper)
 		{
