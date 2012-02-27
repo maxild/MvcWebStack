@@ -174,12 +174,24 @@ namespace Maxfire.Web.Mvc
 
 		protected virtual object GetAttemptedModelValue(string modelName)
 		{
+			IEnumerable<KeyValuePair<string, object>> values = GetAttemptedModelValues(modelName);
+			return values.Map(x => x.Value).FirstOrDefault();
+		}
+
+		IEnumerable<KeyValuePair<string, object>> IModelMetadataAccessor.GetAttemptedModelValues(string modelName)
+		{
+			return GetAttemptedModelValues(modelName);
+		}
+
+		protected virtual IEnumerable<KeyValuePair<string, object>> GetAttemptedModelValues(string modelName)
+		{
+			IDictionary<string, object> values = null;
 			object value = GetModelMetadata(modelName).Model;
 			if (value != null && NameValueSerializer != null)
 			{
-				value = NameValueSerializer.GetValues(value).Map(x => x.Value).FirstOrDefault();
+				values = NameValueSerializer.GetValues(value, modelName);
 			}
-			return value;
+			return values ?? Enumerable.Empty<KeyValuePair<string, object>>();
 		}
 
 		ModelMetadata IModelMetadataAccessor.GetModelMetadata(string modelName)

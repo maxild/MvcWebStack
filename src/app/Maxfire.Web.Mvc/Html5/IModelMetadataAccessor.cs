@@ -15,6 +15,8 @@ namespace Maxfire.Web.Mvc.Html5
 		/// to the current model value. If the model is null, it returns null.</returns>
 		object GetAttemptedModelValue(string modelName);
 
+		IEnumerable<KeyValuePair<string, object>> GetAttemptedModelValues(string modelName);
+
 		/// <summary>
 		/// Get the metadata of the root Model or descendant properties in the model object graph.
 		/// </summary>

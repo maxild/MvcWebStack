@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Web.Mvc;
 using Maxfire.Core;
 using Maxfire.Web.Mvc.Html5.Elements;
@@ -25,6 +27,17 @@ namespace Maxfire.Web.Mvc.Html5
 			string name = accessor.GetModelNameFor(expression);
 			object value = explicitValue ?? accessor.GetAttemptedModelValue(name);
 			return new Input(type, name, accessor).Value(value).Attr(attributes);
+		}
+
+		// TODO: Create FragmentList<T> such that a list of fragments can be treated as one fragment, but rendered in sequence
+		public static MvcHtmlString MultipleInputFor<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor,
+			string type, Expression<Func<TModel, TValue>> expression, IEnumerable<KeyValuePair<string, object>> attributes)
+		{
+			string name = accessor.GetModelNameFor(expression);
+			IEnumerable<KeyValuePair<string, object>> values = accessor.GetAttemptedModelValues(name);
+			var htmlString = values.Aggregate(new StringBuilder(), (sb, kvp) => 
+				sb.Append(new Input(type, kvp.Key, accessor).Value(kvp.Value).Attr(attributes))).ToString();
+			return MvcHtmlString.Create(htmlString);
 		}
 
 		public static RadioButtonList RadioButtonListFor<TModel, TProperty>(this IModelMetadataAccessor<TModel> accessor,
