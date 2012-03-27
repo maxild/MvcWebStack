@@ -100,10 +100,22 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				dayValue = modelValue.Value.Day;
 			}
-			var dayOptions = OptionsAdapter.FromCollection(1.UpTo(31));
+			var dayOptions = htmlHelper.GetOptions(dayName) ?? OptionsAdapter.FromCollection(1.UpTo(31));
 
 			sb.Append(LabelHelper(dayId, dayText, htmlLabelElementAttributes));
-			sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes, modelIsInvalid));
+			if (dayOptions.IsSingular())
+			{
+				TextValuePair singleOption = dayOptions.Single();
+				sb.Append(htmlHelper.Hidden(dayName, singleOption.Value));
+				sb.Append(singleOption.Text);
+				sb.Append(".");
+				sb.Append(@" &nbsp;");
+			}
+			else
+			{
+				sb.Append(htmlHelper.SelectHelper(dayName, dayId, dayOptions, optionLabel, dayValue, htmlSelectElementAttributes,
+				                                  modelIsInvalid));
+			}
 
 			string monthName = fullHtmlFieldName + ".Month";
 			string monthId = Html401IdUtil.CreateSanitizedId(monthName);
@@ -113,11 +125,10 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				monthValue = modelValue.Value.Month;
 			}
-			var monthOptions = OptionsAdapter.Months();
+			var monthOptions = htmlHelper.GetOptions(monthName) ?? OptionsAdapter.Months();
 			
 			sb.Append(LabelHelper(monthId, monthText, htmlLabelElementAttributes));
 			sb.Append(htmlHelper.SelectHelper(monthName, monthId, monthOptions, optionLabel, monthValue, htmlSelectElementAttributes, modelIsInvalid));
-
 
 			string yearName = fullHtmlFieldName + ".Year";
 			string yearId = Html401IdUtil.CreateSanitizedId(yearName);

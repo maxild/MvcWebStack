@@ -13,6 +13,19 @@ namespace Maxfire.Core.UnitTests
 	// TODO: Better naming of tests
 	public class ExpressionNameVisitorTester
 	{
+		class PersonModel
+		{
+			public DateTime BirthDay { get; set; }
+			public DateTime? DeathDay { get; set; }
+		}
+
+		[Fact]
+		public void can_handle_nullable_datetime()
+		{
+			ExpressionExtensions.GetNameFor<PersonModel, int>(x => x.BirthDay.Day).ShouldEqual("BirthDay.Day");
+			ExpressionExtensions.GetNameFor<PersonModel, int>(x => x.DeathDay.Value.Day).ShouldEqual("DeathDay.Day");
+		}
+
 		enum Kategori { Transport }
 
 		class Foo

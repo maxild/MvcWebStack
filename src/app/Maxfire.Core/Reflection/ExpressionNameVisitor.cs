@@ -110,9 +110,14 @@ namespace Maxfire.Core.Reflection
 			{
 				Builder.Append(expression.Member.DeclaringType.Name);
 			}
-			// We always prepend dot operator and remember to clean up before returning final result
-			Builder.Append(".");
-			Builder.Append(expression.Member.Name);
+			// In case of m => m.BirthDay.Value.Day, where BirthDay is declared as Nullable<DateTime>,
+			// we want BirthDay.Day (as if BirthDay is not Nullable<DateTime>).
+			if (false == expression.Member.DeclaringType.IsNullableValueType())
+			{
+				// We always prepend dot operator and remember to clean up before returning final result
+				Builder.Append(".");
+				Builder.Append(expression.Member.Name);
+			}
 		}
 
 		private void visitMethodCall(MethodCallExpression expression)

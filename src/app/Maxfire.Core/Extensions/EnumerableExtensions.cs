@@ -8,6 +8,36 @@ namespace Maxfire.Core.Extensions
 {
 	public static class EnumerableExtensions
 	{
+		public static bool IsSingular<T>(this IEnumerable<T> iterator)
+		{
+			if (iterator == null)
+			{
+				throw new ArgumentNullException("iterator");
+			}
+			IList<T> list = iterator as IList<T>;
+			if (list != null)
+			{
+				return list.Count == 1;
+			}
+			using (IEnumerator<T> enumerator = iterator.GetEnumerator())
+			{
+				if (!enumerator.MoveNext())
+				{
+					return false;
+				}
+				if (!enumerator.MoveNext())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static bool IsNotSingular<T>(this IEnumerable<T> iterator)
+		{
+			return !iterator.IsSingular();
+		}
+
 		public static bool IsEmpty<T>(this IEnumerable<T> iterator)
 		{
 			return !iterator.IsNotEmpty();
