@@ -161,8 +161,7 @@ namespace Maxfire.Web.Mvc
 
 		protected virtual string GetModelNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
-			string modelName = ExpressionHelper.GetExpressionText(expression);
-			string fullHtmlFieldName = ViewData.TemplateInfo.GetFullHtmlFieldName(modelName);
+			string fullHtmlFieldName = expression.GetHtmlFieldNameFor(ViewData);
 			TryAdd(fullHtmlFieldName, () => ModelMetadata.FromLambdaExpression(expression, ViewData));
 			return fullHtmlFieldName;
 		}

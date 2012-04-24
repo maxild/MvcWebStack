@@ -363,6 +363,7 @@ namespace Maxfire.Core.UnitTests
 			Assert.Equal("container.Model.SomeMethod().Length", ExpressionHelper.GetExpressionText(Lambda<object, int>(m => container.Model.SomeMethod().Length)));
 		}
 
+		[Fact]
 		public void Test11()
 		{
 			// Lambda expression which involves indexer which references lambda parameter throws

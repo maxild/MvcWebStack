@@ -9,7 +9,7 @@ namespace Maxfire.Core.Reflection
 	{
 		public static string GetNameFor<T, TValue>(this Expression<Func<T, TValue>> expression) where T : class
 		{
-			return new ExpressionNameVisitor().ToString(expression.Body);
+			return ExpressionHelper.GetExpressionText(expression);
 		}
 
 		public static TValue GetValueFrom<T, TValue>(this Expression<Func<T, TValue>> expression, T viewModel) where T : class
