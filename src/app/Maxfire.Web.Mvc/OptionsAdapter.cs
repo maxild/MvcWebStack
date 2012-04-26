@@ -12,6 +12,20 @@ namespace Maxfire.Web.Mvc
 {
 	public static class OptionsAdapter
 	{
+		public static IEnumerable<TextValuePair> FromEnumeration(Type enumerationType)
+		{
+			return new OptionsAdapter<Enumeration>(
+				Enumeration.GetAll(enumerationType).Cast<Enumeration>(), 
+				item => item.Text, item => item.Name);
+		}
+
+		public static IEnumerable<TextValuePair> FromEnumerationValues(Type enumerationType)
+		{
+			return new OptionsAdapter<Enumeration>(
+				Enumeration.GetAll(enumerationType).Cast<Enumeration>(),
+				item => item.Text, item => item.Value.ToString());
+		}
+
 		public static IEnumerable<TextValuePair> FromEnumeration<TEnumeration>()
 			where TEnumeration : Enumeration
 		{

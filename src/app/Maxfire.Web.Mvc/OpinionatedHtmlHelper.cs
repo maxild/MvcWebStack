@@ -118,6 +118,10 @@ namespace Maxfire.Web.Mvc
 			{
 				return OptionsAdapter.FromEnumTexts(type);
 			}
+			if (typeof(Enumeration).IsAssignableFrom(type))
+			{
+				return OptionsAdapter.FromEnumeration(type);
+			}
 
 			return null;
 		}
