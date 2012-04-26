@@ -10,6 +10,7 @@ using System.Web.Mvc.Html;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
+using Maxfire.Web.Mvc.Html5;
 
 namespace Maxfire.Web.Mvc.Html
 {
@@ -292,11 +293,10 @@ namespace Maxfire.Web.Mvc.Html
 
 		public static object GetModelValueFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
 		{
-			// BUG: Here INameValueSerializer should be used to convert model ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model to string/object
 			string name = expression.GetHtmlFieldNameFor(htmlHelper);
-			object attemptedValue = htmlHelper.GetModelStateValue(name, typeof(string)) ??
-			                        ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData).Model;
-			return attemptedValue;
+			object attemptedvalue = htmlHelper.GetModelStateValue(name, typeof (string)) ??
+			                        (htmlHelper as IModelMetadataAccessor<TModel>).GetAttemptedModelValue(name);
+			return attemptedvalue;
 		}
 
 		private static object GetModelStateValue(this HtmlHelper htmlHelper, string key, Type destinationType)

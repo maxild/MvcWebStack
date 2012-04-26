@@ -185,7 +185,21 @@ namespace Maxfire.Web.Mvc
 		protected virtual IEnumerable<KeyValuePair<string, object>> GetAttemptedModelValues(string modelName)
 		{
 			IDictionary<string, object> values = null;
-			object value = GetModelMetadata(modelName).Model;
+			ModelMetadata modelMetadata = GetModelMetadata(modelName);
+			object value;
+			try
+			{
+				value = modelMetadata.Model;
+			}
+			catch (InvalidOperationException)
+			{
+				// Nullable object must have a value (e.g. 'birthday.Value.Day')
+				value = null;
+			}
+			catch (NullReferenceException)
+			{
+				value = null;
+			}
 			if (value != null && NameValueSerializer != null)
 			{
 				values = NameValueSerializer.GetValues(value, modelName);
