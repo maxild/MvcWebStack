@@ -293,7 +293,8 @@ namespace Maxfire.Web.Mvc.Html
 
 		public static object GetModelValueFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression) where TModel : class
 		{
-			string name = expression.GetHtmlFieldNameFor(htmlHelper);
+			var self = htmlHelper as IModelNameResolver<TModel>;
+			string name = self.GetModelNameFor(expression);
 			object attemptedvalue = htmlHelper.GetModelStateValue(name, typeof (string)) ??
 			                        (htmlHelper as IModelMetadataAccessor<TModel>).GetAttemptedModelValue(name);
 			return attemptedvalue;
