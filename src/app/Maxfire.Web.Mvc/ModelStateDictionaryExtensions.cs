@@ -20,6 +20,11 @@ namespace Maxfire.Web.Mvc
 			return modelStateDictionary.Any(kvp => includeField(kvp.Key) && kvp.Value.Errors.Count > 0);
 		}
 
+		public static void RemoveAttemptedValues(this ModelStateDictionary modelState)
+		{
+			modelState.Keys.Each(field => modelState.SetModelValue(field, null));
+		}
+
 		public static void RemoveValidationErrors(this ModelStateDictionary modelState, Func<string, bool> includeField)
 		{
 			modelState.Keys
