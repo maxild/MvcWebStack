@@ -10,7 +10,7 @@ namespace Maxfire.Core.Collections
 	/// <typeparam name="T"></typeparam>
 	public sealed class ReverseComparer<T> : IComparer<T>
 	{
-		readonly IComparer<T> originalComparer;
+		readonly IComparer<T> _originalComparer;
 
 		/// <summary>
 		/// Returns the original comparer; this can be useful to avoid multiple
@@ -18,7 +18,7 @@ namespace Maxfire.Core.Collections
 		/// </summary>
 		public IComparer<T> OriginalComparer
 		{
-			get { return originalComparer; }
+			get { return _originalComparer; }
 		}
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Maxfire.Core.Collections
 		public ReverseComparer(IComparer<T> original)
 		{
 			original.ThrowIfNull("original");
-			originalComparer = original;
+			_originalComparer = original;
 		}
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace Maxfire.Core.Collections
 		/// </summary>
 		public int Compare(T x, T y)
 		{
-			return originalComparer.Compare(y, x);
+			return _originalComparer.Compare(y, x);
 		}
 	}
 }
