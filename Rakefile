@@ -43,8 +43,8 @@ namespace :build do
 	dev_build = [
 		:clean_build, 
 		:compile, 
-		:fxcop, 
-		:simian, 
+		#:fxcop, 
+		#:simian, 
 		:run_tests, 
 		:coverage_report,
 		:copy_output_assemblies
@@ -80,7 +80,7 @@ namespace :build do
 		build_number = ENV["CCNetLabel"].nil? ? '0' : ENV["CCNetLabel"].to_s
 		revision_number = File.exists?('.svn') ? Rake::TaskUtils::svn_revision : '0'
 		PROP[:version] = "#{PRODUCT_VERSION}.#{build_number}.#{revision_number}"
-		asminfo.version = Rake::Version.new(PROP[:version])
+		asminfo.version = Rake::Vers.new(PROP[:version])
 	end
 	
 	desc "Compile all code"

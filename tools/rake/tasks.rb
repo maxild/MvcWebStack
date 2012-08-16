@@ -180,8 +180,7 @@ module Rake
 				require 'System'
 				require 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
 			else
-				require 'xml'
-				require 'libxslt'
+				require 'nokogiri'
 			end
 		end
 		
@@ -235,7 +234,7 @@ module Rake
 					xpath_doc = System::Xml::XPath::XPathDocument.new(file)
 					@xpath_nav = xpath_doc.create_navigator
 				}
-				ruby.mri { @doc = LibXML::XML::Document.file(file) }
+				ruby.mri { @doc = Nokogiri::XML(File.read(file)) }
 			end		
 		end 
 		
@@ -243,7 +242,7 @@ module Rake
 			execute_in do |ruby|
 				# hack because IronRuby has a bug
 				ruby.net { ruby.return_value = @xpath_nav.evaluate(xpath).to_s }
-				ruby.mri { ruby.return_value = @doc.find(xpath).to_s }
+				ruby.mri { ruby.return_value = @doc.at_xpath(xpath).to_s }
 			end
 		end
 	end
@@ -263,12 +262,11 @@ module Rake
 					xslt.transform(xml_file, file)
 				}	
 				ruby.mri {
-					stylesheet_doc = LibXML::XML::Document.file(xslt_file)
-  					stylesheet = LibXSLT::XSLT::Stylesheet.new(stylesheet_doc)
-  					xml_doc = XML::Document.file(xml_file)
-  					html = stylesheet.apply(xml_doc)
-  					File.open(file, 'w') do |f|
-						f.puts html
+					doc = Nokogiri::XML(File.read(xml_file))
+          xslt = Nokogiri::XSLT(File.read(xslt_file))
+          html = xslt.transform(doc)
+					File.open(file, 'w') do |f|
+            f.puts html
 					end
 				}
 			end	
@@ -376,7 +374,7 @@ module Rake
 		protected :exit_code
 	end
 	
-	class Version
+	class Vers
 		attr_accessor :major, :minor, :build, :revision
 		def initialize(version=nil)
 			@major = @minor = @build = @revision = 0
@@ -397,7 +395,7 @@ module Rake
 		attr_accessor :version
 		
 		def init
-			@version = Version.new
+			@version = Vers.new
 			@properties = Hash.new
 		end
 		
