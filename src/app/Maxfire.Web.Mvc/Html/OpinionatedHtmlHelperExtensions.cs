@@ -165,7 +165,7 @@ namespace Maxfire.Web.Mvc.Html
 				{
 					string sanitizedId = Html401IdUtil.CreateSanitizedId(name + "_" + option.Value);
 					sb.Append(htmlHelper.RadioButtonHelper(modelValue, sanitizedId, name, option.Value, htmlInputElementAttributes));
-					sb.Append(LabelHelper(sanitizedId, option.Text, htmlLabelElementAttributes));
+					sb.Append(LabelHelper(sanitizedId, HttpUtility.HtmlEncode(option.Text), htmlLabelElementAttributes));
 				}
 			}
 
@@ -251,7 +251,7 @@ namespace Maxfire.Web.Mvc.Html
 
 		private static string LabelHelper(string forId, string labelText, IDictionary<string, object> htmlAttributes)
 		{
-			var tag = new TagBuilder("label") { InnerHtml = HttpUtility.HtmlEncode(labelText) };
+			var tag = new TagBuilder("label") { InnerHtml = labelText };
 			tag.MergeAttributes(htmlAttributes);
 			tag.Attributes.Add("for", forId);
 			return tag.ToString(TagRenderMode.Normal);
