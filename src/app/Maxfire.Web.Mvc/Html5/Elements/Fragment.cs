@@ -19,6 +19,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		private readonly ISet<string> _classNames = new SortedSet<string>(StringComparer.Ordinal);
 		private TagRenderMode _tagRenderMode;
 		private string _formatValueWith;
+		private bool _isModelValue;
 
 		protected Fragment(string elementName)
 		{
@@ -281,13 +282,42 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 			else
 			{
-				if (_formatValueWith != null)
-				{
-					value = _formatValueWith.FormatWith(value);
-				}
-				Attr(HtmlAttribute.Value, value);
+				SetValue(value);
 			}
 			return self;
+		}
+
+		private void SetValue(object value)
+		{
+			Attr(HtmlAttribute.Value, _formatValueWith != null ? _formatValueWith.FormatWith(value) : value);
+		}
+
+		public T BindValueAndExplicitValue(object value, object explicitValue)
+		{
+			if (value != null)
+			{
+				BindValue(value);
+				_isModelValue = true;
+			}
+			if (explicitValue != null)
+			{
+				BindValue(explicitValue);
+				_isModelValue = false;
+			}
+			return self;
+		}
+
+		protected void BindAttemptedValue(object value)
+		{
+			if (_isModelValue)
+			{
+				BindValue(value);
+			}
+		}
+
+		protected virtual void BindValue(object value)
+		{
+			SetValue(value);
 		}
 
 		/// <summary>
@@ -311,7 +341,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				if (value != null)
 				{
 					string formattedValue = _formatValueWith.FormatWith(value);
-					Value(formattedValue);
+					SetValue(formattedValue);
 				}
 			}
 			return (T)this;

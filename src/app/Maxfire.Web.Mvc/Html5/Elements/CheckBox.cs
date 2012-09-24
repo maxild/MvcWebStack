@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System.Globalization;
+using System.Web.Mvc;
+using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -50,9 +52,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return self;
 		}
 
-		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		protected override object GetAttemptedValue(ValueProviderResult attemptedValue)
 		{
-			var isChecked = attemptedValue.ConvertTo<bool?>();
+			return attemptedValue.ConvertTo<bool?>();
+		}
+
+		protected override void BindValue(object value)
+		{
+			var isChecked = TypeExtensions.ConvertSimpleType<bool?>(CultureInfo.CurrentCulture, value);
 			if (isChecked.HasValue)
 			{
 				Checked(isChecked.Value);

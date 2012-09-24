@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Maxfire.Web.Mvc.FluentHtml.Elements;
 
 namespace Maxfire.Web.Mvc
@@ -11,6 +12,12 @@ namespace Maxfire.Web.Mvc
 		{
 			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.NameValueSerializer);
 			return new UrlBuilder(urlHelper, routeValues);
+		}
+
+		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action, RouteValueDictionary routeValues) where TController : Controller
+		{
+			var mergedRouteValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.NameValueSerializer).Merge(routeValues);
+			return new UrlBuilder(urlHelper, mergedRouteValues);
 		}
 
 		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action, string controllerName) where TController : Controller

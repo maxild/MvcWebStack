@@ -226,8 +226,6 @@ namespace Maxfire.Web.Mvc.Html
 			return tagBuilder.ToString(TagRenderMode.Normal);
 		}
 
-		
-
 		private static INameValueSerializer GetNameValueSerializer(this HtmlHelper htmlHelper)
 		{
 			var controller = htmlHelper.ViewContext.Controller as OpinionatedController;
@@ -295,8 +293,7 @@ namespace Maxfire.Web.Mvc.Html
 		{
 			var self = htmlHelper as IModelNameResolver<TModel>;
 			string name = self.GetModelNameFor(expression);
-			object attemptedvalue = htmlHelper.GetModelStateValue(name, typeof (string)) ??
-			                        (htmlHelper as IModelMetadataAccessor<TModel>).GetAttemptedModelValue(name);
+			object attemptedvalue = htmlHelper.GetModelStateValue(name, typeof (string));
 			return attemptedvalue;
 		}
 

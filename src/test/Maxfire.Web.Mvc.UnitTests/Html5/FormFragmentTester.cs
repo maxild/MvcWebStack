@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.Web.Mvc;
 using Maxfire.Web.Mvc.Html5.Elements;
-using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
@@ -13,10 +10,6 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		{
 			public TestableFormFragment(string name) 
 				: base("input", name, null /*accessor*/)
-			{
-			}
-
-			protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
 			{
 			}
 		}

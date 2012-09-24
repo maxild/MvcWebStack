@@ -1,5 +1,4 @@
-﻿using System.Web.Mvc;
-using Maxfire.Core.Extensions;
+﻿using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -24,11 +23,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				return value ?? "text";
 			}
 			return value;
-		}
-
-		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
-		{
-			Value(attemptedValue.ConvertTo<string>());
 		}
 	}
 

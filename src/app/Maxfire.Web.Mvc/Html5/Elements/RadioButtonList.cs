@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Web.Mvc;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -22,9 +21,9 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return self;
 		}
 
-		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		protected override void BindValue(object value)
 		{
-			SelectedValue(attemptedValue.ConvertTo<string>());
+			SelectedValue(value);
 		}
 	}
 }

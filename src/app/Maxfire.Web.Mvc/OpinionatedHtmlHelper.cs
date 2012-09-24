@@ -170,47 +170,6 @@ namespace Maxfire.Web.Mvc
 			return fullHtmlFieldName;
 		}
 
-		object IModelMetadataAccessor.GetAttemptedModelValue(string modelName)
-		{
-			return GetAttemptedModelValue(modelName);
-		}
-
-		protected virtual object GetAttemptedModelValue(string modelName)
-		{
-			IEnumerable<KeyValuePair<string, object>> values = GetAttemptedModelValues(modelName);
-			return values.Map(x => x.Value).FirstOrDefault();
-		}
-
-		IEnumerable<KeyValuePair<string, object>> IModelMetadataAccessor.GetAttemptedModelValues(string modelName)
-		{
-			return GetAttemptedModelValues(modelName);
-		}
-
-		protected virtual IEnumerable<KeyValuePair<string, object>> GetAttemptedModelValues(string modelName)
-		{
-			IDictionary<string, object> values = null;
-			ModelMetadata modelMetadata = GetModelMetadata(modelName);
-			object value;
-			try
-			{
-				value = modelMetadata.Model;
-			}
-			catch (InvalidOperationException)
-			{
-				// Nullable object must have a value (e.g. 'birthday.Value.Day')
-				value = null;
-			}
-			catch (NullReferenceException)
-			{
-				value = null;
-			}
-			if (value != null && NameValueSerializer != null)
-			{
-				values = NameValueSerializer.GetValues(value, modelName);
-			}
-			return values ?? Enumerable.Empty<KeyValuePair<string, object>>();
-		}
-
 		ModelMetadata IModelMetadataAccessor.GetModelMetadata(string modelName)
 		{
 			return GetModelMetadata(modelName);

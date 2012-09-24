@@ -44,10 +44,8 @@ namespace Maxfire.Web.Mvc
 
 		public UrlBuilder RouteValues(object model)
 		{
-			RouteValueDictionary routeValues = new RouteValueDictionary();
 			var values = _urlHelper.NameValueSerializer.GetValues(model, string.Empty);
-			routeValues.Merge(values);
-			return RouteValues(routeValues);
+			return RouteValues(values);
 		}
 
 		public UrlBuilder RouteValues(IDictionary<string, object> routeValues)

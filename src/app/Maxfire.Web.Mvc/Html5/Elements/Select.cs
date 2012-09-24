@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Text;
-using System.Web.Mvc;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
@@ -33,9 +32,9 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				.ToString();
 		}
 
-		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		protected override void BindValue(object value)
 		{
-			SelectedValue(attemptedValue.ConvertTo<string>());
+			SelectedValue(value);
 		}
 	}
 }

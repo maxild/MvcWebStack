@@ -24,15 +24,16 @@ namespace Maxfire.Web.Mvc
 			throw new InvalidOperationException(string.Format("The required key '{0}' cannot be found in route values.", name));
 		}
 
-		public static void Merge(this RouteValueDictionary mergedRouteValues, IDictionary<string, object> values)
+		public static RouteValueDictionary Merge(this RouteValueDictionary routeValues, IDictionary<string, object> values)
 		{
 			if (values != null)
 			{
 				foreach (KeyValuePair<string, object> kvp in values)
 				{
-					mergedRouteValues[kvp.Key] = kvp.Value;
+					routeValues[kvp.Key] = kvp.Value;
 				}
 			}
+			return routeValues;
 		}
 	}
 }

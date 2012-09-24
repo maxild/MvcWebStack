@@ -21,7 +21,6 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				throw new ArgumentException("The argument cannot be empty.", "name");
 			}
-			// TODO: Can accessor be null?
 			_accessor = accessor;
 			Attr(HtmlAttribute.Name, name);
 			Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
@@ -29,45 +28,35 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
 
-		// TODO: Maybe virtual?
-		protected void ApplyModelState()
+		private void ApplyModelState()
 		{
-			var name = Attr(HtmlAttribute.Name);
-			if (name == null || _accessor == null)
-			{
-				return;
-			}
-
-			ModelState modelState = _accessor.GetModelState(name);
-			if (modelState != null)
-			{
-				// TODO: ApplyModelStateErrors
-				if (modelState.IsInvalid())
-				{
-					AddClass(DEFAULT_VALIDATION_CSS_CLASS);
-				}
-				if (modelState.Value != null)
-				{
-					ApplyModelStateAttemptedValue(modelState.Value);
-				}
-			}
-		}
-
-		private void InferIdFromName()
-		{
-			if (!HasAttr(HtmlAttribute.Id))
+			if (_accessor != null)
 			{
 				string name = Attr(HtmlAttribute.Name);
-				Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
+				ModelState modelState = _accessor.GetModelState(name);
+				if (modelState != null)
+				{
+					if (modelState.IsInvalid())
+					{
+						AddClass(DEFAULT_VALIDATION_CSS_CLASS);
+					}
+					if (modelState.Value != null)
+					{
+						// ModelState should always take precedence over any model based values (by convention)
+						// To avoid modelstate overwriting model based values either remove it or use an explicit value
+						BindAttemptedValue(GetAttemptedValue((modelState.Value)));
+					}
+				}
 			}
 		}
 
-		protected abstract void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue);
+		protected virtual object GetAttemptedValue(ValueProviderResult attemptedValue)
+		{
+			return attemptedValue.ConvertTo<string>();
+		}
 
 		protected override string ToTagString()
 		{
-			// Id is inferred in ctor and therefore commented out below
-			//InferIdFromName();
 			ApplyModelState();
 			return base.ToTagString();
 		}

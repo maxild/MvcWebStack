@@ -23,9 +23,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return self;
 		}
 
-		protected override void ApplyModelStateAttemptedValue(ValueProviderResult attemptedValue)
+		protected override object GetAttemptedValue(ValueProviderResult attemptedValue)
 		{
-			SelectedValues(attemptedValue.ConvertTo<string[]>());
+			return attemptedValue.ConvertTo<string[]>();
+		}
+
+		protected override void BindValue(object value)
+		{
+			SelectedValues(value as IEnumerable);
 		}
 	}
 }

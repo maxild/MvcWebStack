@@ -72,6 +72,11 @@ namespace Maxfire.Core.Extensions
 			return typeConverter.CanConvertFrom(typeof(String));
 		}
 
+		public static T ConvertSimpleType<T>(CultureInfo culture, object value)
+		{
+			return (T) ConvertSimpleType(culture, value, typeof (T));
+		}
+
 		public static object ConvertSimpleType(CultureInfo culture, object value, Type destinationType)
 		{
 			if (value == null || destinationType.IsInstanceOfType(value))

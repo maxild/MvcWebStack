@@ -79,7 +79,7 @@ namespace Maxfire.Web.Mvc
 
 		public static IEnumerable<TextValuePair> FromEnumTexts<TEnum>(Func<TEnum, bool> predicate = null)
 		{
-			return FromEnumHelper<TEnum>(item => item.ToString(), predicate);
+			return FromEnumHelper(item => item.ToString(), predicate);
 		}
 
 		private static IEnumerable<TextValuePair> FromEnumHelper<TEnum>(Func<TEnum, string> valueSelector, Func<TEnum, bool> predicate = null)
