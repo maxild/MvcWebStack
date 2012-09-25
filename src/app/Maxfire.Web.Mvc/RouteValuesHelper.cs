@@ -32,7 +32,25 @@ namespace Maxfire.Web.Mvc
 				throw new ArgumentException("The LINQ expression must be a method call.");
 			}
 
-			controllerName = controllerName ?? typeof(TController).Name;
+			string controller = GetControllerName(controllerName ?? typeof(TController).Name);
+
+			var routeValues = new RouteValueDictionary { { "Controller", controller }, { "Action", call.Method.Name } };
+
+			if (nameValueSerializer != null)
+			{
+				addParameterValuesFromExpressionToDictionary(routeValues, call, prefix, nameValueSerializer);
+			}
+
+			return routeValues;
+		}
+
+		public static string GetControllerName<TController>()
+		{
+			return GetControllerName(typeof (TController).Name);
+		}
+
+		private static string GetControllerName(string controllerName)
+		{
 			if (!controllerName.EndsWith("Controller", StringComparison.OrdinalIgnoreCase))
 			{
 				throw new ArgumentException("The name of the generic TController type argument does not end with 'Controller'.");
@@ -41,17 +59,10 @@ namespace Maxfire.Web.Mvc
 			controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
 			if (controllerName.Length == 0)
 			{
-				throw new ArgumentException("Cannot route to the Controller super layer type.", "action");
+				throw new ArgumentException("Cannot route to the Controller super layer type.");
 			}
 
-			var routeValues = new RouteValueDictionary { { "Controller", controllerName }, { "Action", call.Method.Name } };
-
-			if (nameValueSerializer != null)
-			{
-				addParameterValuesFromExpressionToDictionary(routeValues, call, prefix, nameValueSerializer);
-			}
-
-			return routeValues;
+			return controllerName;
 		}
 
 		private static void addParameterValuesFromExpressionToDictionary(RouteValueDictionary routeValues,

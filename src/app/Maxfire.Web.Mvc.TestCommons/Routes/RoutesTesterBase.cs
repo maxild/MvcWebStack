@@ -247,6 +247,11 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				return this;
 			}
 
+			public UriPathRecognizeOptions ShouldMatchController<TController>()
+			{
+				return ShouldMatchController(RouteValuesHelper.GetControllerName<TController>());
+			}
+
 			public UriPathRecognizeOptions ShouldMatch<TController>(Expression<Action<TController>> action) where TController : Controller
 			{
 				var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, _nameValueSerializer);
