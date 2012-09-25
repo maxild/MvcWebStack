@@ -110,7 +110,7 @@ namespace Maxfire.Web.Mvc
 			public IDictionary<string, object> GetValues(object model, string prefix)
 			{
 				object value = TypeExtensions.ConvertSimpleType(_culture, model, typeof(string));
-				return new Dictionary<string, object>{{prefix, value}};
+				return new Dictionary<string, object>(1){{prefix, value}};
 			}
 		}
 	}

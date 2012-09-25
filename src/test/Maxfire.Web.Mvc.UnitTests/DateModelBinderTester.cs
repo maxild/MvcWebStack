@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 	{
 		public DateModelBinderTester()
 		{
-			Sut = new DateModelBinder(new CultureInfo("da-DK"));
+			Sut = new DateModelBinder();
 		}
 
 		public DateModelBinder Sut { get; private set; }
@@ -123,7 +123,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void CanHandleSingleField()
 		{
-			var valueProvider = new SimpleValueProvider { { "", "3/6/1970" } };
+			var valueProvider = new SimpleValueProvider { { "", "3/6-1970" } };
 
 			var bindingContext = new ModelBindingContext
 			{
@@ -141,7 +141,41 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void CanHandleSingleNamedField()
 		{
-			var valueProvider = new SimpleValueProvider { { "birthday", "3/6/1970" } };
+			var valueProvider = new SimpleValueProvider { { "birthday", "3/6-1970" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			DateTime? result = (DateTime?)Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1970, 6, 3));
+		}
+
+		[Fact]
+		public void CanHandleSingleNamedField2()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday", "03-06-1970" } };
+
+			var bindingContext = new ModelBindingContext
+			{
+				ModelName = "birthday",
+				ValueProvider = valueProvider
+			};
+
+			DateTime? result = (DateTime?)Sut.BindModel(null, bindingContext);
+
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
+			result.ShouldEqual(new DateTime(1970, 6, 3));
+		}
+
+		[Fact]
+		public void CanHandleSingleNamedField3()
+		{
+			var valueProvider = new SimpleValueProvider { { "birthday", "1970-06-03" } };
 
 			var bindingContext = new ModelBindingContext
 			{

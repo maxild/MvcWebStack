@@ -9,13 +9,6 @@ namespace Maxfire.Web.Mvc
 {
 	public class DateModelBinder : SimpleNameValueSerializer<DateTime>, IModelBinder
 	{
-		private readonly CultureInfo _culture;
-
-		public DateModelBinder(CultureInfo culture = null)
-		{
-			_culture = culture ?? CultureInfo.InvariantCulture;
-		}
-
 		public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
 			if (bindingContext == null)
@@ -88,7 +81,7 @@ namespace Maxfire.Web.Mvc
 			return new DateTime(values[0].GetValueOrDefault(), values[1].GetValueOrDefault(), values[2].GetValueOrDefault());
 		}
 
-		private DateTime? GetDateTime(ModelBindingContext bindingContext)
+		private static DateTime? GetDateTime(ModelBindingContext bindingContext)
 		{
 			ValueProviderResult valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 			if (valueResult == null)
@@ -96,10 +89,19 @@ namespace Maxfire.Web.Mvc
 				return null;
 			}
 
+			string valueAsString = valueResult.ConvertTo<string>();
+			if (valueAsString.IsEmpty())
+			{
+				return null;
+			}
+
 			bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueResult);
 			try
 			{
-				return (DateTime?)valueResult.ConvertTo(typeof(DateTime?), _culture);
+				return DateTime.ParseExact(valueAsString, 
+				                           new[] { @"d\/M-yyyy", @"dd\/MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd-MM-yyyy"},
+										   CultureInfo.InvariantCulture,
+				                           DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite);
 			}
 			catch (Exception ex)
 			{
