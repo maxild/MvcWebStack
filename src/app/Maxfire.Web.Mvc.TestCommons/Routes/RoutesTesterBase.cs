@@ -343,19 +343,24 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathGenerationOptions WithController(string controller)
 			{
-				_values.Add("controller", controller);
+				_values["controller"] = controller;
 				return this;
+			}
+
+			public UriPathGenerationOptions WithController<TController>()
+			{
+				return WithController(RouteValuesHelper.GetControllerName<TController>());
 			}
 
 			public UriPathGenerationOptions AndAction(string action)
 			{
-				_values.Add("action", action);
+				_values["action"] = action;
 				return this;
 			}
 
 			public UriPathGenerationOptions AndRouteValue(string key, string value)
 			{
-				_values.Add(key, value);
+				_values[key] = value;
 				return this;
 			}
 
@@ -368,7 +373,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			{
 				foreach (var kvp in values)
 				{
-					_values.Add(kvp.Key, kvp.Value);
+					_values[kvp.Key] = kvp.Value;
 				}
 				return this;
 			}
