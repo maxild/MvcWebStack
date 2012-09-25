@@ -9,15 +9,13 @@ namespace Maxfire.Web.Mvc
 {
 	public abstract class OpinionatedController : Controller, ITempDataContainer, IUrlHelper
 	{
-		private readonly INameValueSerializer _nameValueSerializer;
-		
-		protected OpinionatedController() : this(new DefaultNameValueSerializer())
+		// Because we do not want to require all derived controllers to implement a non-default 
+		// property we rely on property injection, and therefore NameValueSerializer has a setter
+		private INameValueSerializer _nameValueSerializer;
+		public INameValueSerializer NameValueSerializer
 		{
-		}
-
-		protected OpinionatedController(INameValueSerializer nameValueSerializer)
-		{
-			_nameValueSerializer = nameValueSerializer;
+			get { return _nameValueSerializer ?? (_nameValueSerializer = new DefaultNameValueSerializer()); }
+			set { _nameValueSerializer = value; }
 		}
 
 		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
@@ -79,11 +77,6 @@ namespace Maxfire.Web.Mvc
 		public string GetVirtualPath(RouteValueDictionary routeValues)
 		{
 			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ControllerContext.RequestContext, routeValues);
-		}
-
-		public INameValueSerializer NameValueSerializer
-		{
-			get { return _nameValueSerializer; }
 		}
 
 		public bool IsAjaxRequest

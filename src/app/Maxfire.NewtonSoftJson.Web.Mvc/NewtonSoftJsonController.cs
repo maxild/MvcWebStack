@@ -7,14 +7,6 @@ namespace Maxfire.NewtonSoftJson.Web.Mvc
 {
 	public class NewtonSoftJsonController : OpinionatedController
 	{
-		public NewtonSoftJsonController()
-		{
-		}
-
-		public NewtonSoftJsonController(INameValueSerializer nameValueSerializer) : base(nameValueSerializer)
-		{
-		}
-
 		protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)
 		{
 			return Json(data, contentType, contentEncoding, behavior, Formatting.None);

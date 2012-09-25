@@ -9,17 +9,6 @@ namespace Maxfire.Spark.Web.Mvc
 {
 	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
 	{
-		private readonly INameValueSerializer _nameValueSerializer;
-
-		protected OpinionatedSparkView() : this(new DefaultNameValueSerializer())
-		{
-		}
-
-		protected OpinionatedSparkView(INameValueSerializer nameValueSerializer)
-		{
-			_nameValueSerializer = nameValueSerializer;
-		}
-
 		private OpinionatedSparkHtmlHelper _htmlHelper;
 		public new OpinionatedSparkHtmlHelper Html
 		{
@@ -31,9 +20,12 @@ namespace Maxfire.Spark.Web.Mvc
 			return UrlHelperUtil.GetVirtualPath(RouteTable.Routes, ViewContext.RequestContext, routeValues);
 		}
 
+		// Because we have to resolve to property injection in views, and therefore NameValueSerializer has a setter
+		private INameValueSerializer _nameValueSerializer;
 		public INameValueSerializer NameValueSerializer
 		{
-			get { return _nameValueSerializer; }
+			get { return _nameValueSerializer ?? (_nameValueSerializer = new DefaultNameValueSerializer()); }
+			set { _nameValueSerializer = value; }
 		}
 
 		public virtual void Render(string html)
@@ -47,11 +39,7 @@ namespace Maxfire.Spark.Web.Mvc
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();
 
-		protected OpinionatedSparkView() : this(new DefaultNameValueSerializer())
-		{
-		}
-
-		protected OpinionatedSparkView(INameValueSerializer nameValueSerializer) : base(nameValueSerializer)
+		protected OpinionatedSparkView()
 		{
 			_behaviors.Add(new ValidationBehavior(() => ViewModelState));
 			_behaviors.Add(new LabelMemberBehavior());
