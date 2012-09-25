@@ -48,11 +48,6 @@ namespace Maxfire.Spark.Web.Mvc
 			engines.Add(SparkEngineStarter.CreateViewEngine(SparkSettings));
 		}
 
-		public void DescribeBatch(SparkBatchDescriptor batch)
-		{
-			_describeBatch(batch);
-		}
-
 		private IPrecompileSparkSettings getPrecompileSettings()
 		{
 			return _precompileSettings ?? (_precompileSettings = _settingsProvider());
@@ -61,13 +56,18 @@ namespace Maxfire.Spark.Web.Mvc
 		/// <summary>
 		/// Call this method at application startup time to load all precompiled views
 		/// </summary>
-		public void LoadPrecompiledViews()
+		public void LoadPrecompiledViews(ISparkSettings settings)
 		{
-			var engine = new SparkViewEngine(SparkSettings)
-			             	{
-			             		DefaultPageBaseType = typeof (SparkView).FullName
-			             	};
-			engine.LoadBatchCompilation(Assembly.Load(ViewsAssemblyFile));
+			LoadPrecompiledViews(SparkSettings, ViewsAssemblyFile);
+		}
+
+		public static void LoadPrecompiledViews(ISparkSettings settings, string viewsAssemblyFile)
+		{
+			var engine = new SparkViewEngine(settings)
+			{
+				DefaultPageBaseType = typeof(SparkView).FullName // Used only if pageBaseType not specified (as a fallback)
+			};
+			engine.LoadBatchCompilation(Assembly.Load(viewsAssemblyFile));
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace Maxfire.Spark.Web.Mvc
 		public Assembly PrecompileViews(string viewsLocation)
 		{
 			var batch = new SparkBatchDescriptor();
-			DescribeBatch(batch);
+			_describeBatch(batch);
 			var factory = new SparkViewFactory(SparkSettings)
 			              	{
 			              		ViewFolder = new FileSystemViewFolder(viewsLocation)
