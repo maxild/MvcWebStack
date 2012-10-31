@@ -174,10 +174,9 @@ namespace Maxfire.Core
 			get { return _text; }
 		}
 
-		
 		public override string ToString()
 		{
-			return ToString("G", null);
+			return Name;
 		}
 
 		public string ToString(string format, IFormatProvider formatProvider)
@@ -200,7 +199,7 @@ namespace Maxfire.Core
 				case "T":
 					return Text;
 				case "G":
-					return Name;
+					return ToString();
 				default:
 					throw new FormatException(String.Format("Unsupported format '{0}'", format));
 			}
