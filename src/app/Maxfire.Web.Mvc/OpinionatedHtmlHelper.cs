@@ -138,10 +138,14 @@ namespace Maxfire.Web.Mvc
 
 		private string GetDisplayNameFor<TValue>(Expression<Func<TModel, TValue>> expression)
 		{
-			var self = ((IModelMetadataAccessor<TModel>) this);
-			string modelName = self.GetModelNameFor(expression);
-			ModelMetadata modelMetadata = self.GetModelMetadata(modelName);
-			return modelMetadata.DisplayName ?? modelMetadata.PropertyName ?? expression.GetHtmlFieldNameFor().Split('.').Last();
+			string modelName = GetModelNameFor(expression);
+			return GetDisplayName(modelName);
+		}
+
+		private string GetDisplayName(string modelName)
+		{
+			ModelMetadata modelMetadata = GetModelMetadata(modelName);
+			return modelMetadata.DisplayName ?? modelMetadata.PropertyName ?? modelName.Split('.').Last();
 		}
 
 		private ViewDataWrapper<string> _labelTextWrapper;
@@ -203,7 +207,7 @@ namespace Maxfire.Web.Mvc
 
 		string IModelMetadataAccessor.GetLabelText(string modelName)
 		{
-			return LabelTextWrapper.GetData(modelName);
+			return LabelTextWrapper.GetData(modelName) ?? GetDisplayName(modelName);
 		}
 
 		private readonly Dictionary<string, ModelMetadata> _cachedModelMetadataHash = new Dictionary<string, ModelMetadata>(StringComparer.Ordinal);
