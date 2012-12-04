@@ -219,7 +219,6 @@ namespace Maxfire.Web.Mvc
 				item = factory();
 				_cachedModelMetadataHash.Add(key, item);
 			}
-			return;
 		}
 
 		#endregion
