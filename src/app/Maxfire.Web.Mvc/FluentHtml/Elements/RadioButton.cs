@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Maxfire.Web.Mvc.FluentHtml.Extensions;
 using Maxfire.Web.Mvc.FluentHtml.Html;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements
@@ -40,17 +39,18 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			return this;
 		}
 
-		protected override void InferIdFromName()
-		{
-			if (!HasId())
-			{
-				SetId(string.Format("{0}{1}",
-				                    GetName(),
-				                    _value == null
-				                    	? null
-				                    	: string.Format("_{0}", _value)).FormatAsHtmlId());
-			}
-		}
+		// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
+		//protected override void InferIdFromName()
+		//{
+		//    if (!HasId())
+		//    {
+		//        SetId(string.Format("{0}{1}",
+		//                            GetName(),
+		//                            _value == null
+		//                                ? null
+		//                                : string.Format("_{0}", _value)).FormatAsHtmlId());
+		//    }
+		//}
 
 		public override string ToString()
 		{

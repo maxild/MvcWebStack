@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
-using Maxfire.Web.Mvc.FluentHtml.Extensions;
 using Maxfire.Web.Mvc.FluentHtml.Html;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements
@@ -123,7 +122,8 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 
 		public override string ToString()
 		{
-			InferIdFromName();
+			// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
+			//InferIdFromName();
 			base.PreRender();
 			string html = RenderLabel(LabelBeforeText);
 			html += base.ToString();
@@ -166,13 +166,14 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			get { return TagRenderMode.SelfClosing; }
 		}
 
-		protected virtual void InferIdFromName()
-		{
-			if (!HasId())
-			{
-				SetId(GetName().FormatAsHtmlId());
-			}
-		}
+		// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
+		//protected virtual void InferIdFromName()
+		//{
+		//    if (!HasId())
+		//    {
+		//        SetId(GetName().FormatAsHtmlId());
+		//    }
+		//}
 
 		protected string LabelBeforeText { get; set; }
 

@@ -23,7 +23,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 			_accessor = accessor;
 			Attr(HtmlAttribute.Name, name);
-			Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
+			// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
+			//Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
 		}
 
 		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
