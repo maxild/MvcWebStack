@@ -46,18 +46,36 @@ namespace Maxfire.Web.Mvc.Html5
 				.Attr(attributes);
 		}
 
-		public static CheckBox CheckBoxFor<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor,
-		                                                   Expression<Func<TModel, TValue>> expression,
-		                                                   IEnumerable<KeyValuePair<string, object>> attributes)
+		public static CheckBox CheckBoxFor<TModel>(this IModelMetadataAccessor<TModel> accessor,
+												   Expression<Func<TModel, bool>> expression,
+												   IEnumerable<KeyValuePair<string, object>> attributes, 
+												   bool? explicitIsChecked = null)
+		{
+			return accessor.CheckBoxForHelper(expression, attributes);
+		}
+
+		// Note: Some disagreement on trio-state bool? for 2-state checkbox, but non-nullable value 
+		// types has the downside, that the the framework validation system cannot decide if a value 
+		// is false (zero valued) or not given. This will make a required boolean value where false 
+		// is not a valid default hard to implement without using bool?.
+		public static CheckBox CheckBoxFor<TModel>(this IModelMetadataAccessor<TModel> accessor,
+												   Expression<Func<TModel, bool?>> expression,
+												   IEnumerable<KeyValuePair<string, object>> attributes, 
+												   bool? explicitIsChecked = null)
+		{
+			return accessor.CheckBoxForHelper(expression, attributes);
+		}
+
+		private static CheckBox CheckBoxForHelper<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor, 
+		                                                          Expression<Func<TModel, TValue>> expression, 
+		                                                          IEnumerable<KeyValuePair<string, object>> attributes, 
+		                                                          bool? explicitIsChecked = null)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			var checkbox = new CheckBox(name, accessor);
 			var isChecked = accessor.GetModelValueAs<bool?>(name);
-			if (isChecked.HasValue)
-			{
-				checkbox.Checked(isChecked.Value);
-			}
-			return checkbox;
+			return new CheckBox(name, accessor)
+				.BindValueAndExplicitValue(isChecked, explicitIsChecked)
+				.Attr(attributes);
 		}
 
 		public static RadioButtonList RadioButtonListFor<TModel, TProperty>(this IModelMetadataAccessor<TModel> accessor,
