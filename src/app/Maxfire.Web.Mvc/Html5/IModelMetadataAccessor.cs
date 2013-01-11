@@ -39,6 +39,11 @@ namespace Maxfire.Web.Mvc.Html5
 		{
 			return TypeExtensions.ConvertSimpleType<string>(CultureInfo.CurrentCulture, modelMetadataAccessor.GetModel(modelName));
 		}
+
+		public static T GetModelValueAs<T>(this IModelMetadataAccessor modelMetadataAccessor, string modelName)
+		{
+			return TypeExtensions.ConvertSimpleType<T>(CultureInfo.CurrentCulture, modelMetadataAccessor.GetModel(modelName));
+		}
 	}
 
 	public interface IModelMetadataAccessor<TModel> : IModelNameResolver<TModel>, IModelMetadataAccessor

@@ -46,6 +46,20 @@ namespace Maxfire.Web.Mvc.Html5
 				.Attr(attributes);
 		}
 
+		public static CheckBox CheckBoxFor<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor,
+		                                                   Expression<Func<TModel, TValue>> expression,
+		                                                   IEnumerable<KeyValuePair<string, object>> attributes)
+		{
+			string name = accessor.GetModelNameFor(expression);
+			var checkbox = new CheckBox(name, accessor);
+			var isChecked = accessor.GetModelValueAs<bool?>(name);
+			if (isChecked.HasValue)
+			{
+				checkbox.Checked(isChecked.Value);
+			}
+			return checkbox;
+		}
+
 		public static RadioButtonList RadioButtonListFor<TModel, TProperty>(this IModelMetadataAccessor<TModel> accessor,
 			Expression<Func<TModel, TProperty>> expression, 
 			IEnumerable<TextValuePair> options, 
