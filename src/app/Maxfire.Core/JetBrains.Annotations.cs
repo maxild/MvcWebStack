@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 
+// ReSharper disable CheckNamespace
 namespace System.Diagnostics.CodeAnalysis
+// ReSharper restore CheckNamespace
 {
 	/// <summary>
 	/// Indicates that marked method builds string by format pattern and (optional) arguments. 
