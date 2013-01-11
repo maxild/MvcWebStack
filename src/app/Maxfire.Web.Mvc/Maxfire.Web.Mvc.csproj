@@ -169,6 +169,7 @@
     <Compile Include="ValidationModelBinder.cs" />
     <Compile Include="ValidationResult.cs" />
     <Compile Include="ValueProviderResultExtensions.cs" />
+    <Compile Include="ViewDataDictionaryExtensions.cs" />
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
