@@ -8,6 +8,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public RadioButtonList(string name, IModelMetadataAccessor accessor) 
 			: base(HtmlInputType.Radio, name, accessor)
 		{
+			if (accessor != null)
+			{
+				SetSelectedValue(accessor.GetModelMetadata(name).Model);
+			}
 		}
 
 		public object SelectedValue()
@@ -17,13 +21,18 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public RadioButtonList SelectedValue(object value)
 		{
-			Selected(value != null ? new[] { value } : null);
+			BindExplicitValue(value);
 			return self;
+		}
+
+		private void SetSelectedValue(object value)
+		{
+			Selected(value != null ? new[] { value } : null);
 		}
 
 		protected override void BindValue(object value)
 		{
-			SelectedValue(value);
+			SetSelectedValue(value);
 		}
 	}
 }

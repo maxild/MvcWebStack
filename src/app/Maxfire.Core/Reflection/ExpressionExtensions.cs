@@ -7,7 +7,7 @@ namespace Maxfire.Core.Reflection
 {
 	public static class ExpressionExtensions
 	{
-		public static string GetNameFor<T, TValue>(this Expression<Func<T, TValue>> expression) where T : class
+		public static string GetNameFor<T, TValue>(this Expression<Func<T, TValue>> expression)
 		{
 			return ExpressionHelper.GetExpressionText(expression);
 		}
@@ -33,7 +33,8 @@ namespace Maxfire.Core.Reflection
 				return false;
 			}
 
-			return methodExpression.Method.DeclaringType.IsArray && methodExpression.Method.Name.Equals("Get");
+			return (methodExpression.Method.DeclaringType != null && methodExpression.Method.DeclaringType.IsArray) &&
+			       methodExpression.Method.Name.Equals("Get");
 		}
 
 		public static bool IsIndexerProperty(this MethodCallExpression methodExpression)
@@ -43,11 +44,10 @@ namespace Maxfire.Core.Reflection
 				return false;
 			}
 			// Does any property getters of the declaring type annotated with DefaultMemberAttribute correspond to this method
-			return methodExpression.Method
-								   .DeclaringType
-								   .GetDefaultMembers()
-								   .OfType<PropertyInfo>()
-								   .Any(p => p.GetGetMethod() == methodExpression.Method);
+			return methodExpression.Method.DeclaringType != null && methodExpression.Method.DeclaringType
+			                                                                 .GetDefaultMembers()
+			                                                                 .OfType<PropertyInfo>()
+			                                                                 .Any(p => p.GetGetMethod() == methodExpression.Method);
 		}
 	}
 }

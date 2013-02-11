@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web.Mvc;
-using Maxfire.Web.Mvc.FluentHtml.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -15,7 +14,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
 		private readonly IModelMetadataAccessor _accessor;
 
-		protected FormFragment(string elementName, string name, IModelMetadataAccessor accessor) : base(elementName)
+		protected FormFragment(string elementName, string name, IModelMetadataAccessor accessor) 
+			: base(elementName)
 		{
 			if (string.IsNullOrEmpty(name))
 			{
@@ -29,7 +29,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
 
-		private void ApplyModelState()
+		public void ApplyModelState()
 		{
 			if (_accessor != null)
 			{

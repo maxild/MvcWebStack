@@ -10,7 +10,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public Select(string name, IModelMetadataAccessor accessor) 
 			: base(HtmlElement.Select, name, accessor)
 		{
-			SelectedValue(accessor.GetModelMetadata(name).Model);
+			if (accessor != null)
+			{
+				SetSelectedValue(accessor.GetModelMetadata(name).Model);
+			}
 		}
 
 		public object SelectedValue()
@@ -20,8 +23,13 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public Select SelectedValue(object value)
 		{
-			Selected(value != null ? new[] {value} : null);
+			BindExplicitValue(value);
 			return self;
+		}
+
+		private void SetSelectedValue(object value)
+		{
+			Selected(value != null ? new[] { value } : null);
 		}
 
 		protected override string RenderOptions()
@@ -34,7 +42,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override void BindValue(object value)
 		{
-			SelectedValue(value);
+			SetSelectedValue(value);
 		}
 	}
 }

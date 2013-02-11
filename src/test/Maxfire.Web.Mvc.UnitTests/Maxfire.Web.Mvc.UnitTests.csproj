@@ -41,9 +41,14 @@
     <Compile Include="Html5\AssertionExtensions\ElementVerifier.cs" />
     <Compile Include="Html5\AssertionExtensions\ElementListVerifier.cs" />
     <Compile Include="Html5\AssertionExtensions\HtmlStringAssertionExtensions.cs" />
+    <Compile Include="Html5\CheckBoxListTester.cs" />
+    <Compile Include="Html5\CheckBoxTester.cs" />
     <Compile Include="Html5\FormFragmentTester.cs" />
-    <Compile Include="Html5\RadioButtonListTester.cs" />
+    <Compile Include="Html5\InputTester.cs" />
+    <Compile Include="Html5\ModelMetadataAccessorFor.cs" />
     <Compile Include="Html5\FragmentTester.cs" />
+    <Compile Include="Html5\RadioButtonListTester.cs" />
+    <Compile Include="Html5\SelectTester.cs" />
     <Compile Include="ModelStateDictionaryExtensionsTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedirectToActionTester.cs" />

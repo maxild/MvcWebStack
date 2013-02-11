@@ -1,16 +1,14 @@
-using System.Web.Mvc;
 using Maxfire.Core.Extensions;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5;
 using Maxfire.Web.Mvc.Html5.Elements;
-using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
 {
-	public class RadioButtonListTester
+	public class SelectTester
 	{
-		public RadioButtonListTester()
+		public SelectTester()
 		{
 			AccessorWithNeitherAttemptedOrModel = new ModelMetadataAccessorFor<string>(null, () => null);
 			AccessorWithBothAttemptedAndModel = new ModelMetadataAccessorFor<string>("attempted", () => "model");
@@ -35,7 +33,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 				}
 				.Each(accessor =>
 					{
-						var sut = new RadioButtonList("name", accessor).SelectedValue("explicit");
+						var sut = new Select("name", accessor).SelectedValue("explicit");
 						sut.ApplyModelState();
 						sut.SelectedValue().ShouldEqual("explicit");
 					});
@@ -44,11 +42,11 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		[Fact]
 		public void ValueShouldEqualAttemptedValueWhenNoExplicitValueHaveBeenDefined()
 		{
-			var sut = new RadioButtonList("name", AccessorWithBothAttemptedAndModel);
+			var sut = new Select("name", AccessorWithBothAttemptedAndModel);
 			sut.ApplyModelState();
 			sut.SelectedValue().ShouldEqual("attempted");
 
-			sut = new RadioButtonList("name", AccessorWithOnlyAttempted);
+			sut = new Select("name", AccessorWithOnlyAttempted);
 			sut.ApplyModelState();
 			sut.SelectedValue().ShouldEqual("attempted");
 		}
@@ -56,7 +54,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		[Fact]
 		public void ValueShouldEqualModelValueWhenNeitherExplicitValueOrAttemptedValueHaveBeenDefined()
 		{
-			var sut = new RadioButtonList("name", AccessorWithOnlyModel);
+			var sut = new Select("name", AccessorWithOnlyModel);
 			sut.ApplyModelState();
 			sut.SelectedValue().ShouldEqual("model");
 		}
@@ -64,32 +62,9 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 		[Fact]
 		public void ValueShouldBeNullWhenNeitherModelValueOrAttemptedModelOrExplicitValueHaveBeenDefined()
 		{
-			var sut = new RadioButtonList("name", AccessorWithNeitherAttemptedOrModel);
+			var sut = new Select("name", AccessorWithNeitherAttemptedOrModel);
 			sut.ApplyModelState();
 			sut.SelectedValue().ShouldBeNull();
-		}
-
-		[Fact]
-		public void Render()
-		{
-			var options = new RadioButtonList("country", null).Options.FromSelectListItems(new[]
-				{
-					new SelectListItem { Text = "text0", Value="value0" },
-					new SelectListItem { Text = "text1", Value="value1", Selected = true}
-				});
-			options.VerifyThatElementList().HasCount(2)
-			       .ElementAt(0).HasName("input")
-			       .DoesntHaveAttribute("id")
-			       .HasAttribute("name", "country")
-			       .HasAttribute("type", "radio")
-			       .HasAttribute("value", "value0")
-			       .HasInnerText("text0")
-			       .ElementAt(1).HasName("input")
-			       .DoesntHaveAttribute("id")
-			       .HasAttribute("name", "country")
-			       .HasAttribute("type", "radio")
-			       .HasAttribute("value", "value1")
-			       .HasInnerText("text1");
 		}
 	}
 }

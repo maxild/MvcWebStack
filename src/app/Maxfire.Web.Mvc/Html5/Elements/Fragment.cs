@@ -19,7 +19,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		private readonly ISet<string> _classNames = new SortedSet<string>(StringComparer.Ordinal);
 		private TagRenderMode _tagRenderMode;
 		private string _formatValueWith;
-		private bool _isModelValue;
+		private bool _isExplicitValue;
 
 		protected Fragment(string elementName)
 		{
@@ -272,19 +272,25 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <summary>
 		/// Set the value of the "value" attribute.
 		/// </summary>
-		/// <param name="value">The new value of the "value" attribute. 
+		/// <param name="explicitValue">The new value of the "value" attribute.
 		/// If null the "value" attribute is removed.</param>
-		public virtual T Value(object value)
+		public virtual T Value(object explicitValue)
 		{
-			if (value == null)
+			if (explicitValue == null)
 			{
 				RemoveAttr(HtmlAttribute.Value);
 			}
 			else
 			{
-				SetValue(value);
+				SetExplicitValue(explicitValue);
 			}
 			return self;
+		}
+
+		private void SetExplicitValue(object value)
+		{
+			SetValue(value);
+			_isExplicitValue = true;
 		}
 
 		private void SetValue(object value)
@@ -292,27 +298,27 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			Attr(HtmlAttribute.Value, _formatValueWith != null ? _formatValueWith.FormatWith(value) : value);
 		}
 
-		public T BindValueAndExplicitValue(object value, object explicitValue)
+		public T BindModelValue(object value)
 		{
 			if (value != null)
 			{
 				BindValue(value);
-				_isModelValue = true;
-			}
-			if (explicitValue != null)
-			{
-				BindValue(explicitValue);
-				_isModelValue = false;
 			}
 			return self;
 		}
 
 		protected void BindAttemptedValue(object value)
 		{
-			if (_isModelValue)
+			if (!_isExplicitValue && value != null)
 			{
 				BindValue(value);
 			}
+		}
+
+		protected void BindExplicitValue(object value)
+		{
+			BindValue(value);
+			_isExplicitValue = true;
 		}
 
 		protected virtual void BindValue(object value)

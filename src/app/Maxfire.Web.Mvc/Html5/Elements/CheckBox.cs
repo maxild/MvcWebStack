@@ -13,6 +13,10 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public CheckBox(string name, IModelMetadataAccessor accessor)
 			: base(HtmlInputType.Checkbox, name, accessor)
 		{
+			if (accessor != null)
+			{
+				SetChecked(accessor.GetModelValueAs<bool?>(name));
+			}
 		}
 
 		/// <summary>
@@ -21,14 +25,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="value">Whether the checkbox should be checked.</param>
 		public CheckBox Checked(bool value)
 		{
-			if (value)
-			{
-				Attr(HtmlAttribute.Checked, HtmlAttribute.Checked);
-			}
-			else
-			{
-				RemoveAttr(HtmlAttribute.Checked);
-			}
+			BindExplicitValue(value); // we cannot call SetChecked, because we need explicit value flag to be set
 			return self;
 		}
 
@@ -46,9 +43,9 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			return Checked() ? "true,false" :"false";
 		}
 
-		public override CheckBox Value(object value)
+		public override CheckBox Value(object explicitValue)
 		{
-			// Setting value other than "true" is not supported...we fail silently using a noop.
+			// Setting value other than "true,false"/"false" is not supported...we fail silently using a noop.
 			return self;
 		}
 
@@ -60,9 +57,26 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		protected override void BindValue(object value)
 		{
 			var isChecked = TypeExtensions.ConvertSimpleType<bool?>(CultureInfo.CurrentCulture, value);
+			SetChecked(isChecked);
+		}
+
+		private void SetChecked(bool? isChecked)
+		{
 			if (isChecked.HasValue)
 			{
-				Checked(isChecked.Value);
+				SetChecked(isChecked.Value);
+			}
+		}
+
+		private void SetChecked(bool isChecked)
+		{
+			if (isChecked)
+			{
+				Attr(HtmlAttribute.Checked, HtmlAttribute.Checked);
+			}
+			else
+			{
+				RemoveAttr(HtmlAttribute.Checked);
 			}
 		}
 
@@ -71,6 +85,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			string checkbox = base.Value("true").ToTagString();
 			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor).Value("false").ToHtmlString();
 			return string.Concat(checkbox, hidden);
+		}
+
+		class Hidden : InputElement<Hidden>
+		{
+			public Hidden(string name, IModelMetadataAccessor accessor)
+				: base(HtmlInputType.Hidden, name, accessor)
+			{
+			}
 		}
 	}
 }

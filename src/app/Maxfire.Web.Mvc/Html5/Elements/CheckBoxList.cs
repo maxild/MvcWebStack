@@ -10,6 +10,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public CheckBoxList(string name, IModelMetadataAccessor accessor) 
 			: base(HtmlInputType.Checkbox, name, accessor)
 		{
+			if (accessor != null)
+			{
+				var selectedValues = accessor.GetModelMetadata(name).Model as IEnumerable;
+				if (selectedValues != null)
+				{
+					SetSelectedValues(selectedValues);
+				}
+			}
 		}
 
 		public IEnumerable<object> SelectedValues()
@@ -19,7 +27,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public CheckBoxList SelectedValues(IEnumerable selectedValues)
 		{
-			Selected(selectedValues);
+			BindExplicitValue(selectedValues);
 			return self;
 		}
 
@@ -30,7 +38,12 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		protected override void BindValue(object value)
 		{
-			SelectedValues(value as IEnumerable);
+			SetSelectedValues(value as IEnumerable);
+		}
+
+		private void SetSelectedValues(IEnumerable selectedValues)
+		{
+			Selected(selectedValues);
 		}
 	}
 }

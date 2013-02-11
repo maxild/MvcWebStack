@@ -8,7 +8,6 @@ namespace Maxfire.Web.Mvc.Html.Extensions
 	public static class HtmlFieldNameExtensions
 	{
 		public static string GetHtmlFieldNameFor<TViewModel, TProperty>(this Expression<Func<TViewModel, TProperty>> expression) 
-			where TViewModel : class
 		{
 			string htmlFieldName = expression.GetNameFor();
 			return htmlFieldName;
@@ -22,14 +21,12 @@ namespace Maxfire.Web.Mvc.Html.Extensions
 		}
 
 		public static string GetHtmlFieldNameFor<TViewModel, TProperty>(this Expression<Func<TViewModel, TProperty>> expression, ViewDataDictionary viewData)
-			where TViewModel : class
 		{
 			string htmlFieldName = expression.GetNameFor();
 			return viewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 		}
 
 		public static string GetHtmlFieldIdFor<TViewModel, TProperty>(this Expression<Func<TViewModel, TProperty>> expression)
-			where TViewModel : class
 		{
 			return Html401IdUtil.CreateSanitizedId(expression.GetHtmlFieldNameFor());
 		}
@@ -41,7 +38,6 @@ namespace Maxfire.Web.Mvc.Html.Extensions
 		}
 
 		public static string GetHtmlFieldIdFor<TViewModel, TProperty>(this Expression<Func<TViewModel, TProperty>> expression, ViewDataDictionary viewData)
-			where TViewModel : class
 		{
 			return Html401IdUtil.CreateSanitizedId(expression.GetHtmlFieldNameFor(viewData));
 		}

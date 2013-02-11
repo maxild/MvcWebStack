@@ -37,19 +37,15 @@ namespace Maxfire.Web.Mvc.Html5
 
 		public static Input InputFor<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor,
 			string type, Expression<Func<TModel, TValue>> expression, 
-			object explicitValue, IEnumerable<KeyValuePair<string, object>> attributes)
+			IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			string value = accessor.GetModelValueAsString(name);
-			return new Input(type, name, accessor)
-				.BindValueAndExplicitValue(value, explicitValue)
-				.Attr(attributes);
+			return new Input(type, name, accessor).Attr(attributes);
 		}
 
 		public static CheckBox CheckBoxFor<TModel>(this IModelMetadataAccessor<TModel> accessor,
 												   Expression<Func<TModel, bool>> expression,
-												   IEnumerable<KeyValuePair<string, object>> attributes, 
-												   bool? explicitIsChecked = null)
+												   IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			return accessor.CheckBoxForHelper(expression, attributes);
 		}
@@ -60,28 +56,22 @@ namespace Maxfire.Web.Mvc.Html5
 		// is not a valid default hard to implement without using bool?.
 		public static CheckBox CheckBoxFor<TModel>(this IModelMetadataAccessor<TModel> accessor,
 												   Expression<Func<TModel, bool?>> expression,
-												   IEnumerable<KeyValuePair<string, object>> attributes, 
-												   bool? explicitIsChecked = null)
+												   IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			return accessor.CheckBoxForHelper(expression, attributes);
 		}
 
 		private static CheckBox CheckBoxForHelper<TModel, TValue>(this IModelMetadataAccessor<TModel> accessor, 
 		                                                          Expression<Func<TModel, TValue>> expression, 
-		                                                          IEnumerable<KeyValuePair<string, object>> attributes, 
-		                                                          bool? explicitIsChecked = null)
+		                                                          IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			var isChecked = accessor.GetModelValueAs<bool?>(name);
-			return new CheckBox(name, accessor)
-				.BindValueAndExplicitValue(isChecked, explicitIsChecked)
-				.Attr(attributes);
+			return new CheckBox(name, accessor).Attr(attributes);
 		}
 
 		public static RadioButtonList RadioButtonListFor<TModel, TProperty>(this IModelMetadataAccessor<TModel> accessor,
 			Expression<Func<TModel, TProperty>> expression, 
 			IEnumerable<TextValuePair> options, 
-			object explicitValue,
 			IEnumerable<KeyValuePair<string, object>> radioAttributes,
 			IEnumerable<KeyValuePair<string, object>> labelAttributes)
 		{
@@ -92,7 +82,7 @@ namespace Maxfire.Web.Mvc.Html5
 			// TODO: Each radio control should have (sanitized) unique id
 			// TODO: labelAttributes not used at all
 			return new RadioButtonList(name, accessor)
-				.BindValueAndExplicitValue(value, explicitValue)
+				.BindModelValue(value)
 				.Options.FromTextValuePairs(textValuePairs)
 				.Attr(radioAttributes);
 		}
@@ -100,7 +90,6 @@ namespace Maxfire.Web.Mvc.Html5
 		public static Select SelectFor<TModel, TProperty>(this IModelMetadataAccessor<TModel> accessor,
 			Expression<Func<TModel, TProperty>> expression, 
 			IEnumerable<TextValuePair> options,
-			object explicitValue,
 			IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
@@ -108,7 +97,7 @@ namespace Maxfire.Web.Mvc.Html5
 			var textValuePairs = options ?? accessor.GetOptions(name);
 
 			return new Select(name, accessor)
-				.BindValueAndExplicitValue(value, explicitValue)
+				.BindModelValue(value)
 				.Options.FromTextValuePairs(textValuePairs)
 				.Attr(attributes);
 		}
