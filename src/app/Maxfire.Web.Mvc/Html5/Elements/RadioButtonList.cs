@@ -10,7 +10,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			if (accessor != null)
 			{
-				SetSelectedValue(accessor.GetModelMetadata(name).Model);
+				SetSelectedValue(accessor.GetModelValueAsString(name));
 			}
 		}
 

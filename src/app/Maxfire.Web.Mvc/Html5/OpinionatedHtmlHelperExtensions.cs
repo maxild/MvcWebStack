@@ -76,13 +76,11 @@ namespace Maxfire.Web.Mvc.Html5
 			IEnumerable<KeyValuePair<string, object>> labelAttributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			string value = accessor.GetModelValueAsString(name);
 			var textValuePairs = options ?? accessor.GetOptions(name);
 			// TODO: Each radio control should have an auto label with for pointing to id (see below)
 			// TODO: Each radio control should have (sanitized) unique id
 			// TODO: labelAttributes not used at all
 			return new RadioButtonList(name, accessor)
-				.BindModelValue(value)
 				.Options.FromTextValuePairs(textValuePairs)
 				.Attr(radioAttributes);
 		}
@@ -93,11 +91,9 @@ namespace Maxfire.Web.Mvc.Html5
 			IEnumerable<KeyValuePair<string, object>> attributes)
 		{
 			string name = accessor.GetModelNameFor(expression);
-			string value = accessor.GetModelValueAsString(name);
 			var textValuePairs = options ?? accessor.GetOptions(name);
 
 			return new Select(name, accessor)
-				.BindModelValue(value)
 				.Options.FromTextValuePairs(textValuePairs)
 				.Attr(attributes);
 		}

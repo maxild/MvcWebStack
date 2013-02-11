@@ -298,7 +298,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			Attr(HtmlAttribute.Value, _formatValueWith != null ? _formatValueWith.FormatWith(value) : value);
 		}
 
-		public T BindModelValue(object value)
+		protected T BindModelValue(object value)
 		{
 			if (value != null)
 			{
