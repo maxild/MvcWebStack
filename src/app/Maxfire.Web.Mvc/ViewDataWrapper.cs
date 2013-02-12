@@ -2,20 +2,43 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html.Extensions;
 
 namespace Maxfire.Web.Mvc
 {
-	public class ViewDataWrapper<T>
+	public static class ViewDataWrapper
+	{
+		const string OPTIONS_KEY = "Options";
+		const string LABEL_TEXT_KEY = "LabelText";
+		const string COLLECTION_IDS_TO_REUSE_KEY = "__htmlPrefixScopeExtensions_IdsToReuse";
+
+		public static ViewDataWrapper<IEnumerable<TextValuePair>> NewOptionsWrapper(ViewDataDictionary viewData)
+		{
+			return new ViewDataWrapper<IEnumerable<TextValuePair>>(viewData, OPTIONS_KEY);
+		}
+
+		public static ViewDataWrapper<string> NewLabelTextWrapper(ViewDataDictionary viewData)
+		{
+			return new ViewDataWrapper<string>(viewData, LABEL_TEXT_KEY);
+		}
+	}
+
+	public class ViewDataWrapper<T> : IDataProviderAndMutator<T>
 	{
 		private readonly ViewDataDictionary _viewData;
 		private readonly string _key;
 
-		public ViewDataWrapper(ViewDataDictionary viewData)
+		public ViewDataWrapper(ViewDataDictionary viewData, string keyPrefix)
 		{
 			_viewData = viewData;
-			_key = "ViewDataWrapper<{0}>".FormatWith(typeof(T).FullName);
+			_key = "__viewDataWrapper_" + keyPrefix;
+		}
+
+		public string Key
+		{
+			get { return _key; }
 		}
 
 		public T GetData(string key)
@@ -43,6 +66,11 @@ namespace Maxfire.Web.Mvc
 			SetDataFor(expression, null, data);
 		}
 
+		public void SetData(string key, T data)
+		{
+			Hash[key] = data;
+		}
+
 		public void SetDataFor<TModel>(Expression<Func<TModel, object>> expression, T data)
 			where TModel : class
 		{
@@ -57,7 +85,7 @@ namespace Maxfire.Web.Mvc
 			{
 				key += prefix;
 			}
-			Hash[key] = data;
+			SetData(key, data);
 		}
 
 		public void SetDataFor<TModel>(Expression<Func<TModel, object>> expression, string prefix, T data)
@@ -68,7 +96,7 @@ namespace Maxfire.Web.Mvc
 			{
 				key += prefix;
 			}
-			Hash[key] = data;
+			SetData(key, data);
 		}
 
 		private IDictionary<string, T> Hash

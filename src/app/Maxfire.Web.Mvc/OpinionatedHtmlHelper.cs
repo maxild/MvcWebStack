@@ -88,7 +88,7 @@ namespace Maxfire.Web.Mvc
 		private ViewDataWrapper<IEnumerable<TextValuePair>> _optionsWrapper;
 		private ViewDataWrapper<IEnumerable<TextValuePair>> OptionsWrapper
 		{
-			get { return _optionsWrapper ?? (_optionsWrapper = new ViewDataWrapper<IEnumerable<TextValuePair>>(ViewData)); }
+			get { return _optionsWrapper ?? (_optionsWrapper = ViewDataWrapper.NewOptionsWrapper(ViewData)); }
 		}
 
 		private IEnumerable<TextValuePair> GetDefaultOptions(string key)
@@ -151,7 +151,7 @@ namespace Maxfire.Web.Mvc
 		private ViewDataWrapper<string> _labelTextWrapper;
 		private ViewDataWrapper<string> LabelTextWrapper
 		{
-			get { return _labelTextWrapper ?? (_labelTextWrapper = new ViewDataWrapper<string>(ViewData)); }
+			get { return _labelTextWrapper ?? (_labelTextWrapper = ViewDataWrapper.NewLabelTextWrapper(ViewData)); }
 		}
 
 		#region IModelMetadataAccessor Explicit Members
