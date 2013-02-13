@@ -35,8 +35,10 @@ namespace Maxfire.Web.Mvc
 			// Q: What about required value logic....?
 		}
 
-		public static List<string> GetSubIndexNames(ModelBindingContext bindingContext, string prefix)
+		protected override IEnumerable<string> GetCollectionIndexes(ModelBindingContext bindingContext)
 		{
+			string prefix = bindingContext.ModelName;
+
 			var subIndexNames = new List<string>();
 			var subIndexPattern = new Regex("^" + Regex.Escape(prefix) + @"\[([^\]]+)\]", RegexOptions.IgnoreCase);
 
@@ -58,56 +60,16 @@ namespace Maxfire.Web.Mvc
 			return subIndexNames;
 		}
 
-		static string createSubIndexName(string prefix, string indexName)
+		protected override object UpdateDictionary(ControllerContext controllerContext, ModelBindingContext bindingContext, Type keyType, Type valueType)
 		{
-			return String.Format(CultureInfo.InvariantCulture, "{0}[{1}]", prefix, indexName);
-		}
-
-		// Note: I have changed UpdateCollection to 'internal protected virtual' in MVC. This way I can support arbitrary string-based indices of lists (Beta behavior)
-		// Todo: Remove duplication between UpdateCollection and UpdateDictionary
-		protected override object UpdateCollection(ControllerContext controllerContext, ModelBindingContext bindingContext, Type elementType)
-		{
-			IModelBinder elementBinder = Binders.GetBinder(elementType);
-
-			List<object> modelList = new List<object>();
-			
-			string prefix = bindingContext.ModelName;
-
-			// Todo: What about the order of the elements (page order, ordinal order, ???)
-			List<string> indices = GetSubIndexNames(bindingContext, prefix);
-
-			foreach (string index in indices)
-			{
-				string subIndexKey = createSubIndexName(bindingContext.ModelName, index);
-				
-				ModelBindingContext innerContext = new ModelBindingContext
-				{
-					ModelMetadata = GetMetadataForType(null, elementType),
-					ModelName = subIndexKey,
-					ModelState = bindingContext.ModelState,
-					PropertyFilter = bindingContext.PropertyFilter,
-					ValueProvider = bindingContext.ValueProvider
-				};
-				object thisElement = elementBinder.BindModel(controllerContext, innerContext);
-
-				// Note: Uncommented because AddValueRequiredMessageToModelState is private
-				//AddValueRequiredMessageToModelState(controllerContext, bindingContext.ModelState, subIndexKey, elementType, thisElement);
-				modelList.Add(thisElement);
-			}
-
-			if (modelList.Count == 0)
+			if (!keyType.IsSimpleType())
 			{
 				return null;
 			}
 
-			object collection = bindingContext.Model;
-			CollectionHelpers.ReplaceCollection(elementType, collection, modelList);
-			return collection;
-		}
+			IEnumerable<string> indexes = GetCollectionIndexes(bindingContext);
 
-		protected override object UpdateDictionary(ControllerContext controllerContext, ModelBindingContext bindingContext, Type keyType, Type valueType)
-		{
-			if (!keyType.IsSimpleType())
+			if (indexes == null)
 			{
 				return null;
 			}
@@ -116,14 +78,9 @@ namespace Maxfire.Web.Mvc
 
 			List<KeyValuePair<object, object>> modelList = new List<KeyValuePair<object, object>>();
 
-			string prefix = bindingContext.ModelName;
-
-			// Todo: What about the order of the elements (page order, ordinal order, ???)
-			List<string> indices = GetSubIndexNames(bindingContext, prefix);
-
-			foreach (string index in indices)
+			foreach (string index in indexes)
 			{
-				string subIndexKey = createSubIndexName(bindingContext.ModelName, index);
+				string subIndexKey = CreateSubIndexName(bindingContext.ModelName, index);
 
 				object thisKey = convertCollectionIndex(bindingContext.ModelState, subIndexKey, index, keyType);
 

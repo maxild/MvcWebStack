@@ -12,7 +12,6 @@ namespace Maxfire.Web.Mvc
 	{
 		const string OPTIONS_KEY = "Options";
 		const string LABEL_TEXT_KEY = "LabelText";
-		const string COLLECTION_IDS_TO_REUSE_KEY = "__htmlPrefixScopeExtensions_IdsToReuse";
 
 		public static ViewDataWrapper<IEnumerable<TextValuePair>> NewOptionsWrapper(ViewDataDictionary viewData)
 		{
