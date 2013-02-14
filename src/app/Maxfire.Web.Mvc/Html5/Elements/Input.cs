@@ -7,8 +7,19 @@
 		{
 			if (accessor != null)
 			{
-				BindModelValue(accessor.GetModelValueAsString(name));
+				SetValueAttr(accessor.GetModelValueAsString(name));
 			}
+		}
+
+		protected override void BindValue(object value)
+		{
+			SetValueAttr(value);
+		}
+
+		public override Input Value(object value)
+		{
+			BindExplicitValue(value); // we cannot call SetValueAttr, because we need explicit value flag to be set
+			return this;
 		}
 	}
 }

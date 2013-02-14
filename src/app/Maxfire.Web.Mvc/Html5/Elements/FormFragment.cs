@@ -13,6 +13,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		// TODO: Inherent label support via attribute (label from bindings that can take values none|before|after)
 		private readonly IModelMetadataAccessor _accessor;
+		private bool _isExplicitValue;
 
 		protected FormFragment(string elementName, string name, IModelMetadataAccessor accessor) 
 			: base(elementName)
@@ -48,6 +49,22 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 						BindAttemptedValue(GetAttemptedValue((modelState.Value)));
 					}
 				}
+			}
+		}
+
+		protected abstract void BindValue(object value);
+
+		protected void BindExplicitValue(object value)
+		{
+			BindValue(value);
+			_isExplicitValue = true;
+		}
+
+		private void BindAttemptedValue(object value)
+		{
+			if (!_isExplicitValue && value != null)
+			{
+				BindValue(value);
 			}
 		}
 

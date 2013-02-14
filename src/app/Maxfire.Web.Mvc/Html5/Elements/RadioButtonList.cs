@@ -21,7 +21,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public RadioButtonList SelectedValue(object value)
 		{
-			BindExplicitValue(value);
+			BindExplicitValue(value); // we cannot call SetSelectedValue, because we need explicit value flag to be set
 			return self;
 		}
 

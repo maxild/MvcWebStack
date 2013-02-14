@@ -24,13 +24,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public Select SelectedValue(object value)
 		{
-			BindExplicitValue(value);
+			BindExplicitValue(value); // we cannot call SetSelectedValue, because we need explicit value flag to be set
 			return self;
-		}
-
-		private void SetSelectedValue(object value)
-		{
-			Selected(value != null ? new[] { value } : null);
 		}
 
 		protected override string RenderOptions()
@@ -44,6 +39,19 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		protected override void BindValue(object value)
 		{
 			SetSelectedValue(value);
+		}
+
+		private void SetSelectedValue(object value)
+		{
+			Selected(value != null ? new[] { value } : null);
+		}
+
+		class Option : Fragment<Option>
+		{
+			public Option()
+				: base(HtmlElement.Option)
+			{
+			}
 		}
 	}
 }

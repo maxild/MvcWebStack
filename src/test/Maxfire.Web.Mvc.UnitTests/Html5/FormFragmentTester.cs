@@ -12,6 +12,10 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 				: base("input", name, null /*accessor*/)
 			{
 			}
+
+			protected override void BindValue(object value)
+			{
+			}
 		}
 
 		[Fact]

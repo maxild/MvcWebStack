@@ -27,7 +27,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 		public CheckBoxList SelectedValues(IEnumerable selectedValues)
 		{
-			BindExplicitValue(selectedValues);
+			BindExplicitValue(selectedValues); // we cannot call SetSelectedValues, because we need explicit value flag to be set
 			return self;
 		}
 

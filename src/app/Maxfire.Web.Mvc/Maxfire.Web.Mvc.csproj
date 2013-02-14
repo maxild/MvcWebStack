@@ -103,7 +103,6 @@
     <Compile Include="Html5\Elements\FormFragment.cs" />
     <Compile Include="Html5\Elements\Fragment.cs" />
     <Compile Include="Html5\Elements\Input.cs" />
-    <Compile Include="Html5\Elements\Option.cs" />
     <Compile Include="Html5\Elements\OptionsFormFragment.cs" />
     <Compile Include="Html5\Elements\RadioButtonList.cs" />
     <Compile Include="Html5\Elements\Select.cs" />

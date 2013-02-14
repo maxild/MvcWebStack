@@ -83,15 +83,21 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		public override string ToHtmlString()
 		{
 			string checkbox = base.Value("true").ToTagString();
-			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor).Value("false").ToHtmlString();
+			string hidden = new HiddenFalseValued(Attr(HtmlAttribute.Name), ModelMetadataAccessor).ToHtmlString();
 			return string.Concat(checkbox, hidden);
 		}
 
-		class Hidden : InputElement<Hidden>
+		class HiddenFalseValued : InputElement<HiddenFalseValued>
 		{
-			public Hidden(string name, IModelMetadataAccessor accessor)
+			public HiddenFalseValued(string name, IModelMetadataAccessor accessor)
 				: base(HtmlInputType.Hidden, name, accessor)
 			{
+				SetValueAttr("false");
+			}
+
+			protected override void BindValue(object value)
+			{
+				// not used
 			}
 		}
 	}
