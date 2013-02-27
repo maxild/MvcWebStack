@@ -7,7 +7,7 @@ using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedController : Controller, ITempDataContainer, IUrlHelper
+	public abstract class OpinionatedController : Controller, IUrlHelper
 	{
 		// Because we do not want to require all derived controllers to implement a non-default 
 		// property we rely on property injection, and therefore NameValueSerializer has a setter
@@ -48,22 +48,6 @@ namespace Maxfire.Web.Mvc
 			LabelTextWrapper.SetDataFor(expression, labelText);
 		}
 
-		public new object TempData
-		{
-			get { throw new InvalidOperationException("By **convention** we don't use the tempdata dictionary."); }
-		}
-
-		TempDataDictionary ITempDataContainer.TempData
-		{
-			get { return base.TempData; }
-		}
-
-		// Note: Could be an extension method to avoid big base class problem
-		protected void FlashNotice(string message, params object[] args)
-		{
-			(this as ITempDataContainer).TempData["flash-notice"] = string.Format(message, args);
-		}
-
 		public virtual string SiteRoot
 		{
 			get { return UrlHelperUtil.GetSiteRoot(ControllerContext.RequestContext); }
@@ -88,6 +72,21 @@ namespace Maxfire.Web.Mvc
 		{
 			// Derived class can override. Null signals do nothing.
 			return null;
+		}
+
+		private ModelStateTempDataTransferBagWrapper _modelStateToTempDateHelper;
+		private ModelStateTempDataTransferBagWrapper ModelStateToTempDateHelper
+		{
+			get { return _modelStateToTempDateHelper ?? (_modelStateToTempDateHelper = new ModelStateTempDataTransferBagWrapper(() => TempData)); }
+		}
+
+		public void ExportModelStateToTempData()
+		{
+			// Only export model state once
+			if (ModelStateToTempDateHelper.Value == null)
+			{
+				ModelStateToTempDateHelper.Value = ModelState;
+			}
 		}
 	}
 }

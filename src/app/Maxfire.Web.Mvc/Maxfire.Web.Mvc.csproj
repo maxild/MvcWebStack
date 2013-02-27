@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="AbstractModelUpdater.cs" />
     <Compile Include="ActionFilterExtensions.cs" />
+    <Compile Include="BagWrapper.cs" />
     <Compile Include="BetterControllerActionInvoker.cs" />
     <Compile Include="BetterDefaultModelBinder.cs" />
     <Compile Include="CollectionIndexStore.cs" />
@@ -44,6 +45,7 @@
     <Compile Include="DateModelBinder.cs" />
     <Compile Include="DefaultNameValueSerializer.cs" />
     <Compile Include="DefaultNameValueSerializerProvider.cs" />
+    <Compile Include="DynamicBag.cs" />
     <Compile Include="EditModelFor.cs" />
     <Compile Include="EntityViewModel.cs" />
     <Compile Include="EnumerationModelBinder.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="FluentHtml\IMemberElement.cs" />
     <Compile Include="FluentHtml\IViewModelContainer.cs" />
     <Compile Include="FluentHtml\RestfulViewModelContainerExtensions.cs" />
-    <Compile Include="FluentHtml\TempDataContainerExtensions.cs" />
     <Compile Include="FluentHtml\ViewModelContainerExtensions.cs" />
     <Compile Include="Html5\Elements\Anchor.cs" />
     <Compile Include="Html5\Elements\CheckBox.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="IResponseWriter.cs" />
     <Compile Include="IRestfulController.cs" />
     <Compile Include="IRestfulOpinionatedView.cs" />
-    <Compile Include="ITempDataContainer.cs" />
     <Compile Include="IUrlHelper.cs" />
     <Compile Include="IUrlResponseWriter.cs" />
     <Compile Include="IViewContextContainer.cs" />

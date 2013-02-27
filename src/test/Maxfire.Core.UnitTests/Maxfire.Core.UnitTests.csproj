@@ -36,6 +36,7 @@
     <Compile Include="EntityEnumerationTester.cs" />
     <Compile Include="EnumerationTester.cs" />
     <Compile Include="ExpressionNameVisitorTester.cs" />
+    <Compile Include="Extensions\EnumerableExtensionsTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

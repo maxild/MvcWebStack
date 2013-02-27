@@ -35,7 +35,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 			var model = Repository.GetById(id);
 			if (model == null)
 			{
-				FlashNotice(String.Format("Entitet med id '{0}' findes ikke.", id));
+				//FlashNotice(String.Format("Entitet med id '{0}' findes ikke.", id));
 				return this.RedirectToAction<TController>(x => x.Index());
 			}
 			var showModel = Mapper.Map<TModel, TShowModel>(model);
@@ -48,7 +48,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 			var model = Repository.GetById(id);
 			if (model == null)
 			{
-				FlashNotice("Entitet findes ikke.");
+				//FlashNotice("Entitet findes ikke.");
 				return this.RedirectToAction<TController>(x => x.Index());
 			}
 			var editModel = getEditModelFor(model);
@@ -64,7 +64,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 			                    model =>
 			                    	{
 			                    		Repository.Save(model);
-			                    		FlashNotice("Entitet er blevet gemt.");
+			                    		//FlashNotice("Entitet er blevet gemt.");
 			                    		return this.RedirectToAction<TController>(x => x.Show(model.Id));
 			                    	});
 		}
@@ -78,7 +78,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 			                    model =>
 			                    	{
 			                    		Repository.Save(model);
-			                    		FlashNotice("Entitet er blevet opdateret.");
+			                    		//FlashNotice("Entitet er blevet opdateret.");
 			                    		return this.RedirectToAction<TController>(x => x.Index());
 			                    	});
 		}
@@ -88,7 +88,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 		{
 			TModel model = Repository.GetProxyById(id);
 			Repository.Delete(model);
-			FlashNotice("Entitet er blevet slettet.");
+			//FlashNotice("Entitet er blevet slettet.");
 			return this.RedirectToAction<TController>(x => x.Index());
 		}
 

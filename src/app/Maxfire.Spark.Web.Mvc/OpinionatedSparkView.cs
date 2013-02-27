@@ -7,7 +7,7 @@ using Spark.Web.Mvc;
 
 namespace Maxfire.Spark.Web.Mvc
 {
-	public abstract class OpinionatedSparkView : SparkView, ITempDataContainer, IUrlResponseWriter
+	public abstract class OpinionatedSparkView : SparkView, IUrlResponseWriter
 	{
 		private OpinionatedSparkHtmlHelper _htmlHelper;
 		public new OpinionatedSparkHtmlHelper Html
