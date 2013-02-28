@@ -9,15 +9,15 @@ namespace Maxfire.Web.Mvc
 	// PRG pattern support //
 	/////////////////////////
 
-	public class ModelStateTempDataTransferBagWrapper : BagWrapper<TempDataDictionary, ModelStateDictionary>
+	public abstract class ModelStateTempDataTransfer : ActionFilterAttribute
 	{
-		public ModelStateTempDataTransferBagWrapper(Func<TempDataDictionary> thunk)
-			: base(thunk, "__modelStateTempDataTransfer")
+		public static NamedValue<ModelStateDictionary> GetNamedValue(Func<TempDataDictionary> tempDataAccessor)
 		{
+			return new NamedValue<ModelStateDictionary>("__modelStateTempDataTransfer", tempDataAccessor);
 		}
 	}
 
-	public class ExportModelStateToTempData : ActionFilterAttribute
+	public class ExportModelStateToTempData : ModelStateTempDataTransfer
 	{
 		public override void OnActionExecuted(ActionExecutedContext filterContext)
 		{
@@ -25,28 +25,28 @@ namespace Maxfire.Web.Mvc
 			if (filterContext.Controller.ViewData.ModelState.IsInvalid() &&
 				((filterContext.Result is RedirectResult) || (filterContext.Result is RedirectToRouteResult)))
 			{
-				var helper = new ModelStateTempDataTransferBagWrapper(() => filterContext.Controller.TempData);
-				if (helper.Value == null)
+				var namedTempData = GetNamedValue(() => filterContext.Controller.TempData);
+				if (namedTempData.Value == null)
 				{
 					// only export model state once (controller might have done it already)
-					helper.Value = filterContext.Controller.ViewData.ModelState;
+					namedTempData.Value = filterContext.Controller.ViewData.ModelState;
 				}
 			}
 			base.OnActionExecuted(filterContext);
 		}
 	}
 
-	public class ImportModelStateFromTempData : ActionFilterAttribute
+	public class ImportModelStateFromTempData : ModelStateTempDataTransfer
 	{
 		private ModelStateDictionary _originalModelState;
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			var helper = new ModelStateTempDataTransferBagWrapper(() => filterContext.Controller.TempData);
-			if (helper.Value != null)
+			var modelStateInTempData = GetNamedValue(() => filterContext.Controller.TempData);
+			if (modelStateInTempData.Value != null)
 			{
 				_originalModelState = DeepCopy(filterContext.Controller.ViewData.ModelState);
-				filterContext.Controller.ViewData.ModelState.Merge(helper.Value);
+				filterContext.Controller.ViewData.ModelState.Merge(modelStateInTempData.Value);
 			}
 			base.OnActionExecuting(filterContext);
 		}
@@ -58,11 +58,11 @@ namespace Maxfire.Web.Mvc
 				// If we are not rendering a page or a partial page...
 				if (!(filterContext.Result is ViewResultBase))
 				{
-					// ...then we restore the modelstate and remove the temp data
+					// ...then we restore the modelstate
 					filterContext.Controller.ViewData.ModelState.Clear();
 					filterContext.Controller.ViewData.ModelState.Merge(_originalModelState);
-					var helper = new ModelStateTempDataTransferBagWrapper(() => filterContext.Controller.TempData);
-					helper.RemoveValue();
+					// ...and remove the temp data
+					GetNamedValue(() => filterContext.Controller.TempData).Delete();
 				}
 			}
 			base.OnActionExecuted(filterContext);

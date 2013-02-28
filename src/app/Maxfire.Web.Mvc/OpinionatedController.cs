@@ -65,7 +65,7 @@ namespace Maxfire.Web.Mvc
 
 		public bool IsAjaxRequest
 		{
-			get { return Request != null ? Request.IsAjaxRequest() : false; }
+			get { return Request != null && Request.IsAjaxRequest(); }
 		}
 
 		public virtual ActionResult RedirectAjaxRequest(string url)
@@ -74,18 +74,18 @@ namespace Maxfire.Web.Mvc
 			return null;
 		}
 
-		private ModelStateTempDataTransferBagWrapper _modelStateToTempDateHelper;
-		private ModelStateTempDataTransferBagWrapper ModelStateToTempDateHelper
+		private NamedValue<ModelStateDictionary> _modelStateToTempDateHelper;
+		private NamedValue<ModelStateDictionary> ModelStateInTempData
 		{
-			get { return _modelStateToTempDateHelper ?? (_modelStateToTempDateHelper = new ModelStateTempDataTransferBagWrapper(() => TempData)); }
+			get { return _modelStateToTempDateHelper ?? (_modelStateToTempDateHelper = ModelStateTempDataTransfer.GetNamedValue(() => TempData)); }
 		}
 
 		public void ExportModelStateToTempData()
 		{
 			// Only export model state once
-			if (ModelStateToTempDateHelper.Value == null)
+			if (ModelStateInTempData.Value == null)
 			{
-				ModelStateToTempDateHelper.Value = ModelState;
+				ModelStateInTempData.Value = ModelState;
 			}
 		}
 	}
