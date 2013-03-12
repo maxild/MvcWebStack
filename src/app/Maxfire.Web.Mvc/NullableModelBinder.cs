@@ -13,13 +13,19 @@ namespace Maxfire.Web.Mvc
 				throw new ArgumentNullException("bindingContext");
 			}
 
-			// Complex model type with no values to be bound should return null (instead of no-arg ctor value)
-// ReSharper disable AccessToModifiedClosure
-			if (bindingContext.ValueProvider.GetKeys().All(key => bindingContext.IsRequiredRouteValue(key)))
-// ReSharper restore AccessToModifiedClosure
+			IEnumerableValueProvider enumerableValueProvider = bindingContext.ValueProvider as IEnumerableValueProvider;
+			if (enumerableValueProvider != null)
 			{
-				return null;
+				// Complex model type with no values to be bound should return null (instead of no-arg ctor value)
+				// ReSharper disable AccessToModifiedClosure
+				if (enumerableValueProvider.GetKeysFromPrefix(string.Empty).Keys.All(key => bindingContext.IsRequiredRouteValue(key)))
+				// ReSharper restore AccessToModifiedClosure
+				{
+					return null;
+				}
 			}
+
+			
 
 			// Notes: 
 			//   1) ContainsPrefix("") == true, for all value providers (even providers with no values)

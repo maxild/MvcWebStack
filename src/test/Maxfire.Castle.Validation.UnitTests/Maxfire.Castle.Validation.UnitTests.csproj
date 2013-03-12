@@ -49,16 +49,12 @@
     <Compile Include="ValidatorSpec.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\Maxfire.Castle.Validation\Maxfire.Castle.Validation.csproj">
-      <Project>{BE55DBB5-36FC-4F87-8429-E69742C7E460}</Project>
-      <Name>Maxfire.Castle.Validation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
-      <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
+      <Project>{ec28d48b-21b9-4f6d-838b-89dee1f0136c}</Project>
       <Name>Maxfire.TestCommons</Name>
     </ProjectReference>
   </ItemGroup>

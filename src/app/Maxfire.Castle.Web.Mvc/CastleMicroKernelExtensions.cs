@@ -14,7 +14,7 @@ namespace Maxfire.Castle.Web.Mvc
 			{
 				if (property.CanWrite && kernel.HasComponent(property.PropertyType))
 				{
-					var value = kernel.GetService(property.PropertyType);
+					var value = kernel.Resolve(property.PropertyType);
 					try
 					{
 						property.SetValue(target, value, null);
@@ -22,7 +22,7 @@ namespace Maxfire.Castle.Web.Mvc
 					catch (Exception ex)
 					{
 						var message = string.Format("Error setting property {0} on type {1}, See inner exception for more information.", property.Name, type.FullName);
-						throw new ComponentActivatorException(message, ex);
+						throw new ComponentActivatorException(message, ex, null);
 					}
 				}
 			}

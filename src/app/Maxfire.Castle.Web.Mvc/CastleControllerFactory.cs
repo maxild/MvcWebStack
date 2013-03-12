@@ -27,7 +27,7 @@ namespace Maxfire.Castle.Web.Mvc
 				throw new HttpException(404, string.Format("The controller for path '{0}' could not be found or it does not implement IController.", requestContext.HttpContext.Request.Path));
 			}
 
-			var controller = (IController) _kernel.GetService(controllerType);
+			var controller = (IController) _kernel.Resolve(controllerType);
 
 			injectOpinionatedActionInvoker(controller);
 

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Maxfire.Web.Mvc.UnitTests</RootNamespace>
     <AssemblyName>Maxfire.Web.Mvc.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,8 +34,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BetterDefaultModelBinderTesting.cs" />
     <Compile Include="DateModelBinderTester.cs" />
     <Compile Include="DefaultNameValueSerializerTester.cs" />
     <Compile Include="Html5\AssertionExtensions\FragmentVerifier.cs" />
@@ -56,19 +59,8 @@
     <Compile Include="SimplyRestful\NoAreaRestfulRoutesSpecs.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolverTester.cs" />
     <Compile Include="SimplyRestful\NamedControllerRestfulRoutesSpecs.cs" />
-    <Compile Include="TestableValidationModelBinder.cs" />
-    <Compile Include="ValidationModelBinderSpecs.cs" />
-    <Compile Include="ValidationModelBinderSpecs.PortedFromDefaultModelBinder.cs" />
-    <Compile Include="ValidationModelBinderSpecs.PortedFromNameValueDeserializer.cs" />
-    <Compile Include="ValidationModelBinderSpecs.Regressions.cs" />
-    <Compile Include="ValidationModelBinderTester.cs" />
-    <Compile Include="when_model_binding_to_lists.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\castle\NET35\Castle.Components.Validator.dll</HintPath>
-    </Reference>
     <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\tools\rhino.mocks\Rhino.Mocks.dll</HintPath>
@@ -79,10 +71,7 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\aspnetmvc3\System.Web.Mvc.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.RegularExpressions" />
     <Reference Include="System.Web.Routing">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -94,10 +83,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\Maxfire.Castle.Validation\Maxfire.Castle.Validation.csproj">
-      <Project>{BE55DBB5-36FC-4F87-8429-E69742C7E460}</Project>
-      <Name>Maxfire.Castle.Validation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>
@@ -107,7 +92,7 @@
       <Name>Maxfire.TestCommons</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">
-      <Project>{34CF0F0F-D7D4-4F77-B73C-02CF89B50FC7}</Project>
+      <Project>{34cf0f0f-d7d4-4f77-b73c-02cf89b50fc7}</Project>
       <Name>Maxfire.Web.Mvc.TestCommons</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">

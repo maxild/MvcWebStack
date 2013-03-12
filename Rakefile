@@ -9,7 +9,7 @@ PRODUCT_DESC = 'Maxfire Webstack Libraries'
 PRODUCT_VERSION = '0.1'
 COPYRIGHT = 'Copyright 2009 Morten Maxild. All rights reserved.';
 CONFIGURATION = 'debug'
-SOLUTION = 'Maxfire-vs2010.sln'
+SOLUTION = 'Maxfire.sln'
 
 # 3rd party program paths
 PATHS = {
@@ -85,9 +85,10 @@ namespace :build do
 	
 	desc "Compile all code"
 	Rake::MsBuildTask.new(:compile => [:init, :version]) do |msbuild|
+		# Both Visual Studio 2010 and Visual Studio 2012 use a ToolsVersion of 4.0.
 		msbuild.tools_version = '4.0'
-		msbuild.target_framework_version = 'v4.0'
-		msbuild.project = File.join('src', SOLUTION)
+		msbuild.target_framework_version = 'v4.5'
+		msbuild.project = SOLUTION
 		msbuild.targets << 'Clean'
 		msbuild.targets << 'Build'
 		msbuild.verbosity_level = 'minimal'
@@ -192,8 +193,7 @@ namespace :util do
 	
 	desc "Start Visual Studio"
 	task :ide do
-		working_folder = File.join(ROOT, 'src')
-		cd working_folder do
+		cd ROOT do
 			sh SOLUTION
 		end	
 	end

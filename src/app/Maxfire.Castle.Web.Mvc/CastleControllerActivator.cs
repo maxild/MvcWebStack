@@ -19,15 +19,16 @@ namespace Maxfire.Castle.Web.Mvc
 			return _kernel.TryResolve(controllerType) as IController;
 		}
 
-		public virtual void Release(IController controller)
-		{
-			var disposable = controller as IDisposable;
-			if (disposable != null)
-			{
-				disposable.Dispose();
-			}
+		// Note: Not part of MVC 4
+		//public virtual void Release(IController controller)
+		//{
+		//	var disposable = controller as IDisposable;
+		//	if (disposable != null)
+		//	{
+		//		disposable.Dispose();
+		//	}
 
-			_kernel.ReleaseComponent(controller);
-		}
+		//	_kernel.ReleaseComponent(controller);
+		//}
 	}
 }
