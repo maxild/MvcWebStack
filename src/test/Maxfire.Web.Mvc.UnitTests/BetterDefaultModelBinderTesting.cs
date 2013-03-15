@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
-	public class BetterDefaultModelBinderTesting
+	public partial class BetterDefaultModelBinderTesting
 	{
 		//[Fact]
 		//public void GetKeys()

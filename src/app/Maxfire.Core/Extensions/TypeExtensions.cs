@@ -34,7 +34,7 @@ namespace Maxfire.Core.Extensions
 
 		public static bool AllowsNullValue(this Type type)
 		{
-			return (!type.IsValueType || IsNullableValueType(type));
+			return !type.IsValueType || IsNullableValueType(type);
 		}
 
 		public static Type MatchesGenericInterface(this Type type, Type genericInterfaceType)
@@ -64,12 +64,13 @@ namespace Maxfire.Core.Extensions
 
 			TypeConverter typeConverter = TypeDescriptor.GetConverter(propertyType);
 
-			if (typeConverter == null)
-			{
-				return false;
-			}
-				
 			return typeConverter.CanConvertFrom(typeof(String));
+		}
+
+		public static Type ExtractGenericInterface(this Type type, Type interfaceType)
+		{
+			Func<Type, bool> matchesInterface = t => t.IsGenericType && t.GetGenericTypeDefinition() == interfaceType;
+			return (matchesInterface(type)) ? type : type.GetInterfaces().FirstOrDefault(matchesInterface);
 		}
 
 		public static T ConvertSimpleType<T>(CultureInfo culture, object value)
@@ -85,11 +86,11 @@ namespace Maxfire.Core.Extensions
 			}
 
 			TypeConverter converter = TypeDescriptor.GetConverter(destinationType);
-			bool canConvertFrom = converter!= null && converter.CanConvertFrom(value.GetType());
+			bool canConvertFrom = converter.CanConvertFrom(value.GetType());
 			if (!canConvertFrom)
 			{
 				converter = TypeDescriptor.GetConverter(value.GetType());
-				if (converter== null || !converter.CanConvertTo(destinationType))
+				if (!converter.CanConvertTo(destinationType))
 				{
 					string message = String.Format("No converter exists that can convert from type '{0}' to type '{1}'.",
 					                               value.GetType().FullName, destinationType.FullName);
