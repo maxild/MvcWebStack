@@ -13,19 +13,15 @@ namespace Maxfire.Web.Mvc
 				throw new ArgumentNullException("bindingContext");
 			}
 
-			IEnumerableValueProvider enumerableValueProvider = bindingContext.ValueProvider as IEnumerableValueProvider;
-			if (enumerableValueProvider != null)
+			var keyEnumerableValueProvider = bindingContext.ValueProvider as IKeyEnumerableValueProvider;
+			if (keyEnumerableValueProvider != null)
 			{
 				// Complex model type with no values to be bound should return null (instead of no-arg ctor value)
-				// ReSharper disable AccessToModifiedClosure
-				if (enumerableValueProvider.GetKeysFromPrefix(string.Empty).Keys.All(key => bindingContext.IsRequiredRouteValue(key)))
-				// ReSharper restore AccessToModifiedClosure
+				if (keyEnumerableValueProvider.GetKeys().All(key => bindingContext.IsRequiredRouteValue(key)))
 				{
 					return null;
 				}
 			}
-
-			
 
 			// Notes: 
 			//   1) ContainsPrefix("") == true, for all value providers (even providers with no values)

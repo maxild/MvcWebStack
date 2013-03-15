@@ -8,29 +8,43 @@ namespace Maxfire.Web.Mvc
 {
 	public class BetterControllerActionInvoker : ControllerActionInvoker
 	{
+		private readonly IValueProviderFactory _valueProviderFactory;
+
+		public BetterControllerActionInvoker() 
+			: this(null)
+		{
+		}
+
+		public BetterControllerActionInvoker(IValueProviderFactory valueProviderFactory)
+		{
+			_valueProviderFactory = valueProviderFactory;
+		}
+
+		private IValueProvider GetValueProvider(ControllerContext controllerContext)
+		{
+			return _valueProviderFactory != null
+				       ? _valueProviderFactory.GetValueProvider(controllerContext)
+				       : controllerContext.Controller.ValueProvider;
+		}
+
 		protected override IDictionary<string, object> GetParameterValues(ControllerContext controllerContext, ActionDescriptor actionDescriptor)
 		{
-			Dictionary<string, object> parametersDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 			ParameterDescriptor[] parameterDescriptors = actionDescriptor.GetParameters();
 			IEnumerable<string> nonNullableParameterNames = GetNonNullableParameterNames(parameterDescriptors);
 
+			var parameterValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+			
 			foreach (ParameterDescriptor parameterDescriptor in parameterDescriptors)
 			{
-				parametersDict[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, nonNullableParameterNames);
+				parameterValues[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, nonNullableParameterNames);
 			}
 
-			return parametersDict;
+			return parameterValues;
 		}
 
 		private object GetParameterValue(ControllerContext controllerContext, ParameterDescriptor parameterDescriptor, IEnumerable<string> nonNullableParameterNames)
 		{
-			Type parameterType = parameterDescriptor.ParameterType;
-			IModelBinder binder = GetModelBinder(parameterDescriptor);
-			IValueProvider valueProvider = controllerContext.Controller.ValueProvider;
-			string parameterName = parameterDescriptor.BindingInfo.Prefix ?? parameterDescriptor.ParameterName;
-			Predicate<string> propertyFilter = GetPropertyFilter(parameterDescriptor);
-
-			ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, parameterType);
+			ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, parameterDescriptor.ParameterType);
 
 			string[] requiredParameterNames = nonNullableParameterNames
 				.Where(name => !name.Equals(parameterDescriptor.ParameterName, StringComparison.OrdinalIgnoreCase))
@@ -38,17 +52,20 @@ namespace Maxfire.Web.Mvc
 
 			modelMetadata.SetRequiredParameterNames(requiredParameterNames);
 
-			ModelBindingContext bindingContext = new ModelBindingContext
+			var bindingContext = new ModelBindingContext
 			{
-				FallbackToEmptyPrefix = (parameterDescriptor.BindingInfo.Prefix == null),
+				FallbackToEmptyPrefix = (parameterDescriptor.BindingInfo.Prefix == null), // only fall back if prefix not specified
 				ModelMetadata = modelMetadata,
-				ModelName = parameterName,
+				ModelName = parameterDescriptor.BindingInfo.Prefix ?? parameterDescriptor.ParameterName,
 				ModelState = controllerContext.Controller.ViewData.ModelState,
-				PropertyFilter = propertyFilter,
-				ValueProvider = valueProvider
+				PropertyFilter = GetPropertyFilter(parameterDescriptor),
+				ValueProvider = GetValueProvider(controllerContext)
 			};
 
+			IModelBinder binder = GetModelBinder(parameterDescriptor);
+
 			object result = binder.BindModel(controllerContext, bindingContext);
+
 			return result ?? parameterDescriptor.DefaultValue;
 		}
 
@@ -61,6 +78,7 @@ namespace Maxfire.Web.Mvc
 
 		private IModelBinder GetModelBinder(ParameterDescriptor parameterDescriptor)
 		{
+			// look on the parameter itself, then look in the global table
 			return parameterDescriptor.BindingInfo.Binder ?? Binders.GetBinder(parameterDescriptor.ParameterType);
 		}
 
@@ -72,9 +90,9 @@ namespace Maxfire.Web.Mvc
 
 		static bool IsPropertyAllowed(string propertyName, string[] includeProperties, string[] excludeProperties)
 		{
-			// We allow	a property to be bound if its both in the include list AND not in the exclude list.
-			// An empty	include	list implies all properties	are	allowed.
-			// An empty	exclude	list implies no	properties are disallowed.
+			// We allow a property to be bound if its both in the include list AND not in the exclude list.
+			// An empty include list implies all properties are allowed.
+			// An empty exclude list implies no properties are disallowed.
 			bool includeProperty = (includeProperties == null) || (includeProperties.Length == 0) || includeProperties.Contains(propertyName, StringComparer.OrdinalIgnoreCase);
 			bool excludeProperty = (excludeProperties != null) && excludeProperties.Contains(propertyName, StringComparer.OrdinalIgnoreCase);
 			return includeProperty && !excludeProperty;

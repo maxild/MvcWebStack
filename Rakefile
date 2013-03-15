@@ -46,7 +46,7 @@ namespace :build do
 		#:fxcop, 
 		#:simian, 
 		:run_tests, 
-		:coverage_report,
+		#:coverage_report,
 		:copy_output_assemblies
 	]
 	
@@ -135,12 +135,13 @@ namespace :build do
 		test_task_names << task_name
 		desc "Run tests in #{test_assembly_name} with coverage"
 		Rake::XUnitTask.new(task_name => :compile) do |xunit|
+			tools_dir = File.join(ROOT, 'packages', 'xunit.runners.1.9.1', 'tools')
 			xunit.clr_version = '4'
-			xunit.xunit_path = File.join(ROOT, 'tools', 'xunit')
+			xunit.xunit_path = tools_dir
 			xunit.test_assembly = test_assembly
 			xunit.results_folder = ARCHIVE[:results]
 			xunit.test_results_filename = "#{name}UnitTestResults.xml"
-			xunit.test_stylesheet = File.join(ROOT, 'tools', 'xunit', 'xUnitSummary.xsl')
+			xunit.test_stylesheet = File.join(tools_dir, 'HTML.xslt')
 			xunit.calculate_coverage = false
 			xunit.coverage_exclude_attrs << 'Maxfire.TestCommons.NoCoverageAttribute'
 			xunit.ncover_path = PATHS[:ncover]
@@ -183,7 +184,7 @@ namespace :util do
 	desc "Force NCover and xUnit.net to run under WOW64 (x86 emulator that allows 32-bit Windows applications to run on 64-bit Windows"
 	task :ncover64 do
 		ncover_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'tools', 'ncover', 'NCover.Console.exe'))
-		xunit_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'tools', 'xunit', 'xunit.console.exe'))
+		xunit_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'packages', 'xunit.runners.1.9.1', 'tools', 'xunit.console.exe'))
 		working_dir = File.join("#{ENV['ProgramW6432']}", 'Microsoft SDKs', 'Windows', 'v7.0', 'bin')
 		cd working_dir do
 			sh "CorFlags.exe #{ncover_path} /32BIT+"

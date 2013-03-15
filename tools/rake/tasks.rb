@@ -650,8 +650,6 @@ using System.Runtime.InteropServices;
 			
 			flash "running #{File.basename(test_asm).ext} and calculating code coverage"
 			
-			coverage_log_file = File.join(@results_folder, @coverage_log_filename) unless nil_or_empty? @coverage_log_filename
-			
 			# determine if we are using CLR 2 or CLR 4 test runner
 			test_runner = 'xunit.console.exe'
 			if @clr_version == '4' then test_runner = 'xunit.console.clr4.exe' end
@@ -675,6 +673,7 @@ using System.Runtime.InteropServices;
 			# the FileList objects internal patterns to a list of files on the disk, and therefore
 			# it is important to do this when the task executes. 
 			###############################################################################
+			coverage_log_file = File.join(@results_folder, @coverage_log_filename) unless nil_or_empty? @coverage_log_filename
 			coverage_assembly_names = @coverage_assemblies.pathmap('%n')
 
 			#TODO: quote_path (escape_path) method missing...only prepend/append \" token if not already there (to avoid C:/Program Files/... parse error)

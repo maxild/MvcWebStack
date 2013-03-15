@@ -41,6 +41,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.AutoMapper.Web.Mvc"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.NewtonSoftJson.Web.Mvc", "src\app\Maxfire.NewtonSoftJson.Web.Mvc\Maxfire.NewtonSoftJson.Web.Mvc.csproj", "{D8E15316-11AA-455C-9803-0225E8B5E2AB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7A72DE84-1DE2-4EB8-884C-45ECC15BAD4B}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
