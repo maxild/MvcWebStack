@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Web.Mvc.ValueProviders
 {
 	public class BetterDictionaryValueProvider<TValue> : IEnumerableValueProvider, IKeyEnumerableValueProvider
 	{

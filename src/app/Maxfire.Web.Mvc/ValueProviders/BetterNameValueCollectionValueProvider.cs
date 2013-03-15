@@ -5,19 +5,15 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Web.Mvc.ValueProviders
 {
 	public class BetterNameValueCollectionValueProvider : NameValueCollectionValueProvider, IKeyEnumerableValueProvider
 	{
 		private readonly Lazy<BetterPrefixContainer> _prefixContainer;
 		private readonly string[] _keys; // we cannot get to _values in base class
 
-		public BetterNameValueCollectionValueProvider(NameValueCollection collection, CultureInfo culture)
-			: this(collection, null, culture)
-		{
-		}
-
-		public BetterNameValueCollectionValueProvider(NameValueCollection collection, NameValueCollection unvalidatedCollection, CultureInfo culture) : base(collection, unvalidatedCollection, culture)
+		public BetterNameValueCollectionValueProvider(NameValueCollection collection, NameValueCollection unvalidatedCollection, CultureInfo culture)
+			: base(collection, unvalidatedCollection, culture)
 		{
 			if (collection == null)
 				throw new ArgumentNullException("collection");

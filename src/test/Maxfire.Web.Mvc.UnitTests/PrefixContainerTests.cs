@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Maxfire.TestCommons.AssertExtensions;
+using Maxfire.Web.Mvc.ValueProviders;
 using Xunit;
 using Xunit.Extensions;
 using Assert = Maxfire.TestCommons.AssertEx;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Maxfire.Core.Extensions;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Web.Mvc.ValueProviders
 {
 	/// <summary>
 	/// This is a container for prefix values. It normalizes all the values into dotted-form and then stores

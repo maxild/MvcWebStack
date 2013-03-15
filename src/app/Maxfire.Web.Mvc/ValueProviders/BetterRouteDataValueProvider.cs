@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Web.Mvc.ValueProviders
 {
 	public sealed class BetterRouteDataValueProvider : BetterDictionaryValueProvider<object>
 	{

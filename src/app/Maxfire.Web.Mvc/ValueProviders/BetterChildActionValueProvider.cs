@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Reflection;
 using System.Web.Mvc;
 
-namespace Maxfire.Web.Mvc
+namespace Maxfire.Web.Mvc.ValueProviders
 {
-	// ChildActionValueProvider is sealed
+	// Note: ChildActionValueProvider is sealed
 	public sealed class BetterChildActionValueProvider : BetterDictionaryValueProvider<object>
 	{
 		public BetterChildActionValueProvider(ControllerContext controllerContext)
@@ -13,7 +13,7 @@ namespace Maxfire.Web.Mvc
 		{
 		}
 
-		// ChildActionValueProvider.ChildActionValuesKey is internal
+		// Note: ChildActionValueProvider.ChildActionValuesKey is internal
 		private static string ChildActionValuesKey
 		{
 			get

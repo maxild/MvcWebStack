@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Web.Mvc;
 using Maxfire.TestCommons.AssertExtensions;
+using Maxfire.Web.Mvc.ValueProviders;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
