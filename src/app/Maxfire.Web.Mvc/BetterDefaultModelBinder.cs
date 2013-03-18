@@ -41,7 +41,7 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		public virtual object BindComplexModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+		protected virtual object BindComplexModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
 			object model = bindingContext.Model;
 			Type modelType = bindingContext.ModelType;
@@ -113,40 +113,32 @@ namespace Maxfire.Web.Mvc
 				throw new ArgumentNullException("bindingContext");
 			}
 
-			bool containsPrefix = bindingContext.ModelName.IsEmpty() || bindingContext.ValueProvider.ContainsPrefix(bindingContext.ModelName);
-
-			if (containsPrefix)
+			// Because it is impossible to decide up front if any keys are matching the properties of 
+			// a complex model type, if FallbackToEmptyPrefix == true have resulted in an empty 
+			// modelname (=prefix). This check will however cover most cases, where only one model type 
+			// is used at a time (on every action)
+			var keyEnumerableValueProvider = bindingContext.ValueProvider as IKeyEnumerableValueProvider;
+			if (keyEnumerableValueProvider != null)
 			{
-				bool performRequestValidation = ShouldPerformRequestValidation(controllerContext, bindingContext);
-				IUnvalidatedValueProvider unvalidatedValueProvider = bindingContext.GetUnvalidatedValueProvider();
-				var valueProviderResult = unvalidatedValueProvider.GetValue(bindingContext.ModelName, !performRequestValidation);
-				if (valueProviderResult != null)
+				// Complex model type with no keys found should return non-updated model (possibly null, instead of no-arg ctor value)
+				if (keyEnumerableValueProvider.GetKeys().All(key => bindingContext.IsRequiredRouteValue(key)))
 				{
-					// a value in the request did exactly match the name of the model we're binding to, 
-					// and therefore we have a simple model (int, string, etc)
-					return BindSimpleModel(controllerContext, bindingContext, valueProviderResult);
+					return bindingContext.Model;
 				}
 			}
-			else
+
+			bool notFound = bindingContext.ModelName.IsNotEmpty() && !bindingContext.ValueProvider.ContainsPrefix(bindingContext.ModelName);
+			if (notFound)
 			{
-				// We couldn't find any entry that began with the prefix.
-				if (bindingContext.FallbackToEmptyPrefix)
-				{
-					// If this is the top-level element fall back to the empty prefix.
-					bindingContext = bindingContext.ChangeModelName();
-				}
-				else
+				if (!bindingContext.FallbackToEmptyPrefix)
 				{
 					return null;
 				}
+				// Fallback to empty prefix
+				bindingContext = bindingContext.ChangeModelName();
 			}
 
-			if (!bindingContext.ModelMetadata.IsComplexType)
-			{
-				return null;
-			}
-
-			return BindComplexModel(controllerContext, bindingContext);
+			return BindModelCore(controllerContext, bindingContext);
 		}
 
 		private void BindProperties(ControllerContext controllerContext, ModelBindingContext bindingContext)
@@ -215,7 +207,7 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		public virtual object BindSimpleModel(ControllerContext controllerContext, ModelBindingContext bindingContext, ValueProviderResult valueProviderResult)
+		protected virtual object BindSimpleModel(ControllerContext controllerContext, ModelBindingContext bindingContext, ValueProviderResult valueProviderResult)
 		{
 			bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
 
@@ -229,7 +221,6 @@ namespace Maxfire.Web.Mvc
 			// since a string is an IEnumerable<char>, we want it to skip the two checks immediately following
 			if (bindingContext.ModelType != typeof(string))
 			{
-				// conversion results in 3 cases, as below
 				if (bindingContext.ModelType.IsArray)
 				{
 					// ValueProviderResult.ConvertTo() understands array types, so pass in the array type directly
@@ -433,7 +424,9 @@ namespace Maxfire.Web.Mvc
 				yield return i.ToString(CultureInfo.InvariantCulture);
 				i++;
 			}
+// ReSharper disable FunctionNeverReturns
 		}
+// ReSharper restore FunctionNeverReturns
 
 		protected virtual void OnModelUpdated(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
@@ -506,7 +499,9 @@ namespace Maxfire.Web.Mvc
 			{
 				try
 				{
+// ReSharper disable AssignNullToNotNullAttribute
 					propertyDescriptor.SetValue(bindingContext.Model, value);
+// ReSharper restore AssignNullToNotNullAttribute
 				}
 				catch (Exception ex)
 				{
@@ -753,6 +748,30 @@ namespace Maxfire.Web.Mvc
 		protected virtual ModelMetadata GetMetadataForType(Func<object> modelAccessor, Type modelType)
 		{
 			return ModelMetadataProviders.Current.GetMetadataForType(modelAccessor, modelType);
+		}
+
+		protected virtual object BindModelCore(ControllerContext controllerContext, ModelBindingContext bindingContext)
+		{
+			if (bindingContext.ModelName.IsNotEmpty())
+			{
+				bool performRequestValidation = ShouldPerformRequestValidation(controllerContext, bindingContext);
+				IUnvalidatedValueProvider unvalidatedValueProvider = bindingContext.GetUnvalidatedValueProvider();
+				var valueProviderResult = unvalidatedValueProvider.GetValue(bindingContext.ModelName, !performRequestValidation);
+				if (valueProviderResult != null)
+				{
+					// a value in the request did exactly match the name of the model we're binding to, 
+					// and therefore we have a simple model (int, string, etc). This is a 'leaf node', 
+					// and the call to BindSimpleModel is non-recursive.
+					return BindSimpleModel(controllerContext, bindingContext, valueProviderResult);
+				}
+			}
+
+			if (!bindingContext.ModelMetadata.IsComplexType)
+			{
+				return null;
+			}
+
+			return BindComplexModel(controllerContext, bindingContext);
 		}
 
 		protected virtual IEnumerable<string> GetCollectionIndexes(ModelBindingContext bindingContext)

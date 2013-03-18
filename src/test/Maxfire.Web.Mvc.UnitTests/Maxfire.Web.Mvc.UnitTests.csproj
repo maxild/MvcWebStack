@@ -57,6 +57,7 @@
     <Compile Include="PrefixContainerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedirectToActionTester.cs" />
+    <Compile Include="SimpleValueProvider.cs" />
     <Compile Include="SimplyRestful\AreaRestfulRoutesSpecs.cs" />
     <Compile Include="SimplyRestful\NoAreaRestfulRoutesSpecs.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolverTester.cs" />
