@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -27,17 +28,19 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
-			mockHelper.Setup(b => b.OnModelUpdating(controllerContext, It.IsAny<ModelBindingContext>())).Returns(false);
+			mockHelper
+				.Setup(b => b.PublicOnModelUpdating(controllerContext, It.IsAny<ModelBindingContext>()))
+				.Returns(false);
 			TestableDefaultModelBinder helper = mockHelper.Object;
 
 			// Act
-			helper.BindComplexElementalModel(controllerContext, bindingContext, model);
+			helper.PublicBindComplexElementalModel(controllerContext, bindingContext, model);
 
 			// Assert
 			Assert.Equal(3, model.ReadWriteProperty);
 			mockHelper.Verify();
-			mockHelper.Verify(b => b.GetModelProperties(controllerContext, It.IsAny<ModelBindingContext>()), Times.Never());
-			mockHelper.Verify(b => b.BindProperty(controllerContext, It.IsAny<ModelBindingContext>(), It.IsAny<PropertyDescriptor>()), Times.Never());
+			mockHelper.Verify(b => b.PublicGetModelProperties(controllerContext, It.IsAny<ModelBindingContext>()), Times.Never());
+			mockHelper.Verify(b => b.PublicBindProperty(controllerContext, It.IsAny<ModelBindingContext>(), It.IsAny<PropertyDescriptor>()), Times.Never());
 		}
 
 		[Fact]
@@ -51,7 +54,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int[])),
 				ModelName = "foo",
 				PropertyFilter = _ => false,
-				ValueProvider = new SimpleValueProvider()
+				ValueProvider = new SimpleValueProvider
 				{
 					{ "foo[0]", null },
 					{ "foo[1]", null },
@@ -59,19 +62,19 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(typeof(int), bc.ModelType);
-						Assert.Equal(bindingContext.ModelState, bc.ModelState);
-						Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (int), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+						});
 
 			var binder = new TestableDefaultModelBinder
 			{
@@ -82,7 +85,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var newIntArray = Assert.IsType<int[]>(newModel);
@@ -108,30 +111,30 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(typeof(int), bc.ModelType);
-						Assert.Equal(bindingContext.ModelState, bc.ModelState);
-						Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (int), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+						});
 
-			var binder = new TestableDefaultModelBinder()
-			{
-				Binders = new ModelBinderDictionary()
+			var binder = new TestableDefaultModelBinder
 				{
+				Binders = new ModelBinderDictionary
+					{
 					{ typeof(int), mockInnerBinder.Object }
 				}
 			};
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var modelAsList = Assert.IsAssignableFrom<IList<int>>(newModel);
@@ -149,8 +152,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IDictionary<string, CountryState>)),
 				ModelName = "countries",
 				PropertyFilter = _ => true,
-				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>()
-				{
+				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>
+					{
 					{ "countries.CA.Name", "Canada" },
 					{ "countries.CA.States[0]", "Québec" },
 					{ "countries.CA.States[1]", "British Columbia" },
@@ -163,7 +166,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			var binder = new TestableDefaultModelBinder();
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var modelAsDictionary = Assert.IsAssignableFrom<IDictionary<string, CountryState>>(newModel);
@@ -189,8 +192,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IDictionary<string, CountryState>)),
 				ModelName = "countries",
 				PropertyFilter = _ => true,
-				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>()
-				{
+				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>
+					{
 					{ "countries[CA].Name", "Canada" },
 					{ "countries[CA].States[0]", "Québec" },
 					{ "countries[CA].States[1]", "British Columbia" },
@@ -203,7 +206,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			var binder = new TestableDefaultModelBinder();
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var modelAsDictionary = Assert.IsAssignableFrom<IDictionary<string, CountryState>>(newModel);
@@ -229,8 +232,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IDictionary<string, CountryState>)),
 				ModelName = "countries",
 				PropertyFilter = _ => true,
-				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>()
-				{
+				ValueProvider = new DictionaryValueProvider<object>(new Dictionary<string, object>
+					{
 					{ "countries[CA].Name", "Canada" },
 					{ "countries[CA].States[0]", "Québec" },
 					{ "countries.CA.States[1]", "British Columbia" },
@@ -243,7 +246,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			var binder = new TestableDefaultModelBinder();
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var modelAsDictionary = Assert.IsAssignableFrom<IDictionary<string, CountryState>>(newModel);
@@ -271,15 +274,15 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IDictionary<int, string>)),
 				ModelName = "foo",
 				PropertyFilter = _ => false,
-				ValueProvider = new SimpleValueProvider()
-				{
+				ValueProvider = new SimpleValueProvider
+					{
 					{ "foo[0].key", null }, { "foo[0].value", null },
 					{ "foo[1].key", null }, { "foo[1].value", null },
 					{ "foo[2].key", null }, { "foo[2].value", null }
 				}
 			};
 
-			Mock<IModelBinder> mockIntBinder = new Mock<IModelBinder>();
+			var mockIntBinder = new Mock<IModelBinder>();
 			mockIntBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
@@ -293,19 +296,19 @@ namespace Maxfire.Web.Mvc.UnitTests
 						return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10;
 					});
 
-			Mock<IModelBinder> mockStringBinder = new Mock<IModelBinder>();
+			var mockStringBinder = new Mock<IModelBinder>();
 			mockStringBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(typeof(string), bc.ModelType);
-						Assert.Equal(bindingContext.ModelState, bc.ModelState);
-						Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (string), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
+						});
 
 			var binder = new TestableDefaultModelBinder
 			{
@@ -317,7 +320,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			// Act
-			object newModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			var modelAsDictionary = Assert.IsAssignableFrom<IDictionary<int, string>>(newModel);
@@ -345,16 +348,16 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider { { "Foo", null }, { "Bar", null } }
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return bc.ModelName + "PostValue";
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return bc.ModelName + "PostValue";
+						});
 
 			var binder = new TestableDefaultModelBinder
 			{
@@ -365,7 +368,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			// Act
-			object updatedModel = binder.BindComplexModel(controllerContext, bindingContext);
+			object updatedModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			Assert.Same(model, updatedModel);
@@ -385,22 +388,23 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider { { "foo", null } }
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc) { return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture); });
+					(ControllerContext cc, ModelBindingContext bc) =>
+					Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture));
 
 			var binder = new TestableDefaultModelBinder
 			{
-				Binders = new ModelBinderDictionary()
-				{
+				Binders = new ModelBinderDictionary
+					{
 					{ typeof(int), mockInnerBinder.Object }
 				}
 			};
 
 			// Act
-			object newModel = binder.BindComplexModel(null, bindingContext);
+			object newModel = binder.PublicBindComplexModel(null, bindingContext);
 
 			// Assert
 			Assert.Null(newModel);
@@ -424,27 +428,27 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider { { "Foo", null }, { "Bar", null } }
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return bc.ModelName + "PostValue";
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return bc.ModelName + "PostValue";
+						});
 
-			var binder = new TestableDefaultModelBinder()
-			{
-				Binders = new ModelBinderDictionary()
+			var binder = new TestableDefaultModelBinder
 				{
+				Binders = new ModelBinderDictionary
+					{
 					{ typeof(string), mockInnerBinder.Object }
 				}
 			};
 
 			// Act
-			binder.BindComplexModel(controllerContext, bindingContext);
+			binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			Assert.Equal("FooPreValue", model.Foo);
@@ -470,27 +474,27 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider { { "Foo", null }, { "Bar", null } }
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return bc.ModelName + "PostValue";
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return bc.ModelName + "PostValue";
+						});
 
-			var binder = new TestableDefaultModelBinder()
-			{
-				Binders = new ModelBinderDictionary()
+			var binder = new TestableDefaultModelBinder
 				{
+				Binders = new ModelBinderDictionary
+					{
 					{ typeof(string), mockInnerBinder.Object }
 				}
 			};
 
 			// Act
-			binder.BindComplexModel(controllerContext, bindingContext);
+			binder.PublicBindComplexModel(controllerContext, bindingContext);
 
 			// Assert
 			Assert.Equal("FooPostValue", model.Foo);
@@ -518,21 +522,21 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider { { "Foo", null }, { "Bar", null } }
 			};
 
-			Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
+			var mockInnerBinder = new Mock<IModelBinder>();
 			mockInnerBinder
 				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
 				.Returns(
-					delegate(ControllerContext cc, ModelBindingContext bc)
-					{
-						Assert.Equal(controllerContext, cc);
-						Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-						return bc.ModelName + "PostValue";
-					});
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return bc.ModelName + "PostValue";
+						});
 
-			var binder = new TestableDefaultModelBinder()
-			{
-				Binders = new ModelBinderDictionary()
+			var binder = new TestableDefaultModelBinder
 				{
+				Binders = new ModelBinderDictionary
+					{
 					{ typeof(string), mockInnerBinder.Object }
 				}
 			};
@@ -555,7 +559,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			{
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
 				ModelName = "foo",
-				ValueProvider = new SimpleValueProvider()
+				ValueProvider = new SimpleValueProvider
 				{
 					{ "foo", "42" }
 				}
@@ -595,14 +599,14 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_SkipsValidationIfControllerOptsOut()
+		public void BindModel_SkipsRequestValidationIfControllerOptsOut()
 		{
 			// Arrange
 			ModelMetadata metadata = new DataAnnotationsModelMetadataProvider().GetMetadataForType(null, typeof(string));
 
 			var controllerContext = new ControllerContext
 				{
-					Controller = new SimpleController {ValidateRequest = false}
+					Controller = new SimpleController { ValidateRequest = false } // [ValidateInput(false)] on controller/action
 				};
 
 			var bindingContext = new ModelBindingContext
@@ -622,11 +626,11 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_SkipsValidationIfModelOptsOut()
+		public void BindModel_SkipsRequestValidationIfModelOptsOut()
 		{
 			// Arrange
 			ModelMetadata metadata = new DataAnnotationsModelMetadataProvider().GetMetadataForType(null, typeof(string));
-			metadata.RequestValidationEnabled = false;
+			metadata.RequestValidationEnabled = false; // [AllowHtml] on model
 
 			var controllerContext = new ControllerContext {Controller = new SimpleController()};
 
@@ -645,7 +649,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// Assert
 			Assert.Equal("fooUnvalidated", updatedModel);
 		}
-	
+
 		[Fact]
 		public void BindModel_ForSimpleType_ReturnsNullIfKeyNotFound()
 		{
@@ -687,26 +691,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_ForComplexType_ReturnsNullIfKeyNotFound2()
-		{
-			// Arrange
-			var bindingContext = new ModelBindingContext
-			{
-				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
-				ModelName = "foo",
-				ValueProvider = new SimpleValueProvider {{"notfoo", "blah"}, {"controller", "something"}}
-			};
-
-			var binder = new BetterDefaultModelBinder();
-
-			// Act
-			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
-
-			// Assert
-			Assert.Null(returnedModel);
-		}
-
-		[Fact]
 		public void BindModel_ForSimpleTypeAndFallbackToEmptyPrefix_ReturnsNullIfKeyNotFound()
 		{
 			// Arrange
@@ -728,7 +712,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_ForSimpleTypeAndFallbackToEmptyPrefix_ReturnsNotNullIfAnyNonRequiredKeysAreFound()
+		public void BindModel_ForSimpleTypeAndFallbackToEmptyPrefix_ReturnsNewModelIfAnyNonRequiredKeysAreFound()
 		{
 			// Arrange
 			var bindingContext = new ModelBindingContext
@@ -770,7 +754,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_ForComplexTypeAndFallbackToEmptyPrefix_ReturnsNotNullIfAnyNonRequiredKeysAreFound()
+		public void BindModel_ForComplexTypeAndFallbackToEmptyPrefix_ReturnsNewModelIfAnyNonRequiredKeysAreFound()
 		{
 			// Arrange
 			var bindingContext = new ModelBindingContext
@@ -800,1348 +784,1351 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Assert.ThrowsArgumentNull(() => binder.BindModel(new ControllerContext(), null), "bindingContext");
 		}
 
-		//[Fact]
-		//public void BindModelValuesCanBeOverridden()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
-		//		ModelName = "",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo", "FooPostValue" },
-		//			{ "bar", "BarPostValue" },
-		//			{ "baz", "BazPostValue" }
-		//		}
-		//	};
-		//	Mock<DefaultModelBinder> binder = new Mock<DefaultModelBinder> { CallBase = true };
-		//	binder.Protected().Setup<object>("GetPropertyValue",
-		//									 ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>(),
-		//									 ItExpr.IsAny<PropertyDescriptor>(), ItExpr.IsAny<IModelBinder>())
-		//		.Returns("Hello, world!");
+		[Fact]
+		public void BindModelValuesCanBeOverridden()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo", "FooPostValue" },
+					{ "bar", "BarPostValue" },
+					{ "baz", "BazPostValue" }
+				}
+			};
 
-		//	// Act
-		//	ModelWithoutBindAttribute model = (ModelWithoutBindAttribute)binder.Object.BindModel(new ControllerContext(), bindingContext);
+			var binder = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			binder.Setup(b => b.PublicGetPropertyValue(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>(),
+											           It.IsAny<PropertyDescriptor>(), It.IsAny<IModelBinder>()))
+				.Returns("Hello, world!");
 
-		//	// Assert
-		//	Assert.Equal("Hello, world!", model.Bar);
-		//	Assert.Equal("Hello, world!", model.Baz);
-		//	Assert.Equal("Hello, world!", model.Foo);
-		//}
+			// Act
+			var model = (ModelWithoutBindAttribute)binder.Object.BindModel(new ControllerContext(), bindingContext);
 
-		//[Fact]
-		//public void BindModelWithTypeConversionErrorUpdatesModelStateMessage()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new PropertyTestingModel(), typeof(PropertyTestingModel)),
-		//		ModelName = "",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "IntReadWrite", "foo" }
-		//		},
-		//	};
-		//	DefaultModelBinder binder = new DefaultModelBinder();
+			// Assert
+			Assert.Equal("Hello, world!", model.Bar);
+			Assert.Equal("Hello, world!", model.Baz);
+			Assert.Equal("Hello, world!", model.Foo);
+		}
 
-		//	// Act
-		//	PropertyTestingModel model = (PropertyTestingModel)binder.BindModel(new ControllerContext(), bindingContext);
+		[Fact]
+		public void BindModelWithTypeConversionErrorUpdatesModelStateMessage()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new PropertyTestingModel(), typeof(PropertyTestingModel)),
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "IntReadWrite", "foo" }
+				},
+			};
+			var binder = new BetterDefaultModelBinder();
 
-		//	// Assert
-		//	ModelState modelState = bindingContext.ModelState["IntReadWrite"];
-		//	Assert.NotNull(modelState);
-		//	Assert.Single(modelState.Errors);
-		//	Assert.Equal("The value 'foo' is not valid for IntReadWrite.", modelState.Errors[0].ErrorMessage);
-		//}
+			// Act
+			binder.BindModel(new ControllerContext(), bindingContext);
 
-		//[Fact]
-		//public void BindModelWithPrefix()
-		//{
-		//	// Arrange
-		//	ModelWithoutBindAttribute model = new ModelWithoutBindAttribute()
-		//	{
-		//		Foo = "FooPreValue",
-		//		Bar = "BarPreValue",
-		//		Baz = "BazPreValue",
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "prefix",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "prefix.foo", "FooPostValue" },
-		//			{ "prefix.bar", "BarPostValue" }
-		//		}
-		//	};
+			// Assert
+			ModelState modelState = bindingContext.ModelState["IntReadWrite"];
+			Assert.NotNull(modelState);
+			Assert.Single(modelState.Errors);
+			Assert.Equal("The value 'foo' is not valid for IntReadWrite.", modelState.Errors[0].ErrorMessage);
+		}
 
-		//	DefaultModelBinder binder = new DefaultModelBinder();
+		[Fact]
+		public void BindModelWithPrefix()
+		{
+			// Arrange
+			var model = new ModelWithoutBindAttribute
+			{
+				Foo = "FooPreValue",
+				Bar = "BarPreValue",
+				Baz = "BazPreValue",
+			};
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "prefix",
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "prefix.foo", "FooPostValue" },
+					{ "prefix.bar", "BarPostValue" }
+				}
+			};
 
-		//	// Act
-		//	object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
+			var binder = new BetterDefaultModelBinder();
 
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal("FooPostValue", model.Foo);
-		//	Assert.Equal("BarPostValue", model.Bar);
-		//	Assert.Equal("BazPreValue", model.Baz);
-		//}
+			// Act
+			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
-		//[Fact]
-		//public void BindModelWithPrefixAndFallback()
-		//{
-		//	// Arrange
-		//	ModelWithoutBindAttribute model = new ModelWithoutBindAttribute()
-		//	{
-		//		Foo = "FooPreValue",
-		//		Bar = "BarPreValue",
-		//		Baz = "BazPreValue",
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		FallbackToEmptyPrefix = true,
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "prefix",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo", "FooPostValue" },
-		//			{ "bar", "BarPostValue" }
-		//		}
-		//	};
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal("FooPostValue", model.Foo);
+			Assert.Equal("BarPostValue", model.Bar);
+			Assert.Equal("BazPreValue", model.Baz);
+		}
 
-		//	DefaultModelBinder binder = new DefaultModelBinder();
+		[Fact]
+		public void BindModelWithPrefixAndFallback()
+		{
+			// Arrange
+			var model = new ModelWithoutBindAttribute
+			{
+				Foo = "FooPreValue",
+				Bar = "BarPreValue",
+				Baz = "BazPreValue",
+			};
+			var bindingContext = new ModelBindingContext
+			{
+				FallbackToEmptyPrefix = true,
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "prefix",
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo", "FooPostValue" },
+					{ "bar", "BarPostValue" }
+				}
+			};
 
-		//	// Act
-		//	object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
+			var binder = new BetterDefaultModelBinder();
 
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal("FooPostValue", model.Foo);
-		//	Assert.Equal("BarPostValue", model.Bar);
-		//	Assert.Equal("BazPreValue", model.Baz);
-		//}
+			// Act
+			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
-		//[Fact]
-		//public void BindModelWithPrefixReturnsNullIfFallbackNotSpecifiedAndValueProviderContainsNoEntries()
-		//{
-		//	// Arrange
-		//	ModelWithoutBindAttribute model = new ModelWithoutBindAttribute()
-		//	{
-		//		Foo = "FooPreValue",
-		//		Bar = "BarPreValue",
-		//		Baz = "BazPreValue",
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "prefix",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo", "FooPostValue" },
-		//			{ "bar", "BarPostValue" }
-		//		}
-		//	};
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal("FooPostValue", model.Foo);
+			Assert.Equal("BarPostValue", model.Bar);
+			Assert.Equal("BazPreValue", model.Baz);
+		}
 
-		//	DefaultModelBinder binder = new DefaultModelBinder();
+		[Fact]
+		public void BindModelWithPrefixReturnsNullIfFallbackNotSpecifiedAndValueProviderContainsNoEntries()
+		{
+			// Arrange
+			var model = new ModelWithoutBindAttribute
+			{
+				Foo = "FooPreValue",
+				Bar = "BarPreValue",
+				Baz = "BazPreValue",
+			};
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "prefix",
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo", "FooPostValue" },
+					{ "bar", "BarPostValue" }
+				}
+			};
 
-		//	// Act
-		//	object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
+			var binder = new BetterDefaultModelBinder();
 
-		//	// Assert
-		//	Assert.Null(updatedModel);
-		//}
+			// Act
+			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
-		//[Fact]
-		//public void BindModelReturnsNullIfSimpleTypeNotFound()
-		//{
-		//	// DevDiv 216165: ModelBinders should not try and instantiate simple types
+			// Assert
+			Assert.Null(updatedModel);
+		}
 
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(string)),
-		//		ModelName = "prefix",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "prefix.foo", "foo" },
-		//			{ "prefix.bar", "bar" }
-		//		}
-		//	};
+		[Fact]
+		public void BindModelReturnsNullIfSimpleTypeNotFound()
+		{
+			// DevDiv 216165: ModelBinders should not try and instantiate simple types
 
-		//	DefaultModelBinder binder = new DefaultModelBinder();
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(string)),
+				ModelName = "prefix",
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "prefix.foo", "foo" },
+					{ "prefix.bar", "bar" }
+				}
+			};
 
-		//	// Act
-		//	object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
+			var binder = new BetterDefaultModelBinder();
 
-		//	// Assert
-		//	Assert.Null(updatedModel);
-		//}
+			// Act
+			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
+
+			// Assert
+			Assert.Null(updatedModel);
+		}
 
 		//// BindProperty tests
 
-		//[Fact]
-		//public void BindPropertyCanUpdateComplexReadOnlyProperties()
-		//{
-		//	// Arrange
-		//	// the Customer type contains a single read-only Address property
-		//	Customer model = new Customer();
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider() { { "Address", null } }
-		//	};
+		[Fact]
+		public void BindPropertyCanUpdateComplexReadOnlyProperties()
+		{
+			// Arrange
+			// the Customer type contains a single read-only Address property
+			var model = new Customer();
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider { { "Address", null } }
+			};
 
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				Address address = (Address)bc.Model;
-		//				address.Street = "1 Microsoft Way";
-		//				address.Zip = "98052";
-		//				return address;
-		//			});
+			// The 'AddressModelBinder' will do the updating of the Address object
+			// Note: Simple properties need to be read-write!!!!
+			// Note: Complecx properties can be read-only
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							var address = (Address) bc.Model;
+							address.Street = "1 Microsoft Way";
+							address.Zip = "98052";
+							return address;
+						});
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["Address"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(Address), mockInnerBinder.Object }
-		//		}
-		//	};
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["Address"];
+			var helper = new TestableDefaultModelBinder
+				{
+				Binders = new ModelBinderDictionary
+				{
+					{ typeof(Address), mockInnerBinder.Object }
+				}
+			};
 
-		//	// Act
-		//	helper.PublicBindProperty(new ControllerContext(), bindingContext, pd);
+			// Act
+			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
 
-		//	// Assert
-		//	Assert.Equal("1 Microsoft Way", model.Address.Street);
-		//	Assert.Equal("98052", model.Address.Zip);
-		//}
+			// Assert
+			Assert.Equal("1 Microsoft Way", model.Address.Street);
+			Assert.Equal("98052", model.Address.Zip);
+		}
 
-		//[Fact]
-		//public void BindPropertyDoesNothingIfValueProviderContainsNoEntryForProperty()
-		//{
-		//	// Arrange
-		//	MyModel2 model = new MyModel2() { IntReadWrite = 3 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
+		[Fact]
+		public void BindPropertyDoesNothingIfValueProviderContainsNoEntryForProperty()
+		{
+			// Arrange
+			var model = new MyModel2 { IntReadWrite = 3 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider()
+			};
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
+			var helper = new TestableDefaultModelBinder();
 
-		//	// Act
-		//	helper.PublicBindProperty(new ControllerContext(), bindingContext, pd);
+			// Act
+			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
 
-		//	// Assert
-		//	Assert.Equal(3, model.IntReadWrite);
-		//}
+			// Assert
+			Assert.Equal(3, model.IntReadWrite);
+		}
 
-		//[Fact]
-		//public void BindProperty()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-		//	MyModel2 model = new MyModel2() { IntReadWrite = 3 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "IntReadWrite", "42" }
-		//		}
-		//	};
+		[Fact]
+		public void BindProperty()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+			var model = new MyModel2 { IntReadWrite = 3 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "IntReadWrite", "42" }
+				}
+			};
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
 
-		//	Mock<DefaultModelBinderHelper> mockHelper = new Mock<DefaultModelBinderHelper>() { CallBase = true };
-		//	mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, pd, 42)).Returns(true).Verifiable();
-		//	mockHelper.Setup(b => b.PublicSetProperty(controllerContext, bindingContext, pd, 42)).Verifiable();
-		//	mockHelper.Setup(b => b.PublicOnPropertyValidated(controllerContext, bindingContext, pd, 42)).Verifiable();
-		//	DefaultModelBinderHelper helper = mockHelper.Object;
+			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, propertyDescriptor, 42)).Returns(true).Verifiable();
+			mockHelper.Setup(b => b.PublicSetProperty(controllerContext, bindingContext, propertyDescriptor, 42)).Verifiable();
+			mockHelper.Setup(b => b.PublicOnPropertyValidated(controllerContext, bindingContext, propertyDescriptor, 42)).Verifiable();
+			var helper = mockHelper.Object;
 
-		//	// Act
-		//	helper.PublicBindProperty(controllerContext, bindingContext, pd);
+			// Act
+			helper.PublicBindProperty(controllerContext, bindingContext, propertyDescriptor);
 
-		//	// Assert
-		//	mockHelper.Verify();
-		//}
+			// Assert
+			mockHelper.Verify();
+		}
 
-		//[Fact]
-		//public void BindPropertyReturnsIfOnPropertyValidatingReturnsFalse()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-		//	MyModel2 model = new MyModel2() { IntReadWrite = 3 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "IntReadWrite", "42" }
-		//		}
-		//	};
+		[Fact]
+		public void BindPropertyReturnsIfOnPropertyValidatingReturnsFalse()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+			var model = new MyModel2 { IntReadWrite = 3 };
+			var bindingContext = new ModelBindingContext
+				{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "IntReadWrite", "42" }
+				}
+			};
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
+			PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
 
-		//	Mock<DefaultModelBinderHelper> mockHelper = new Mock<DefaultModelBinderHelper>() { CallBase = true };
-		//	mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, pd, 42)).Returns(false);
-		//	DefaultModelBinderHelper helper = mockHelper.Object;
+			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, pd, 42)).Returns(false);
+			var helper = mockHelper.Object;
 
-		//	// Act
-		//	helper.PublicBindProperty(controllerContext, bindingContext, pd);
+			// Act
+			helper.PublicBindProperty(controllerContext, bindingContext, pd);
 
-		//	// Assert
-		//	Assert.Equal(3, model.IntReadWrite);
-		//	mockHelper.Verify();
-		//	mockHelper.Verify(b => b.PublicSetProperty(controllerContext, bindingContext, pd, 42), Times.Never());
-		//	mockHelper.Verify(b => b.PublicOnPropertyValidated(controllerContext, bindingContext, pd, 42), Times.Never());
-		//}
+			// Assert
+			Assert.Equal(3, model.IntReadWrite);
+			mockHelper.Verify();
+			mockHelper.Verify(b => b.PublicSetProperty(controllerContext, bindingContext, pd, 42), Times.Never());
+			mockHelper.Verify(b => b.PublicOnPropertyValidated(controllerContext, bindingContext, pd, 42), Times.Never());
+		}
 
-		//[Fact]
-		//public void BindPropertySetsPropertyToNullIfUserLeftTextEntryFieldBlankForOptionalValue()
-		//{
-		//	// Arrange
-		//	MyModel2 model = new MyModel2() { NullableIntReadWrite = 8 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider() { { "NullableIntReadWrite", null } }
-		//	};
+		[Fact]
+		public void BindPropertySetsPropertyToNullIfUserLeftTextEntryFieldBlankForOptionalValue()
+		{
+			// Arrange
+			var model = new MyModel2 { NullableIntReadWrite = 8 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider { { "NullableIntReadWrite", null } }
+			};
 
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder.Setup(b => b.BindModel(new ControllerContext(), It.IsAny<ModelBindingContext>())).Returns((object)null);
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder.Setup(b => b.BindModel(new ControllerContext(), It.IsAny<ModelBindingContext>())).Returns(null);
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["NullableIntReadWrite"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int?), mockInnerBinder.Object }
-		//		}
-		//	};
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["NullableIntReadWrite"];
+			var helper = new TestableDefaultModelBinder
+			{
+				Binders = new ModelBinderDictionary
+					{
+					{ typeof(int?), mockInnerBinder.Object }
+				}
+			};
 
-		//	// Act
-		//	helper.PublicBindProperty(new ControllerContext(), bindingContext, pd);
+			// Act
+			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
 
-		//	// Assert
-		//	Assert.Empty(bindingContext.ModelState);
-		//	Assert.Null(model.NullableIntReadWrite);
-		//}
+			// Note: Every posted key is updated regardless if the value is null or non-null
 
-		//[Fact]
-		//public void BindPropertyUpdatesPropertyOnFailureIfInnerBinderReturnsNonNullObject()
-		//{
-		//	// Arrange
-		//	MyModel2 model = new MyModel2() { IntReadWriteNonNegative = 8 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ValueProvider = new SimpleValueProvider() { { "IntReadWriteNonNegative", null } }
-		//	};
+			// Assert
+			Assert.Empty(bindingContext.ModelState);
+			Assert.Null(model.NullableIntReadWrite);
+		}
 
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				bc.ModelState.AddModelError("IntReadWriteNonNegative", "Some error text.");
-		//				return 4;
-		//			});
+		[Fact]
+		public void BindPropertyUpdatesPropertyOnFailureIfInnerBinderReturnsNonNullObject()
+		{
+			// Arrange
+			var model = new MyModel2 { IntReadWriteNonNegative = 8 };
+			var bindingContext = new ModelBindingContext
+				{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ValueProvider = new SimpleValueProvider { { "IntReadWriteNonNegative", null } }
+			};
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWriteNonNegative"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockInnerBinder.Object }
-		//		}
-		//	};
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							bc.ModelState.AddModelError("IntReadWriteNonNegative", "Some error text.");
+							return 4;
+						});
 
-		//	// Act
-		//	helper.PublicBindProperty(new ControllerContext(), bindingContext, pd);
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWriteNonNegative"];
+			var helper = new TestableDefaultModelBinder
+			{
+				Binders = new ModelBinderDictionary
+					{
+					{ typeof(int), mockInnerBinder.Object }
+				}
+			};
 
-		//	// Assert
-		//	Assert.Equal(false, bindingContext.ModelState.IsValidField("IntReadWriteNonNegative"));
-		//	var error = Assert.Single(bindingContext.ModelState["IntReadWriteNonNegative"].Errors);
-		//	Assert.Equal("Some error text.", error.ErrorMessage);
-		//	Assert.Equal(4, model.IntReadWriteNonNegative);
-		//}
+			// Act
+			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
 
-		//[Fact]
-		//public void BindPropertyUpdatesPropertyOnSuccess()
-		//{
-		//	// Arrange
-		//	// Effectively, this is just testing updating a single property named "IntReadWrite"
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+			// Assert
+			Assert.Equal(false, bindingContext.ModelState.IsValidField("IntReadWriteNonNegative"));
+			var error = Assert.Single(bindingContext.ModelState["IntReadWriteNonNegative"].Errors);
+			Assert.Equal("Some error text.", error.ErrorMessage);
+			Assert.Equal(4, model.IntReadWriteNonNegative);
+		}
 
-		//	MyModel2 model = new MyModel2() { IntReadWrite = 3 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		ModelState = new ModelStateDictionary() { { "blah", new ModelState() } },
-		//		ValueProvider = new SimpleValueProvider() { { "foo.IntReadWrite", null } }
-		//	};
+		[Fact]
+		public void BindPropertyUpdatesPropertyOnSuccess()
+		{
+			// Arrange
+			// Effectively, this is just testing updating a single property named "IntReadWrite"
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
 
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				Assert.Equal(controllerContext, cc);
-		//				Assert.Equal(3, bc.Model);
-		//				Assert.Equal(typeof(int), bc.ModelType);
-		//				Assert.Equal("foo.IntReadWrite", bc.ModelName);
-		//				Assert.Equal(new ModelBindingContext().PropertyFilter, bc.PropertyFilter);
-		//				Assert.Equal(bindingContext.ModelState, bc.ModelState);
-		//				Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-		//				return 4;
-		//			});
+			var model = new MyModel2 { IntReadWrite = 3 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ModelState = new ModelStateDictionary { { "blah", new ModelState() } },
+				ValueProvider = new SimpleValueProvider { { "foo.IntReadWrite", null } }
+			};
 
-		//	PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockInnerBinder.Object }
-		//		}
-		//	};
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(3, bc.Model);
+							Assert.Equal(typeof (int), bc.ModelType);
+							Assert.Equal("foo.IntReadWrite", bc.ModelName);
+							Assert.Equal(new ModelBindingContext().PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return 4;
+						});
 
-		//	// Act
-		//	helper.PublicBindProperty(controllerContext, bindingContext, pd);
+			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
+			var helper = new TestableDefaultModelBinder
+			{
+				Binders = new ModelBinderDictionary
+				{
+					{ typeof(int), mockInnerBinder.Object }
+				}
+			};
 
-		//	// Assert
-		//	Assert.Equal(4, model.IntReadWrite);
-		//}
+			// Act
+			helper.PublicBindProperty(controllerContext, bindingContext, propertyDescriptor);
+
+			// Assert
+			Assert.Equal(4, model.IntReadWrite);
+		}
 
 		//// BindSimpleModel tests
 
-		//[Fact]
-		//public void BindSimpleModelCanReturnArrayTypes()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult(42, null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int[])),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	var returnedValueAsIntArray = Assert.IsType<int[]>(returnedValue);
-		//	Assert.Single(returnedValueAsIntArray);
-		//	Assert.Equal(42, returnedValueAsIntArray[0]);
-		//}
-
-		//[Fact]
-		//public void BindSimpleModelCanReturnCollectionTypes()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult(new string[] { "42", "82" }, null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IEnumerable<int>)),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	var returnedValueAsList = Assert.IsAssignableFrom<IEnumerable<int>>(returnedValue).ToList();
-		//	Assert.Equal(2, returnedValueAsList.Count);
-		//	Assert.Equal(42, returnedValueAsList[0]);
-		//	Assert.Equal(82, returnedValueAsList[1]);
-		//}
-
-		//[Fact]
-		//public void BindSimpleModelCanReturnElementalTypes()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult("42", null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	Assert.Equal(42, returnedValue);
-		//}
-
-		//[Fact]
-		//public void BindSimpleModelCanReturnStrings()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult(new object[] { "42" }, null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(string)),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	Assert.Equal("42", returnedValue);
-		//}
-
-		//[Fact]
-		//public void BindSimpleModelChecksValueProviderResultRawValueType()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult(new MemoryStream(), null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(Stream)),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	Assert.Equal(result, bindingContext.ModelState["foo"].Value);
-		//	Assert.Same(result.RawValue, returnedValue);
-		//}
-
-		//[Fact]
-		//public void BindSimpleModelPropagatesErrorsOnFailure()
-		//{
-		//	// Arrange
-		//	ValueProviderResult result = new ValueProviderResult("invalid", null, null);
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
-		//		ModelName = "foo",
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object returnedValue = binder.BindSimpleModel(null, bindingContext, result);
-
-		//	// Assert
-		//	Assert.False(bindingContext.ModelState.IsValidField("foo"));
-		//	Assert.IsType<InvalidOperationException>(bindingContext.ModelState["foo"].Errors[0].Exception);
-		//	Assert.Equal("The parameter conversion from type 'System.String' to type 'System.Int32' failed. See the inner exception for more information.", bindingContext.ModelState["foo"].Errors[0].Exception.Message);
-		//	Assert.Null(returnedValue);
-		//}
-
-		//[Fact]
-		//public void CreateComplexElementalModelBindingContext_ReadsBindAttributeFromBuddyClass()
-		//{
-		//	// Arrange
-		//	ModelBindingContext originalBindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = new EmptyModelMetadataProvider().GetMetadataForType(null, typeof(CreateComplexElementalModelBindingContext_ReadsBindAttributeFromBuddyClass_Model)),
-		//		ModelName = "someName",
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	ModelBindingContext newBindingContext = binder.CreateComplexElementalModelBindingContext(new ControllerContext(), originalBindingContext, null);
-
-		//	// Assert
-		//	Assert.True(newBindingContext.PropertyFilter("foo"));
-		//	Assert.False(newBindingContext.PropertyFilter("bar"));
-		//}
-
-		//[MetadataType(typeof(CreateComplexElementalModelBindingContext_ReadsBindAttributeFromBuddyClass_Model_BuddyClass))]
-		//private class CreateComplexElementalModelBindingContext_ReadsBindAttributeFromBuddyClass_Model
-		//{
-		//	[Bind(Include = "foo")]
-		//	private class CreateComplexElementalModelBindingContext_ReadsBindAttributeFromBuddyClass_Model_BuddyClass
-		//	{
-		//	}
-		//}
-
-		//[Fact]
-		//public void CreateInstanceCreatesModelInstance()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	object modelObj = helper.PublicCreateModel(null, null, typeof(Guid));
-
-		//	// Assert
-		//	Assert.Equal(Guid.Empty, modelObj);
-		//}
-
-		//[Fact]
-		//public void CreateInstanceCreatesModelInstanceForGenericICollection()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	object modelObj = helper.PublicCreateModel(null, null, typeof(ICollection<Guid>));
-
-		//	// Assert
-		//	Assert.IsAssignableFrom<ICollection<Guid>>(modelObj);
-		//}
-
-		//[Fact]
-		//public void CreateInstanceCreatesModelInstanceForGenericIDictionary()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	object modelObj = helper.PublicCreateModel(null, null, typeof(IDictionary<string, Guid>));
-
-		//	// Assert
-		//	Assert.IsAssignableFrom<IDictionary<string, Guid>>(modelObj);
-		//}
-
-		//[Fact]
-		//public void CreateInstanceCreatesModelInstanceForGenericIEnumerable()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	object modelObj = helper.PublicCreateModel(null, null, typeof(IEnumerable<Guid>));
-
-		//	// Assert
-		//	Assert.IsAssignableFrom<ICollection<Guid>>(modelObj);
-		//}
-
-		//[Fact]
-		//public void CreateInstanceCreatesModelInstanceForGenericIList()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	object modelObj = helper.PublicCreateModel(null, null, typeof(IList<Guid>));
-
-		//	// Assert
-		//	Assert.IsAssignableFrom<IList<Guid>>(modelObj);
-		//}
-
-		//[Fact]
-		//public void CreateSubIndexNameReturnsPrefixPlusIndex()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	string newName = helper.PublicCreateSubIndexName("somePrefix", 2);
-
-		//	// Assert
-		//	Assert.Equal("somePrefix[2]", newName);
-		//}
-
-		//[Fact]
-		//public void CreateSubPropertyNameReturnsPrefixPlusPropertyName()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	string newName = helper.PublicCreateSubPropertyName("somePrefix", "someProperty");
-
-		//	// Assert
-		//	Assert.Equal("somePrefix.someProperty", newName);
-		//}
-
-		//[Fact]
-		//public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsEmpty()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	string newName = helper.PublicCreateSubPropertyName(String.Empty, "someProperty");
-
-		//	// Assert
-		//	Assert.Equal("someProperty", newName);
-		//}
-
-		//[Fact]
-		//public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsNull()
-		//{
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	string newName = helper.PublicCreateSubPropertyName(null, "someProperty");
-
-		//	// Assert
-		//	Assert.Equal("someProperty", newName);
-		//}
-
-		//[Fact]
-		//public void GetFilteredModelPropertiesFiltersNonUpdateableProperties()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(PropertyTestingModel)),
-		//		PropertyFilter = new BindAttribute() { Exclude = "Blacklisted" }.IsPropertyAllowed
-		//	};
-
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	PropertyDescriptorCollection properties = new PropertyDescriptorCollection(helper.PublicGetFilteredModelProperties(null, bindingContext).ToArray());
-
-		//	// Assert
-		//	Assert.NotNull(properties["StringReadWrite"]);
-		//	Assert.Null(properties["StringReadOnly"]);
-		//	Assert.NotNull(properties["IntReadWrite"]);
-		//	Assert.Null(properties["IntReadOnly"]);
-		//	Assert.NotNull(properties["ArrayReadWrite"]);
-		//	Assert.Null(properties["ArrayReadOnly"]);
-		//	Assert.NotNull(properties["AddressReadWrite"]);
-		//	Assert.NotNull(properties["AddressReadOnly"]);
-		//	Assert.NotNull(properties["Whitelisted"]);
-		//	Assert.Null(properties["Blacklisted"]);
-		//	Assert.Equal(6, properties.Count);
-		//}
-
-		//[Fact]
-		//public void GetModelPropertiesReturnsUnfilteredPropertyList()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(PropertyTestingModel)),
-		//		PropertyFilter = new BindAttribute() { Exclude = "Blacklisted" }.IsPropertyAllowed
-		//	};
-
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	PropertyDescriptorCollection properties = helper.PublicGetModelProperties(null, bindingContext);
-
-		//	// Assert
-		//	Assert.NotNull(properties["StringReadWrite"]);
-		//	Assert.NotNull(properties["StringReadOnly"]);
-		//	Assert.NotNull(properties["IntReadWrite"]);
-		//	Assert.NotNull(properties["IntReadOnly"]);
-		//	Assert.NotNull(properties["ArrayReadWrite"]);
-		//	Assert.NotNull(properties["ArrayReadOnly"]);
-		//	Assert.NotNull(properties["AddressReadWrite"]);
-		//	Assert.NotNull(properties["AddressReadOnly"]);
-		//	Assert.NotNull(properties["Whitelisted"]);
-		//	Assert.NotNull(properties["Blacklisted"]);
-		//	Assert.Equal(10, properties.Count);
-		//}
-
-		//[Fact]
-		//public void IsModelValidWithNullBindingContextThrows()
-		//{
-		//	// Act & Assert
-		//	Assert.ThrowsArgumentNull(
-		//		() => DefaultModelBinderHelper.PublicIsModelValid(null),
-		//		"bindingContext");
-		//}
-
-		//[Fact]
-		//public void IsModelValidReturnsModelStateIsValidWhenModelNameIsEmpty()
-		//{
-		//	// Arrange
-		//	ModelBindingContext contextWithNoErrors = new ModelBindingContext { ModelName = "" };
-		//	ModelBindingContext contextWithErrors = new ModelBindingContext { ModelName = "" };
-		//	contextWithErrors.ModelState.AddModelError("foo", "bar");
-
-		//	// Act & Assert
-		//	Assert.True(DefaultModelBinderHelper.PublicIsModelValid(contextWithNoErrors));
-		//	Assert.False(DefaultModelBinderHelper.PublicIsModelValid(contextWithErrors));
-		//}
-
-		//[Fact]
-		//public void IsModelValidReturnsValidityOfSubModelStateWhenModelNameIsNotEmpty()
-		//{
-		//	// Arrange
-		//	ModelBindingContext contextWithNoErrors = new ModelBindingContext { ModelName = "foo" };
-		//	ModelBindingContext contextWithErrors = new ModelBindingContext { ModelName = "foo" };
-		//	contextWithErrors.ModelState.AddModelError("foo.bar", "baz");
-		//	ModelBindingContext contextWithUnrelatedErrors = new ModelBindingContext { ModelName = "foo" };
-		//	contextWithUnrelatedErrors.ModelState.AddModelError("biff", "baz");
-
-		//	// Act & Assert
-		//	Assert.True(DefaultModelBinderHelper.PublicIsModelValid(contextWithNoErrors));
-		//	Assert.False(DefaultModelBinderHelper.PublicIsModelValid(contextWithErrors));
-		//	Assert.True(DefaultModelBinderHelper.PublicIsModelValid(contextWithUnrelatedErrors));
-		//}
-
-		//[Fact]
-		//public void OnModelUpdatingReturnsTrue()
-		//{
-		//	// By default, this method does nothing, so we just want to make sure it returns true
-
-		//	// Arrange
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-
-		//	// Act
-		//	bool returned = helper.PublicOnModelUpdating(null, null);
-
-		//	// Arrange
-		//	Assert.True(returned);
-		//}
+		[Fact]
+		public void BindSimpleModelCanReturnArrayTypes()
+		{
+			// Arrange
+			// Note: BindSimpleType delegates to ValueProviderResult.ConvertTo that only uses RawValue
+			var valueProviderResult = new ValueProviderResult(42, null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int[])),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, valueProviderResult);
+
+			// Assert
+			var returnedValueAsIntArray = Assert.IsType<int[]>(returnedValue);
+			Assert.Single(returnedValueAsIntArray);
+			Assert.Equal(42, returnedValueAsIntArray[0]);
+		}
+
+		[Fact]
+		public void BindSimpleModelCanReturnCollectionTypes()
+		{
+			// Arrange
+			var result = new ValueProviderResult(new [] { "42", "82" }, null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(IEnumerable<int>)),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
+
+			// Assert
+			var returnedValueAsList = Assert.IsAssignableFrom<IEnumerable<int>>(returnedValue).ToList();
+			Assert.Equal(2, returnedValueAsList.Count);
+			Assert.Equal(42, returnedValueAsList[0]);
+			Assert.Equal(82, returnedValueAsList[1]);
+		}
+
+		[Fact]
+		public void BindSimpleModelCanReturnElementalTypes()
+		{
+			// Arrange
+			// Note: Simple types (int) are treated as individual (simple) types
+			var result = new ValueProviderResult("42", null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
+
+			// Assert
+			Assert.Equal(42, returnedValue);
+		}
+
+		[Fact]
+		public void BindSimpleModelCanReturnStrings()
+		{
+			// Arrange
+			// Note: Strings are treated as individual (simple) types
+			var result = new ValueProviderResult(new object[] { "42" }, null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(string)),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
+
+			// Assert
+			Assert.Equal("42", returnedValue);
+		}
+
+		[Fact]
+		public void BindSimpleModelChecksValueProviderResultRawValueTypeIfItIsAssignmentCompatible()
+		{
+			// Arrange
+			var result = new ValueProviderResult(new MemoryStream(), null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(Stream)),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
+
+			// Assert
+			Assert.Equal(result, bindingContext.ModelState["foo"].Value);
+			Assert.Same(result.RawValue, returnedValue);
+		}
+
+		[Fact]
+		public void BindSimpleModelPropagatesErrorsOnFailure()
+		{
+			// Arrange
+			var result = new ValueProviderResult("invalid", null, null);
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
+				ModelName = "foo",
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
+
+			// Assert
+			Assert.False(bindingContext.ModelState.IsValidField("foo"));
+			Assert.IsType<InvalidOperationException>(bindingContext.ModelState["foo"].Errors[0].Exception);
+			Assert.Equal("The parameter conversion from type 'System.String' to type 'System.Int32' failed. See the inner exception for more information.", bindingContext.ModelState["foo"].Errors[0].Exception.Message);
+			Assert.Null(returnedValue);
+		}
+
+		//// CreateComplexElementalModelBindingContext tests
+
+		[Fact]
+		public void CreateComplexElementalModelBindingContext_ReadsBindAttributeFromModelClass()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = new EmptyModelMetadataProvider().GetMetadataForType(null, typeof(SomeModel)),
+				ModelName = "someName",
+				ValueProvider = new SimpleValueProvider(),
+				PropertyFilter = _ => true // all properties are whitelistet per default
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			ModelBindingContext newBindingContext = binder.PublicCreateComplexElementalModelBindingContext(new ControllerContext(), bindingContext, null);
+
+			// Assert
+			Assert.False(newBindingContext.PropertyFilter("foo"));
+			Assert.True(newBindingContext.PropertyFilter("bar"));
+		}
+
+
+		[Fact]
+		public void CreateComplexElementalModelBindingContext_DoesNotReadBindAttributeFromBuddyClass()
+		{
+			// Note: I dislike the 'buddy class' concept, and therefore BetterDefaultModelBinder do not use 
+			// the AssociatedMetadataTypeTypeDescriptionProvider from System.ComponentModel.DataAnnotations. 
+			// Instead it uses the more conventional plain vanilla TypeDescriptor from System.ComponentModel.
+
+			// Arrange
+			var originalBindingContext = new ModelBindingContext
+			{
+				ModelMetadata = new EmptyModelMetadataProvider().GetMetadataForType(null, typeof(FooModel)),
+				ModelName = "someName",
+				ValueProvider = new SimpleValueProvider(),
+				PropertyFilter = _ => true // all properties are whitelistet per default
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			ModelBindingContext newBindingContext = binder.PublicCreateComplexElementalModelBindingContext(new ControllerContext(), originalBindingContext, null);
+
+			// Assert
+			Assert.True(newBindingContext.PropertyFilter("foo"));
+			Assert.True(newBindingContext.PropertyFilter("bar"));
+		}
+
+		[MetadataType(typeof(FooModelBuddyClass))]
+		class FooModel
+		{
+			[Bind(Exclude = "foo")]
+			private class FooModelBuddyClass
+			{
+				// Note: Buddy class not supported by BetterDefaultModelBinder
+			}
+		}
+
+		[Bind(Exclude = "foo")]
+		class SomeModel
+		{
+		}
+
+		//// CreateModel tests
+
+		[Fact]
+		public void CreateInstanceCreatesModelInstance()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			object modelObj = helper.PublicCreateModel(null, null, typeof(Guid));
+
+			// Assert
+			Assert.Equal(Guid.Empty, modelObj);
+		}
+
+		[Fact]
+		public void CreateInstanceCreatesModelInstanceForGenericICollection()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			object modelObj = helper.PublicCreateModel(null, null, typeof(ICollection<Guid>));
+
+			// Assert
+			Assert.IsAssignableFrom<ICollection<Guid>>(modelObj);
+		}
+
+		[Fact]
+		public void CreateInstanceCreatesModelInstanceForGenericIDictionary()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			object modelObj = helper.PublicCreateModel(null, null, typeof(IDictionary<string, Guid>));
+
+			// Assert
+			Assert.IsAssignableFrom<IDictionary<string, Guid>>(modelObj);
+		}
+
+		[Fact]
+		public void CreateInstanceCreatesModelInstanceForGenericIEnumerable()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			object modelObj = helper.PublicCreateModel(null, null, typeof(IEnumerable<Guid>));
+
+			// Assert
+			Assert.IsAssignableFrom<ICollection<Guid>>(modelObj);
+		}
+
+		[Fact]
+		public void CreateInstanceCreatesModelInstanceForGenericIList()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			object modelObj = helper.PublicCreateModel(null, null, typeof(IList<Guid>));
+
+			// Assert
+			Assert.IsAssignableFrom<IList<Guid>>(modelObj);
+		}
+
+		//// CreateSubIndexName, CreateSubPropertyName tests
+
+		[Fact]
+		public void CreateSubIndexNameReturnsPrefixPlusIndex()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			string newName = helper.PublicCreateSubIndexName("somePrefix", 2);
+
+			// Assert
+			Assert.Equal("somePrefix[2]", newName);
+		}
+
+		[Fact]
+		public void CreateSubPropertyNameReturnsPrefixPlusPropertyName()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			string newName = helper.PublicCreateSubPropertyName("somePrefix", "someProperty");
+
+			// Assert
+			Assert.Equal("somePrefix.someProperty", newName);
+		}
+
+		[Fact]
+		public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsEmpty()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			string newName = helper.PublicCreateSubPropertyName(String.Empty, "someProperty");
+
+			// Assert
+			Assert.Equal("someProperty", newName);
+		}
+
+		[Fact]
+		public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsNull()
+		{
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			string newName = helper.PublicCreateSubPropertyName(null, "someProperty");
+
+			// Assert
+			Assert.Equal("someProperty", newName);
+		}
+
+		[Fact]
+		public void GetFilteredModelPropertiesFiltersNonUpdateableProperties()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(PropertyTestingModel)),
+				PropertyFilter = new BindAttribute { Exclude = "Blacklisted" }.IsPropertyAllowed
+			};
+
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			var properties = new PropertyDescriptorCollection(helper.PublicGetFilteredModelProperties(null, bindingContext).ToArray());
+
+			// Assert
+			Assert.NotNull(properties["StringReadWrite"]);
+			Assert.Null(properties["StringReadOnly"]);
+			Assert.NotNull(properties["IntReadWrite"]);
+			Assert.Null(properties["IntReadOnly"]);
+			Assert.NotNull(properties["ArrayReadWrite"]);
+			Assert.Null(properties["ArrayReadOnly"]);
+			Assert.NotNull(properties["AddressReadWrite"]);
+			Assert.NotNull(properties["AddressReadOnly"]);
+			Assert.NotNull(properties["Whitelisted"]);
+			Assert.Null(properties["Blacklisted"]);
+			Assert.Equal(6, properties.Count);
+		}
+
+		[Fact]
+		public void GetModelPropertiesReturnsUnfilteredPropertyList()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+				{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(PropertyTestingModel)),
+				PropertyFilter = new BindAttribute { Exclude = "Blacklisted" }.IsPropertyAllowed
+			};
+
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			PropertyDescriptorCollection properties = helper.PublicGetModelProperties(null, bindingContext);
+
+			// Assert
+			Assert.NotNull(properties["StringReadWrite"]);
+			Assert.NotNull(properties["StringReadOnly"]);
+			Assert.NotNull(properties["IntReadWrite"]);
+			Assert.NotNull(properties["IntReadOnly"]);
+			Assert.NotNull(properties["ArrayReadWrite"]);
+			Assert.NotNull(properties["ArrayReadOnly"]);
+			Assert.NotNull(properties["AddressReadWrite"]);
+			Assert.NotNull(properties["AddressReadOnly"]);
+			Assert.NotNull(properties["Whitelisted"]);
+			Assert.NotNull(properties["Blacklisted"]);
+			Assert.Equal(10, properties.Count);
+		}
+
+		[Fact]
+		public void OnModelUpdatingReturnsTrue()
+		{
+			// By default, this method does nothing, so we just want to make sure it returns true
+
+			// Arrange
+			var helper = new TestableDefaultModelBinder();
+
+			// Act
+			bool returned = helper.PublicOnModelUpdating(null, null);
+
+			// Arrange
+			Assert.True(returned);
+		}
 
 		//// OnModelUpdated tests
 
-		//[Fact]
-		//public void OnModelUpdatedCalledWhenOnModelUpdatingReturnsTrue()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
-		//		ModelName = "",
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-		//	Mock<DefaultModelBinder> binder = new Mock<DefaultModelBinder> { CallBase = true };
-		//	binder.Protected().Setup<bool>("OnModelUpdating",
-		//								   ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
-		//		.Returns(true);
-		//	binder.Protected().Setup("OnModelUpdated",
-		//							 ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
-		//		.Verifiable();
-
-		//	// Act
-		//	binder.Object.BindModel(new ControllerContext(), bindingContext);
-
-		//	// Assert
-		//	binder.Verify();
-		//}
-
-		//[Fact]
-		//public void OnModelUpdatedNotCalledWhenOnModelUpdatingReturnsFalse()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
-		//		ModelName = "",
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-		//	Mock<DefaultModelBinder> binder = new Mock<DefaultModelBinder> { CallBase = true };
-		//	binder.Protected().Setup<bool>("OnModelUpdating",
-		//								   ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
-		//		.Returns(false);
-
-		//	// Act
-		//	binder.Object.BindModel(new ControllerContext(), bindingContext);
-
-		//	// Assert
-		//	binder.Verify();
-		//	binder.Protected().Verify("OnModelUpdated", Times.Never(),
-		//							  ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>());
-		//}
-
-		//[Fact]
-		//public void OnModelUpdatedDoesntAddNewMessagesWhenMessagesAlreadyExist()
-		//{
-		//	// Arrange
-		//	var binder = new TestableDefaultModelBinder<SetPropertyModel>();
-		//	binder.Context.ModelState.AddModelError(BASE_MODEL_NAME + ".NonNullableStringWithAttribute", "Some pre-existing error");
-
-		//	// Act
-		//	binder.OnModelUpdated();
-
-		//	// Assert
-		//	var modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
-		//	var error = Assert.Single(modelState.Errors);
-		//	Assert.Equal("Some pre-existing error", error.ErrorMessage);
-		//}
-
-		//[Fact]
-		//public void OnPropertyValidatingNotCalledOnPropertiesWithErrors()
-		//{
-		//	// Arrange
-		//	ModelWithoutBindAttribute model = new ModelWithoutBindAttribute();
-		//	ModelBindingContext bindingContext = new ModelBindingContext
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo", "foo" }
-		//		},
-		//	};
-		//	bindingContext.ModelState.AddModelError("foo", "Pre-existing error");
-		//	Mock<DefaultModelBinder> binder = new Mock<DefaultModelBinder> { CallBase = true };
-
-		//	// Act
-		//	binder.Object.BindModel(new ControllerContext(), bindingContext);
-
-		//	// Assert
-		//	binder.Verify();
-		//	binder.Protected().Verify("OnPropertyValidating", Times.Never(),
-		//							  ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>(),
-		//							  ItExpr.IsAny<PropertyDescriptor>(), ItExpr.IsAny<object>());
-		//}
-
-		//public class ExtraValueModel
-		//{
-		//	public int RequiredValue { get; set; }
-		//}
-
-		//[Fact]
-		//public void ExtraValueRequiredMessageNotAddedForAlreadyInvalidProperty()
-		//{
-		//	// Arrange
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
-		//		ModelName = "theModel",
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-		//	bindingContext.ModelState.AddModelError("theModel.ReadWriteProperty", "Existing Error Message");
-
-		//	// Act
-		//	binder.BindModel(new ControllerContext(), bindingContext);
-
-		//	// Assert
-		//	ModelState modelState = bindingContext.ModelState["theModel.ReadWriteProperty"];
-		//	var error = Assert.Single(modelState.Errors);
-		//	Assert.Equal("Existing Error Message", error.ErrorMessage);
-		//}
-
-		//[Fact]
-		//public void OnPropertyValidatingReturnsTrueOnSuccess()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
-		//		ModelName = "theModel"
-		//	};
-
-		//	PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
-		//	bindingContext.PropertyMetadata["ReadWriteProperty"].Model = 42;
-
-		//	// Act
-		//	bool returned = helper.PublicOnPropertyValidating(new ControllerContext(), bindingContext, property, 42);
-
-		//	// Assert
-		//	Assert.True(returned);
-		//	Assert.Empty(bindingContext.ModelState);
-		//}
-
-		//[Fact]
-		//public void UpdateCollectionCreatesDefaultEntriesForInvalidElements()
-		//{
-		//	// Arrange
-		//	List<int> model = new List<int>() { 4, 5, 6, 7, 8 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo[0]", null },
-		//			{ "foo[1]", null },
-		//			{ "foo[2]", null }
-		//		}
-		//	};
-
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-		//				return (fooIdx == 1) ? (object)null : fooIdx;
-		//			});
-
-		//	DefaultModelBinder binder = new DefaultModelBinder()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockInnerBinder.Object }
-		//		}
-		//	};
-
-		//	// Act
-		//	object updatedModel = binder.UpdateCollection(null, bindingContext, typeof(int));
-
-		//	// Assert
-		//	Assert.Equal(3, model.Count);
-		//	Assert.Equal(false, bindingContext.ModelState.IsValidField("foo[1]"));
-		//	Assert.Equal("A value is required.", bindingContext.ModelState["foo[1]"].Errors[0].ErrorMessage);
-		//	Assert.Equal(0, model[0]);
-		//	Assert.Equal(0, model[1]);
-		//	Assert.Equal(2, model[2]);
-		//}
-
-		//[Fact]
-		//public void UpdateCollectionReturnsModifiedCollectionOnSuccess_ExplicitIndex()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-
-		//	List<int> model = new List<int>() { 4, 5, 6, 7, 8 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		PropertyFilter = _ => false,
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo.index", new string[] { "alpha", "bravo", "charlie" } }, // 'bravo' will be skipped
-		//			{ "foo[alpha]", "10" },
-		//			{ "foo[charlie]", "30" }
-		//		}
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object updatedModel = binder.UpdateCollection(controllerContext, bindingContext, typeof(int));
-
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal(2, model.Count);
-		//	Assert.Equal(10, model[0]);
-		//	Assert.Equal(30, model[1]);
-		//}
-
-		//[Fact]
-		//public void UpdateCollectionReturnsModifiedCollectionOnSuccess_ZeroBased()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-
-		//	List<int> model = new List<int>() { 4, 5, 6, 7, 8 };
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		PropertyFilter = _ => false,
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo[0]", null },
-		//			{ "foo[1]", null },
-		//			{ "foo[2]", null }
-		//		}
-		//	};
-
-		//	Mock<IModelBinder> mockInnerBinder = new Mock<IModelBinder>();
-		//	mockInnerBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				Assert.Equal(controllerContext, cc);
-		//				Assert.Equal(typeof(int), bc.ModelType);
-		//				Assert.Equal(bindingContext.ModelState, bc.ModelState);
-		//				Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
-		//				Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-		//				return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-		//			});
-
-		//	DefaultModelBinder binder = new DefaultModelBinder()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockInnerBinder.Object }
-		//		}
-		//	};
-
-		//	// Act
-		//	object updatedModel = binder.UpdateCollection(controllerContext, bindingContext, typeof(int));
-
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal(3, model.Count);
-		//	Assert.Equal(0, model[0]);
-		//	Assert.Equal(1, model[1]);
-		//	Assert.Equal(2, model[2]);
-		//}
-
-		//[Fact]
-		//public void UpdateCollectionReturnsNullIfZeroIndexNotFound()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object updatedModel = binder.UpdateCollection(null, bindingContext, typeof(object));
-
-		//	// Assert
-		//	Assert.Null(updatedModel);
-		//}
-
-		//[Fact]
-		//public void UpdateDictionaryCreatesDefaultEntriesForInvalidValues()
-		//{
-		//	// Arrange
-		//	Dictionary<string, int> model = new Dictionary<string, int>
-		//	{
-		//		{ "one", 1 },
-		//		{ "two", 2 }
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo[0].key", null }, { "foo[0].value", null },
-		//			{ "foo[1].key", null }, { "foo[1].value", null },
-		//			{ "foo[2].key", null }, { "foo[2].value", null }
-		//		}
-		//	};
-
-		//	Mock<IModelBinder> mockStringBinder = new Mock<IModelBinder>();
-		//	mockStringBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc) { return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value"; });
-
-		//	Mock<IModelBinder> mockIntBinder = new Mock<IModelBinder>();
-		//	mockIntBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-		//				return (fooIdx == 1) ? (object)null : fooIdx;
-		//			});
-
-		//	DefaultModelBinder binder = new DefaultModelBinder()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(string), mockStringBinder.Object },
-		//			{ typeof(int), mockIntBinder.Object }
-		//		}
-		//	};
-
-		//	// Act
-		//	object updatedModel = binder.UpdateDictionary(null, bindingContext, typeof(string), typeof(int));
-
-		//	// Assert
-		//	Assert.Equal(3, model.Count);
-		//	Assert.False(bindingContext.ModelState.IsValidField("foo[1].value"));
-		//	Assert.Equal("A value is required.", bindingContext.ModelState["foo[1].value"].Errors[0].ErrorMessage);
-		//	Assert.Equal(0, model["10Value"]);
-		//	Assert.Equal(0, model["11Value"]);
-		//	Assert.Equal(2, model["12Value"]);
-		//}
-
-		//[Fact]
-		//public void UpdateDictionaryReturnsModifiedDictionaryOnSuccess_ExplicitIndex()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-
-		//	Dictionary<int, string> model = new Dictionary<int, string>
-		//	{
-		//		{ 1, "one" },
-		//		{ 2, "two" }
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		PropertyFilter = _ => false,
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo.index", new string[] { "alpha", "bravo", "charlie" } }, // 'bravo' will be skipped
-		//			{ "foo[alpha].key", "10" }, { "foo[alpha].value", "ten" },
-		//			{ "foo[charlie].key", "30" }, { "foo[charlie].value", "thirty" }
-		//		}
-		//	};
-
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object updatedModel = binder.UpdateDictionary(controllerContext, bindingContext, typeof(int), typeof(string));
-
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal(2, model.Count);
-		//	Assert.Equal("ten", model[10]);
-		//	Assert.Equal("thirty", model[30]);
-		//}
-
-		//[Fact]
-		//public void UpdateDictionaryReturnsModifiedDictionaryOnSuccess_ZeroBased()
-		//{
-		//	// Arrange
-		//	ControllerContext controllerContext = new Mock<ControllerContext>().Object;
-
-		//	Dictionary<int, string> model = new Dictionary<int, string>
-		//	{
-		//		{ 1, "one" },
-		//		{ 2, "two" }
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		PropertyFilter = _ => false,
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo[0].key", null }, { "foo[0].value", null },
-		//			{ "foo[1].key", null }, { "foo[1].value", null },
-		//			{ "foo[2].key", null }, { "foo[2].value", null }
-		//		}
-		//	};
-
-		//	Mock<IModelBinder> mockIntBinder = new Mock<IModelBinder>();
-		//	mockIntBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				Assert.Equal(controllerContext, cc);
-		//				Assert.Equal(typeof(int), bc.ModelType);
-		//				Assert.Equal(bindingContext.ModelState, bc.ModelState);
-		//				Assert.Equal(new ModelBindingContext().PropertyFilter, bc.PropertyFilter);
-		//				Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-		//				return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10;
-		//			});
-
-		//	Mock<IModelBinder> mockStringBinder = new Mock<IModelBinder>();
-		//	mockStringBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				Assert.Equal(controllerContext, cc);
-		//				Assert.Equal(typeof(string), bc.ModelType);
-		//				Assert.Equal(bindingContext.ModelState, bc.ModelState);
-		//				Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
-		//				Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
-		//				return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
-		//			});
-
-		//	DefaultModelBinder binder = new DefaultModelBinder()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockIntBinder.Object },
-		//			{ typeof(string), mockStringBinder.Object }
-		//		}
-		//	};
-
-		//	// Act
-		//	object updatedModel = binder.UpdateDictionary(controllerContext, bindingContext, typeof(int), typeof(string));
-
-		//	// Assert
-		//	Assert.Same(model, updatedModel);
-		//	Assert.Equal(3, model.Count);
-		//	Assert.Equal("10Value", model[10]);
-		//	Assert.Equal("11Value", model[11]);
-		//	Assert.Equal("12Value", model[12]);
-		//}
-
-		//[Fact]
-		//public void UpdateDictionaryReturnsNullIfNoValidElementsFound()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ValueProvider = new SimpleValueProvider()
-		//	};
-		//	DefaultModelBinder binder = new DefaultModelBinder();
-
-		//	// Act
-		//	object updatedModel = binder.UpdateDictionary(null, bindingContext, typeof(object), typeof(object));
-
-		//	// Assert
-		//	Assert.Null(updatedModel);
-		//}
-
-		//[Fact]
-		//public void UpdateDictionarySkipsInvalidKeys()
-		//{
-		//	// Arrange
-		//	Dictionary<int, string> model = new Dictionary<int, string>
-		//	{
-		//		{ 1, "one" },
-		//		{ 2, "two" }
-		//	};
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "foo",
-		//		ValueProvider = new SimpleValueProvider()
-		//		{
-		//			{ "foo[0].key", null }, { "foo[0].value", null },
-		//			{ "foo[1].key", null }, { "foo[1].value", null },
-		//			{ "foo[2].key", null }, { "foo[2].value", null }
-		//		}
-		//	};
-
-		//	Mock<IModelBinder> mockIntBinder = new Mock<IModelBinder>();
-		//	mockIntBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc)
-		//			{
-		//				int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
-		//				return (fooIdx == 1) ? (object)null : fooIdx;
-		//			});
-
-		//	Mock<IModelBinder> mockStringBinder = new Mock<IModelBinder>();
-		//	mockStringBinder
-		//		.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
-		//		.Returns(
-		//			delegate(ControllerContext cc, ModelBindingContext bc) { return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value"; });
-
-		//	DefaultModelBinder binder = new DefaultModelBinder()
-		//	{
-		//		Binders = new ModelBinderDictionary()
-		//		{
-		//			{ typeof(int), mockIntBinder.Object },
-		//			{ typeof(string), mockStringBinder.Object }
-		//		}
-		//	};
-
-		//	// Act
-		//	object updatedModel = binder.UpdateDictionary(null, bindingContext, typeof(int), typeof(string));
-
-		//	// Assert
-		//	Assert.Equal(2, model.Count);
-		//	Assert.False(bindingContext.ModelState.IsValidField("foo[1].key"));
-		//	Assert.Equal("A value is required.", bindingContext.ModelState["foo[1].key"].Errors[0].ErrorMessage);
-		//	Assert.Equal("10Value", model[0]);
-		//	Assert.Equal("12Value", model[2]);
-		//}
+		[Fact]
+		public void OnModelUpdatedCalledWhenOnModelUpdatingReturnsTrue()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
+				ModelName = "",
+				ValueProvider = new SimpleValueProvider()
+			};
+			var binder = new Mock<DefaultModelBinder> { CallBase = true };
+			binder.Protected().Setup<bool>("OnModelUpdating",
+										   ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
+				.Returns(true);
+			binder.Protected().Setup("OnModelUpdated",
+									 ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
+				.Verifiable();
+
+			// Act
+			binder.Object.BindModel(new ControllerContext(), bindingContext);
+
+			// Assert
+			binder.Verify();
+		}
+
+		[Fact]
+		public void OnModelUpdatedNotCalledWhenOnModelUpdatingReturnsFalse()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new ModelWithoutBindAttribute(), typeof(ModelWithoutBindAttribute)),
+				ModelName = "",
+				ValueProvider = new SimpleValueProvider()
+			};
+			var binder = new Mock<DefaultModelBinder> { CallBase = true };
+			binder.Protected().Setup<bool>("OnModelUpdating",
+										   ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>())
+				.Returns(false);
+
+			// Act
+			binder.Object.BindModel(new ControllerContext(), bindingContext);
+
+			// Assert
+			binder.Verify();
+			binder.Protected().Verify("OnModelUpdated", Times.Never(),
+									  ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>());
+		}
+
+		[Fact]
+		public void OnModelUpdatedDoesntAddNewMessagesWhenMessagesAlreadyExist()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
+			binder.Context.ModelState.AddModelError(BASE_MODEL_NAME + ".NonNullableStringWithAttribute", "Some pre-existing error");
+
+			// Act
+			binder.OnModelUpdated();
+
+			// Assert
+			var modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
+			var error = Assert.Single(modelState.Errors);
+			Assert.Equal("Some pre-existing error", error.ErrorMessage);
+		}
+
+		[Fact]
+		public void OnPropertyValidatingNotCalledOnPropertiesWithErrors()
+		{
+			// Arrange
+			var model = new ModelWithoutBindAttribute();
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "",
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "foo", "foo" }
+				},
+			};
+			bindingContext.ModelState.AddModelError("foo", "Pre-existing error");
+			var binder = new Mock<DefaultModelBinder> { CallBase = true };
+
+			// Act
+			binder.Object.BindModel(new ControllerContext(), bindingContext);
+
+			// Assert
+			binder.Verify();
+			binder.Protected().Verify("OnPropertyValidating", Times.Never(),
+									  ItExpr.IsAny<ControllerContext>(), ItExpr.IsAny<ModelBindingContext>(),
+									  ItExpr.IsAny<PropertyDescriptor>(), ItExpr.IsAny<object>());
+		}
+
+		[Fact]
+		public void ExtraValueRequiredMessageNotAddedForAlreadyInvalidProperty()
+		{
+			// Arrange
+			var binder = new BetterDefaultModelBinder();
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
+				ModelName = "theModel",
+				ValueProvider = new SimpleValueProvider()
+			};
+			bindingContext.ModelState.AddModelError("theModel.ReadWriteProperty", "Existing Error Message");
+
+			// Act
+			binder.BindModel(new ControllerContext(), bindingContext);
+
+			// Assert
+			ModelState modelState = bindingContext.ModelState["theModel.ReadWriteProperty"];
+			var error = Assert.Single(modelState.Errors);
+			Assert.Equal("Existing Error Message", error.ErrorMessage);
+		}
+
+		[Fact]
+		public void OnPropertyValidatingReturnsTrueOnSuccess()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
+				ModelName = "theModel"
+			};
+
+			PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
+			var helper = new TestableDefaultModelBinder();
+			bindingContext.PropertyMetadata["ReadWriteProperty"].Model = 42;
+
+			// Act
+			bool returned = helper.PublicOnPropertyValidating(new ControllerContext(), bindingContext, property, 42);
+
+			// Assert
+			Assert.True(returned);
+			Assert.Empty(bindingContext.ModelState);
+		}
+
+		[Fact]
+		public void UpdateCollectionCreatesDefaultEntriesForInvalidElements()
+		{
+			// Arrange
+			var model = new List<int> { 4, 5, 6, 7, 8 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "foo[0]", null },
+					{ "foo[1]", null },
+					{ "foo[2]", null }
+				}
+			};
+
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+							return (fooIdx == 1) ? (object) null : fooIdx; // index == 1 => Invalid null value
+						});
+
+			var binder = new TestableDefaultModelBinder
+				{
+				Binders = new ModelBinderDictionary
+					{
+					{ typeof(int), mockInnerBinder.Object }
+				}
+			};
+
+			// Act
+			binder.PublicUpdateCollection(null, bindingContext, typeof(int));
+
+			// Assert
+			Assert.Equal(3, model.Count);
+			Assert.False(bindingContext.ModelState.IsValidField("foo[1]"));
+			Assert.Equal("A value is required.", bindingContext.ModelState["foo[1]"].Errors[0].ErrorMessage);
+			Assert.Equal(0, model[0]);
+			Assert.Equal(0, model[1]);
+			Assert.Equal(2, model[2]);
+		}
+
+		[Fact]
+		public void UpdateCollectionReturnsModifiedCollectionOnSuccess_ExplicitIndex()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+
+			var model = new List<int> { 4, 5, 6, 7, 8 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo.index", new [] { "alpha", "bravo", "charlie" } }, // 'bravo' will be skipped
+					{ "foo[alpha]", "10" },
+					{ "foo[charlie]", "30" }
+				}
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object updatedModel = binder.PublicUpdateCollection(controllerContext, bindingContext, typeof(int));
+
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal(2, model.Count);
+			Assert.Equal(10, model[0]);
+			Assert.Equal(30, model[1]);
+		}
+
+		[Fact]
+		public void UpdateCollectionReturnsModifiedCollectionOnSuccess_ZeroBased()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+
+			var model = new List<int> { 4, 5, 6, 7, 8 };
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo[0]", null },
+					{ "foo[1]", null },
+					{ "foo[2]", null }
+				}
+			};
+
+			var mockInnerBinder = new Mock<IModelBinder>();
+			mockInnerBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (int), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+						});
+
+			var binder = new TestableDefaultModelBinder
+				{
+				Binders = new ModelBinderDictionary
+					{
+					{ typeof(int), mockInnerBinder.Object }
+				}
+			};
+
+			// Act
+			object updatedModel = binder.PublicUpdateCollection(controllerContext, bindingContext, typeof(int));
+
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal(3, model.Count);
+			Assert.Equal(0, model[0]);
+			Assert.Equal(1, model[1]);
+			Assert.Equal(2, model[2]);
+		}
+
+		[Fact]
+		public void UpdateCollectionReturnsNullIfZeroIndexNotFound()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+			{
+				ValueProvider = new SimpleValueProvider()
+			};
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object updatedModel = binder.PublicUpdateCollection(null, bindingContext, typeof(object));
+
+			// Assert
+			Assert.Null(updatedModel);
+		}
+
+		[Fact]
+		public void UpdateDictionaryCreatesDefaultEntriesForInvalidValues()
+		{
+			// Arrange
+			var model = new Dictionary<string, int>
+			{
+				{ "one", 1 },
+				{ "two", 2 }
+			};
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ValueProvider = new SimpleValueProvider
+				{
+					{ "foo[0].key", null }, { "foo[0].value", null },
+					{ "foo[1].key", null }, { "foo[1].value", null },
+					{ "foo[2].key", null }, { "foo[2].value", null }
+				}
+			};
+
+			var mockStringBinder = new Mock<IModelBinder>();
+			mockStringBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+					(Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value");
+
+			var mockIntBinder = new Mock<IModelBinder>();
+			mockIntBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					delegate(ControllerContext cc, ModelBindingContext bc)
+					{
+						int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+						return (fooIdx == 1) ? (object)null : fooIdx;
+					});
+
+			var binder = new TestableDefaultModelBinder
+				{
+				Binders = new ModelBinderDictionary
+				{
+					{ typeof(string), mockStringBinder.Object },
+					{ typeof(int), mockIntBinder.Object }
+				}
+			};
+
+			// Act
+			binder.PublicUpdateDictionary(null, bindingContext, typeof(string), typeof(int));
+
+			// Assert
+			Assert.Equal(3, model.Count);
+			Assert.False(bindingContext.ModelState.IsValidField("foo[1].value"));
+			Assert.Equal("A value is required.", bindingContext.ModelState["foo[1].value"].Errors[0].ErrorMessage);
+			Assert.Equal(0, model["10Value"]);
+			Assert.Equal(0, model["11Value"]);
+			Assert.Equal(2, model["12Value"]);
+		}
+
+		[Fact]
+		public void UpdateDictionaryReturnsModifiedDictionaryOnSuccess_ExplicitIndex()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+
+			var model = new Dictionary<int, string>
+			{
+				{ 1, "one" },
+				{ 2, "two" }
+			};
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				PropertyFilter = _ => false,
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo.index", new [] { "alpha", "bravo", "charlie" } }, // 'bravo' will be skipped
+					{ "foo[alpha].key", "10" }, { "foo[alpha].value", "ten" },
+					{ "foo[charlie].key", "30" }, { "foo[charlie].value", "thirty" }
+				}
+			};
+
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object updatedModel = binder.PublicUpdateDictionary(controllerContext, bindingContext, typeof(int), typeof(string));
+
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal(2, model.Count);
+			Assert.Equal("ten", model[10]);
+			Assert.Equal("thirty", model[30]);
+		}
+
+		[Fact]
+		public void UpdateDictionaryReturnsModifiedDictionaryOnSuccess_ZeroBased()
+		{
+			// Arrange
+			ControllerContext controllerContext = new Mock<ControllerContext>().Object;
+
+			var model = new Dictionary<int, string>
+			{
+				{ 1, "one" },
+				{ 2, "two" }
+			};
+			var bindingContext = new ModelBindingContext
+				{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				PropertyFilter = _ => false,
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo[0].key", null }, { "foo[0].value", null },
+					{ "foo[1].key", null }, { "foo[1].value", null },
+					{ "foo[2].key", null }, { "foo[2].value", null }
+				}
+			};
+
+			var mockIntBinder = new Mock<IModelBinder>();
+			mockIntBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (int), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(new ModelBindingContext().PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10;
+						});
+
+			var mockStringBinder = new Mock<IModelBinder>();
+			mockStringBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							Assert.Equal(controllerContext, cc);
+							Assert.Equal(typeof (string), bc.ModelType);
+							Assert.Equal(bindingContext.ModelState, bc.ModelState);
+							Assert.Equal(bindingContext.PropertyFilter, bc.PropertyFilter);
+							Assert.Equal(bindingContext.ValueProvider, bc.ValueProvider);
+							return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
+						});
+
+			var binder = new TestableDefaultModelBinder
+				{
+				Binders = new ModelBinderDictionary
+					{
+					{ typeof(int), mockIntBinder.Object },
+					{ typeof(string), mockStringBinder.Object }
+				}
+			};
+
+			// Act
+			object updatedModel = binder.PublicUpdateDictionary(controllerContext, bindingContext, typeof(int), typeof(string));
+
+			// Assert
+			Assert.Same(model, updatedModel);
+			Assert.Equal(3, model.Count);
+			Assert.Equal("10Value", model[10]);
+			Assert.Equal("11Value", model[11]);
+			Assert.Equal("12Value", model[12]);
+		}
+
+		[Fact]
+		public void UpdateDictionaryReturnsNullIfNoValidElementsFound()
+		{
+			// Arrange
+			var bindingContext = new ModelBindingContext
+				{
+				ValueProvider = new SimpleValueProvider()
+			};
+			var binder = new TestableDefaultModelBinder();
+
+			// Act
+			object updatedModel = binder.PublicUpdateDictionary(null, bindingContext, typeof(object), typeof(object));
+
+			// Assert
+			Assert.Null(updatedModel);
+		}
+
+		[Fact]
+		public void UpdateDictionarySkipsInvalidKeys()
+		{
+			// Arrange
+			var model = new Dictionary<int, string>
+			{
+				{ 1, "one" },
+				{ 2, "two" }
+			};
+			var bindingContext = new ModelBindingContext
+				{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "foo",
+				ValueProvider = new SimpleValueProvider
+					{
+					{ "foo[0].key", null }, { "foo[0].value", null },
+					{ "foo[1].key", null }, { "foo[1].value", null },
+					{ "foo[2].key", null }, { "foo[2].value", null }
+				}
+			};
+
+			var mockIntBinder = new Mock<IModelBinder>();
+			mockIntBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+						{
+							int fooIdx = Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
+							return (fooIdx == 1) ? (object) null : fooIdx;
+						});
+
+			var mockStringBinder = new Mock<IModelBinder>();
+			mockStringBinder
+				.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>()))
+				.Returns(
+					(ControllerContext cc, ModelBindingContext bc) =>
+					(Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value");
+
+			var binder = new TestableDefaultModelBinder
+			{
+				Binders = new ModelBinderDictionary
+				{
+					{ typeof(int), mockIntBinder.Object },
+					{ typeof(string), mockStringBinder.Object }
+				}
+			};
+
+			// Act
+			binder.PublicUpdateDictionary(null, bindingContext, typeof(int), typeof(string));
+
+			// Assert
+			Assert.Equal(2, model.Count);
+			Assert.False(bindingContext.ModelState.IsValidField("foo[1].key"));
+			Assert.Equal("A value is required.", bindingContext.ModelState["foo[1].key"].Errors[0].ErrorMessage);
+			Assert.Equal("10Value", model[0]);
+			Assert.Equal("12Value", model[2]);
+		}
 
 		[ModelBinder(typeof(DefaultModelBinder))]
 		private class MyModel
@@ -2153,6 +2140,40 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			public int ReadWriteProperty { get; set; }
 			public int ReadWriteProperty2 { get; set; }
+		}
+
+		class MyModel2
+		{
+			private int _intReadWriteNonNegative;
+
+			public int IntReadOnly
+			{
+				get { return 4; }
+			}
+
+			public int IntReadWrite { get; set; }
+
+			public int IntReadWriteNonNegative
+			{
+				get { return _intReadWriteNonNegative; }
+				set
+				{
+					if (value < 0)
+					{
+						throw new ArgumentOutOfRangeException("value", "Value must be non-negative.");
+					}
+					_intReadWriteNonNegative = value;
+				}
+			}
+
+			public int? NullableIntReadWrite { get; set; }
+		}
+
+		class CountryState
+		{
+			public string Name { get; set; }
+
+			public IEnumerable<string> States { get; set; }
 		}
 
 		//private class MyClassWithoutConverter
@@ -2170,21 +2191,20 @@ namespace Maxfire.Web.Mvc.UnitTests
 		//	public string Foxtrot { get; set; }
 		//}
 
-		//public class Customer
-		//{
-		//	private Address _address = new Address();
+		class Customer
+		{
+			private readonly Address _address = new Address();
+			public Address Address
+			{
+				get { return _address; }
+			}
+		}
 
-		//	public Address Address
-		//	{
-		//		get { return _address; }
-		//	}
-		//}
-
-		//public class Address
-		//{
-		//	public string Street { get; set; }
-		//	public string Zip { get; set; }
-		//}
+		class Address
+		{
+			public string Street { get; set; }
+			public string Zip { get; set; }
+		}
 
 		//public class IntegerContainer
 		//{
@@ -2270,7 +2290,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		{
 			public ValueProviderResult GetValue(string key, bool skipValidation)
 			{
-				string newValue = key + ((skipValidation) ? "Unvalidated" : "Validated");
+				string newValue = key + (skipValidation ? "Unvalidated" : "Validated");
 				return new ValueProviderResult(newValue, newValue, null);
 			}
 
@@ -2289,136 +2309,6 @@ namespace Maxfire.Web.Mvc.UnitTests
 		{
 		}
 
-		//public class DefaultModelBinderHelper : DefaultModelBinder
-		//{
-		//	public virtual void PublicBindProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property)
-		//	{
-		//		base.BindProperty(controllerContext, bindingContext, property);
-		//	}
-
-		//	protected override void BindProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property)
-		//	{
-		//		PublicBindProperty(controllerContext, bindingContext, property);
-		//	}
-
-		//	public virtual object PublicCreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType)
-		//	{
-		//		return base.CreateModel(controllerContext, bindingContext, modelType);
-		//	}
-
-		//	protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType)
-		//	{
-		//		return PublicCreateModel(controllerContext, bindingContext, modelType);
-		//	}
-
-		//	public virtual IEnumerable<PropertyDescriptor> PublicGetFilteredModelProperties(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		return base.GetFilteredModelProperties(controllerContext, bindingContext);
-		//	}
-
-		//	public virtual PropertyDescriptorCollection PublicGetModelProperties(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		return base.GetModelProperties(controllerContext, bindingContext);
-		//	}
-
-		//	protected override PropertyDescriptorCollection GetModelProperties(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		return PublicGetModelProperties(controllerContext, bindingContext);
-		//	}
-
-		//	public string PublicCreateSubIndexName(string prefix, int indexName)
-		//	{
-		//		return CreateSubIndexName(prefix, indexName);
-		//	}
-
-		//	public string PublicCreateSubPropertyName(string prefix, string propertyName)
-		//	{
-		//		return CreateSubPropertyName(prefix, propertyName);
-		//	}
-
-		//	public static bool PublicIsModelValid(ModelBindingContext bindingContext)
-		//	{
-		//		return IsModelValid(bindingContext);
-		//	}
-
-		//	public virtual bool PublicOnModelUpdating(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		return base.OnModelUpdating(controllerContext, bindingContext);
-		//	}
-
-		//	protected override bool OnModelUpdating(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		return PublicOnModelUpdating(controllerContext, bindingContext);
-		//	}
-
-		//	public virtual void PublicOnModelUpdated(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		base.OnModelUpdated(controllerContext, bindingContext);
-		//	}
-
-		//	protected override void OnModelUpdated(ControllerContext controllerContext, ModelBindingContext bindingContext)
-		//	{
-		//		PublicOnModelUpdated(controllerContext, bindingContext);
-		//	}
-
-		//	public virtual bool PublicOnPropertyValidating(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		return base.OnPropertyValidating(controllerContext, bindingContext, property, value);
-		//	}
-
-		//	protected override bool OnPropertyValidating(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		return PublicOnPropertyValidating(controllerContext, bindingContext, property, value);
-		//	}
-
-		//	public virtual void PublicOnPropertyValidated(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		base.OnPropertyValidated(controllerContext, bindingContext, property, value);
-		//	}
-
-		//	protected override void OnPropertyValidated(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		PublicOnPropertyValidated(controllerContext, bindingContext, property, value);
-		//	}
-
-		//	public virtual void PublicSetProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		base.SetProperty(controllerContext, bindingContext, property, value);
-		//	}
-
-		//	protected override void SetProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor property, object value)
-		//	{
-		//		PublicSetProperty(controllerContext, bindingContext, property, value);
-		//	}
-		//}
-
-		//private class MyModel2
-		//{
-		//	private int _intReadWriteNonNegative;
-
-		//	public int IntReadOnly
-		//	{
-		//		get { return 4; }
-		//	}
-
-		//	public int IntReadWrite { get; set; }
-
-		//	public int IntReadWriteNonNegative
-		//	{
-		//		get { return _intReadWriteNonNegative; }
-		//		set
-		//		{
-		//			if (value < 0)
-		//			{
-		//				throw new ArgumentOutOfRangeException("value", "Value must be non-negative.");
-		//			}
-		//			_intReadWriteNonNegative = value;
-		//		}
-		//	}
-
-		//	public int? NullableIntReadWrite { get; set; }
-		//}
-
 		[Bind(Exclude = "Foo")]
 		class ModelWithBindAttribute : ModelWithoutBindAttribute
 		{
@@ -2431,595 +2321,576 @@ namespace Maxfire.Web.Mvc.UnitTests
 			public string Baz { get; set; }
 		}
 
-		//private class PropertyTestingModel
-		//{
-		//	public string StringReadWrite { get; set; }
-		//	public string StringReadOnly { get; private set; }
-		//	public int IntReadWrite { get; set; }
-		//	public int IntReadOnly { get; private set; }
-		//	public object[] ArrayReadWrite { get; set; }
-		//	public object[] ArrayReadOnly { get; private set; }
-		//	public Address AddressReadWrite { get; set; }
-		//	public Address AddressReadOnly { get; private set; }
-		//	public string Whitelisted { get; set; }
-		//	public string Blacklisted { get; set; }
-		//}
+		class PropertyTestingModel
+		{
+			public string StringReadWrite { get; set; }
+			public string StringReadOnly { get; private set; }
+			public int IntReadWrite { get; set; }
+			public int IntReadOnly { get; private set; }
+			public object[] ArrayReadWrite { get; set; }
+			public object[] ArrayReadOnly { get; private set; }
+			public Address AddressReadWrite { get; set; }
+			public Address AddressReadOnly { get; private set; }
+			public string Whitelisted { get; set; }
+			public string Blacklisted { get; set; }
+		}
 
 		//// --------------------------------------------------------------------------------
 		////  DataAnnotations tests
 
-		//public const string BASE_MODEL_NAME = "BaseModelName";
+		const string BASE_MODEL_NAME = "BaseModelName";
 
 		//// GetModelProperties tests
 
-		//[MetadataType(typeof(Metadata))]
-		//class GetModelPropertiesModel
-		//{
-		//	[Required]
-		//	public int LocalAttributes { get; set; }
+		[MetadataType(typeof(Metadata))]
+		class GetModelPropertiesModel
+		{
+			[Required]
+			public int LocalAttributes { get; set; }
 
-		//	public int MetadataAttributes { get; set; }
+			public int MetadataAttributes { get; set; }
 
-		//	[Required]
-		//	public int MixedAttributes { get; set; }
+			[Required]
+			public int MixedAttributes { get; set; }
 
-		//	class Metadata
-		//	{
-		//		[Range(10, 100)]
-		//		public int MetadataAttributes { get; set; }
+			class Metadata
+			{
+				[Range(10, 100)]
+				public int MetadataAttributes { get; set; }
 
-		//		[Range(10, 100)]
-		//		public int MixedAttributes { get; set; }
-		//	}
-		//}
+				[Range(10, 100)]
+				public int MixedAttributes { get; set; }
+			}
+		}
 
-		//[Fact]
-		//public void GetModelPropertiesWithLocalAttributes()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetModelPropertiesModel> modelBinder = new TestableDefaultModelBinder<GetModelPropertiesModel>();
+		[Fact]
+		public void GetModelPropertiesWithLocalAttributes()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
 
-		//	// Act
-		//	PropertyDescriptor property = modelBinder.GetModelProperties()
-		//		.Cast<PropertyDescriptor>()
-		//		.Where(pd => pd.Name == "LocalAttributes")
-		//		.Single();
+			// Act
+			PropertyDescriptor property = modelBinder.GetModelProperties()
+			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "LocalAttributes");
 
-		//	// Assert
-		//	Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
-		//}
+			// Assert
+			Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
+		}
 
-		//[Fact]
-		//public void GetModelPropertiesWithMetadataAttributes()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetModelPropertiesModel> modelBinder = new TestableDefaultModelBinder<GetModelPropertiesModel>();
+		[Fact]
+		public void GetModelPropertiesWithMetadataAttributesDoesntWork()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
 
-		//	// Act
-		//	PropertyDescriptor property = modelBinder.GetModelProperties()
-		//		.Cast<PropertyDescriptor>()
-		//		.Where(pd => pd.Name == "MetadataAttributes")
-		//		.Single();
+			// Act
+			PropertyDescriptor property = modelBinder.GetModelProperties()
+			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "MetadataAttributes");
 
-		//	// Assert
-		//	Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
-		//}
+			// Assert
+			Assert.False(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
+		}
 
-		//[Fact]
-		//public void GetModelPropertiesWithMixedAttributes()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetModelPropertiesModel> modelBinder = new TestableDefaultModelBinder<GetModelPropertiesModel>();
+		[Fact]
+		public void GetModelPropertiesWithMixedAttributes()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
 
-		//	// Act
-		//	PropertyDescriptor property = modelBinder.GetModelProperties()
-		//		.Cast<PropertyDescriptor>()
-		//		.Where(pd => pd.Name == "MixedAttributes")
-		//		.Single();
+			// Act
+			PropertyDescriptor property = modelBinder.GetModelProperties()
+			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "MixedAttributes");
 
-		//	// Assert
-		//	Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
-		//	Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
-		//}
+			// Assert
+			Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
+			Assert.False(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
+		}
 
 		//// GetPropertyValue tests
 
-		//class GetPropertyValueModel
-		//{
-		//	public string NoAttribute { get; set; }
+		class GetPropertyValueModel
+		{
+			public string NoAttribute { get; set; }
 
-		//	[DisplayFormat(ConvertEmptyStringToNull = false)]
-		//	public string AttributeWithoutConversion { get; set; }
+			[DisplayFormat(ConvertEmptyStringToNull = false)]
+			public string AttributeWithoutConversion { get; set; }
 
-		//	[DisplayFormat(ConvertEmptyStringToNull = true)]
-		//	public string AttributeWithConversion { get; set; }
-		//}
+			[DisplayFormat(ConvertEmptyStringToNull = true)]
+			public string AttributeWithConversion { get; set; }
+		}
 
-		//[Fact]
-		//public void GetPropertyValueWithNoAttributeConvertsEmptyStringToNull()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetPropertyValueModel> binder = new TestableDefaultModelBinder<GetPropertyValueModel>();
-		//	binder.Context.ModelMetadata = binder.Context.PropertyMetadata["NoAttribute"];
+		[Fact]
+		public void GetPropertyValueWithNoAttributeConvertsEmptyStringToNull()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["NoAttribute"];
 
-		//	// Act
-		//	object result = binder.GetPropertyValue("NoAttribute", String.Empty);
+			// Act
+			object result = binder.GetPropertyValue("NoAttribute", String.Empty);
 
-		//	// Assert
-		//	Assert.Null(result);
-		//}
+			// Assert
+			Assert.Null(result);
+		}
 
-		//[Fact]
-		//public void GetPropertyValueWithFalseAttributeDoesNotConvertEmptyStringToNull()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetPropertyValueModel> binder = new TestableDefaultModelBinder<GetPropertyValueModel>();
-		//	binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithoutConversion"];
+		[Fact]
+		public void GetPropertyValueWithFalseAttributeDoesNotConvertEmptyStringToNull()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithoutConversion"];
 
-		//	// Act
-		//	object result = binder.GetPropertyValue("AttributeWithoutConversion", String.Empty);
+			// Act
+			object result = binder.GetPropertyValue("AttributeWithoutConversion", String.Empty);
 
-		//	// Assert
-		//	Assert.Equal(String.Empty, result);
-		//}
+			// Assert
+			Assert.Equal(String.Empty, result);
+		}
 
-		//[Fact]
-		//public void GetPropertyValueWithTrueAttributeConvertsEmptyStringToNull()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<GetPropertyValueModel> binder = new TestableDefaultModelBinder<GetPropertyValueModel>();
-		//	binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithConversion"];
+		[Fact]
+		public void GetPropertyValueWithTrueAttributeConvertsEmptyStringToNull()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithConversion"];
 
-		//	// Act
-		//	object result = binder.GetPropertyValue("AttributeWithConversion", String.Empty);
+			// Act
+			object result = binder.GetPropertyValue("AttributeWithConversion", String.Empty);
 
-		//	// Assert
-		//	Assert.Null(result);
-		//}
+			// Assert
+			Assert.Null(result);
+		}
 
 		//// OnModelUpdated tests
 
-		//[Fact]
-		//public void OnModelUpdatedPassesNullContainerToValidate()
-		//{
-		//	Mock<ModelValidatorProvider> provider = null;
+		[Fact]
+		public void OnModelUpdatedPassesNullContainerToValidate()
+		{
+			Mock<ModelValidatorProvider> provider = null;
 
-		//	try
-		//	{
-		//		// Arrange
-		//		ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(object));
-		//		ControllerContext context = new ControllerContext();
-		//		Mock<ModelValidator> validator = new Mock<ModelValidator>(metadata, context);
-		//		provider = new Mock<ModelValidatorProvider>();
-		//		provider.Setup(p => p.GetValidators(It.IsAny<ModelMetadata>(), It.IsAny<ControllerContext>()))
-		//			.Returns(new ModelValidator[] { validator.Object });
-		//		ModelValidatorProviders.Providers.Add(provider.Object);
-		//		object model = new object();
-		//		TestableDefaultModelBinder<object> modelBinder = new TestableDefaultModelBinder<object>(model);
+			try
+			{
+				// Arrange
+				ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(object));
+				var controllerContext = new ControllerContext();
+				var mockModelValidator = new Mock<ModelValidator>(metadata, controllerContext);
+				provider = new Mock<ModelValidatorProvider>();
+				provider
+					.Setup(p => p.GetValidators(It.IsAny<ModelMetadata>(), It.IsAny<ControllerContext>()))
+					.Returns(new [] { mockModelValidator.Object });
+				ModelValidatorProviders.Providers.Add(provider.Object);
+				var model = new object();
+				var modelBinder = new TestableBetterDefaultModelBinder<object>(model);
 
-		//		// Act
-		//		modelBinder.OnModelUpdated();
+				// Act
+				modelBinder.OnModelUpdated();
 
-		//		// Assert
-		//		validator.Verify(v => v.Validate(null));
-		//	}
-		//	finally
-		//	{
-		//		if (provider != null)
-		//		{
-		//			ModelValidatorProviders.Providers.Remove(provider.Object);
-		//		}
-		//	}
-		//}
+				// Assert
+				mockModelValidator.Verify(v => v.Validate(null));
+			}
+			finally
+			{
+				if (provider != null)
+				{
+					ModelValidatorProviders.Providers.Remove(provider.Object);
+				}
+			}
+		}
 
-		//public class MinMaxValidationAttribute : ValidationAttribute
-		//{
-		//	public MinMaxValidationAttribute()
-		//		: base("Minimum must be less than or equal to Maximum")
-		//	{
-		//	}
+		public class MinMaxValidationAttribute : ValidationAttribute
+		{
+			public MinMaxValidationAttribute()
+				: base("Minimum must be less than or equal to Maximum")
+			{
+			}
 
-		//	public override bool IsValid(object value)
-		//	{
-		//		OnModelUpdatedModelMultipleParameters model = (OnModelUpdatedModelMultipleParameters)value;
-		//		return model.Minimum <= model.Maximum;
-		//	}
-		//}
+			public override bool IsValid(object value)
+			{
+				var model = (OnModelUpdatedModelMultipleParameters)value;
+				return model.Minimum <= model.Maximum;
+			}
+		}
 
-		//[MinMaxValidation]
-		//public class OnModelUpdatedModelMultipleParameters
-		//{
-		//	public int Minimum { get; set; }
-		//	public int Maximum { get; set; }
-		//}
+		[MinMaxValidation]
+		public class OnModelUpdatedModelMultipleParameters
+		{
+			public int Minimum { get; set; }
+			public int Maximum { get; set; }
+		}
 
-		//[Fact]
-		//public void OnModelUpdatedWithValidationAttributeMultipleParameters()
-		//{
-		//	// Arrange
-		//	OnModelUpdatedModelMultipleParameters model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
-		//	TestableDefaultModelBinder<OnModelUpdatedModelMultipleParameters> modelBinder = new TestableDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
+		[Fact]
+		public void OnModelUpdatedWithValidationAttributeMultipleParameters()
+		{
+			// Arrange
+			var model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
+			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
 
-		//	// Act
-		//	modelBinder.OnModelUpdated();
+			// Act
+			modelBinder.OnModelUpdated();
 
-		//	// Assert
-		//	Assert.Single(modelBinder.ModelState);
-		//	ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
-		//	Assert.NotNull(stateModel);
-		//	Assert.Equal("Minimum must be less than or equal to Maximum", stateModel.Errors.Single().ErrorMessage);
-		//}
+			// Assert
+			Assert.Single(modelBinder.ModelState);
+			ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
+			Assert.NotNull(stateModel);
+			Assert.Equal("Minimum must be less than or equal to Maximum", stateModel.Errors.Single().ErrorMessage);
+		}
 
-		//[Fact]
-		//public void OnModelUpdatedWithInvalidPropertyValidationWillNotRunEntityLevelValidation()
-		//{
-		//	// Arrange
-		//	OnModelUpdatedModelMultipleParameters model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
-		//	TestableDefaultModelBinder<OnModelUpdatedModelMultipleParameters> modelBinder = new TestableDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
-		//	modelBinder.ModelState.AddModelError(BASE_MODEL_NAME + ".Minimum", "The minimum value was invalid.");
+		[Fact]
+		public void OnModelUpdatedWithInvalidPropertyValidationWillNotRunEntityLevelValidation()
+		{
+			// Arrange
+			var model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
+			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
+			modelBinder.ModelState.AddModelError(BASE_MODEL_NAME + ".Minimum", "The minimum value was invalid.");
 
-		//	// Act
-		//	modelBinder.OnModelUpdated();
+			// Act
+			modelBinder.OnModelUpdated();
 
-		//	// Assert
-		//	Assert.Null(modelBinder.ModelState[BASE_MODEL_NAME]);
-		//}
+			// Assert
+			Assert.Null(modelBinder.ModelState[BASE_MODEL_NAME]);
+		}
 
-		//public class AlwaysInvalidAttribute : ValidationAttribute
-		//{
-		//	public AlwaysInvalidAttribute()
-		//	{
-		//	}
+		public class AlwaysInvalidAttribute : ValidationAttribute
+		{
+			public AlwaysInvalidAttribute()
+			{
+			}
 
-		//	public AlwaysInvalidAttribute(string message)
-		//		: base(message)
-		//	{
-		//	}
+			public AlwaysInvalidAttribute(string message)
+				: base(message)
+			{
+			}
 
-		//	public override bool IsValid(object value)
-		//	{
-		//		return false;
-		//	}
-		//}
+			public override bool IsValid(object value)
+			{
+				return false;
+			}
+		}
 
-		//[AlwaysInvalid("The object just isn't right")]
-		//public class OnModelUpdatedModelNoParameters
-		//{
-		//}
+		[AlwaysInvalid("The object just isn't right")]
+		public class OnModelUpdatedModelNoParameters
+		{
+		}
 
-		//[Fact]
-		//public void OnModelUpdatedWithValidationAttributeNoParameters()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnModelUpdatedModelNoParameters> modelBinder = new TestableDefaultModelBinder<OnModelUpdatedModelNoParameters>();
+		[Fact]
+		public void OnModelUpdatedWithValidationAttributeNoParameters()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoParameters>();
 
-		//	// Act
-		//	modelBinder.OnModelUpdated();
+			// Act
+			modelBinder.OnModelUpdated();
 
-		//	// Assert
-		//	Assert.Single(modelBinder.ModelState);
-		//	ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
-		//	Assert.NotNull(stateModel);
-		//	Assert.Equal("The object just isn't right", stateModel.Errors.Single().ErrorMessage);
-		//}
+			// Assert
+			Assert.Single(modelBinder.ModelState);
+			ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
+			Assert.NotNull(stateModel);
+			Assert.Equal("The object just isn't right", stateModel.Errors.Single().ErrorMessage);
+		}
 
-		//[AlwaysInvalid]
-		//public class OnModelUpdatedModelNoValidationResult
-		//{
-		//}
+		[AlwaysInvalid]
+		public class OnModelUpdatedModelNoValidationResult
+		{
+		}
 
-		//[Fact]
-		//public void OnModelUpdatedWithValidationAttributeNoValidationMessage()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnModelUpdatedModelNoValidationResult> modelBinder = new TestableDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
+		[Fact]
+		public void OnModelUpdatedWithValidationAttributeNoValidationMessage()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
 
-		//	// Act
-		//	modelBinder.OnModelUpdated();
+			// Act
+			modelBinder.OnModelUpdated();
 
-		//	// Assert
-		//	Assert.Single(modelBinder.ModelState);
-		//	ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
-		//	Assert.NotNull(stateModel);
-		//	Assert.Equal("The field OnModelUpdatedModelNoValidationResult is invalid.", stateModel.Errors.Single().ErrorMessage);
-		//}
+			// Assert
+			Assert.Single(modelBinder.ModelState);
+			ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
+			Assert.NotNull(stateModel);
+			Assert.Equal("The field OnModelUpdatedModelNoValidationResult is invalid.", stateModel.Errors.Single().ErrorMessage);
+		}
 
-		//[Fact]
-		//public void OnModelUpdatedDoesNotPlaceErrorMessagesInModelStateWhenSubPropertiesHaveErrors()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnModelUpdatedModelNoValidationResult> modelBinder = new TestableDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
-		//	modelBinder.ModelState.AddModelError("Foo.Bar", "Foo.Bar is invalid");
-		//	modelBinder.Context.ModelName = "Foo";
+		[Fact]
+		public void OnModelUpdatedDoesNotPlaceErrorMessagesInModelStateWhenSubPropertiesHaveErrors()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
+			modelBinder.ModelState.AddModelError("Foo.Bar", "Foo.Bar is invalid");
+			modelBinder.Context.ModelName = "Foo";
 
-		//	// Act
-		//	modelBinder.OnModelUpdated();
+			// Act
+			modelBinder.OnModelUpdated();
 
-		//	// Assert
-		//	Assert.Null(modelBinder.ModelState["Foo"]);
-		//}
+			// Assert
+			Assert.Null(modelBinder.ModelState["Foo"]);
+		}
 
 		//// OnPropertyValidating tests
 
-		//class OnPropertyValidatingModel
-		//{
-		//	public string NotValidated { get; set; }
+		class OnPropertyValidatingModel
+		{
+			public string NotValidated { get; set; }
 
-		//	[Range(10, 65)]
-		//	public int RangedInteger { get; set; }
+			[Range(10, 65)]
+			public int RangedInteger { get; set; }
 
-		//	[Required(ErrorMessage = "Custom Required Message")]
-		//	public int RequiredInteger { get; set; }
-		//}
+			[Required(ErrorMessage = "Custom Required Message")]
+			public int RequiredInteger { get; set; }
+		}
 
-		//[Fact]
-		//public void OnPropertyValidatingWithoutValidationAttribute()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnPropertyValidatingModel> modelBinder = new TestableDefaultModelBinder<OnPropertyValidatingModel>();
+		[Fact]
+		public void OnPropertyValidatingWithoutValidationAttribute()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
 
-		//	// Act
-		//	modelBinder.OnPropertyValidating("NotValidated", 42);
+			// Act
+			modelBinder.OnPropertyValidating("NotValidated", 42);
 
-		//	// Assert
-		//	Assert.Empty(modelBinder.ModelState);
-		//}
+			// Assert
+			Assert.Empty(modelBinder.ModelState);
+		}
 
-		//[Fact]
-		//public void OnPropertyValidatingWithValidationAttributePassing()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnPropertyValidatingModel> modelBinder = new TestableDefaultModelBinder<OnPropertyValidatingModel>();
-		//	modelBinder.Context.PropertyMetadata["RangedInteger"].Model = 42;
+		[Fact]
+		public void OnPropertyValidatingWithValidationAttributePassing()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
+			modelBinder.Context.PropertyMetadata["RangedInteger"].Model = 42;
 
-		//	// Act
-		//	bool result = modelBinder.OnPropertyValidating("RangedInteger", 42);
+			// Act
+			bool result = modelBinder.OnPropertyValidating("RangedInteger", 42);
 
-		//	// Assert
-		//	Assert.True(result);
-		//	Assert.Empty(modelBinder.ModelState);
-		//}
+			// Assert
+			Assert.True(result);
+			Assert.Empty(modelBinder.ModelState);
+		}
 
 		//// SetProperty tests
 
-		//[Fact]
-		//public void SetPropertyWithRequiredOnValueTypeOnlyResultsInSingleMessage()
-		//{ // DDB #225150
-		//	// Arrange
-		//	TestableDefaultModelBinder<OnPropertyValidatingModel> modelBinder = new TestableDefaultModelBinder<OnPropertyValidatingModel>();
-		//	modelBinder.Context.ModelMetadata.Model = new OnPropertyValidatingModel();
+		[Fact]
+		public void SetPropertyWithRequiredOnValueTypeOnlyResultsInSingleMessage()
+		{
+			// Arrange
+			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
+			modelBinder.Context.ModelMetadata.Model = new OnPropertyValidatingModel();
 
-		//	// Act
-		//	modelBinder.SetProperty("RequiredInteger", null);
+			// Act
+			modelBinder.SetProperty("RequiredInteger", null);
 
-		//	// Assert
-		//	ModelState modelState = modelBinder.ModelState[BASE_MODEL_NAME + ".RequiredInteger"];
-		//	ModelError modelStateError = modelState.Errors.Single();
-		//	Assert.Equal("Custom Required Message", modelStateError.ErrorMessage);
-		//}
+			// Assert
+			ModelState modelState = modelBinder.ModelState[BASE_MODEL_NAME + ".RequiredInteger"];
+			ModelError modelStateError = modelState.Errors.Single();
+			Assert.Equal("Custom Required Message", modelStateError.ErrorMessage);
+		}
 
-		//[Fact]
-		//public void SetPropertyAddsDefaultMessageForNonBindableNonNullableValueTypes()
-		//{
-		//	DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
+		[Fact]
+		public void SetPropertyAddsDefaultMessageForNonBindableNonNullableValueTypes()
+		{
+			DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
 
-		//	try
-		//	{
-		//		// Arrange
-		//		TestableDefaultModelBinder<List<String>> modelBinder = new TestableDefaultModelBinder<List<String>>();
-		//		modelBinder.Context.ModelMetadata.Model = null;
+			try
+			{
+				// Arrange
+				var modelBinder = new TestableBetterDefaultModelBinder<List<String>>();
+				modelBinder.Context.ModelMetadata.Model = null;
 
-		//		// Act
-		//		modelBinder.SetProperty("Count", null);
+				// Act
+				modelBinder.SetProperty("Count", null);
 
-		//		// Assert
-		//		ModelState modelState = modelBinder.ModelState[BASE_MODEL_NAME + ".Count"];
-		//		ModelError modelStateError = modelState.Errors.Single();
-		//		Assert.Equal("A value is required.", modelStateError.ErrorMessage);
-		//	}
-		//	finally
-		//	{
-		//		DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = true;
-		//	}
-		//}
+				// Assert
+				ModelState modelState = modelBinder.ModelState[BASE_MODEL_NAME + ".Count"];
+				ModelError modelStateError = modelState.Errors.Single();
+				Assert.Equal("A value is required.", modelStateError.ErrorMessage);
+			}
+			finally
+			{
+				DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = true;
+			}
+		}
 
-		//[Fact]
-		//public void SetPropertyCreatesValueRequiredErrorIfNecessary()
-		//{
-		//	// Arrange
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new MyModel(), typeof(MyModel)),
-		//		ModelName = "theModel",
-		//	};
+		[Fact]
+		public void SetPropertyCreatesValueRequiredErrorIfNecessary()
+		{
+			// Arrange
+			ModelBindingContext bindingContext = new ModelBindingContext()
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new MyModel(), typeof(MyModel)),
+				ModelName = "theModel",
+			};
 
-		//	PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
+			PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
+			var helper = new TestableDefaultModelBinder();
 
-		//	// Act
-		//	helper.PublicSetProperty(new ControllerContext(), bindingContext, property, null);
+			// Act
+			helper.PublicSetProperty(new ControllerContext(), bindingContext, property, null);
 
-		//	// Assert
-		//	Assert.Equal("The ReadWriteProperty field is required.", bindingContext.ModelState["theModel.ReadWriteProperty"].Errors[0].ErrorMessage);
-		//}
+			// Assert
+			Assert.Equal("The ReadWriteProperty field is required.", bindingContext.ModelState["theModel.ReadWriteProperty"].Errors[0].ErrorMessage);
+		}
 
-		//[Fact]
-		//public void SetPropertyWithThrowingSetter()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<SetPropertyModel> binder = new TestableDefaultModelBinder<SetPropertyModel>();
+		[Fact]
+		public void SetPropertyWithThrowingSetter()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
 
-		//	// Act
-		//	binder.SetProperty("NonNullableString", null);
+			// Act
+			binder.SetProperty("NonNullableString", null);
 
-		//	// Assert
-		//	ModelState modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableString"];
-		//	Assert.Single(modelState.Errors);
-		//	Assert.IsType<ArgumentNullException>(modelState.Errors[0].Exception);
-		//}
+			// Assert
+			ModelState modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableString"];
+			Assert.Single(modelState.Errors);
+			Assert.IsType<ArgumentNullException>(modelState.Errors[0].Exception);
+		}
 
-		//[Fact]
-		//public void SetPropertyWithNullValueAndThrowingSetterWithRequiredAttribute()
-		//{ // DDB #227809
-		//	// Arrange
-		//	TestableDefaultModelBinder<SetPropertyModel> binder = new TestableDefaultModelBinder<SetPropertyModel>();
+		[Fact]
+		public void SetPropertyWithNullValueAndThrowingSetterWithRequiredAttribute()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
 
-		//	// Act
-		//	binder.SetProperty("NonNullableStringWithAttribute", null);
+			// Act
+			binder.SetProperty("NonNullableStringWithAttribute", null);
 
-		//	// Assert
-		//	ModelState modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
-		//	var error = Assert.Single(modelState.Errors);
-		//	Assert.Equal("My custom required message", error.ErrorMessage);
-		//}
+			// Assert
+			ModelState modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
+			var error = Assert.Single(modelState.Errors);
+			Assert.Equal("My custom required message", error.ErrorMessage);
+		}
 
-		//[Fact]
-		//public void SetPropertyDoesNothingIfPropertyIsReadOnly()
-		//{
-		//	// Arrange
-		//	MyModel model = new MyModel();
-		//	ModelBindingContext bindingContext = new ModelBindingContext()
-		//	{
-		//		ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
-		//		ModelName = "theModel"
-		//	};
+		[Fact]
+		public void SetPropertyDoesNothingIfPropertyIsReadOnly()
+		{
+			// Arrange
+			var model = new MyModel();
+			var bindingContext = new ModelBindingContext
+			{
+				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
+				ModelName = "theModel"
+			};
 
-		//	PropertyDescriptor property = TypeDescriptor.GetProperties(model)["ReadOnlyProperty"];
-		//	DefaultModelBinderHelper helper = new DefaultModelBinderHelper();
+			PropertyDescriptor property = TypeDescriptor.GetProperties(model)["ReadOnlyProperty"];
+			var helper = new TestableDefaultModelBinder();
 
-		//	// Act
-		//	helper.PublicSetProperty(new ControllerContext(), bindingContext, property, 42);
+			// Act
+			helper.PublicSetProperty(new ControllerContext(), bindingContext, property, 42);
 
-		//	// Assert
-		//	Assert.Empty(bindingContext.ModelState);
-		//}
+			// Assert
+			Assert.Empty(bindingContext.ModelState);
+		}
 
-		//[Fact]
-		//public void SetPropertySuccess()
-		//{
-		//	// Arrange
-		//	TestableDefaultModelBinder<SetPropertyModel> binder = new TestableDefaultModelBinder<SetPropertyModel>();
+		[Fact]
+		public void SetPropertySuccess()
+		{
+			// Arrange
+			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
 
-		//	// Act
-		//	binder.SetProperty("NullableString", "The new value");
+			// Act
+			binder.SetProperty("NullableString", "The new value");
 
-		//	// Assert
-		//	Assert.Equal("The new value", ((SetPropertyModel)binder.Context.Model).NullableString);
-		//	Assert.Empty(binder.Context.ModelState);
-		//}
+			// Assert
+			Assert.Equal("The new value", ((SetPropertyModel)binder.Context.Model).NullableString);
+			Assert.Empty(binder.Context.ModelState);
+		}
 
-		//class SetPropertyModel
-		//{
-		//	public string NullableString { get; set; }
+		class SetPropertyModel
+		{
+			public string NullableString { get; set; }
 
-		//	public string NonNullableString
-		//	{
-		//		get { return null; }
-		//		set
-		//		{
-		//			if (value == null)
-		//			{
-		//				throw new ArgumentNullException("value");
-		//			}
-		//		}
-		//	}
+			public string NonNullableString
+			{
+				get { return null; }
+				set
+				{
+					if (value == null)
+					{
+						throw new ArgumentNullException("value");
+					}
+				}
+			}
 
-		//	[Required(ErrorMessage = "My custom required message")]
-		//	public string NonNullableStringWithAttribute
-		//	{
-		//		get { return null; }
-		//		set
-		//		{
-		//			if (value == null)
-		//			{
-		//				throw new ArgumentNullException("value");
-		//			}
-		//		}
-		//	}
-		//}
-
-		//// Helper methods
-
-		//static PropertyDescriptor GetProperty<T>(string propertyName)
-		//{
-		//	return TypeDescriptor.GetProperties(typeof(T))
-		//		.Cast<PropertyDescriptor>()
-		//		.Where(p => p.Name == propertyName)
-		//		.Single();
-		//}
-
-		//static ICustomTypeDescriptor GetType<T>()
-		//{
-		//	return TypeDescriptor.GetProvider(typeof(T)).GetTypeDescriptor(typeof(T));
-		//}
+			[Required(ErrorMessage = "My custom required message")]
+			public string NonNullableStringWithAttribute
+			{
+				get { return null; }
+				set
+				{
+					if (value == null)
+					{
+						throw new ArgumentNullException("value");
+					}
+				}
+			}
+		}
 
 		//// Helper classes
 
-		//class TestableDefaultModelBinder<TModel> : DefaultModelBinder
-		//	where TModel : new()
-		//{
-		//	public TestableDefaultModelBinder()
-		//		: this(new TModel())
-		//	{
-		//	}
-
-		//	public TestableDefaultModelBinder(TModel model)
-		//	{
-		//		ModelState = new ModelStateDictionary();
-
-		//		Context = new ModelBindingContext();
-		//		Context.ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, typeof(TModel));
-		//		Context.ModelName = BASE_MODEL_NAME;
-		//		Context.ModelState = ModelState;
-		//	}
-
-		//	public ModelBindingContext Context { get; private set; }
-
-		//	public ModelStateDictionary ModelState { get; set; }
-
-		//	public void BindProperty(string propertyName)
-		//	{
-		//		base.BindProperty(new ControllerContext(), Context, GetProperty<TModel>(propertyName));
-		//	}
-
-		//	public PropertyDescriptorCollection GetModelProperties()
-		//	{
-		//		return base.GetModelProperties(new ControllerContext(), Context);
-		//	}
-
-		//	public object GetPropertyValue(string propertyName, object existingValue)
-		//	{
-		//		Mock<IModelBinder> mockModelBinder = new Mock<IModelBinder>();
-		//		mockModelBinder.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), Context)).Returns(existingValue);
-		//		return base.GetPropertyValue(new ControllerContext(), Context, GetProperty<TModel>(propertyName), mockModelBinder.Object);
-		//	}
-
-		//	public bool OnPropertyValidating(string propertyName, object value)
-		//	{
-		//		return base.OnPropertyValidating(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
-		//	}
-
-		//	public void OnPropertyValidated(string propertyName, object value)
-		//	{
-		//		base.OnPropertyValidated(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
-		//	}
-
-		//	public void OnModelUpdated()
-		//	{
-		//		base.OnModelUpdated(new ControllerContext(), Context);
-		//	}
-
-		//	public void SetProperty(string propertyName, object value)
-		//	{
-		//		base.SetProperty(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
-		//	}
-		//}
-
-		class CountryState
+		class TestableBetterDefaultModelBinder<TModel> : BetterDefaultModelBinder
+			where TModel : new()
 		{
-			public string Name { get; set; }
+			public TestableBetterDefaultModelBinder()
+				: this(new TModel())
+			{
+			}
 
-			public IEnumerable<string> States { get; set; }
+			public TestableBetterDefaultModelBinder(TModel model)
+			{
+				ModelState = new ModelStateDictionary();
+
+				Context = new ModelBindingContext
+					{
+						ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, typeof (TModel)),
+						ModelName = BASE_MODEL_NAME,
+						ModelState = ModelState
+					};
+			}
+
+			public ModelBindingContext Context { get; private set; }
+
+			public ModelStateDictionary ModelState { get; set; }
+
+			public void BindProperty(string propertyName)
+			{
+				base.BindProperty(new ControllerContext(), Context, GetProperty<TModel>(propertyName));
+			}
+
+			public PropertyDescriptorCollection GetModelProperties()
+			{
+				return base.GetModelProperties(new ControllerContext(), Context);
+			}
+
+			public object GetPropertyValue(string propertyName, object existingValue)
+			{
+				var mockPropertyBinder = new Mock<IModelBinder>();
+				mockPropertyBinder.Setup(b => b.BindModel(It.IsAny<ControllerContext>(), Context)).Returns(existingValue);
+				return base.GetPropertyValue(new ControllerContext(), Context, GetProperty<TModel>(propertyName), mockPropertyBinder.Object);
+			}
+
+			public bool OnPropertyValidating(string propertyName, object value)
+			{
+				return base.OnPropertyValidating(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
+			}
+
+			public void OnPropertyValidated(string propertyName, object value)
+			{
+				base.OnPropertyValidated(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
+			}
+
+			public void OnModelUpdated()
+			{
+				base.OnModelUpdated(new ControllerContext(), Context);
+			}
+
+			public void SetProperty(string propertyName, object value)
+			{
+				base.SetProperty(new ControllerContext(), Context, GetProperty<TModel>(propertyName), value);
+			}
+
+			static PropertyDescriptor GetProperty<T>(string propertyName)
+			{
+				return TypeDescriptor.GetProperties(typeof(T))
+				                     .Cast<PropertyDescriptor>().Single(p => p.Name == propertyName);
+			}
 		}
 	}
 }

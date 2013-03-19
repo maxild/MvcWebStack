@@ -13,6 +13,13 @@ namespace Maxfire.Web.Mvc
 {
 	public class BetterDefaultModelBinder : IModelBinder
 	{
+		private ModelBinderDictionary _binders;
+		public ModelBinderDictionary Binders
+		{
+			get { return _binders ?? (_binders = new ModelBinderDictionary()); }
+			set { _binders = value; }
+		}
+
 		private static string _resourceClassKey;
 		public static string ResourceClassKey
 		{
@@ -289,7 +296,7 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		private ModelBindingContext CreateComplexElementalModelBindingContext(ControllerContext controllerContext, ModelBindingContext bindingContext, object model)
+		protected virtual ModelBindingContext CreateComplexElementalModelBindingContext(ControllerContext controllerContext, ModelBindingContext bindingContext, object model)
 		{
 			var bindAttr = (BindAttribute)GetTypeDescriptor(controllerContext, bindingContext).GetAttributes()[typeof(BindAttribute)];
 			Predicate<string> newPropertyFilter = bindAttr != null
@@ -308,7 +315,7 @@ namespace Maxfire.Web.Mvc
 			return newBindingContext;
 		}
 
-		public virtual object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType)
+		protected virtual object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType)
 		{
 			Type typeToCreate = modelType;
 
@@ -408,12 +415,12 @@ namespace Maxfire.Web.Mvc
 
 		private static string GetValueRequiredResource(ControllerContext controllerContext)
 		{
-			return GetUserResourceString(controllerContext, "PropertyValueRequired") ?? "The value is required";
+			return GetUserResourceString(controllerContext, "PropertyValueRequired") ?? "A value is required.";
 		}
 
 		private static string GetValueInvalidResource(ControllerContext controllerContext)
 		{
-			return GetUserResourceString(controllerContext, "PropertyValueInvalid") ?? "The value is invalid";
+			return GetUserResourceString(controllerContext, "PropertyValueInvalid") ?? "The value '{0}' is not valid for {1}.";
 		}
 
 		private static IEnumerable<string> GetZeroBasedIndexes()
@@ -448,18 +455,18 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		public virtual bool OnModelUpdating(ControllerContext controllerContext, ModelBindingContext bindingContext)
+		protected virtual bool OnModelUpdating(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
 			// default implementation does nothing
 			return true;
 		}
 
-		public virtual void OnPropertyValidated(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor propertyDescriptor, object value)
+		protected virtual void OnPropertyValidated(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor propertyDescriptor, object value)
 		{
 			// default implementation does nothing
 		}
 
-		public virtual bool OnPropertyValidating(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor propertyDescriptor, object value)
+		protected virtual bool OnPropertyValidating(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor propertyDescriptor, object value)
 		{
 			// default implementation does nothing
 			return true;
@@ -741,7 +748,7 @@ namespace Maxfire.Web.Mvc
 
 		protected virtual IModelBinder GetBinder(Type modelType)
 		{
-			IModelBinder binder = ModelBinders.Binders.GetBinder(modelType);
+			IModelBinder binder = Binders.GetBinder(modelType);
 			return binder ?? this;
 		}
 
