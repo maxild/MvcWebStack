@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Spark.Web.Mvc4</id>
+    <version>1.0.0.0</version>
+    <title>Spark.Web.Mvc4</title>
+    <authors>Louis DeJardin &amp; Robert Greyling</authors>
+    <owners>Louis DeJardin &amp; Robert Greyling</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Spark View Engine for ASP.NET MVC 4.</description>
+    <summary>Spark View Engine for ASP.NET MVC 4.</summary>
+    <releaseNotes />
+    <copyright />
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="Spark" version="1.7.5.1" />
+      <dependency id="WebActivator" version="1.4.1" />
+    </dependencies>
+    <references>
+      <reference file="Spark.Web.Mvc.dll" />
+    </references>
+  </metadata>
+</package>

@@ -87,7 +87,7 @@ namespace :build do
 	Rake::MsBuildTask.new(:compile => [:init, :version]) do |msbuild|
 		# Both Visual Studio 2010 and Visual Studio 2012 use a ToolsVersion of 4.0.
 		msbuild.tools_version = '4.0'
-		msbuild.target_framework_version = 'v4.5'
+		msbuild.target_framework_version = 'v4.0'
 		msbuild.project = SOLUTION
 		msbuild.targets << 'Clean'
 		msbuild.targets << 'Build'
