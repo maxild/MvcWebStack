@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Spark.Web.Mvc4</id>
-    <version>1.0.0.0</version>
+    <version>1.0.0.1</version>
     <title>Spark.Web.Mvc4</title>
     <authors>Louis DeJardin &amp; Robert Greyling</authors>
     <owners>Louis DeJardin &amp; Robert Greyling</owners>
