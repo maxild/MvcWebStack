@@ -30,7 +30,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			
 			// Because when testing Url recognition we have a call to IRouteHandler.GetHttpHandler,
 			// and the standard MvcRouteHandler will call IControllerFactory.GetControllerSessionBehavior
-			// that will use the 'ASP.NET pipeline' based BuildManager. This will throw during testinf, and
+			// that will use the 'ASP.NET pipeline' based BuildManager. This will throw during testing, and
 			// therefore we use a fake controller factory.
 			
 			_controllerFactory = ControllerBuilder.Current.GetControllerFactory();
@@ -82,9 +82,9 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		// Todo: This method should get a better name
 		protected void CheckRequestForRestResource(string controllerPath, string controller)
 		{
-			const string id = "1";
+			const string ID = "1";
 			string usersPath = controllerPath;
-			string userPath = usersPath + "/" + id;
+			string userPath = usersPath + "/" + ID;
 			string usersPathNew = usersPath + "/new";
 			string userPathEdit = userPath + "/edit";
 
@@ -103,22 +103,22 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			GetRequestFor(userPath)
 				.ShouldMatchController(controller)
 				.AndAction("Show")
-				.AndRouteValue("id", id);
+				.AndRouteValue("id", ID);
 
 			PutRequestFor(userPath)
 				.ShouldMatchController(controller)
 				.AndAction("Update")
-				.AndRouteValue("id", id);
+				.AndRouteValue("id", ID);
 
 			DeleteRequestFor(userPath)
 				.ShouldMatchController(controller)
 				.AndAction("Destroy")
-				.AndRouteValue("id", id);
+				.AndRouteValue("id", ID);
 
 			GetRequestFor(userPathEdit)
 				.ShouldMatchController(controller)
 				.AndAction("Edit")
-				.AndRouteValue("id", id);
+				.AndRouteValue("id", ID);
 		}
 
 		protected UriPathRecognizeOptions GetRequestFor(string url)
@@ -211,15 +211,15 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			RouteValueDictionary values = RouteValuesHelper.GetRouteValuesFromExpression(action, _nameValueSerializer);
 
 			// This is a hack to map to the action alias defined by the ActionName attribute
-			if (hack == UrlGenerationHack.MapToActionName) values["action"] = getActionName(action);
+			if (hack == UrlGenerationHack.MapToActionName) values["action"] = GetActionName(action);
 
 			return new UriPathGenerationOptions(Routes, values);
 		}
 
-		private static string getActionName<TController>(Expression<Action<TController>> action)
+		private static string GetActionName<TController>(Expression<Action<TController>> action)
 		{
 			Type controllerType = typeof(TController);
-			MethodCallExpression call = action.Body as MethodCallExpression;
+			var call = action.Body as MethodCallExpression;
 			string methodName = call != null ? call.Method.Name : "";
 			MethodInfo actionMethodInfo = controllerType.GetMethod(methodName);
 			var alias = (ActionNameAttribute[])actionMethodInfo.GetCustomAttributes(typeof(ActionNameAttribute), true);
@@ -236,14 +236,14 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			public UriPathRecognizeOptions(INameValueSerializer nameValueSerializer, RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 			{
 				_nameValueSerializer = nameValueSerializer;
-				var result = recognizePath(routes, url, httpMethod, formMethod);
+				var result = RecognizePath(routes, url, httpMethod, formMethod);
 				_routeData = result.RouteData;
 				_queryData = result.QueryData;
 			}
 
 			public UriPathRecognizeOptions ShouldMatchController(string controller)
 			{
-				assertStringsEquivalent(controller, _routeData.GetRequiredString("controller"));
+				AssertStringsEquivalent(controller, _routeData.GetRequiredString("controller"));
 				return this;
 			}
 
@@ -275,7 +275,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathRecognizeOptions AndAction(string action)
 			{
-				assertStringsEquivalent(action, _routeData.GetRequiredString("action"));
+				AssertStringsEquivalent(action, _routeData.GetRequiredString("action"));
 				return this;
 			}
 
@@ -286,22 +286,22 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				{
 					throw new AssertException(string.Format("Cannot verify route value, because the key '{0}' failed to be recognized.", key));
 				}
-				assertStringsEquivalent(value, actualValue.ToString());
+				AssertStringsEquivalent(value, actualValue.ToString());
 				return this;
 			}
 
 			public UriPathRecognizeOptions AndQueryValue(string key, string value)
 			{
-				assertStringsEquivalent(value, _queryData[key]);
+				AssertStringsEquivalent(value, _queryData[key]);
 				return this;
 			}
 
-			private static void assertStringsEquivalent(string expected, string actual)
+			private static void AssertStringsEquivalent(string expected, string actual)
 			{
 				Assert.Equal(expected, actual, StringComparer.Create(CultureInfo.InvariantCulture, true));
 			}
 
-			private static RecognizePathResult recognizePath(RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
+			private static RecognizePathResult RecognizePath(RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 			{
 				HttpContextBase context = RouteUtil.GetHttpContext(url, httpMethod, formMethod);
 
@@ -310,10 +310,6 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 				Assert.True(routeData != null, String.Format("The url '{0}' was not recognized by any routes.", url));
 				
-				// The bound RouteHandler can mutate the routeData when getting the http 
-				// handler for the request (See SimplyRestfulRouteHandler)
-				routeData.RouteHandler.GetHttpHandler(new RequestContext(context, routeData));
-
 				return new RecognizePathResult { RouteData = routeData, QueryData = queryData };
 			}
 
@@ -380,23 +376,23 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public void ShouldGenerateUriPathOf(string path)
 			{
-				string uriPath = generateUrl(_routes, _values);
-				assertStringsEquivalent(path, uriPath);
+				string uriPath = GenerateUrlHelper(_routes, _values);
+				AssertStringsEquivalent(path, uriPath);
 			}
 
 			public string GenerateUriPathOf()
 			{
-				string uriPath = generateUrl(_routes, _values);
+				string uriPath = GenerateUrlHelper(_routes, _values);
 				return uriPath;
 			}
 
-			private static void assertStringsEquivalent(string expected, string actual)
+			private static void AssertStringsEquivalent(string expected, string actual)
 			{
 				Assert.Equal(expected, actual, StringComparer.Create(CultureInfo.InvariantCulture, true));
 			}
 
 			// Todo: Could use a mocked IUrlHelper instead
-			private static string generateUrl(RouteCollection routes, RouteValueDictionary values)
+			private static string GenerateUrlHelper(RouteCollection routes, RouteValueDictionary values)
 			{
 				var requestContext = RouteUtil.GetRequestContext();
 				return UrlHelperUtil.GetVirtualPath(routes, requestContext, values);
