@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BetterDefaultModelBinderTesting.cs" />
+    <Compile Include="PrefixContainerSpecs.cs" />
     <Compile Include="BetterDefaultModelBinderTesting_FromMvc.cs" />
     <Compile Include="BetterDefaultModelBinderTests.cs" />
     <Compile Include="DateModelBinderTester.cs" />
@@ -63,6 +63,7 @@
     <Compile Include="SimplyRestful\NoAreaRestfulRoutesSpecs.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolverTester.cs" />
     <Compile Include="SimplyRestful\NamedControllerRestfulRoutesSpecs.cs" />
+    <Compile Include="TestableBetterDefaultModelBinder.cs" />
     <Compile Include="TestableExtensibleDefaultModelBinder.cs" />
   </ItemGroup>
   <ItemGroup>

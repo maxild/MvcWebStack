@@ -199,39 +199,5 @@ namespace Maxfire.Web.Mvc.UnitTests
             // Assert
             Assert.Empty(result);
         }
-
-		[Fact]
-		public void Bug()
-		{
-			var sut = new BetterPrefixContainer(new[] { "SomeData", "ValueIsSequence", "Value[0].Data" });
-			sut.ContainsPrefix("Value").ShouldBeTrue();
-		}
-
-		[Fact]
-		public void GetKeysFromPrefix_()
-		{
-			var container = new BetterPrefixContainer(new[]
-				{
-					"foo[bar]", 
-					"something[other]", 
-					"foo.baz", 
-					"foot[hello]", 
-					"fo[nothing]", 
-					"foo",
-					"foo.bar[0]",
-					"foo.bar[1]",
-					"foo.user[0].name",
-					"foo.user[0].age",
-					"foo.user[1].name",
-					"foo.user[1].age",
-				});
-
-			IDictionary<string, string> result = container.GetKeysFromPrefix("foo.user");
-
-			foreach (var kvp in result)
-			{
-				Debug.WriteLine("result[{0}] = {1}", kvp.Key, kvp.Value);
-			}
-		}
     }
 }

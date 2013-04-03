@@ -58,12 +58,37 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var keys = sut.GetKeysFromPrefix("foo");
 
-			foreach (var key in keys)
-			{
-				Debug.WriteLine("{0} = {1}", key.Key, key.Value);
-			}
+			//foreach (var key in keys)
+			//{
+			//	Debug.WriteLine("{0} = {1}", key.Key, key.Value);
+			//}
+		}
+
+		[Fact]
+		public void GetKeysFromPrefix_()
+		{
+			var container = new BetterPrefixContainer(new[]
+				{
+					"foo[bar]", 
+					"something[other]", 
+					"foo.baz", 
+					"foot[hello]", 
+					"fo[nothing]", 
+					"foo",
+					"foo.bar[0]",
+					"foo.bar[1]",
+					"foo.user[0].name",
+					"foo.user[0].age",
+					"foo.user[1].name",
+					"foo.user[1].age",
+				});
+
+			IDictionary<string, string> result = container.GetKeysFromPrefix("foo.user");
+
+			//foreach (var kvp in result)
+			//{
+			//	Debug.WriteLine("result[{0}] = {1}", kvp.Key, kvp.Value);
+			//}
 		}
 	}
-
-	// Note: This is copied from Mvc source
 }

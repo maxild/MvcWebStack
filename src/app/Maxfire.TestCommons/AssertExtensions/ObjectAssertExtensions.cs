@@ -157,7 +157,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 
 		public static void ShouldBeAssignableTo(this object @object, Type expectedType)
 		{
-			expectedType.IsAssignableFrom(@object.GetType());
+			Assert.IsAssignableFrom(@object.GetType(), expectedType);
 		}
 
 		/// <summary>
