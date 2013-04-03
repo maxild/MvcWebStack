@@ -13,7 +13,7 @@ using Assert = Maxfire.TestCommons.AssertEx;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
-	public class DefaultModelBinderTest
+	public class ExtensibleDefaultModelBinderTests
 	{
 		[Fact]
 		public void BindComplexElementalModelReturnsIfOnModelUpdatingReturnsFalse()
@@ -27,11 +27,11 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
 			};
 
-			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			var mockHelper = new Mock<TestableExtensibleDefaultModelBinder> { CallBase = true };
 			mockHelper
 				.Setup(b => b.PublicOnModelUpdating(controllerContext, It.IsAny<ModelBindingContext>()))
 				.Returns(false);
-			TestableDefaultModelBinder helper = mockHelper.Object;
+			TestableExtensibleDefaultModelBinder helper = mockHelper.Object;
 
 			// Act
 			helper.PublicBindComplexElementalModel(controllerContext, bindingContext, model);
@@ -76,7 +76,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 				{
@@ -125,7 +125,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -163,7 +163,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}, CultureInfo.CurrentCulture)
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
@@ -203,7 +203,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}, CultureInfo.CurrentCulture)
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
@@ -243,7 +243,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}, CultureInfo.CurrentCulture)
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object newModel = binder.PublicBindComplexModel(controllerContext, bindingContext);
@@ -310,7 +310,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 				{
@@ -359,7 +359,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return bc.ModelName + "PostValue";
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 				{
@@ -395,7 +395,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					(ControllerContext cc, ModelBindingContext bc) =>
 					Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture));
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 					{
@@ -439,7 +439,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return bc.ModelName + "PostValue";
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -485,7 +485,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return bc.ModelName + "PostValue";
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -533,7 +533,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return bc.ModelName + "PostValue";
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -565,7 +565,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -589,7 +589,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new CustomUnvalidatedValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(controllerContext, bindingContext);
@@ -616,7 +616,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new CustomUnvalidatedValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(controllerContext, bindingContext);
@@ -641,7 +641,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new CustomUnvalidatedValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(controllerContext, bindingContext);
@@ -661,7 +661,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -681,7 +681,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -702,7 +702,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -712,28 +712,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void BindModel_ForSimpleTypeAndFallbackToEmptyPrefix_ReturnsNewModelIfAnyNonRequiredKeysAreFound()
-		{
-			// Arrange
-			var bindingContext = new ModelBindingContext
-			{
-				FallbackToEmptyPrefix = true,
-				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(int)),
-				ModelName = "foo",
-				ValueProvider = new SimpleValueProvider { { "something", "in the way she smiles" } }
-			};
-
-			var binder = new BetterDefaultModelBinder();
-
-			// Act
-			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
-
-			// Assert
-			Assert.Null(returnedModel);
-		}
-
-		[Fact]
-		public void BindModel_ForComplexTypeAndFallbackToEmptyPrefix_ReturnsNullIfKeyNotFound()
+		public void BindModel_ForComplexTypeAndFallbackToEmptyPrefix_ReturnsNewModelIfKeyNotFound()
 		{
 			// Arrange
 			var bindingContext = new ModelBindingContext
@@ -744,28 +723,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ValueProvider = new SimpleValueProvider()
 			};
 
-			var binder = new BetterDefaultModelBinder();
-
-			// Act
-			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
-
-			// Assert
-			Assert.Null(returnedModel);
-		}
-
-		[Fact]
-		public void BindModel_ForComplexTypeAndFallbackToEmptyPrefix_ReturnsNewModelIfAnyNonRequiredKeysAreFound()
-		{
-			// Arrange
-			var bindingContext = new ModelBindingContext
-			{
-				FallbackToEmptyPrefix = true,
-				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
-				ModelName = "foo",
-				ValueProvider = new SimpleValueProvider {{"something", "in the way she smiles"}}
-			};
-
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -778,7 +736,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void BindModelThrowsIfBindingContextIsNull()
 		{
 			// Arrange
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act & assert
 			Assert.ThrowsArgumentNull(() => binder.BindModel(new ControllerContext(), null), "bindingContext");
@@ -799,7 +757,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			var binder = new Mock<TestableExtensibleDefaultModelBinder> { CallBase = true };
 			binder.Setup(b => b.PublicGetPropertyValue(It.IsAny<ControllerContext>(), It.IsAny<ModelBindingContext>(),
 											           It.IsAny<PropertyDescriptor>(), It.IsAny<IModelBinder>()))
 				.Returns("Hello, world!");
@@ -825,7 +783,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					{ "IntReadWrite", "foo" }
 				},
 			};
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			binder.BindModel(new ControllerContext(), bindingContext);
@@ -858,7 +816,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -892,7 +850,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -925,7 +883,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -951,7 +909,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.BindModel(new ControllerContext(), bindingContext);
@@ -990,7 +948,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 						});
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["Address"];
-			var helper = new TestableDefaultModelBinder
+			var helper = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 				{
@@ -1018,7 +976,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
@@ -1044,7 +1002,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
 
-			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			var mockHelper = new Mock<TestableExtensibleDefaultModelBinder> { CallBase = true };
 			mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, propertyDescriptor, 42)).Returns(true).Verifiable();
 			mockHelper.Setup(b => b.PublicSetProperty(controllerContext, bindingContext, propertyDescriptor, 42)).Verifiable();
 			mockHelper.Setup(b => b.PublicOnPropertyValidated(controllerContext, bindingContext, propertyDescriptor, 42)).Verifiable();
@@ -1074,7 +1032,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			PropertyDescriptor pd = TypeDescriptor.GetProperties(model)["IntReadWrite"];
 
-			var mockHelper = new Mock<TestableDefaultModelBinder> { CallBase = true };
+			var mockHelper = new Mock<TestableExtensibleDefaultModelBinder> { CallBase = true };
 			mockHelper.Setup(b => b.PublicOnPropertyValidating(controllerContext, bindingContext, pd, 42)).Returns(false);
 			var helper = mockHelper.Object;
 
@@ -1103,7 +1061,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			mockInnerBinder.Setup(b => b.BindModel(new ControllerContext(), It.IsAny<ModelBindingContext>())).Returns(null);
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["NullableIntReadWrite"];
-			var helper = new TestableDefaultModelBinder
+			var helper = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 					{
@@ -1143,7 +1101,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 						});
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWriteNonNegative"];
-			var helper = new TestableDefaultModelBinder
+			var helper = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 					{
@@ -1194,7 +1152,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 						});
 
 			PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(model)["IntReadWrite"];
-			var helper = new TestableDefaultModelBinder
+			var helper = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 				{
@@ -1223,7 +1181,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, valueProviderResult);
@@ -1245,7 +1203,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
@@ -1269,7 +1227,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
@@ -1290,7 +1248,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
@@ -1310,7 +1268,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
@@ -1331,7 +1289,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				ModelName = "foo",
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object returnedValue = binder.PublicBindSimpleModel(null, bindingContext, result);
@@ -1357,7 +1315,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				PropertyFilter = _ => true // all properties are whitelistet per default
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			ModelBindingContext newBindingContext = binder.PublicCreateComplexElementalModelBindingContext(new ControllerContext(), bindingContext, null);
@@ -1384,7 +1342,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				PropertyFilter = _ => true // all properties are whitelistet per default
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			ModelBindingContext newBindingContext = binder.PublicCreateComplexElementalModelBindingContext(new ControllerContext(), originalBindingContext, null);
@@ -1415,7 +1373,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateInstanceCreatesModelInstance()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object modelObj = helper.PublicCreateModel(null, null, typeof(Guid));
@@ -1428,7 +1386,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateInstanceCreatesModelInstanceForGenericICollection()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object modelObj = helper.PublicCreateModel(null, null, typeof(ICollection<Guid>));
@@ -1441,7 +1399,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateInstanceCreatesModelInstanceForGenericIDictionary()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object modelObj = helper.PublicCreateModel(null, null, typeof(IDictionary<string, Guid>));
@@ -1454,7 +1412,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateInstanceCreatesModelInstanceForGenericIEnumerable()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object modelObj = helper.PublicCreateModel(null, null, typeof(IEnumerable<Guid>));
@@ -1467,7 +1425,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateInstanceCreatesModelInstanceForGenericIList()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object modelObj = helper.PublicCreateModel(null, null, typeof(IList<Guid>));
@@ -1482,7 +1440,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateSubIndexNameReturnsPrefixPlusIndex()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			string newName = helper.PublicCreateSubIndexName("somePrefix", 2);
@@ -1495,7 +1453,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateSubPropertyNameReturnsPrefixPlusPropertyName()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			string newName = helper.PublicCreateSubPropertyName("somePrefix", "someProperty");
@@ -1508,7 +1466,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsEmpty()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			string newName = helper.PublicCreateSubPropertyName(String.Empty, "someProperty");
@@ -1521,7 +1479,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void CreateSubPropertyNameReturnsPropertyNameIfPrefixIsNull()
 		{
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			string newName = helper.PublicCreateSubPropertyName(null, "someProperty");
@@ -1540,7 +1498,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				PropertyFilter = new BindAttribute { Exclude = "Blacklisted" }.IsPropertyAllowed
 			};
 
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			var properties = new PropertyDescriptorCollection(helper.PublicGetFilteredModelProperties(null, bindingContext).ToArray());
@@ -1569,7 +1527,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				PropertyFilter = new BindAttribute { Exclude = "Blacklisted" }.IsPropertyAllowed
 			};
 
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			PropertyDescriptorCollection properties = helper.PublicGetModelProperties(null, bindingContext);
@@ -1594,7 +1552,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// By default, this method does nothing, so we just want to make sure it returns true
 
 			// Arrange
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			bool returned = helper.PublicOnModelUpdating(null, null);
@@ -1658,7 +1616,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnModelUpdatedDoesntAddNewMessagesWhenMessagesAlreadyExist()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<SetPropertyModel>();
 			binder.Context.ModelState.AddModelError(BASE_MODEL_NAME + ".NonNullableStringWithAttribute", "Some pre-existing error");
 
 			// Act
@@ -1701,7 +1659,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void ExtraValueRequiredMessageNotAddedForAlreadyInvalidProperty()
 		{
 			// Arrange
-			var binder = new BetterDefaultModelBinder();
+			var binder = new ExtensibleDefaultModelBinder();
 			var bindingContext = new ModelBindingContext
 			{
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(MyModel)),
@@ -1730,7 +1688,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 			bindingContext.PropertyMetadata["ReadWriteProperty"].Model = 42;
 
 			// Act
@@ -1768,7 +1726,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return (fooIdx == 1) ? (object) null : fooIdx; // index == 1 => Invalid null value
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -1807,7 +1765,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.PublicUpdateCollection(controllerContext, bindingContext, typeof(int));
@@ -1852,7 +1810,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture);
 						});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 					{
@@ -1879,7 +1837,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			{
 				ValueProvider = new SimpleValueProvider()
 			};
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.PublicUpdateCollection(null, bindingContext, typeof(object));
@@ -1926,7 +1884,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 						return (fooIdx == 1) ? (object)null : fooIdx;
 					});
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 				{
 				Binders = new ModelBinderDictionary
 				{
@@ -1971,7 +1929,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				}
 			};
 
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.PublicUpdateDictionary(controllerContext, bindingContext, typeof(int), typeof(string));
@@ -1995,12 +1953,12 @@ namespace Maxfire.Web.Mvc.UnitTests
 				{ 2, "two" }
 			};
 			var bindingContext = new ModelBindingContext
-				{
+			{
 				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => model, model.GetType()),
 				ModelName = "foo",
 				PropertyFilter = _ => false,
 				ValueProvider = new SimpleValueProvider
-					{
+				{
 					{ "foo[0].key", null }, { "foo[0].value", null },
 					{ "foo[1].key", null }, { "foo[1].value", null },
 					{ "foo[2].key", null }, { "foo[2].value", null }
@@ -2035,8 +1993,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 							return (Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value";
 						});
 
-			var binder = new TestableDefaultModelBinder
-				{
+			var binder = new TestableExtensibleDefaultModelBinder
+			{
 				Binders = new ModelBinderDictionary
 					{
 					{ typeof(int), mockIntBinder.Object },
@@ -2063,7 +2021,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				{
 				ValueProvider = new SimpleValueProvider()
 			};
-			var binder = new TestableDefaultModelBinder();
+			var binder = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			object updatedModel = binder.PublicUpdateDictionary(null, bindingContext, typeof(object), typeof(object));
@@ -2110,7 +2068,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					(ControllerContext cc, ModelBindingContext bc) =>
 					(Int32.Parse(bc.ModelName.Substring(4, 1), CultureInfo.InvariantCulture) + 10) + "Value");
 
-			var binder = new TestableDefaultModelBinder
+			var binder = new TestableExtensibleDefaultModelBinder
 			{
 				Binders = new ModelBinderDictionary
 				{
@@ -2367,7 +2325,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetModelPropertiesWithLocalAttributes()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<GetModelPropertiesModel>();
 
 			// Act
 			PropertyDescriptor property = modelBinder.GetModelProperties()
@@ -2381,7 +2339,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetModelPropertiesWithMetadataAttributesDoesntWork()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<GetModelPropertiesModel>();
 
 			// Act
 			PropertyDescriptor property = modelBinder.GetModelProperties()
@@ -2395,7 +2353,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetModelPropertiesWithMixedAttributes()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<GetModelPropertiesModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<GetModelPropertiesModel>();
 
 			// Act
 			PropertyDescriptor property = modelBinder.GetModelProperties()
@@ -2423,7 +2381,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetPropertyValueWithNoAttributeConvertsEmptyStringToNull()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<GetPropertyValueModel>();
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["NoAttribute"];
 
 			// Act
@@ -2437,7 +2395,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetPropertyValueWithFalseAttributeDoesNotConvertEmptyStringToNull()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<GetPropertyValueModel>();
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithoutConversion"];
 
 			// Act
@@ -2451,7 +2409,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void GetPropertyValueWithTrueAttributeConvertsEmptyStringToNull()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<GetPropertyValueModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<GetPropertyValueModel>();
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithConversion"];
 
 			// Act
@@ -2480,7 +2438,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					.Returns(new [] { mockModelValidator.Object });
 				ModelValidatorProviders.Providers.Add(provider.Object);
 				var model = new object();
-				var modelBinder = new TestableBetterDefaultModelBinder<object>(model);
+				var modelBinder = new TestableExtensibleDefaultModelBinder<object>(model);
 
 				// Act
 				modelBinder.OnModelUpdated();
@@ -2523,7 +2481,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		{
 			// Arrange
 			var model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
-			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
 
 			// Act
 			modelBinder.OnModelUpdated();
@@ -2540,7 +2498,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		{
 			// Arrange
 			var model = new OnModelUpdatedModelMultipleParameters { Minimum = 250, Maximum = 100 };
-			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelMultipleParameters>(model);
 			modelBinder.ModelState.AddModelError(BASE_MODEL_NAME + ".Minimum", "The minimum value was invalid.");
 
 			// Act
@@ -2576,7 +2534,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnModelUpdatedWithValidationAttributeNoParameters()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoParameters>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelNoParameters>();
 
 			// Act
 			modelBinder.OnModelUpdated();
@@ -2597,7 +2555,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnModelUpdatedWithValidationAttributeNoValidationMessage()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
 
 			// Act
 			modelBinder.OnModelUpdated();
@@ -2613,7 +2571,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnModelUpdatedDoesNotPlaceErrorMessagesInModelStateWhenSubPropertiesHaveErrors()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
 			modelBinder.ModelState.AddModelError("Foo.Bar", "Foo.Bar is invalid");
 			modelBinder.Context.ModelName = "Foo";
 
@@ -2641,7 +2599,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnPropertyValidatingWithoutValidationAttribute()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnPropertyValidatingModel>();
 
 			// Act
 			modelBinder.OnPropertyValidating("NotValidated", 42);
@@ -2654,7 +2612,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void OnPropertyValidatingWithValidationAttributePassing()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnPropertyValidatingModel>();
 			modelBinder.Context.PropertyMetadata["RangedInteger"].Model = 42;
 
 			// Act
@@ -2671,7 +2629,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void SetPropertyWithRequiredOnValueTypeOnlyResultsInSingleMessage()
 		{
 			// Arrange
-			var modelBinder = new TestableBetterDefaultModelBinder<OnPropertyValidatingModel>();
+			var modelBinder = new TestableExtensibleDefaultModelBinder<OnPropertyValidatingModel>();
 			modelBinder.Context.ModelMetadata.Model = new OnPropertyValidatingModel();
 
 			// Act
@@ -2691,7 +2649,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			try
 			{
 				// Arrange
-				var modelBinder = new TestableBetterDefaultModelBinder<List<String>>();
+				var modelBinder = new TestableExtensibleDefaultModelBinder<List<String>>();
 				modelBinder.Context.ModelMetadata.Model = null;
 
 				// Act
@@ -2719,7 +2677,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			helper.PublicSetProperty(new ControllerContext(), bindingContext, property, null);
@@ -2732,7 +2690,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void SetPropertyWithThrowingSetter()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<SetPropertyModel>();
 
 			// Act
 			binder.SetProperty("NonNullableString", null);
@@ -2747,7 +2705,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void SetPropertyWithNullValueAndThrowingSetterWithRequiredAttribute()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<SetPropertyModel>();
 
 			// Act
 			binder.SetProperty("NonNullableStringWithAttribute", null);
@@ -2770,7 +2728,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			};
 
 			PropertyDescriptor property = TypeDescriptor.GetProperties(model)["ReadOnlyProperty"];
-			var helper = new TestableDefaultModelBinder();
+			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
 			helper.PublicSetProperty(new ControllerContext(), bindingContext, property, 42);
@@ -2783,7 +2741,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		public void SetPropertySuccess()
 		{
 			// Arrange
-			var binder = new TestableBetterDefaultModelBinder<SetPropertyModel>();
+			var binder = new TestableExtensibleDefaultModelBinder<SetPropertyModel>();
 
 			// Act
 			binder.SetProperty("NullableString", "The new value");
@@ -2825,15 +2783,15 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 		//// Helper classes
 
-		class TestableBetterDefaultModelBinder<TModel> : BetterDefaultModelBinder
+		class TestableExtensibleDefaultModelBinder<TModel> : ExtensibleDefaultModelBinder
 			where TModel : new()
 		{
-			public TestableBetterDefaultModelBinder()
+			public TestableExtensibleDefaultModelBinder()
 				: this(new TModel())
 			{
 			}
 
-			public TestableBetterDefaultModelBinder(TModel model)
+			public TestableExtensibleDefaultModelBinder(TModel model)
 			{
 				ModelState = new ModelStateDictionary();
 

@@ -24,32 +24,6 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		public static ModelBindingContext ChangeModelName(this ModelBindingContext bindingContext, string modelName = null)
-		{
-			return new ModelBindingContext
-				{
-					// FallbackToEmptyPrefix = false
-					ModelMetadata = bindingContext.ModelMetadata,
-					ModelName = modelName,
-					ModelState = bindingContext.ModelState,
-					ValueProvider = bindingContext.ValueProvider,
-					PropertyFilter = bindingContext.PropertyFilter,
-				};
-		}
-
-		public static ModelBindingContext ChangeModelMetadata(this ModelBindingContext bindingContext, ModelMetadata modelMetadata)
-		{
-			return new ModelBindingContext
-			{
-				// FallbackToEmptyPrefix = false
-				ModelMetadata = modelMetadata,
-				ModelName = bindingContext.ModelName,
-				ModelState = bindingContext.ModelState,
-				ValueProvider = bindingContext.ValueProvider,
-				PropertyFilter = bindingContext.PropertyFilter,
-			};
-		}
-
 		public static IUnvalidatedValueProvider GetUnvalidatedValueProvider(this ModelBindingContext bindingContext)
 		{
 			return (bindingContext.ValueProvider as IUnvalidatedValueProvider) ?? new UnvalidatedValueProviderWrapper(bindingContext.ValueProvider);

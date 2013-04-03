@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="BetterDefaultModelBinderTesting.cs" />
     <Compile Include="BetterDefaultModelBinderTesting_FromMvc.cs" />
+    <Compile Include="BetterDefaultModelBinderTests.cs" />
     <Compile Include="DateModelBinderTester.cs" />
     <Compile Include="DefaultNameValueSerializerTester.cs" />
     <Compile Include="Html5\AssertionExtensions\FragmentVerifier.cs" />
@@ -62,7 +63,7 @@
     <Compile Include="SimplyRestful\NoAreaRestfulRoutesSpecs.cs" />
     <Compile Include="SimplyRestful\RestfulActionResolverTester.cs" />
     <Compile Include="SimplyRestful\NamedControllerRestfulRoutesSpecs.cs" />
-    <Compile Include="TestableDefaultModelBinder.cs" />
+    <Compile Include="TestableExtensibleDefaultModelBinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

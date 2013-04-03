@@ -186,7 +186,7 @@ namespace System.Diagnostics.CodeAnalysis
 	/// Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
 	/// so this symbol will not be marked as unused (as well as by other usage inspections)
 	/// </summary>
-	[AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = false)]
+	[AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = false), MeansImplicitUse]
 	public class UsedImplicitlyAttribute : Attribute
 	{
 		/// <summary>

@@ -4,8 +4,15 @@ using System.Web.Mvc;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
-	public class TestableDefaultModelBinder : BetterDefaultModelBinder
+	public class TestableExtensibleDefaultModelBinder : ExtensibleDefaultModelBinder
 	{
+		private ModelBinderDictionary _binders;
+		public ModelBinderDictionary Binders
+		{
+			get { return _binders ?? (_binders = new ModelBinderDictionary()); }
+			set { _binders = value; }
+		}
+
 		protected override IModelBinder GetBinder(System.Type modelType)
 		{
 			return Binders.GetBinder(modelType) ?? base.GetBinder(modelType);

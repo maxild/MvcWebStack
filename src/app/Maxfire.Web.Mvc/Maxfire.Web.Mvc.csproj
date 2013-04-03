@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="AbstractModelUpdater.cs" />
     <Compile Include="ActionFilterExtensions.cs" />
+    <Compile Include="BetterDefaultModelBinder.cs" />
     <Compile Include="ValueProviders\BetterChildActionValueProvider.cs" />
     <Compile Include="ValueProviders\BetterDictionaryValueProvider.cs" />
     <Compile Include="ValueProviders\BetterFormValueProvider.cs" />
@@ -51,7 +52,7 @@
     <Compile Include="ModelStateValueProvider.cs" />
     <Compile Include="NamedValue.cs" />
     <Compile Include="BetterControllerActionInvoker.cs" />
-    <Compile Include="BetterDefaultModelBinder.cs" />
+    <Compile Include="ExtensibleDefaultModelBinder.cs" />
     <Compile Include="CollectionIndexStore.cs" />
     <Compile Include="ControllerExtensions.cs" />
     <Compile Include="DateModelBinder.cs" />

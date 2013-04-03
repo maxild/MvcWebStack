@@ -9,39 +9,6 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
-	public partial class BetterDefaultModelBinderTesting
-	{
-		//[Fact]
-		//public void GetKeys()
-		//{
-		//	var sut = new BetterDefaultModelBinder();
-		//} 
-
-		[Fact]
-		public void Get()
-		{
-			// Given "foo.bar", "foo.hello", "something.other", foo[abc].baz and asking for prefix "foo" will return:
-			// - "bar"/"foo.bar"
-			// - "hello"/"foo.hello"
-			// - "abc"/"foo[abc]"
-        
-			var sut = new DictionaryValueProvider<string>(new Dictionary<string, string>
-				{
-					{ "foo.bar", "1"},
-					{ "foo.hello", "2"},
-					{ "something.other", "3"},
-					{ "foo[abc].baz", "4"}
-				}, CultureInfo.InvariantCulture);
-
-			var keys = sut.GetKeysFromPrefix("foo");
-
-			foreach (var key in keys)
-			{
-				Debug.WriteLine("{0} = {1}", key.Key, key.Value);
-			}
-		}
-	}
-
 	public class PrefixContainerSpecs
 	{
 		[Fact]
@@ -71,6 +38,30 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// http://aspnetwebstack.codeplex.com/workitem/616
 			var sut = new BetterPrefixContainer(new[] { "SomeData", "ValueIsSequence", "Value[0].Data" });
 			sut.ContainsPrefix("Value").ShouldBeTrue();
+		}
+
+		[Fact]
+		public void Get()
+		{
+			// Given "foo.bar", "foo.hello", "something.other", foo[abc].baz and asking for prefix "foo" will return:
+			// - "bar"/"foo.bar"
+			// - "hello"/"foo.hello"
+			// - "abc"/"foo[abc]"
+
+			var sut = new DictionaryValueProvider<string>(new Dictionary<string, string>
+				{
+					{ "foo.bar", "1"},
+					{ "foo.hello", "2"},
+					{ "something.other", "3"},
+					{ "foo[abc].baz", "4"}
+				}, CultureInfo.InvariantCulture);
+
+			var keys = sut.GetKeysFromPrefix("foo");
+
+			foreach (var key in keys)
+			{
+				Debug.WriteLine("{0} = {1}", key.Key, key.Value);
+			}
 		}
 	}
 
