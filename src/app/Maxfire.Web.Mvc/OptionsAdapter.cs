@@ -23,19 +23,16 @@ namespace Maxfire.Web.Mvc
 		{
 			return new OptionsAdapter<Enumeration>(
 				Enumeration.GetAll(enumerationType).Cast<Enumeration>(),
-				item => item.Text, item => item.Value.ToString());
-		}
-
-		public static IEnumerable<TextValuePair> FromEnumeration<TEnumeration>()
-			where TEnumeration : Enumeration
-		{
-			return FromEnumeration(Enumeration.GetAll<TEnumeration>());
+				item => item.Text, item => item.Value.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumeration<TEnumeration>(params TEnumeration[] items)
 			where TEnumeration : Enumeration
 		{
-			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Name);
+			return new OptionsAdapter<TEnumeration>(
+				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items , 
+				item => item.Text, 
+				item => item.Name);
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumeration<TEnumeration>(IEnumerable<TEnumeration> items)
@@ -44,32 +41,42 @@ namespace Maxfire.Web.Mvc
 			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Name);
 		}
 
-		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>()
-			where TEnumeration : Enumeration
-		{
-			return FromEnumerationValues(Enumeration.GetAll<TEnumeration>());
-		}
-
 		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>(params TEnumeration[] items)
 			where TEnumeration : Enumeration
 		{
-			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Value.ToString());
+			return new OptionsAdapter<TEnumeration>(
+				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items, 
+				item => item.Text, 
+				item => item.Value.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>(IEnumerable<TEnumeration> items)
 			where TEnumeration : Enumeration
 		{
-			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Value.ToString());
+			return new OptionsAdapter<TEnumeration>(items, item => item.Text, item => item.Value.ToString(CultureInfo.InvariantCulture));
+		}
+
+		public static IEnumerable<TextValuePair> FromEnum<TEnum>(Func<TEnum, string> textSelector = null, Func<TEnum, string> valueSelector = null)
+		{
+			textSelector = textSelector ??(item => item.GetDisplayNameOfEnum());
+			valueSelector = valueSelector ?? (item => item.ToString());
+			var enumType = typeof(TEnum);
+			if (!enumType.IsEnum)
+			{
+				throw new ArgumentException("The generic type argument must be an enum.");
+			}
+			var values = Enum.GetValues(enumType).Cast<TEnum>();
+			return new OptionsAdapter<TEnum>(values, textSelector, valueSelector);
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumValues(Type enumType)
 		{
-			return FromEnumHelper(enumType, item => Convert.ToInt32(item).ToString());
+			return FromEnumHelper(enumType, item => Convert.ToInt32(item).ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumValues<TEnum>()
 		{
-			return FromEnumHelper<TEnum>(item => Convert.ToInt32(item).ToString());
+			return FromEnumHelper<TEnum>(item => Convert.ToInt32(item).ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumTexts(Type enumType)
@@ -166,11 +173,11 @@ namespace Maxfire.Web.Mvc
 
 		public static IEnumerable<TextValuePair> WithFirstOptionText(this IEnumerable<TextValuePair> options, string firstOptionText)
 		{
-			return firstOptionTextIterator(firstOptionText).Concat(options);
+			return FirstOptionTextIterator(firstOptionText).Concat(options);
 
 		}
 
-		private static IEnumerable<TextValuePair> firstOptionTextIterator(string firstOptionText)
+		private static IEnumerable<TextValuePair> FirstOptionTextIterator(string firstOptionText)
 		{
 			yield return new TextValuePair(firstOptionText ?? string.Empty, string.Empty);
 		}
