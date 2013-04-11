@@ -159,8 +159,6 @@
     <Compile Include="ModelUnflattener.cs" />
     <Compile Include="NameValueSerializerExtensions.cs" />
     <Compile Include="NameValueSerializerProviderExtensions.cs" />
-    <Compile Include="NullableModelBinder.cs" />
-    <Compile Include="NullableModelBinderWrapper.cs" />
     <Compile Include="OpinionatedController.cs" />
     <Compile Include="OpinionatedHtmlHelper.cs" />
     <Compile Include="OpinionatedMetadataProvider.cs" />
