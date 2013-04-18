@@ -38,7 +38,14 @@ namespace Maxfire.Castle.Web.Mvc
 
 			public IController Create(RequestContext requestContext, Type controllerType)
 			{
-				var controller = _kernel.TryResolve(controllerType) as IController;
+				// First try IoC container, but if nothing is registered,
+				// then try default ctor of controller type. This way if 
+				// routing is delegating to 'foreign' controllers, and this 
+				// have been setup by 'foreigners' (e.g. RavenDB profiler)
+				// using something like PreApplicationStartMethodAttribute,
+				// the controller factory still supports it.
+				var controller = _kernel.TryResolve(controllerType) as IController ??
+				                 Activator.CreateInstance(controllerType) as IController;
 				if (_actionInvoker != null)
 				{
 					var c = controller as Controller;
