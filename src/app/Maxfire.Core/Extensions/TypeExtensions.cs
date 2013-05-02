@@ -114,5 +114,24 @@ namespace Maxfire.Core.Extensions
 				throw new InvalidOperationException(message, ex);
 			}
 		}
+
+		public static bool TryConvertSimpleType(CultureInfo culture, object value, Type destinationType, out object convertedValue)
+		{
+			try
+			{
+				convertedValue = ConvertSimpleType(culture, value, destinationType);
+				return true;
+			}
+			catch
+			{
+				convertedValue = null;
+				return false;
+			}
+		}
+
+		public static bool TryConvertSimpleType<T>(CultureInfo culture, object value, out object convertedValue)
+		{
+			return TryConvertSimpleType(culture, value, typeof(T), out convertedValue);
+		}
 	}
 }
