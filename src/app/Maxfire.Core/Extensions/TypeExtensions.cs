@@ -129,9 +129,16 @@ namespace Maxfire.Core.Extensions
 			}
 		}
 
-		public static bool TryConvertSimpleType<T>(CultureInfo culture, object value, out object convertedValue)
+		public static bool TryConvertSimpleType<T>(CultureInfo culture, object value, out T convertedValue)
 		{
-			return TryConvertSimpleType(culture, value, typeof(T), out convertedValue);
+			object objectValue;
+			if (TryConvertSimpleType(culture, value, typeof (T), out objectValue))
+			{
+				convertedValue = (T) objectValue;
+				return true;
+			}
+			convertedValue = default(T);
+			return false;
 		}
 	}
 }
