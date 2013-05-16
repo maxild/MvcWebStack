@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
 
@@ -21,14 +23,14 @@ namespace Maxfire.Web.Mvc
 		public static void AddModelErrorFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty, string errorMessage)
 			where TInputModel : class, IEntityViewModel<TId>
 		{
-			string name = controller.getModelName(modelProperty);
+			string name = controller.GetModelName(modelProperty);
 			controller.ModelState.AddModelError(name, errorMessage);
 		}
 
 		public static ModelState GetModelStateFor<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty)
 			where TInputModel : class, IEntityViewModel<TId>
 		{
-			string name = controller.getModelName(modelProperty);
+			string name = controller.GetModelName(modelProperty);
 			ModelState modelState;
 			return controller.ModelState.TryGetValue(name, out modelState) ? modelState : null;
 		}
@@ -46,7 +48,7 @@ namespace Maxfire.Web.Mvc
 			return !controller.IsInputInvalidFor(expression);
 		}
 
-		private static string getModelName<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty)
+		private static string GetModelName<TInputModel, TId>(this IRestfulController<TInputModel, TId> controller, Expression<Func<TInputModel, object>> modelProperty)
 			where TInputModel : class, IEntityViewModel<TId>
 		{
 			string name = modelProperty.GetNameFor();
@@ -67,12 +69,51 @@ namespace Maxfire.Web.Mvc
 		}
 
 		/// <summary>
+		/// Redirects to an action on the same controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this TController controller, Expression<Action<TController>> action, RouteValueDictionary routeValues)
+			where TController : OpinionatedController
+		{
+			return ((OpinionatedController)controller).RedirectToAction(action, routeValues);
+		}
+
+		/// <summary>
+		/// Redirects to an action on the same controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this TController controller, Expression<Action<TController>> action, object routeValues)
+			where TController : OpinionatedController
+		{
+			return ((OpinionatedController)controller).RedirectToAction(action, routeValues);
+		}
+
+		/// <summary>
+		/// Redirects to an action on the same controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this TController controller, Expression<Action<TController>> action, IDictionary<string, object> routeValues)
+			where TController : OpinionatedController
+		{
+			return ((OpinionatedController)controller).RedirectToAction(action, routeValues);
+		}
+
+		/// <summary>
 		/// Redirects to an action on the same or another controller using expression-based syntax
 		/// </summary>
-		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller, Expression<Action<TController>> action)
+		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller,
+																 Expression<Action<TController>> action)
+			where TController : OpinionatedController
+		{
+			return controller.RedirectToAction(action, null);
+		}
+
+		/// <summary>
+		/// Redirects to an action on the same or another controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller,
+																 Expression<Action<TController>> action, RouteValueDictionary routeValues)
 			where TController : OpinionatedController
 		{
 			string controllerName = typeof(TController).Name;
+
 			if (controller.IsAjaxRequest)
 			{
 				string url = controller.UrlFor(action, controllerName);
@@ -82,8 +123,31 @@ namespace Maxfire.Web.Mvc
 					return redirectBrowserResult;
 				}
 			}
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, controller.NameValueSerializer, controllerName);
-			return new RedirectToRouteResult(routeValues);
+
+			RouteValueDictionary routeValuesFromExpression 
+				= RouteValuesHelper.GetRouteValuesFromExpression(action, controller.NameValueSerializer, controllerName);
+
+			return new RedirectToRouteResult(routeValuesFromExpression.Merge(routeValues));
+		}
+
+		/// <summary>
+		/// Redirects to an action on the same or another controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller,
+																 Expression<Action<TController>> action, IDictionary<string, object> routeValues)
+			where TController : OpinionatedController
+		{
+			return controller.RedirectToAction(action, new RouteValueDictionary(routeValues));
+		}
+
+		/// <summary>
+		/// Redirects to an action on the same or another controller using expression-based syntax (routeValues will overwrite expression based route values)
+		/// </summary>
+		public static ActionResult RedirectToAction<TController>(this OpinionatedController controller,
+																 Expression<Action<TController>> action, object routeValues)
+			where TController : OpinionatedController
+		{
+			return controller.RedirectToAction(action, new RouteValueDictionary(routeValues));
 		}
 	}
 }
