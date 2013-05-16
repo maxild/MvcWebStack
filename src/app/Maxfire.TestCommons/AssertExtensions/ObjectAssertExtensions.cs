@@ -140,24 +140,14 @@ namespace Maxfire.TestCommons.AssertExtensions
 			Assert.IsType(expectedType, @object);
 		}
 
-		public static void ShouldBeAssignableFrom<T>(this object @object)
+		public static void ShouldBeDerivedFromType<T>(this object @object)
 		{
 			Assert.IsAssignableFrom<T>(@object);
 		}
 
-		public static void ShouldBeAssignableFrom(this object @object, Type expectedType)
+		public static void ShouldBeDerivedFromType(this object @object, Type expectedType)
 		{
 			Assert.IsAssignableFrom(expectedType, @object);
-		}
-
-		public static void ShouldBeAssignableTo<T>(this object @object)
-		{
-			@object.ShouldBeAssignableTo(typeof (T));
-		}
-
-		public static void ShouldBeAssignableTo(this object @object, Type expectedType)
-		{
-			Assert.IsAssignableFrom(@object.GetType(), expectedType);
 		}
 
 		/// <summary>
