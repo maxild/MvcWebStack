@@ -47,35 +47,43 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		/// <returns>Fake http context</returns>
 		public static HttpContextBase GetHttpContext(string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 		{
-			url = prepareUrl(url);
+			url = PrepareUrl(url);
 
 			var context = MockRepository.GenerateStub<HttpContextBase>();
 			var request = MockRepository.GenerateStub<HttpRequestBase>();
 
+			// GetHttpMethodOverride requires non-null/empty QueryString, Form and Headers, if HttpMethod is POST
+			var empty = new NameValueCollection();
+
 			context.Stub(x => x.Request).Return(request).Repeat.Any();
-			request.Stub(x => x.QueryString).Return(getRequestParams(url)).Repeat.Any();
-			request.Stub(x => x.AppRelativeCurrentExecutionFilePath).Return(getRequestPath(url)).Repeat.Any();
+			request.Stub(x => x.QueryString).Return(GetRequestParams(url)).Repeat.Any();
+			request.Stub(x => x.AppRelativeCurrentExecutionFilePath).Return(GetRequestPath(url)).Repeat.Any();
 			request.Stub(x => x.PathInfo).Return(String.Empty).Repeat.Any();
 			request.Stub(x => x.HttpMethod).Return(httpMethod.ToString().ToUpperInvariant()).Repeat.Any();
+			request.Stub(x => x.Headers).Return(empty).Repeat.Any();
 
 			if (formMethod != null)
 			{
-				var form = new NameValueCollection { { "_method", formMethod.ToString().ToUpperInvariant() } };
+				var form = new NameValueCollection {{"_method", formMethod.ToString().ToUpperInvariant()}};
 				request.Stub(r => r.Form).Return(form).Repeat.Any();
+			}
+			else
+			{
+				request.Stub(r => r.Form).Return(empty).Repeat.Any();
 			}
 
 			return context;
 		}
 
-		private static string getRequestPath(string url)
+		private static string GetRequestPath(string url)
 		{
 			if (url.Contains("?"))
-				return url.Substring(0, url.IndexOf("?"));
+				return url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
 
 			return url;
 		}
 
-		private static NameValueCollection getRequestParams(string url)
+		private static NameValueCollection GetRequestParams(string url)
 		{
 			var parameters = new NameValueCollection();
 
@@ -95,7 +103,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			return parameters;
 		}
 
-		private static string prepareUrl(string url)
+		private static string PrepareUrl(string url)
 		{
 			if (!url.StartsWith("~"))
 			{
