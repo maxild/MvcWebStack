@@ -15,14 +15,14 @@ namespace Maxfire.Core.Extensions
 			}
 		}
 
-		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey tKey)
+		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
 		{
-			return dictionary.GetValueOrDefault(tKey, default(TValue));
+			return dictionary.GetValueOrDefault(key, default(TValue));
 		}
 
-		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey tKey, TValue defaultTValue)
+		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultTValue)
 		{
-			if (dictionary.ContainsKey(tKey)) return dictionary[tKey];
+			if (dictionary.ContainsKey(key)) return dictionary[key];
 			return defaultTValue;
 		}
 
