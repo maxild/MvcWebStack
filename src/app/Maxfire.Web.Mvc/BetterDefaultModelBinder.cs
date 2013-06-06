@@ -15,9 +15,13 @@ namespace Maxfire.Web.Mvc
 			var keyEnumerableValueProvider = bindingContext.ValueProvider as IKeyEnumerableValueProvider;
 			if (keyEnumerableValueProvider != null)
 			{
-				// Complex model type with no keys found should return non-updated model (possibly null, instead of no-arg ctor value)
-				if (keyEnumerableValueProvider.GetKeys().All(bindingContext.IsRequiredRouteValue))
+				// Test that all keys in this request match either required route values (area, controller, action)
+				// or other required paremeter names
+				if (keyEnumerableValueProvider.GetKeys().All(bindingContext.IsRequiredKey))
 				{
+					// return non-updated model (possibly null). This overrides the default 
+					// no-arg ctor value returned by MVC default model binder, when doing 
+					// automatic parameter model binding in the controller-action invoker.
 					return bindingContext.Model;
 				}
 			}

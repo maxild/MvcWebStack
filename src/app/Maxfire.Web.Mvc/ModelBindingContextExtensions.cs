@@ -7,17 +7,22 @@ namespace Maxfire.Web.Mvc
 {
 	public static class ModelBindingContextExtensions
 	{
-		public static bool IsRequiredRouteValue(this ModelBindingContext bindingContext, string value)
+		/// <summary>
+		/// Does the key match any of the _other_ required parameter names or any of the required route values.
+		/// </summary>
+		public static bool IsRequiredKey(this ModelBindingContext bindingContext, string value)
 		{
-			return GetRequiredRouteValues(bindingContext)
+			return GetRequiredKeys(bindingContext)
 				.Any(s => value.Equals(s, StringComparison.OrdinalIgnoreCase));
 		}
 
-		private static IEnumerable<string> GetRequiredRouteValues(ModelBindingContext bindingContext)
+		private static IEnumerable<string> GetRequiredKeys(ModelBindingContext bindingContext)
 		{
+			// required route values
 			yield return "area";
 			yield return "controller";
 			yield return "action";
+			// other (that is not this parameter name) required parameter names
 			foreach (string requiredParam in bindingContext.ModelMetadata.GetRequiredParameterNames())
 			{
 				yield return requiredParam;

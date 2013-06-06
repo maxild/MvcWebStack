@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -30,27 +31,27 @@ namespace Maxfire.Web.Mvc
 		protected override IDictionary<string, object> GetParameterValues(ControllerContext controllerContext, ActionDescriptor actionDescriptor)
 		{
 			ParameterDescriptor[] parameterDescriptors = actionDescriptor.GetParameters();
-			IEnumerable<string> nonNullableParameterNames = GetNonNullableParameterNames(parameterDescriptors);
+			IEnumerable<string> requiredParameterNames = GetRequiredParameterNames(parameterDescriptors);
 
 			var parameterValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 			
 			foreach (ParameterDescriptor parameterDescriptor in parameterDescriptors)
 			{
-				parameterValues[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, nonNullableParameterNames);
+				parameterValues[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, requiredParameterNames);
 			}
 
 			return parameterValues;
 		}
 
-		private object GetParameterValue(ControllerContext controllerContext, ParameterDescriptor parameterDescriptor, IEnumerable<string> nonNullableParameterNames)
+		private object GetParameterValue(ControllerContext controllerContext, ParameterDescriptor parameterDescriptor, IEnumerable<string> requiredParameterNames)
 		{
 			ModelMetadata modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, parameterDescriptor.ParameterType);
 
-			string[] requiredParameterNames = nonNullableParameterNames
-				.Where(name => !name.Equals(parameterDescriptor.ParameterName, StringComparison.OrdinalIgnoreCase))
+			string[] requiredParameterNamesExceptOwnParameterName = requiredParameterNames
+				.Where(name => false == name.Equals(parameterDescriptor.ParameterName, StringComparison.OrdinalIgnoreCase))
 				.ToArray();
 
-			modelMetadata.SetRequiredParameterNames(requiredParameterNames);
+			modelMetadata.SetRequiredParameterNames(requiredParameterNamesExceptOwnParameterName);
 
 			var bindingContext = new ModelBindingContext
 			{
@@ -69,10 +70,10 @@ namespace Maxfire.Web.Mvc
 			return result ?? parameterDescriptor.DefaultValue;
 		}
 
-		private static IEnumerable<string> GetNonNullableParameterNames(IEnumerable<ParameterDescriptor> parameterDescriptors)
+		private static IEnumerable<string> GetRequiredParameterNames(IEnumerable<ParameterDescriptor> parameterDescriptors)
 		{
 			return parameterDescriptors
-				.Where(p => p.ParameterType.AllowsNullValue() == false)
+				.Where(p => p.ParameterType.AllowsNullValue() == false || p.IsDefined(typeof(RequiredAttribute), false))
 				.Select(p => p.ParameterName);
 		}
 
