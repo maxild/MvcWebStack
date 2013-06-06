@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -243,7 +244,11 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathRecognizeOptions ShouldMatchController(string controller)
 			{
-				AssertStringsEquivalent(controller, _routeData.GetRequiredString("controller"));
+				string actualController = _routeData.GetRequiredString("controller");
+				if (DoesNotMatch(controller, actualController))
+				{
+					throw new ControllerNotMatchedException(controller, actualController);
+				}
 				return this;
 			}
 
@@ -275,30 +280,42 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathRecognizeOptions AndAction(string action)
 			{
-				AssertStringsEquivalent(action, _routeData.GetRequiredString("action"));
+				string actualAction = _routeData.GetRequiredString("action");
+				if (DoesNotMatch(action, actualAction))
+				{
+					throw new ActionNotMatchedException(action, actualAction);
+				}
 				return this;
 			}
 
 			public UriPathRecognizeOptions AndRouteValue(string key, string value)
 			{
-				var actualValue = _routeData.Values[key];
-				if (actualValue == null)
+				var actual = _routeData.Values[key];
+				if (actual == null)
 				{
 					throw new AssertException(string.Format("Cannot verify route value, because the key '{0}' failed to be recognized.", key));
 				}
-				AssertStringsEquivalent(value, actualValue.ToString());
+				string actualValue = TypeExtensions.ConvertSimpleType<string>(CultureInfo.InvariantCulture, value);
+				if (DoesNotMatch(value, actualValue))
+				{
+					throw new RouteValueNotMatchedException(key, value, actualValue);
+				}
 				return this;
 			}
 
 			public UriPathRecognizeOptions AndQueryValue(string key, string value)
 			{
-				AssertStringsEquivalent(value, _queryData[key]);
+				string actualValue = _queryData[key];
+				if (DoesNotMatch(value, actualValue))
+				{
+					throw new QueryValueNotMatchedException(key, value, actualValue);
+				}
 				return this;
 			}
 
-			private static void AssertStringsEquivalent(string expected, string actual)
+			private static bool DoesNotMatch(string expected, string actual)
 			{
-				Assert.Equal(expected, actual, StringComparer.Create(CultureInfo.InvariantCulture, true));
+				return false == string.Equals(expected, actual, StringComparison.InvariantCultureIgnoreCase);
 			}
 
 			private static RecognizePathResult RecognizePath(RouteCollection routes, string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
@@ -376,19 +393,14 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public void ShouldGenerateUriPathOf(string path)
 			{
-				string uriPath = GenerateUrlHelper(_routes, _values);
-				AssertStringsEquivalent(path, uriPath);
+				string actualPath = GenerateUrlHelper(_routes, _values);
+				Assert.Equal(path, actualPath, StringComparer.InvariantCultureIgnoreCase);
 			}
 
 			public string GenerateUriPathOf()
 			{
 				string uriPath = GenerateUrlHelper(_routes, _values);
 				return uriPath;
-			}
-
-			private static void AssertStringsEquivalent(string expected, string actual)
-			{
-				Assert.Equal(expected, actual, StringComparer.Create(CultureInfo.InvariantCulture, true));
 			}
 
 			// Todo: Could use a mocked IUrlHelper instead
@@ -398,5 +410,45 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				return UrlHelperUtil.GetVirtualPath(routes, requestContext, values);
 			}
 		}
+	}
+
+	[Serializable]
+	public class ControllerNotMatchedException : RouteValueNotMatchedException
+	{
+		public ControllerNotMatchedException(string expected, string actual)
+			: base("controller", expected, actual) { }
+
+		protected ControllerNotMatchedException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
+	}
+
+	[Serializable]
+	public class ActionNotMatchedException : RouteValueNotMatchedException
+	{
+		public ActionNotMatchedException(string expected, string actual)
+			: base("action", expected, actual) { }
+
+		protected ActionNotMatchedException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
+	}
+
+	[Serializable]
+	public class RouteValueNotMatchedException : AssertActualExpectedException
+	{
+		public RouteValueNotMatchedException(string name, string expected, string actual)
+			: base(expected, actual, "The '{0}' route value does not match".FormatWith(name)) { }
+
+		protected RouteValueNotMatchedException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
+	}
+
+	[Serializable]
+	public class QueryValueNotMatchedException : AssertActualExpectedException
+	{
+		public QueryValueNotMatchedException(string name, string expected, string actual)
+			: base(expected, actual, "The '{0}' querystring param does not match".FormatWith(name)) { }
+
+		protected QueryValueNotMatchedException(SerializationInfo info, StreamingContext context)
+			: base(info, context) { }
 	}
 }
