@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -73,8 +72,8 @@ namespace Maxfire.Web.Mvc
 		private static IEnumerable<string> GetRequiredParameterNames(IEnumerable<ParameterDescriptor> parameterDescriptors)
 		{
 			return parameterDescriptors
-				.Where(p => p.ParameterType.AllowsNullValue() == false || p.IsDefined(typeof(RequiredAttribute), false))
-				.Select(p => p.ParameterName);
+				.Where(p => false == p.IsDefined(typeof(NonRequiredAttribute), false))
+				.Map(p => p.ParameterName);
 		}
 
 		private IModelBinder GetModelBinder(ParameterDescriptor parameterDescriptor)

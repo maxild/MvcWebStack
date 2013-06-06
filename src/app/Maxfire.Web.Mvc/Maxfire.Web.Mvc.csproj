@@ -40,6 +40,7 @@
     <Compile Include="AbstractModelUpdater.cs" />
     <Compile Include="ActionFilterExtensions.cs" />
     <Compile Include="BetterDefaultModelBinder.cs" />
+    <Compile Include="NonRequiredAttribute.cs" />
     <Compile Include="ValueProviders\BetterChildActionValueProvider.cs" />
     <Compile Include="ValueProviders\BetterDictionaryValueProvider.cs" />
     <Compile Include="ValueProviders\BetterFormValueProvider.cs" />
@@ -191,7 +192,6 @@
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
