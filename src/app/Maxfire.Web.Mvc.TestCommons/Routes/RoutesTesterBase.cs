@@ -271,7 +271,6 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 				foreach (var item in routeValues)
 				{
-					//if (item.Value != null)
 					self.AndRouteValue(item.Key, item.Value.ToNullSafeString());
 				}
 
