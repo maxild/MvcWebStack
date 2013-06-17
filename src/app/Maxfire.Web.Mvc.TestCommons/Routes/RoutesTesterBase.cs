@@ -14,54 +14,31 @@ using Xunit.Sdk;
 
 namespace Maxfire.Web.Mvc.TestCommons.Routes
 {
-	// Todo: If a FakeRoutingContextContainer is injected everything works. Then both routes and mocked httpcontext is contained in this instance
-	// Todo: Should be done by a fixture, because this is the context. This way duplicate setting up the routes are removed
 	public abstract class RoutesTesterBase : IDisposable
 	{
-		private readonly INameValueSerializer _nameValueSerializer;
-		private readonly IControllerFactory _controllerFactory;
+		private readonly IControllerFactory _oldControllerFactory;
 
-		protected RoutesTesterBase() : this(new DefaultNameValueSerializer())
+		protected RoutesTesterBase()
 		{
-		}
-
-		protected RoutesTesterBase(INameValueSerializer nameValueSerializer)
-		{
-			_nameValueSerializer = nameValueSerializer;
-			
 			// Because when testing Url recognition we have a call to IRouteHandler.GetHttpHandler,
 			// and the standard MvcRouteHandler will call IControllerFactory.GetControllerSessionBehavior
 			// that will use the 'ASP.NET pipeline' based BuildManager. This will throw during testing, and
 			// therefore we use a fake controller factory.
-			
-			_controllerFactory = ControllerBuilder.Current.GetControllerFactory();
+			_oldControllerFactory = ControllerBuilder.Current.GetControllerFactory();
 			ControllerBuilder.Current.SetControllerFactory(new FakeControllerFactory());
 		}
 
 		void IDisposable.Dispose()
 		{
-			ControllerBuilder.Current.SetControllerFactory(_controllerFactory);
+			ControllerBuilder.Current.SetControllerFactory(_oldControllerFactory);
 		}
 
-		public INameValueSerializer NameValueSerializer
+		protected virtual INameValueSerializer NameValueSerializer
 		{
-			get { return _nameValueSerializer; }
+			get { return new DefaultNameValueSerializer();}
 		}
 
-		private RouteCollection _routes;
-		public RouteCollection Routes
-		{
-			get { return _routes ?? (_routes = GetRoutes()); }
-		}
-
-		protected RouteCollection GetRoutes()
-		{
-			var routes = new RouteCollection();
-			RegisterRoutes(routes);
-			return routes;
-		}
-
-		protected abstract void RegisterRoutes(RouteCollection routes);
+		protected abstract RouteCollection Routes { get; }
 
 		class FakeControllerFactory : IControllerFactory
 		{
@@ -124,37 +101,37 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 		protected UriPathRecognizeOptions GetRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Get);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Get);
 		}
 
 		protected UriPathRecognizeOptions DeleteRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Delete);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Delete);
 		}
 
 		protected UriPathRecognizeOptions PseudoDeleteRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Delete);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Delete);
 		}
 
 		protected UriPathRecognizeOptions PutRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Put);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Put);
 		}
 
 		protected UriPathRecognizeOptions PseudoPutRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Put);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Post, HttpVerbs.Put);
 		}
 
 		protected UriPathRecognizeOptions PostRequestFor(string url)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, HttpVerbs.Post);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, HttpVerbs.Post);
 		}
 
 		protected UriPathRecognizeOptions RequestFor(string url, HttpVerbs httpMethod, HttpVerbs? formMethod = null)
 		{
-			return new UriPathRecognizeOptions(_nameValueSerializer, Routes, url, httpMethod, formMethod);
+			return new UriPathRecognizeOptions(NameValueSerializer, Routes, url, httpMethod, formMethod);
 		}
 
 		protected UriPathGenerationOptions UrlGeneration
@@ -209,7 +186,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			// and carefully read the discussion (in the comments) about the following 2 views:
 			//		1) The MVC team is in favour of string based route values (controller, action, parameters, etc.)
 			//		2) Others are in favour of strongly typed route values (controller, action, parameters, etc.)
-			RouteValueDictionary values = RouteValuesHelper.GetRouteValuesFromExpression(action, _nameValueSerializer);
+			RouteValueDictionary values = RouteValuesHelper.GetRouteValuesFromExpression(action, NameValueSerializer);
 
 			// This is a hack to map to the action alias defined by the ActionName attribute
 			if (hack == UrlGenerationHack.MapToActionName) values["action"] = GetActionName(action);
@@ -289,12 +266,12 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathRecognizeOptions AndRouteValue(string key, string value)
 			{
-				var actual = _routeData.Values[key];
+				object actual = _routeData.Values[key];
 				if (actual == null)
 				{
 					throw new AssertException(string.Format("Cannot verify route value, because the key '{0}' failed to be recognized.", key));
 				}
-				string actualValue = TypeExtensions.ConvertSimpleType<string>(CultureInfo.InvariantCulture, value);
+				string actualValue = TypeExtensions.ConvertSimpleType<string>(CultureInfo.InvariantCulture, actual);
 				if (DoesNotMatch(value, actualValue))
 				{
 					throw new RouteValueNotMatchedException(key, value, actualValue);
