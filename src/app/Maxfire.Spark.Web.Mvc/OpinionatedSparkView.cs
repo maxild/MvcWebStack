@@ -32,6 +32,11 @@ namespace Maxfire.Spark.Web.Mvc
 		{
 			ViewContext.HttpContext.Response.Write(html);
 		}
+
+		public bool IsAjaxRequest
+		{
+			get { return Request != null && Request.IsAjaxRequest(); }
+		}
 	}
 
 	public abstract class OpinionatedSparkView<TViewModel> : OpinionatedSparkView, IOpinionatedView<TViewModel>
