@@ -41,10 +41,12 @@
     <Compile Include="Assert2.cs" />
     <Compile Include="AssertExtensibility\AssertComparer.cs" />
     <Compile Include="AssertExtensibility\AssertEqualityComparer.cs" />
+    <Compile Include="AssertExtensibility\AssertEqualityComparerAdapter.cs" />
     <Compile Include="AssertExtensibility\CollectionComparer.cs" />
     <Compile Include="AssertExtensibility\CollectionEqualityComparer.cs" />
     <Compile Include="AssertExtensibility\CollectionEquivalenceComparer.cs" />
     <Compile Include="AssertExtensibility\DateComparer.cs" />
+    <Compile Include="AssertExtensibility\DynamicAssertEqualityComparer.cs" />
     <Compile Include="AssertExtensions\BooleanAssertionExtensions.cs" />
     <Compile Include="AssertExtensions\CollectionAssertExtensions.cs" />
     <Compile Include="AssertExtensions\DictionaryAssertExtensions.cs" />

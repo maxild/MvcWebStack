@@ -151,16 +151,36 @@ namespace Maxfire.TestCommons.AssertExtensions
 		}
 
 		/// <summary>
-		/// Verifies that two objects are equal (by type).
+		/// Verifies that two objects are equal (using default comparer).
 		/// </summary>
 		/// <typeparam name="T">The type of the objects to be compared</typeparam>
 		/// <param name="actual">The value to be compared against</param>
 		/// <param name="expected">The expected value</param>
+		/// <param name="skipTypeCheck">If true, skip checking that actual and expected values have the same type.</param>
 		/// <exception cref="EqualException">Thrown when the objects are not equal</exception>
-		public static T ShouldEqual<T>(this T actual,
-		                               T expected)
+		public static T ShouldEqual<T>(this T actual, T expected, bool skipTypeCheck = false)
 		{
-			Assert.Equal(expected, actual, new AssertEqualityComparer<T>());
+			Assert.Equal(expected, actual, new AssertEqualityComparer<T>(skipTypeCheck));
+			return actual;
+		}
+
+		/// <summary>
+		/// Verifies that two objects are equal (using dynamic comparer).
+		/// </summary>
+		/// <typeparam name="T">The type of the objects to be compared</typeparam>
+		/// <param name="actual">The value to be compared against</param>
+		/// <param name="expected">The expected value</param>
+		/// <param name="skipTypeCheck">If true, skip checking that actual and expected values have the same type.</param>
+		/// <exception cref="EqualException">Thrown when the objects are not equal</exception>
+		public static T ShouldEqual<T>(this T actual, object expected, bool skipTypeCheck = true)
+		{
+			Assert.Equal(expected, actual, new DynamicAssertEqualityComparer(skipTypeCheck));
+			return actual;
+		}
+
+		public static T ShouldStrictEqual<T>(this T actual, object expected)
+		{
+			Assert.Equal(expected, actual, new DynamicAssertEqualityComparer());
 			return actual;
 		}
 
@@ -171,30 +191,14 @@ namespace Maxfire.TestCommons.AssertExtensions
 		}
 
 		/// <summary>
-		/// Verifies that two objects are equal (by type).
-		/// </summary>
-		/// <typeparam name="T">The type of the objects to be compared</typeparam>
-		/// <param name="actual">The value to be compared against</param>
-		/// <param name="expected">The expected value</param>
-		/// <exception cref="EqualException">Thrown when the objects are not equal</exception>
-		public static T ShouldEqual<T>(this T actual,
-		                               object expected)
-		{
-			Assert.Equal(expected, actual, new AssertEqualityComparer<object>());
-			return actual;
-		}
-
-		/// <summary>
-		/// Verifies that two objects are equal, using a custom comparer.
+		/// Verifies that two objects are equal (using custom comparer).
 		/// </summary>
 		/// <typeparam name="T">The type of the objects to be compared</typeparam>
 		/// <param name="actual">The value to be compared against</param>
 		/// <param name="expected">The expected value</param>
 		/// <param name="comparer">The comparer used to compare the two objects</param>
 		/// <exception cref="EqualException">Thrown when the objects are not equal</exception>
-		public static T ShouldEqual<T>(this T actual,
-		                               T expected,
-		                               IEqualityComparer<T> comparer)
+		public static T ShouldEqual<T>(this T actual, T expected, IEqualityComparer<T> comparer)
 		{
 			Assert.Equal(expected, actual, comparer);
 			return actual;
@@ -292,44 +296,48 @@ namespace Maxfire.TestCommons.AssertExtensions
 		}
 
 		/// <summary>
-		/// Verifies that two objects are not equal, using a default comparer.
+		/// Verifies that two objects are not equal (using default comparer).
 		/// </summary>
 		/// <typeparam name="T">The type of the objects to be compared</typeparam>
 		/// <param name="actual">The actual object</param>
 		/// <param name="expected">The expected object</param>
+		/// <param name="skipTypeCheck">If true, skip checking that actual and expected values have the same type.</param>
 		/// <exception cref="NotEqualException">Thrown when the objects are equal</exception>
-		public static T ShouldNotEqual<T>(this T actual,
-		                                  T expected)
+		public static T ShouldNotEqual<T>(this T actual, T expected, bool skipTypeCheck = false)
 		{
-			Assert.NotEqual(expected, actual, new AssertEqualityComparer<T>());
+			Assert.NotEqual(expected, actual, new AssertEqualityComparer<T>(skipTypeCheck));
 			return actual;
 		}
 
 		/// <summary>
-		/// Verifies that two objects are not equal, using a default comparer.
+		/// Verifies that two objects are not equal (using dynamic comparer).
 		/// </summary>
 		/// <typeparam name="T">The type of the objects to be compared</typeparam>
 		/// <param name="actual">The actual object</param>
 		/// <param name="expected">The expected object</param>
+		/// <param name="skipTypeCheck">If true, skip checking that actual and expected values have the same type.</param>
 		/// <exception cref="NotEqualException">Thrown when the objects are equal</exception>
-		public static T ShouldNotEqual<T>(this T actual,
-		                                  object expected)
+		public static T ShouldNotEqual<T>(this T actual, object expected, bool skipTypeCheck = true)
 		{
-			Assert.NotEqual(expected, actual, new AssertEqualityComparer<object>());
+			Assert.NotEqual(expected, actual, new DynamicAssertEqualityComparer(skipTypeCheck));
+			return actual;
+		}
+
+		public static T ShouldNotStrictEqual<T>(this T actual, object expected)
+		{
+			Assert.NotEqual(expected, actual, new DynamicAssertEqualityComparer());
 			return actual;
 		}
 
 		/// <summary>
-		/// Verifies that two objects are not equal, using a custom comparer.
+		/// Verifies that two objects are not equal (using custom comparer).
 		/// </summary>
 		/// <typeparam name="T">The type of the objects to be compared</typeparam>
 		/// <param name="actual">The actual object</param>
 		/// <param name="expected">The expected object</param>
 		/// <param name="comparer">The comparer used to examine the objects</param>
 		/// <exception cref="NotEqualException">Thrown when the objects are equal</exception>
-		public static T ShouldNotEqual<T>(this T actual,
-		                                  T expected,
-		                                  IEqualityComparer<T> comparer)
+		public static T ShouldNotEqual<T>(this T actual, T expected, IEqualityComparer<T> comparer)
 		{
 			Assert.NotEqual(expected, actual, comparer);
 			return actual;
