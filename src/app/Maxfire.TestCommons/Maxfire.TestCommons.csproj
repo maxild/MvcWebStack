@@ -47,6 +47,7 @@
     <Compile Include="AssertExtensibility\CollectionEquivalenceComparer.cs" />
     <Compile Include="AssertExtensibility\DateComparer.cs" />
     <Compile Include="AssertExtensibility\DynamicAssertEqualityComparer.cs" />
+    <Compile Include="AssertExtensibility\EqualityUtils.cs" />
     <Compile Include="AssertExtensions\BooleanAssertionExtensions.cs" />
     <Compile Include="AssertExtensions\CollectionAssertExtensions.cs" />
     <Compile Include="AssertExtensions\DictionaryAssertExtensions.cs" />

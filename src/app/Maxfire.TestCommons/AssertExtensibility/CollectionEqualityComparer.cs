@@ -14,9 +14,6 @@ namespace Maxfire.TestCommons.AssertExtensibility
 		/// <summary>
 		/// Check that two iterators are equal (i.e. all elements are equal, and are listed in the same order).
 		/// </summary>
-		/// <param name="left">Left hand side</param>
-		/// <param name="right">Right hand side</param>
-		/// <returns>0 if equal, and -1 otherwise</returns>
 		public static bool Equals(IEnumerable<T> left, IEnumerable<T> right)
 		{
 			IEnumerator<T> enumLeft = left.GetEnumerator();
@@ -30,26 +27,9 @@ namespace Maxfire.TestCommons.AssertExtensibility
 				if (!hasNextX || !hasNextY)
 					return (hasNextX == hasNextY);
 
-				if (!equals(enumLeft.Current, enumRight.Current))
+				if (!EqualityUtils.Equals(enumLeft.Current, enumRight.Current))
 					return false;
 			}
-		}
-
-		private static bool equals(T left, T right)
-		{
-			var x = left as IEquatable<T>;
-			if (x != null)
-			{
-				return x.Equals(right);
-			}
-
-			var y = right as IEquatable<T>;
-			if (y != null)
-			{
-				return y.Equals(left);
-			}
-
-			return Equals(left, right);
 		}
 
 		int IEqualityComparer<IEnumerable<T>>.GetHashCode(IEnumerable<T> obj)
@@ -84,7 +64,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 				if (!hasNextX || !hasNextY)
 					return (hasNextX == hasNextY);
 
-				if (!Equals(enumLeft.Current, enumRight.Current))
+				if (!EqualityUtils.Equals(enumLeft.Current, enumRight.Current))
 					return false;
 			}
 		}
