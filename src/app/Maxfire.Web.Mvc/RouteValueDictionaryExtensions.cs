@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Web.Routing;
 
 namespace Maxfire.Web.Mvc
@@ -31,6 +32,18 @@ namespace Maxfire.Web.Mvc
 				foreach (KeyValuePair<string, object> kvp in values)
 				{
 					routeValues[kvp.Key] = kvp.Value;
+				}
+			}
+			return routeValues;
+		}
+
+		public static RouteValueDictionary Merge(this RouteValueDictionary routeValues, object values)
+		{
+			if (values != null)
+			{
+				foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
+				{
+					routeValues[descriptor.Name.ToLowerInvariant()] = descriptor.GetValue(values);
 				}
 			}
 			return routeValues;

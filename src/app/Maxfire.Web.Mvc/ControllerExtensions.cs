@@ -116,7 +116,7 @@ namespace Maxfire.Web.Mvc
 
 			if (controller.IsAjaxRequest)
 			{
-				string url = controller.UrlFor(action, controllerName);
+				string url = controller.UrlFor(action);
 				ActionResult redirectBrowserResult = controller.RedirectAjaxRequest(url);
 				if (redirectBrowserResult != null)
 				{
@@ -147,7 +147,7 @@ namespace Maxfire.Web.Mvc
 																 Expression<Action<TController>> action, object routeValues)
 			where TController : OpinionatedController
 		{
-			return controller.RedirectToAction(action, new RouteValueDictionary(routeValues));
+			return controller.RedirectToAction(action, new RouteValueDictionary().Merge(routeValues));
 		}
 	}
 }

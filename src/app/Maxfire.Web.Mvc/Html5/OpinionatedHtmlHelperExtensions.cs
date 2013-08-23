@@ -14,17 +14,28 @@ namespace Maxfire.Web.Mvc.Html5
 		public static Anchor ActionLink<TController>(this IUrlHelper urlHelper,
 			Expression<Action<TController>> action,
 			string linkText,
-			IEnumerable<KeyValuePair<string, object>> attributes) where TController : Controller
+			IEnumerable<KeyValuePair<string, object>> attributes
+			) where TController : Controller
 		{
 			string url = urlHelper.UrlFor(action);
 			return ActionLinkHelper(url, linkText, attributes);
 		}
 
+		public static Anchor ActionLink<TController>(this IUrlHelper urlHelper, 
+			Expression<Action<TController>> action, 
+			string linkText, IEnumerable<KeyValuePair<string, object>> attributes, 
+			RouteValueDictionary routeValues
+			) where TController : Controller
+		{
+			string url = urlHelper.UrlFor(action, routeValues);
+			return ActionLinkHelper(url, linkText, attributes);
+		}
+
 		public static Anchor ActionLink<TController>(this IUrlHelper urlHelper,
 			Expression<Action<TController>> action,
-			string linkText,
-			RouteValueDictionary routeValues,
-			IEnumerable<KeyValuePair<string, object>> attributes) where TController : Controller
+			string linkText, IEnumerable<KeyValuePair<string, object>> attributes,
+			object routeValues
+			) where TController : Controller
 		{
 			string url = urlHelper.UrlFor(action, routeValues);
 			return ActionLinkHelper(url, linkText, attributes);

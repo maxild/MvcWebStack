@@ -26,7 +26,7 @@ namespace Maxfire.Web.Mvc
 		{
 			action.ThrowIfNull("action");
 
-			MethodCallExpression call = action.Body as MethodCallExpression;
+			var call = action.Body as MethodCallExpression;
 			if (call == null)
 			{
 				throw new ArgumentException("The LINQ expression must be a method call.");
@@ -34,11 +34,11 @@ namespace Maxfire.Web.Mvc
 
 			string controller = GetControllerName(controllerName ?? typeof(TController).Name);
 
-			var routeValues = new RouteValueDictionary { { "Controller", controller }, { "Action", call.Method.Name } };
+			var routeValues = new RouteValueDictionary { { "controller", controller }, { "action", call.Method.Name } };
 
 			if (nameValueSerializer != null)
 			{
-				addParameterValuesFromExpressionToDictionary(routeValues, call, prefix, nameValueSerializer);
+				AddParameterValuesFromExpressionToDictionary(routeValues, call, prefix, nameValueSerializer);
 			}
 
 			return routeValues;
@@ -65,7 +65,7 @@ namespace Maxfire.Web.Mvc
 			return controllerName;
 		}
 
-		private static void addParameterValuesFromExpressionToDictionary(RouteValueDictionary routeValues,
+		private static void AddParameterValuesFromExpressionToDictionary(RouteValueDictionary routeValues,
 																		 MethodCallExpression call, string prefix, INameValueSerializer nameValueSerializer)
 		{
 			ParameterInfo[] parameters = call.Method.GetParameters();
@@ -76,7 +76,7 @@ namespace Maxfire.Web.Mvc
 				{
 					Expression arg = call.Arguments[i];
 					object value;
-					ConstantExpression ce = arg as ConstantExpression;
+					var ce = arg as ConstantExpression;
 					if (ce != null)
 					{
 						// If argument is a constant expression, just get the value
@@ -100,7 +100,7 @@ namespace Maxfire.Web.Mvc
 					string prefixToUse = prefix;
 					if (value.GetType().IsSimpleType() && prefix.IsEmpty())
 					{
-						prefixToUse = parameters[i].Name;
+						prefixToUse = parameters[i].Name.ToLowerInvariant();
 					}
 
 					var values = nameValueSerializer.GetValues(value, prefixToUse);

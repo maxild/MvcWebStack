@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Dynamic;
 
 namespace Maxfire.Web.Mvc
 {
-	public class DynamicBag<TDictionary> : DynamicObject
-		where TDictionary : IDictionary<string, object>
+	public class DynamicNameValueCollection: DynamicObject
 	{
-		private readonly Func<TDictionary> _thunk;
+		private readonly Func<NameValueCollection> _thunk;
 
-		public DynamicBag(Func<TDictionary> thunk)
+		public DynamicNameValueCollection(Func<NameValueCollection> thunk)
 		{
 			// we use a delegate thunk such that controllers and views 
-			// can bind a closure to ViewData, TempDate etc. This way
-			// we do not have to worry about TempData pointing to any 
-			// new object
+			// can bind a closure to Forms, QueryString etc.
 			_thunk = thunk;
 		}
 
-		private TDictionary Bag
+		private NameValueCollection Bag
 		{
 			get
 			{
-				TDictionary dictionary = _thunk();
-				return dictionary;
+				NameValueCollection collection = _thunk();
+				return collection;
 			}
 		}
 
@@ -31,21 +29,19 @@ namespace Maxfire.Web.Mvc
 		// the properties currently defined on the object
 		public override IEnumerable<string> GetDynamicMemberNames()
 		{
-			return Bag.Keys;
+			return Bag.AllKeys;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			Bag.TryGetValue(binder.Name, out result);
+			result = Bag[binder.Name];
 			// we always return a result even if the key does not exist
 			return true;
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object value)
 		{
-			Bag[binder.Name] = value;
-			// you can always set a key in the dictionary so return true
-			return true;
+			return false;
 		}
 	}
 }

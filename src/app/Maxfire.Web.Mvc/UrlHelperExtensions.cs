@@ -10,20 +10,24 @@ namespace Maxfire.Web.Mvc
 	{
 		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action) where TController : Controller
 		{
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.NameValueSerializer);
-			return new UrlBuilder(urlHelper, routeValues);
+			return urlHelper.UrlFor(action, null);
 		}
 
-		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action, RouteValueDictionary routeValues) where TController : Controller
+		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper,
+			Expression<Action<TController>> action,
+			object routeValues
+			) where TController : Controller
+		{
+			return urlHelper.UrlFor(action, new RouteValueDictionary().Merge(routeValues));
+		}
+
+		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, 
+			Expression<Action<TController>> action, 
+			RouteValueDictionary routeValues
+			) where TController : Controller
 		{
 			var mergedRouteValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.NameValueSerializer).Merge(routeValues);
 			return new UrlBuilder(urlHelper, mergedRouteValues);
-		}
-
-		public static UrlBuilder UrlFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action, string controllerName) where TController : Controller
-		{
-			var routeValues = RouteValuesHelper.GetRouteValuesFromExpression(action, urlHelper.NameValueSerializer, controllerName);
-			return new UrlBuilder(urlHelper, routeValues);
 		}
 
 		public static Link LinkFor<TController>(this IUrlHelper urlHelper, Expression<Action<TController>> action) where TController : Controller
@@ -34,7 +38,7 @@ namespace Maxfire.Web.Mvc
 
 		public static string IncludeCss(this IUrlHelper urlHelper, string cssFile)
 		{
-			cssFile = getContentPath("css", cssFile);
+			cssFile = GetContentPath("css", cssFile);
 			string url = urlHelper.SiteResource(cssFile);
 			return string.Format("<link type=\"text/css\" rel=\"stylesheet\" href=\"{0}\" />", url);
 		}
@@ -46,21 +50,21 @@ namespace Maxfire.Web.Mvc
 
 		public static string PathOfJS(this IUrlHelper urlHelper, string jsFile)
 		{
-			jsFile = getContentPath("js", jsFile);
+			jsFile = GetContentPath("js", jsFile);
 			string url = urlHelper.SiteResource(jsFile);
 			return url;
 		}
 
 		public static string PathOfImage(this IUrlHelper urlHelper, string imageFile)
 		{
-			imageFile = getContentPath("images", imageFile);
+			imageFile = GetContentPath("images", imageFile);
 			string url = urlHelper.SiteResource(imageFile);
 			return url;
 		}
 
 		public static string PathOfStaticHtml(this IUrlHelper urlHelper, string htmlFile)
 		{
-			htmlFile = getContentPath("html", htmlFile);
+			htmlFile = GetContentPath("html", htmlFile);
 			string url = urlHelper.SiteResource(htmlFile);
 			return url;
 		}
@@ -85,7 +89,7 @@ namespace Maxfire.Web.Mvc
 			return url;
 		}
 
-		private static string getContentPath(string contentSubFolder, string file)
+		private static string GetContentPath(string contentSubFolder, string file)
 		{
 			if (!file.StartsWith("~", StringComparison.OrdinalIgnoreCase))
 			{

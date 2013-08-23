@@ -355,7 +355,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 
 			public UriPathGenerationOptions AndRouteValues(object values)
 			{
-				return AndRouteValues(new RouteValueDictionary(values));
+				return AndRouteValues(new RouteValueDictionary().Merge(values));
 			}
 
 			public UriPathGenerationOptions AndRouteValues(RouteValueDictionary values)
