@@ -13,7 +13,8 @@ SOLUTION = 'Maxfire.sln'
 
 # 3rd party program paths
 PATHS = {
-	:ncover => "#{File.join(Rake::OSArchitecture.programfiles, 'NCover')}"
+	:ncover => "#{File.join(Rake::OSArchitecture.programfiles, 'NCover')}",
+	:xunit => File.join(ROOT, 'packages', 'xunit.runners.1.9.2', 'tools')
 }
 
 ARCHIVE = {
@@ -135,7 +136,7 @@ namespace :build do
 		test_task_names << task_name
 		desc "Run tests in #{test_assembly_name} with coverage"
 		Rake::XUnitTask.new(task_name => :compile) do |xunit|
-			tools_dir = File.join(ROOT, 'packages', 'xunit.runners.1.9.1', 'tools')
+			tools_dir = PATHS[:xunit]
 			xunit.clr_version = '4'
 			xunit.xunit_path = tools_dir
 			xunit.test_assembly = test_assembly
@@ -184,7 +185,7 @@ namespace :util do
 	desc "Force NCover and xUnit.net to run under WOW64 (x86 emulator that allows 32-bit Windows applications to run on 64-bit Windows"
 	task :ncover64 do
 		ncover_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'tools', 'ncover', 'NCover.Console.exe'))
-		xunit_path = Rake::TaskUtils.to_windows_path(File.join(ROOT, 'packages', 'xunit.runners.1.9.1', 'tools', 'xunit.console.exe'))
+		xunit_path = Rake::TaskUtils.to_windows_path(File.join(PATHS[:xunit], 'xunit.console.exe'))
 		working_dir = File.join("#{ENV['ProgramW6432']}", 'Microsoft SDKs', 'Windows', 'v7.0', 'bin')
 		cd working_dir do
 			sh "CorFlags.exe #{ncover_path} /32BIT+"
