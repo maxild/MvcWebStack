@@ -219,6 +219,12 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				_queryData = result.QueryData;
 			}
 
+			public UriPathRecognizeOptions ShouldMatchRouteHandlerOfType<T>()
+			{
+				Assert.IsType<T>(_routeData.RouteHandler);
+				return this;
+			}
+
 			public UriPathRecognizeOptions ShouldMatchController(string controller)
 			{
 				string actualController = _routeData.GetRequiredString("controller");
