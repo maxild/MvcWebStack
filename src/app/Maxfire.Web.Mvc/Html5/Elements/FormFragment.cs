@@ -28,6 +28,11 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			//Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
 		}
 
+		protected string GetName()
+		{
+			return Attr(HtmlAttribute.Name);
+		}
+
 		protected IModelMetadataAccessor ModelMetadataAccessor { get { return _accessor; }}
 
 		public void ApplyModelState()

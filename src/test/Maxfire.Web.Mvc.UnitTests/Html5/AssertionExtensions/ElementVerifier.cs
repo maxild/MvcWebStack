@@ -29,9 +29,10 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 			get { return _currentElement; }
 		}
 
-		//public ElementListVerifier Elements(string elementName)
+		//public ElementListVerifier Elements(string xpath)
 		//{
-		//    return new ElementListVerifier(_rootElement.SelectNodes(elementName));
+		//	XmlNodeList nodes = _rootElement.SelectNodes(xpath);
+		//	return new ElementListVerifier(nodes.ToString(), nodes);
 		//}
 	}
 }

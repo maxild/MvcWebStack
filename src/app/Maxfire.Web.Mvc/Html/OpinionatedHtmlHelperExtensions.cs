@@ -147,31 +147,6 @@ namespace Maxfire.Web.Mvc.Html
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
-		// Note: Even though we use SelectListItem the Selected property isn't used at all, because the model is compared to the values to find any selected options
-		// Todo: Maybe use my own ITextValuePair abstraction
-		public static MvcHtmlString RadioButtonListFor<TModel, TProperty>(this OpinionatedHtmlHelper<TModel> htmlHelper, 
-			Expression<Func<TModel, TProperty>> expression, IEnumerable<TextValuePair> options,
-			IDictionary<string, object> htmlInputElementAttributes, IDictionary<string, object> htmlLabelElementAttributes) where TModel : class
-		{
-			var sb = new StringBuilder();
-			object modelValue = htmlHelper.GetModelValueFor(expression);
-			string name = expression.GetHtmlFieldNameFor(htmlHelper);
-			
-			options = options ?? htmlHelper.GetOptionsFor(expression);
-
-			if (options != null)
-			{
-				foreach (var option in options)
-				{
-					string sanitizedId = Html401IdUtil.CreateSanitizedId(name + "_" + option.Value);
-					sb.Append(htmlHelper.RadioButtonHelper(modelValue, sanitizedId, name, option.Value, htmlInputElementAttributes));
-					sb.Append(LabelHelper(sanitizedId, HttpUtility.HtmlEncode(option.Text), htmlLabelElementAttributes));
-				}
-			}
-
-			return MvcHtmlString.Create(sb.ToString());
-		}
-
 		// Note: MVC 2 RTM source code for DropDownListFor does have a BUG: 
 		//   Any SelectListItem in the list of options that has the Selected property set to true 
 		//   does not have any bearing over the <option> element rendered with the selected attribute 
@@ -270,14 +245,6 @@ namespace Maxfire.Web.Mvc.Html
 			return tagBuilder.ToString(TagRenderMode.Normal);
 		}
 
-		private static MvcHtmlString RadioButtonHelper(this HtmlHelper htmlHelper,
-			object modelValue, string id, string name, string value, IDictionary<string, object> htmlAttributes)
-		{
-			var nameValueSerializer = htmlHelper.GetNameValueSerializer();
-			bool isChecked = GetIsSelected(value, nameValueSerializer, modelValue);
-			return htmlHelper.RadioButton(name, value, isChecked, htmlAttributes.GetIdExtendedHtmlAttributes(id));
-		}
-
 		private static IDictionary<string, object> GetIdExtendedHtmlAttributes(this IDictionary<string, object> htmlAttributes, string id)
 		{
 			if (!String.IsNullOrEmpty(id))
@@ -346,11 +313,6 @@ namespace Maxfire.Web.Mvc.Html
 			{
 				if (key == null) throw new ArgumentNullException("key");
 				return key.Length == 0 ? _valueProviderResult : null;
-			}
-
-			public IEnumerable<string> GetKeys()
-			{
-				yield return string.Empty;
 			}
 		}
 

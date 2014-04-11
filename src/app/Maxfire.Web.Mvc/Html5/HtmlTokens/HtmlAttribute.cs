@@ -17,7 +17,7 @@
 		//public const string Title = "title";
 		//public const string Style = "style";
 		public const string Class = "class";
-		//public const string For = "for";
+		public const string For = "for";
 		public const string HRef = "href";
 	}
 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.Mvc;
 using Maxfire.Web.Mvc.FluentHtml.Extensions;
 using Maxfire.Web.Mvc.FluentHtml.Html;
+using Maxfire.Web.Mvc.Html;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements
 {
@@ -68,16 +69,18 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 				return null;
 			}
 
+			string idPrefix = Html401IdUtil.CreateSanitizedId(GetName());
+
 			RemoveAttr(HtmlAttribute.Name);
 			var sb = new StringBuilder();
 			var i = 0;
 			foreach (var option in _options)
 			{
 				var value = option.Value;
-				var checkbox = (new CheckBox(GetName(), ForMember)
+				var checkbox = new CheckBox(GetName(), ForMember)
 					.ApplyBehaviors(AppliedBehaviors)
-					.Id(string.Format("{0}_{1}", GetName().FormatAsHtmlId(), i))
-					.Value(value))
+					.Id(string.Format("{0}_{1}", idPrefix, i))
+					.Value(value)
 					.LabelAfter(option.Text, _itemClass)
 					.Checked(IsSelectedValue(value));
 				if (_itemClass != null)
@@ -87,7 +90,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 				sb.Append(_itemFormat == null
 				          	? checkbox.ToCheckBoxOnlyHtml()
 				          	: string.Format(_itemFormat, checkbox.ToCheckBoxOnlyHtml()));
-				i++;
+				i += 1;
 			}
 			return sb.ToString();
 		}

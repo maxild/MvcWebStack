@@ -14,6 +14,7 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions
 			_xhtml = xhtml;
 		}
 
+// ReSharper disable once InconsistentNaming
 		protected T self { get { return (T) this; }}
 
 		public T HasName(string expectedTagName)
