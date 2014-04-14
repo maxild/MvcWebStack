@@ -34,42 +34,35 @@ namespace Maxfire.Web.Mvc
 			// being empty (posted as an empty value). This way a set of partial request
 			// params (e.g. 'birthday.day' and 'birthday.month') will bind to a nullable 
 			// DateTime without any errors, if the values of the partial params are empty.
-			if (parts.Values.All(IsMissingOrEmpty))
+			if (parts.Values.Any(IsMissingOrEmpty))
 			{
 				return null;
 			}
+
+			// All validation errors are reported back in ModelState under ModelName (i.e. 'udbdato', not 'udbdato.Day' etc)
+			// This way the view can use the ValidationMessage html helper after a DateSelects element. Only disadvantage is 
+			// that all selects are colored red, because we do not differentiate between which of the date components (day/month/year) 
+			// that was invalid.
 
 			bool nullResult = false;
 
-			parts.Where(kvp => IsMissingOrEmpty(kvp.Value)).Each(kvp =>
-			{
-				bindingContext.ModelState.AddModelError(kvp.Key, "Værdien for '{0}' mangler.".FormatWith(kvp.Key));
-				nullResult = true;
-			});
-			
-			if (nullResult)
-			{
-				return null;
-			}
-
 			var values = GetValues(bindingContext, parts);
-			var keys = parts.Map(x => x.Key).ToList();
-			
+
 			if (values[0] != null && values[0] <= 0)
 			{
-				bindingContext.ModelState.AddModelError(keys[0], "Værdien '{0}' er ikke et validt år.".FormatWith(values[0]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke et validt år.".FormatWith(values[0]));
 				nullResult = true;
 			}
 
 			if (values[1] != null && (values[1] < 1 || values[1] > 12))
 			{
-				bindingContext.ModelState.AddModelError(keys[1], "Værdien '{0}' er ikke en valid måned.".FormatWith(values[1]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke en valid måned.".FormatWith(values[1]));
 				nullResult = true;
 			}
 
 			if (values[2] != null && (values[2] < 1 || values[2] > DateTime.DaysInMonth(values[0] ?? 2012, values[1] ?? 1)))
 			{
-				bindingContext.ModelState.AddModelError(keys[2], "Værdien '{0}' er ikke en valid dag for den valgte måned.".FormatWith(values[2]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke en valid dag for den valgte måned.".FormatWith(values[2]));
 				nullResult = true;
 			}
 
@@ -184,8 +177,8 @@ namespace Maxfire.Web.Mvc
 		protected override IDictionary<string, object> GetValuesCore(DateTime value, string prefix)
 		{
 			return string.IsNullOrEmpty(prefix) ?
-					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { Day, value.Day.ToString() }, { Month, value.Month.ToString() }, { Year, value.Year.ToString() } } :
-					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { prefix + "." + Day, value.Day.ToString() }, { prefix + "." + Month, value.Month.ToString() }, { prefix + "." + Year, value.Year.ToString() } };
+					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { Day, value.Day.ToString(CultureInfo.InvariantCulture) }, { Month, value.Month.ToString(CultureInfo.InvariantCulture) }, { Year, value.Year.ToString(CultureInfo.InvariantCulture) } } :
+					new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) { { prefix + "." + Day, value.Day.ToString(CultureInfo.InvariantCulture) }, { prefix + "." + Month, value.Month.ToString(CultureInfo.InvariantCulture) }, { prefix + "." + Year, value.Year.ToString(CultureInfo.InvariantCulture) } };
 		}
 	}
 

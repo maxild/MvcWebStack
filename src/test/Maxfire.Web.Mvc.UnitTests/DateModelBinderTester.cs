@@ -83,7 +83,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		}
 
 		[Fact]
-		public void SomeMissingFieldsReturnsNullWithBindingErrors()
+		public void SomeMissingFieldsReturnsNullWithoutBindingErrors()
 		{
 			var valueProvider = new SimpleValueProvider { { "birthday.month", "12" }, { "birthday.day", "1" } };
 
@@ -95,13 +95,12 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			object result = Sut.BindModel(null, bindingContext);
 
-			bindingContext.ModelState.IsInvalid(field => field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeTrue();
-			bindingContext.ModelState.IsInvalid(field => !field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeFalse();
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
 			result.ShouldBeNull();
 		}
 
 		[Fact]
-		public void SomeEmptyFieldsReturnsNullWithBindingErrors()
+		public void SomeEmptyFieldsReturnsNullWithoutBindingErrors()
 		{
 			var valueProvider = new SimpleValueProvider { { "birthday.year", "" }, { "birthday.month", "12" }, { "birthday.day", "1" } };
 
@@ -113,8 +112,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			object result = Sut.BindModel(null, bindingContext);
 
-			bindingContext.ModelState.IsInvalid(field => field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeTrue();
-			bindingContext.ModelState.IsInvalid(field => !field.Equals("birthday.year", StringComparison.OrdinalIgnoreCase)).ShouldBeFalse();
+			bindingContext.ModelState.IsValid.ShouldBeTrue();
 			result.ShouldBeNull();
 		}
 
