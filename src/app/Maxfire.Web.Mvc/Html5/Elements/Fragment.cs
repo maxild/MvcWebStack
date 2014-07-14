@@ -26,7 +26,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			_tagBuilder = new TagBuilder(elementName);
 		}
 
-		protected T self { get { return this as T; }}
+// ReSharper disable once InconsistentNaming
+		protected T self { get { return (T)this; }}
 
 		/// <summary>
 		/// Get the element name of this/each element.
@@ -202,7 +203,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		/// <param name="className">One or more class names to be added to the class attribute of this/each element.</param>
 		public T AddClass(params string[] className)
 		{
-			foreach (string part in className.SelectMany(splitClassName))
+			foreach (string part in className.SelectMany(SplitClassName))
 			{
 				_classNames.Add(part);
 			}
@@ -226,7 +227,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 			else
 			{
-				foreach (string part in className.SelectMany(splitClassName))
+				foreach (string part in className.SelectMany(SplitClassName))
 				{
 					_classNames.Remove(part);
 				}
@@ -265,7 +266,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				return _classNames.Count > 0;
 			}
-			return className.SelectMany(splitClassName).All(_classNames.Contains);
+			return className.SelectMany(SplitClassName).All(_classNames.Contains);
 		}
 
 		/// <summary>
@@ -367,7 +368,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			}
 		}
 
-		private static IEnumerable<string> splitClassName(string className)
+		private static IEnumerable<string> SplitClassName(string className)
 		{
 			if (string.IsNullOrEmpty(className))
 			{
