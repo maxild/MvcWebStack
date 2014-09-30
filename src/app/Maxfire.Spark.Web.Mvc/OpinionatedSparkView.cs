@@ -28,6 +28,11 @@ namespace Maxfire.Spark.Web.Mvc
 			set { _nameValueSerializer = value; }
 		}
 
+		public RouteData RouteData
+		{
+			get { return ViewContext.RouteData; }
+		}
+
 		public virtual void Render(string html)
 		{
 			ViewContext.HttpContext.Response.Write(html);
