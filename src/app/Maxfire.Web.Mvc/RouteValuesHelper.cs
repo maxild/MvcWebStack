@@ -26,15 +26,12 @@ namespace Maxfire.Web.Mvc
 		{
 			action.ThrowIfNull("action");
 
-			var call = action.Body as MethodCallExpression;
-			if (call == null)
-			{
-				throw new ArgumentException("The LINQ expression must be a method call.");
-			}
+			var call = GetRequiredMethodCallExpression(action);
 
-			string controller = GetControllerName(controllerName ?? typeof(TController).Name);
+			string controllerNameToUse = GetControllerName(controllerName ?? typeof(TController).Name);
+			string actionName = GetActionNameHelper(call);
 
-			var routeValues = new RouteValueDictionary { { "controller", controller }, { "action", call.Method.Name } };
+			var routeValues = new RouteValueDictionary { { "controller", controllerNameToUse }, { "action", actionName } };
 
 			if (nameValueSerializer != null)
 			{
@@ -44,9 +41,31 @@ namespace Maxfire.Web.Mvc
 			return routeValues;
 		}
 
+		public static string GetActionName<TController>(Expression<Action<TController>> action)
+			where TController : Controller
+		{
+			var call = GetRequiredMethodCallExpression(action);
+			return GetActionNameHelper(call);
+		}
+
 		public static string GetControllerName<TController>()
 		{
 			return GetControllerName(typeof (TController).Name);
+		}
+
+		private static string GetActionNameHelper(MethodCallExpression call)
+		{
+			return call.Method.Name;
+		}
+
+		private static MethodCallExpression GetRequiredMethodCallExpression<TController>(Expression<Action<TController>> action)
+		{
+			var call = action.Body as MethodCallExpression;
+			if (call == null)
+			{
+				throw new ArgumentException("The LINQ expression must be a method call.");
+			}
+			return call;
 		}
 
 		private static string GetControllerName(string controllerName)
