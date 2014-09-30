@@ -27,5 +27,10 @@ namespace Maxfire.Web.Mvc
 		/// Convert a model to name-value pairs to be used as route values (before generating a URL).
 		/// </summary>
 		INameValueSerializer NameValueSerializer { get; }
+
+		/// <summary>
+		/// Gets the route data for the current request.
+		/// </summary>
+		RouteData RouteData { get; }
 	}
 }

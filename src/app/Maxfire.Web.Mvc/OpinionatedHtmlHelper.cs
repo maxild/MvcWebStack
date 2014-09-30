@@ -40,6 +40,11 @@ namespace Maxfire.Web.Mvc
 		{
 			get { return _nameValueSerializer; }
 		}
+
+		public RouteData RouteData
+		{
+			get { return ViewContext.RouteData; }
+		}
 	}
 
 	// Note : OpinionatedHtmlHelper<TModel> has to derive from HtmlHelper<T> (This is Liskov's substitution 
@@ -73,6 +78,11 @@ namespace Maxfire.Web.Mvc
 		public INameValueSerializer NameValueSerializer
 		{
 			get { return _nameValueSerializer; }
+		}
+
+		public RouteData RouteData
+		{
+			get { return ViewContext.RouteData; }
 		}
 
 		public virtual IEnumerable<TextValuePair> GetOptions(string key)
