@@ -26,16 +26,14 @@ namespace Maxfire.Web.Mvc.Html
 		public static MvcHtmlString LabelFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TValue>> expression, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
-			string labelText = htmlHelper.GetLabelTextFor(expression);
-			return htmlHelper.LabelFor(expression, labelText, htmlAttributes);
+			return htmlHelper.LabelFor(expression, null, htmlAttributes);
 		}
 
 		public static MvcHtmlString LabelFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper,
 			Expression<Func<TModel, TValue>> expression, string labelText, IDictionary<string, object> htmlAttributes) where TModel : class
 		{
-			return String.IsNullOrEmpty(labelText) ?
-				MvcHtmlString.Empty :
-				MvcHtmlString.Create(LabelHelper(expression.GetHtmlFieldIdFor(htmlHelper), labelText, htmlAttributes));
+			string labelTextToUse = string.IsNullOrEmpty(labelText) ? htmlHelper.GetLabelTextFor(expression) : labelText;
+			return MvcHtmlString.Create(LabelHelper(expression.GetHtmlFieldIdFor(htmlHelper), labelTextToUse, htmlAttributes));
 		}
 
 		public static MvcHtmlString LegendFor<TModel, TValue>(this OpinionatedHtmlHelper<TModel> htmlHelper,
