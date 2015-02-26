@@ -94,8 +94,7 @@ namespace :build do
     #expectedVersion = "12.0.31101.0"
     #puts "MSBuild version is $version"
     msbuild.tools_version = '12.0'
-    msbuild.target_framework_version = 'v4.5'
-
+    msbuild.target_framework_version = 'v4.5.2'
   end
 
 	desc "Compile all code"
@@ -103,7 +102,7 @@ namespace :build do
 		# Visual Studio 2013 (v12.0) uses a ToolsVersion of 12.0.
     # See also http://blogs.msdn.com/b/visualstudio/archive/2013/07/24/msbuild-is-now-part-of-visual-studio.aspx
 		msbuild.tools_version = '12.0'
-		msbuild.target_framework_version = 'v4.5'
+		msbuild.target_framework_version = 'v4.5.2'
 		msbuild.project = SOLUTION
 		msbuild.targets << 'Clean'
 		msbuild.targets << 'Build'
