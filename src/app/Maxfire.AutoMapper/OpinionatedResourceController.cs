@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using AutoMapper;
@@ -51,7 +50,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 				//FlashNotice("Entitet findes ikke.");
 				return this.RedirectToAction<TController>(x => x.Index());
 			}
-			var editModel = getEditModelFor(model);
+			var editModel = GetEditModelForHelper(model);
 			return EditViewFor(editModel);
 		}
 
@@ -100,7 +99,7 @@ namespace Maxfire.AutoMapper.Web.Mvc
 			return EditViewFor(editModel);
 		}
 
-		private TEditModel getEditModelFor(TModel model)
+		private TEditModel GetEditModelForHelper(TModel model)
 		{
 			var input = Mapper.Map<TModel, TInputModel>(model);
 			return GetEditModelFor(input);
