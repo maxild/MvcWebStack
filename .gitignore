@@ -1,3 +1,4 @@
+archive
 src/**/[Oo]bj
 src/**/[Bb]in
 src/CommonAssemblyInfo.cs
