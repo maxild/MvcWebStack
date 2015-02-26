@@ -1,0 +1,10 @@
+src/**/[Oo]bj
+src/**/[Bb]in
+src/CommonAssemblyInfo.cs
+*.user
+*.suo
+*.Cache
+*.cache
+*.log
+_ReSharper.*
+*.resharper
