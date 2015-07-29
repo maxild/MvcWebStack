@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Mvc;
 
 namespace Maxfire.Web.Mvc
 {
-	/////////////////////////
+    /////////////////////////
 	// PRG pattern support //
 	/////////////////////////
 
 	public abstract class ModelStateTempDataTransfer : ActionFilterAttribute
 	{
-		public static NamedValue<ModelStateDictionary> GetNamedValue(Func<TempDataDictionary> tempDataAccessor)
+		public static NamedValue<ModelStateDictionary> GetNamedValue(Func<IDictionary<string, object>> tempDataAccessor)
 		{
 			return new NamedValue<ModelStateDictionary>("__modelStateTempDataTransfer", tempDataAccessor);
 		}
@@ -25,7 +26,7 @@ namespace Maxfire.Web.Mvc
 			if (filterContext.Controller.ViewData.ModelState.IsInvalid() &&
 				((filterContext.Result is RedirectResult) || (filterContext.Result is RedirectToRouteResult)))
 			{
-				var namedTempData = GetNamedValue(() => filterContext.Controller.TempData);
+				var namedTempData = GetNamedValue(() => new PeekReadingTempDateDictionary(filterContext.Controller.TempData));
 				if (namedTempData.Value == null)
 				{
 					// only export model state once (controller might have done it already)
@@ -42,7 +43,7 @@ namespace Maxfire.Web.Mvc
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			var modelStateInTempData = GetNamedValue(() => filterContext.Controller.TempData);
+			var modelStateInTempData = GetNamedValue(() => new PeekReadingTempDateDictionary(filterContext.Controller.TempData));
 			if (modelStateInTempData.Value != null)
 			{
 				_originalModelState = DeepCopy(filterContext.Controller.ViewData.ModelState);
@@ -61,7 +62,7 @@ namespace Maxfire.Web.Mvc
 					// ...then we restore the modelstate
 					filterContext.Controller.ViewData.ModelState.Clear();
 					filterContext.Controller.ViewData.ModelState.Merge(_originalModelState);
-					// ...and remove the temp data
+					// ...and remove the temp data (this would have been done automagically by ASP.NET anyway)
 					GetNamedValue(() => filterContext.Controller.TempData).Delete();
 				}
 			}

@@ -42,6 +42,7 @@
     <Compile Include="BetterDefaultModelBinder.cs" />
     <Compile Include="DynamicNameValueCollection.cs" />
     <Compile Include="NonRequiredAttribute.cs" />
+    <Compile Include="PeekReadingTempDateDictionary.cs" />
     <Compile Include="ValueProviders\BetterChildActionValueProvider.cs" />
     <Compile Include="ValueProviders\BetterDictionaryValueProvider.cs" />
     <Compile Include="ValueProviders\BetterFormValueProvider.cs" />

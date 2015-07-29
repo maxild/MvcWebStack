@@ -77,7 +77,7 @@ namespace Maxfire.Web.Mvc
 		private NamedValue<ModelStateDictionary> _modelStateToTempDateHelper;
 		private NamedValue<ModelStateDictionary> ModelStateInTempData
 		{
-			get { return _modelStateToTempDateHelper ?? (_modelStateToTempDateHelper = ModelStateTempDataTransfer.GetNamedValue(() => TempData)); }
+			get { return _modelStateToTempDateHelper ?? (_modelStateToTempDateHelper = ModelStateTempDataTransfer.GetNamedValue(() => new PeekReadingTempDateDictionary(TempData))); }
 		}
 
 		public void ExportModelStateToTempData()
