@@ -6,7 +6,16 @@ namespace Maxfire.Web.Mvc
 {
 	public class BetterDefaultModelBinder : ExtensibleDefaultModelBinder
 	{
-		protected override object BindModelCore(ControllerContext controllerContext, ModelBindingContext bindingContext)
+	    public BetterDefaultModelBinder() 
+	    {
+	    }
+
+        public BetterDefaultModelBinder(IModelBinderErrorMessageProvider errorMessageProvider)
+            : base(errorMessageProvider)
+        {
+        }
+
+	    protected override object BindModelCore(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
 			// Because it is impossible to decide up front if any keys are matching the properties of 
 			// a complex model type, if FallbackToEmptyPrefix == true have resulted in an empty 

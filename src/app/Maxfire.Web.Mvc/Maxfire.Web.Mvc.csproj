@@ -41,8 +41,11 @@
     <Compile Include="ActionFilterExtensions.cs" />
     <Compile Include="BetterDefaultModelBinder.cs" />
     <Compile Include="DynamicNameValueCollection.cs" />
+    <Compile Include="IModelBinderErrorMessageProvider.cs" />
+    <Compile Include="DefaultModelBinderErrorMessageProvider.cs" />
     <Compile Include="NonRequiredAttribute.cs" />
     <Compile Include="PeekReadingTempDateDictionary.cs" />
+    <Compile Include="ResourceManagerModelBinderErrorMessageProvider.cs" />
     <Compile Include="ValueProviders\BetterChildActionValueProvider.cs" />
     <Compile Include="ValueProviders\BetterDictionaryValueProvider.cs" />
     <Compile Include="ValueProviders\BetterFormValueProvider.cs" />

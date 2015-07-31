@@ -12,23 +12,27 @@ using Maxfire.Core.Extensions;
 
 namespace Maxfire.Web.Mvc
 {
-	/// <summary>
+    /// <summary>
 	/// An extensible duplicate of the MVC frameworks own DefaultModelBinder
 	/// </summary>
 	public class ExtensibleDefaultModelBinder : IModelBinder
 	{
-		private static string _resourceClassKey;
-		public static string ResourceClassKey
-		{
-			get { return _resourceClassKey ?? String.Empty; }
-			set { _resourceClassKey = value; }
-		}
+        public ExtensibleDefaultModelBinder() : this(null)
+        {
+        }
 
-		private static void AddValueRequiredMessageToModelState(ControllerContext controllerContext, ModelStateDictionary modelState, string modelStateKey, Type elementType, object value)
+        public ExtensibleDefaultModelBinder(IModelBinderErrorMessageProvider errorMessageProvider)
+        {
+            ErrorMessageProvider = errorMessageProvider ?? new DefaultModelBinderErrorMessageProvider();
+        }
+
+        public IModelBinderErrorMessageProvider ErrorMessageProvider { get; private set; }
+
+		private void AddValueRequiredMessageToModelState(ControllerContext controllerContext, ModelStateDictionary modelState, string modelStateKey, Type elementType, object value)
 		{
 			if (value == null && !elementType.AllowsNullValue() && modelState.IsValidField(modelStateKey))
 			{
-				modelState.AddModelError(modelStateKey, GetValueRequiredResource(controllerContext));
+				modelState.AddModelError(modelStateKey, ErrorMessageProvider.GetValueRequiredMessage(controllerContext));
 			}
 		}
 
@@ -210,7 +214,7 @@ namespace Maxfire.Web.Mvc
 						if (exception is FormatException)
 						{
 							string displayName = propertyMetadata.GetDisplayName();
-							string errorMessageTemplate = GetValueInvalidResource(controllerContext);
+							string errorMessageTemplate = ErrorMessageProvider.GetValueInvalidMessage(controllerContext);
 							string errorMessage = String.Format(CultureInfo.CurrentCulture, errorMessageTemplate, modelState.Value.AttemptedValue, displayName);
 							modelState.Errors.Remove(error);
 							modelState.Errors.Add(errorMessage);
@@ -412,24 +416,7 @@ namespace Maxfire.Web.Mvc
 			return TypeDescriptor.GetProvider(bindingContext.ModelType).GetTypeDescriptor(bindingContext.ModelType);
 		}
 
-		private static string GetUserResourceString(ControllerContext controllerContext, string resourceName)
-		{
-			if (ResourceClassKey.IsEmpty() || controllerContext == null || controllerContext.HttpContext == null)
-				return null;
-
-			return controllerContext.HttpContext.GetGlobalResourceObject(ResourceClassKey, resourceName, CultureInfo.CurrentUICulture) as string;
-		}
-
-		private static string GetValueRequiredResource(ControllerContext controllerContext)
-		{
-			return GetUserResourceString(controllerContext, "PropertyValueRequired") ?? "A value is required.";
-		}
-
-		private static string GetValueInvalidResource(ControllerContext controllerContext)
-		{
-			return GetUserResourceString(controllerContext, "PropertyValueInvalid") ?? "The value '{0}' is not valid for {1}.";
-		}
-
+		
 		private static IEnumerable<string> GetZeroBasedIndexes()
 		{
 			int i = 0;
@@ -531,7 +518,7 @@ namespace Maxfire.Web.Mvc
 			// the default "A value is required." message.
 			if (isNullValueOnNonNullableType && bindingContext.ModelState.IsValidField(modelStateKey))
 			{
-				bindingContext.ModelState.AddModelError(modelStateKey, GetValueRequiredResource(controllerContext));
+				bindingContext.ModelState.AddModelError(modelStateKey, ErrorMessageProvider.GetValueRequiredMessage(controllerContext));
 			}
 		}
 
