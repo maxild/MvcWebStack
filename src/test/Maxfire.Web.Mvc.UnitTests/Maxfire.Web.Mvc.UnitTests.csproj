@@ -121,7 +121,7 @@
       <Name>Maxfire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
-      <Project>{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}</Project>
+      <Project>{ec28d48b-21b9-4f6d-838b-89dee1f0136c}</Project>
       <Name>Maxfire.TestCommons</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">

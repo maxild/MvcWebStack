@@ -81,13 +81,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
-      <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
-      <Name>Maxfire.Core</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">
+      <Project>{af0c4791-de9c-4353-b344-084e9b0c1770}</Project>
+      <Name>Maxfire.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
