@@ -92,7 +92,7 @@ task compile -depends clean, restore, commonAssemblyInfo {
 
     Write-Host "Compiling '$sln_file' with '$configuration' configuration" -ForegroundColor Yellow
 
-    exec { msbuild /t:Clean /t:Build /p:OutDir=$outdir /p:Configuration=$configuration /v:q /tv:${tools_version} /p:VisualStudioVersion=${tools_version} /maxcpucount "$sln_file" }
+    exec { msbuild /t:Clean /t:Build /p:OutDir=$outdir /p:Configuration=$configuration /p:TreatWarningsAsErrors=true /v:minimal /tv:${tools_version} /p:VisualStudioVersion=${tools_version} /maxcpucount "$sln_file" }
 
     # TODO: Use SourceLink.exe
     # if ($commit -ne "0000000000000000000000000000000000000000") {
