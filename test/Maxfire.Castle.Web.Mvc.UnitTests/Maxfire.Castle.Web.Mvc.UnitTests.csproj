@@ -58,7 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\app\Maxfire.Castle.Web.Mvc\Maxfire.Castle.Web.Mvc.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Castle.Web.Mvc\Maxfire.Castle.Web.Mvc.csproj">
       <Project>{3D2A9818-C4CA-446F-8CC8-BA631B706FB3}</Project>
       <Name>Maxfire.Castle.Web.Mvc</Name>
     </ProjectReference>

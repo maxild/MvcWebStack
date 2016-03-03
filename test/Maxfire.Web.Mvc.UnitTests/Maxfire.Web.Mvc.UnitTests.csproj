@@ -125,19 +125,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\app\Maxfire.Core\Maxfire.Core.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{AF0C4791-DE9C-4353-B344-084E9B0C1770}</Project>
       <Name>Maxfire.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
       <Project>{ec28d48b-21b9-4f6d-838b-89dee1f0136c}</Project>
       <Name>Maxfire.TestCommons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\app\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">
       <Project>{34cf0f0f-d7d4-4f77-b73c-02cf89b50fc7}</Project>
       <Name>Maxfire.Web.Mvc.TestCommons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\app\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj">
       <Project>{1C61E0E9-B998-4894-9DA9-21561F341FE1}</Project>
       <Name>Maxfire.Web.Mvc</Name>
     </ProjectReference>

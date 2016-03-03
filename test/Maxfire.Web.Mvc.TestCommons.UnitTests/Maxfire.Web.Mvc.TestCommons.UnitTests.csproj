@@ -41,7 +41,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\app\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj">
       <Project>{34CF0F0F-D7D4-4F77-B73C-02CF89B50FC7}</Project>
       <Name>Maxfire.Web.Mvc.TestCommons</Name>
     </ProjectReference>

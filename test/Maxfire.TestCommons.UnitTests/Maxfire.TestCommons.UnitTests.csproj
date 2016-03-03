@@ -43,11 +43,11 @@
     <Compile Include="Specs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\app\Maxfire.Core\Maxfire.Core.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Core\Maxfire.Core.csproj">
       <Project>{af0c4791-de9c-4353-b344-084e9b0c1770}</Project>
       <Name>Maxfire.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.TestCommons\Maxfire.TestCommons.csproj">
       <Project>{ec28d48b-21b9-4f6d-838b-89dee1f0136c}</Project>
       <Name>Maxfire.TestCommons</Name>
     </ProjectReference>

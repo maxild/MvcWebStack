@@ -38,7 +38,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\app\Maxfire.Spark.Web.Mvc\Maxfire.Spark.Web.Mvc.csproj">
+    <ProjectReference Include="..\..\src\Maxfire.Spark.Web.Mvc\Maxfire.Spark.Web.Mvc.csproj">
       <Project>{B0B0A7D7-924F-4E58-90A5-69EF4776AAD8}</Project>
       <Name>Maxfire.Spark.Web.Mvc</Name>
     </ProjectReference>
