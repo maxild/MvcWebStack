@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
+using Maxfire.Prelude;
 
 namespace Maxfire.Web.Mvc
 {
@@ -15,23 +16,23 @@ namespace Maxfire.Web.Mvc
 		public static IEnumerable<TextValuePair> FromEnumeration(Type enumerationType)
 		{
 			return new OptionsAdapter<Enumeration>(
-				Enumeration.GetAll(enumerationType).Cast<Enumeration>(), 
+				Enumeration.GetAll(enumerationType),
 				item => item.Text, item => item.Name);
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumerationValues(Type enumerationType)
 		{
 			return new OptionsAdapter<Enumeration>(
-				Enumeration.GetAll(enumerationType).Cast<Enumeration>(),
+				Enumeration.GetAll(enumerationType),
 				item => item.Text, item => item.Value.ToString());
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumeration<TEnumeration>(params TEnumeration[] items)
-			where TEnumeration : Enumeration
+			where TEnumeration : Enumeration<TEnumeration>
 		{
 			return new OptionsAdapter<TEnumeration>(
-				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items , 
-				item => item.Text, 
+				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items,
+				item => item.Text,
 				item => item.Name);
 		}
 
@@ -42,11 +43,11 @@ namespace Maxfire.Web.Mvc
 		}
 
 		public static IEnumerable<TextValuePair> FromEnumerationValues<TEnumeration>(params TEnumeration[] items)
-			where TEnumeration : Enumeration
+			where TEnumeration : Enumeration<TEnumeration>
 		{
 			return new OptionsAdapter<TEnumeration>(
-				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items, 
-				item => item.Text, 
+				items.IsEmpty() ? Enumeration.GetAll<TEnumeration>() : items,
+				item => item.Text,
 				item => item.Value.ToString());
 		}
 
@@ -132,8 +133,8 @@ namespace Maxfire.Web.Mvc
 
 		public static IEnumerable<TextValuePair> FromDictionary<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> items)
 		{
-			return new OptionsAdapter<KeyValuePair<TKey, TValue>>(items, 
-				kvp => kvp.Key.ToNullSafeString(CultureInfo.CurrentCulture), 
+			return new OptionsAdapter<KeyValuePair<TKey, TValue>>(items,
+				kvp => kvp.Key.ToNullSafeString(CultureInfo.CurrentCulture),
 				kvp => kvp.Value.ToNullSafeString(CultureInfo.CurrentCulture));
 		}
 
@@ -144,8 +145,8 @@ namespace Maxfire.Web.Mvc
 
 		public static IEnumerable<TextValuePair> FromDictionary(params Func<string, string>[] items)
 		{
-			return new OptionsAdapter<Func<string, string>>(items, 
-				func => func.Method.GetParameters()[0].Name, 
+			return new OptionsAdapter<Func<string, string>>(items,
+				func => func.Method.GetParameters()[0].Name,
 				func => func(null));
 		}
 
@@ -192,8 +193,8 @@ namespace Maxfire.Web.Mvc
 
 		public OptionsAdapter(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector, Func<TItem, bool> predicate = null)
 		{
-			if (textSelector == null) throw new ArgumentNullException("textSelector");
-			if (valueSelector == null) throw new ArgumentNullException("valueSelector");
+			if (textSelector == null) throw new ArgumentNullException(nameof(textSelector));
+			if (valueSelector == null) throw new ArgumentNullException(nameof(valueSelector));
 			_items = items;
 			_textSelector = textSelector;
 			_valueSelector = valueSelector;
@@ -211,7 +212,7 @@ namespace Maxfire.Web.Mvc
 			{
 				return Enumerable.Empty<TextValuePair>();
 			}
-			IEnumerable<TextValuePair> textValuePairs = _predicate != null ? 
+			IEnumerable<TextValuePair> textValuePairs = _predicate != null ?
 				_items
 					.Where(_predicate)
 					.Select(item => new TextValuePair(_textSelector(item), _valueSelector(item))) :

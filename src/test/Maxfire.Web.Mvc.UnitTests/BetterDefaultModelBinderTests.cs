@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Web.Mvc;
-using Maxfire.TestCommons;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.ValueProviders;
 using Xunit;
@@ -23,7 +22,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					{"foo.index", "4"},
 					{"foo.index", "6"}
 				};
-			
+
 			var coll = new List<int>();
 			var controllerContext = new ControllerContext();
 			var bindingContext = new ModelBindingContext
@@ -74,7 +73,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
 			// Assert
-			AssertEx.Null(returnedModel);
+			Assert.Null(returnedModel);
 		}
 
 		[Fact]
@@ -95,7 +94,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
 			// Assert
-			AssertEx.Null(returnedModel);
+			Assert.Null(returnedModel);
 		}
 
 		[Fact]
@@ -116,7 +115,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			object returnedModel = binder.BindModel(new ControllerContext(), bindingContext);
 
 			// Assert
-			AssertEx.NotNull(returnedModel);
+			Assert.NotNull(returnedModel);
 		}
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -275,7 +274,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				object actual = _routeData.Values[key];
 				if (actual == null)
 				{
-					throw new AssertException(string.Format("Cannot verify route value, because the key '{0}' failed to be recognized.", key));
+					throw new XunitException($"Cannot verify route value, because the key '{key}' failed to be recognized.");
 				}
 				string actualValue = TypeExtensions.ConvertSimpleType<string>(CultureInfo.InvariantCulture, actual);
 				if (DoesNotMatch(value, actualValue))
@@ -397,40 +396,36 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 	[Serializable]
 	public class ControllerNotMatchedException : RouteValueNotMatchedException
 	{
-		public ControllerNotMatchedException(string expected, string actual)
-			: base("controller", expected, actual) { }
-
-		protected ControllerNotMatchedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
+	    public ControllerNotMatchedException(string expected, string actual)
+	        : base("controller", expected, actual)
+	    {
+	    }
 	}
 
 	[Serializable]
 	public class ActionNotMatchedException : RouteValueNotMatchedException
 	{
-		public ActionNotMatchedException(string expected, string actual)
-			: base("action", expected, actual) { }
-
-		protected ActionNotMatchedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
+	    public ActionNotMatchedException(string expected, string actual)
+	        : base("action", expected, actual)
+	    {
+	    }
 	}
 
 	[Serializable]
 	public class RouteValueNotMatchedException : AssertActualExpectedException
 	{
-		public RouteValueNotMatchedException(string name, string expected, string actual)
-			: base(expected, actual, "The '{0}' route value does not match".FormatWith(name)) { }
-
-		protected RouteValueNotMatchedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
+	    public RouteValueNotMatchedException(string name, string expected, string actual)
+	        : base(expected, actual, "The '{0}' route value does not match".FormatWith(name))
+	    {
+	    }
 	}
 
 	[Serializable]
 	public class QueryValueNotMatchedException : AssertActualExpectedException
 	{
-		public QueryValueNotMatchedException(string name, string expected, string actual)
-			: base(expected, actual, "The '{0}' querystring param does not match".FormatWith(name)) { }
-
-		protected QueryValueNotMatchedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) { }
+	    public QueryValueNotMatchedException(string name, string expected, string actual)
+	        : base(expected, actual, "The '{0}' querystring param does not match".FormatWith(name))
+	    {
+	    }
 	}
 }

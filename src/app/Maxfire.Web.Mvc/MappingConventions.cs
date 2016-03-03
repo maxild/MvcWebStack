@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using Maxfire.Core;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude;
 
 namespace Maxfire.Web.Mvc
 {
@@ -15,13 +15,13 @@ namespace Maxfire.Web.Mvc
 
 		public void SetDefaults()
 		{
-			const NumberStyles decimalStyles = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign;
+			const NumberStyles DECIMAL_STYLES = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign;
 
-			const NumberStyles moneyStyles =
+			const NumberStyles MONEY_STYLES =
 				NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite |
 				NumberStyles.AllowTrailingWhite | NumberStyles.AllowThousands;
 
-			const DateTimeStyles dateStyles = DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite;
+			const DateTimeStyles DATE_STYLES = DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite;
 
 			decimal decimalValue;
 			DateTime dateValue;
@@ -30,7 +30,7 @@ namespace Maxfire.Web.Mvc
 			long longValue;
 
 			// See also: http://msdn.microsoft.com/en-us/library/dwhawy9k(VS.95).aspx
-			// If the precision specifier is omitted or zero, the type of the number determines the 
+			// If the precision specifier is omitted or zero, the type of the number determines the
 			// default precision, as indicated by the following list:
 			//
 			// Byte or SByte: 3
@@ -40,33 +40,33 @@ namespace Maxfire.Web.Mvc
 			// UInt64: 20
 			// Single: 7
 			// Double: 15
-			// Decimal: 29 
+			// Decimal: 29
 			//
 
-			ValidateMachineDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), decimalStyles, CultureInfo.InvariantCulture, out decimalValue));
-			ParseMachineDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), decimalStyles, CultureInfo.InvariantCulture));
+			ValidateMachineDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.InvariantCulture, out decimalValue));
+			ParseMachineDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.InvariantCulture));
 
-			// .....The exception to the preceding rule is if the number is a Decimal and 
-			// the precision specifier is omitted. In that case, fixed-point notation is 
+			// .....The exception to the preceding rule is if the number is a Decimal and
+			// the precision specifier is omitted. In that case, fixed-point notation is
 			// always used and trailing zeroes are preserved.
-			// The “G” format with a number means to format that many significant digits. 
-			// Because 29 is the most significant digits that a Decimal can have, this will 
+			// The “G” format with a number means to format that many significant digits.
+			// Because 29 is the most significant digits that a Decimal can have, this will
 			// effectively truncate the trailing zeros without rounding.
 			FormatMachineDecimal = (value => value.ToString("G29", CultureInfo.InvariantCulture));
 
 			// Human readable
-			ValidateDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), decimalStyles, CultureInfo.CurrentCulture, out decimalValue));
-			ParseDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), decimalStyles, CultureInfo.CurrentCulture));
+			ValidateDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture, out decimalValue));
+			ParseDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture));
 			FormatDecimal = (value => value.ToString("G29", CultureInfo.CurrentCulture));
 			FormatDecimalAsPctSats = (value => String.Format("{0:G29} pct.", value * 100.0m));
 
-			ValidateMoney = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), moneyStyles, CultureInfo.CurrentCulture, out decimalValue));
-			ParseMoney = (s => decimal.Parse(s.ToTrimmedNullSafeString(), moneyStyles, CultureInfo.CurrentCulture));
+			ValidateMoney = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture, out decimalValue));
+			ParseMoney = (s => decimal.Parse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture));
 
 			ValidateDate = (s =>
-				DateTime.TryParseExact(s.ToTrimmedNullSafeString(), "dd-MM-yyyy", CultureInfo.CurrentCulture, dateStyles, out dateValue) &&
+				DateTime.TryParseExact(s.ToTrimmedNullSafeString(), "dd-MM-yyyy", CultureInfo.CurrentCulture, DATE_STYLES, out dateValue) &&
 				dateValue.IsDate());
-			ParseDate = (s => DateTime.ParseExact(s.ToTrimmedNullSafeString(), "dd-MM-yyyy", CultureInfo.CurrentCulture, dateStyles));
+			ParseDate = (s => DateTime.ParseExact(s.ToTrimmedNullSafeString(), "dd-MM-yyyy", CultureInfo.CurrentCulture, DATE_STYLES));
 			FormatDate = (value => value.ToString("dd-MM-yyyy"));
 
 			ValidateBoolean = (s => "true".Equals(s, StringComparison.Ordinal) || "false".Equals(s, StringComparison.Ordinal));
@@ -240,7 +240,7 @@ namespace Maxfire.Web.Mvc
 			}
 		}
 
-		public virtual bool ValidateEnumerationOfType<T>(string s) where T : Enumeration
+		public virtual bool ValidateEnumerationOfType<T>(string s) where T : Enumeration<T>
 		{
 			return (Enumeration.FromNameOrDefault<T>(s.ToTrimmedNullSafeString()) != null);
 		}
@@ -250,7 +250,7 @@ namespace Maxfire.Web.Mvc
 			return (Enumeration.FromNameOrDefault(enumerationType, s.ToTrimmedNullSafeString()) != null);
 		}
 
-		public virtual T ParseEnumerationOfType<T>(string s) where T : Enumeration
+		public virtual T ParseEnumerationOfType<T>(string s) where T : Enumeration<T>
 		{
 			return Enumeration.FromName<T>(s.ToTrimmedNullSafeString());
 		}
@@ -259,7 +259,7 @@ namespace Maxfire.Web.Mvc
 		{
 			if (value == null)
 			{
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 
 			return value.Name;

@@ -3,24 +3,18 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.TestCommons.Routes
 {
-	public abstract class RoutesRegisteredBy<TFixture> : RoutesTesterBase, IUseFixture<TFixture> 
+	public abstract class RoutesRegisteredBy<TFixture> : RoutesTesterBase, IClassFixture<TFixture>
 		where TFixture : RoutesFixture, new()
 	{
-		
-		protected override INameValueSerializer NameValueSerializer
-		{
-			get { return Fixture.NameValueSerializer; }
-		}
+	    protected RoutesRegisteredBy(RoutesFixture fixture)
+	    {
+	        Fixture = fixture;
+	    }
 
-		protected override RouteCollection Routes
-		{
-			get { return Fixture.Routes; }
-		}
+	    protected override INameValueSerializer NameValueSerializer => Fixture.NameValueSerializer;
 
-		protected RoutesFixture Fixture { get; set; }
-		void IUseFixture<TFixture>.SetFixture(TFixture fixture)
-		{
-			Fixture = fixture;
-		}
+	    protected override RouteCollection Routes => Fixture.Routes;
+
+	    protected RoutesFixture Fixture { get; }
 	}
 }

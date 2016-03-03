@@ -22,8 +22,8 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 
 			if (actualNumberOfInvalidFields != expectedNumberOfInvalidFields)
 			{
-				throw new AssertException(string.Format("The actual number of invalid fields is {0}, but we expected {1}.", 
-				                                        actualNumberOfInvalidFields, expectedNumberOfInvalidFields));
+				throw new XunitException(
+				    $"The actual number of invalid fields is {actualNumberOfInvalidFields}, but we expected {expectedNumberOfInvalidFields}.");
 			}
 		}
 
@@ -32,8 +32,7 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 			ModelState modelState;
 			if (!modelStateDictionary.TryGetValue(modelName, out modelState))
 			{
-				throw new AssertException(String.Format("The property '{0}' is not contained by the ModelStateDictionary object",
-				                                        modelName));
+				throw new XunitException($"The property '{modelName}' is not contained by the ModelStateDictionary object");
 			}
 			return new ModelStateInvestigator(modelName, modelState);
 		}
@@ -68,52 +67,52 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 
 		public void AndException<T>(string expectedExceptionMessage)
 		{
-			ModelError modelError = getModelError();
+			ModelError modelError = GetModelError();
 			if (modelError.Exception == null)
 			{
-				throw new AssertException(String.Format("The property '{0}' has no exception model error.", _modelName));
+				throw new XunitException($"The property '{_modelName}' has no exception model error.");
 			}
 			if (modelError.Exception.GetType() != typeof(T))
 			{
-				throw new AssertException(String.Format("The exception model error is not of the expected type '{0}'. The actual type is '{1}'.", typeof(T), modelError.Exception.GetType()));
+				throw new XunitException(
+				    $"The exception model error is not of the expected type '{typeof (T)}'. The actual type is '{modelError.Exception.GetType()}'.");
 			}
 			if (expectedExceptionMessage != modelError.Exception.Message)
 			{
-				throw new AssertException(String.Format("The actual Exception.Message '{0}' of property '{1}' is not equal to the expected value: '{2}'",
-				                                        modelError.ErrorMessage, _modelName, expectedExceptionMessage));
+				throw new XunitException(
+				    $"The actual Exception.Message '{modelError.ErrorMessage}' of property '{_modelName}' is not equal to the expected value: '{expectedExceptionMessage}'");
 			}
 		}
 
 		public void AndErrorMessage(string expectedErrorMessage)
 		{
-			ModelError modelError = getModelError();
+			ModelError modelError = GetModelError();
 			if (expectedErrorMessage != modelError.ErrorMessage)
 			{
-				throw new AssertException(String.Format("The actual ErrorMessage '{0}' of property '{1}' is not equal to the expected value: '{2}'",
-				                                        modelError.ErrorMessage, _modelName, expectedErrorMessage));
+				throw new XunitException(
+				    $"The actual ErrorMessage '{modelError.ErrorMessage}' of property '{_modelName}' is not equal to the expected value: '{expectedErrorMessage}'");
 			}
 		}
 
-		private ModelError getModelError()
+		private ModelError GetModelError()
 		{
 			if (_checkAttemptedValue)
 			{
 				if (_modelState.Value == null)
 				{
-					throw new AssertException(
-						String.Format("No ValueProviderResult for the ModelState of '{0}'.", _modelName));
+					throw new XunitException(
+					    $"No ValueProviderResult for the ModelState of '{_modelName}'.");
 				}
 				if (_attemptedValue != _modelState.Value.AttemptedValue)
 				{
-					throw new AssertException(
-						String.Format("The actual AttemptedValue '{0}' of property '{1}' is not as expected '{2}'",
-						              _modelState.Value.AttemptedValue, _modelName, _attemptedValue));
+					throw new XunitException(
+					    $"The actual AttemptedValue '{_modelState.Value.AttemptedValue}' of property '{_modelName}' is not as expected '{_attemptedValue}'");
 				}
 			}
 			ModelError modelError = _modelState.Errors.FirstOrDefault();
 			if (modelError == null)
 			{
-				throw new AssertException(String.Format("The property '{0}' have no errors.", _modelName));
+				throw new XunitException($"The property '{_modelName}' have no errors.");
 			}
 			return modelError;
 		}

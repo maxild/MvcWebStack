@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.ValueProviders;
 using Xunit;
-using Xunit.Extensions;
-using Assert = Maxfire.TestCommons.AssertEx;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
@@ -15,7 +12,7 @@ namespace Maxfire.Web.Mvc.UnitTests
         public void Constructor_GuardClauses()
         {
             // Act & assert
-            Assert.ThrowsArgumentNull(() => new BetterPrefixContainer(null), "values");
+            Assert.Throws<ArgumentNullException>(() => new BetterPrefixContainer(null));
         }
 
         [Fact]
@@ -25,7 +22,7 @@ namespace Maxfire.Web.Mvc.UnitTests
             var container = new BetterPrefixContainer(new string[0]);
 
             // Act & assert
-            Assert.ThrowsArgumentNull(() => container.ContainsPrefix(null), "prefix");
+            Assert.Throws<ArgumentNullException>(() => container.ContainsPrefix(null));
         }
 
         [Fact]

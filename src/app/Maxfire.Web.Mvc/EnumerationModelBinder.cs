@@ -1,11 +1,11 @@
 using System;
 using System.Web.Mvc;
-using Maxfire.Core;
+using Maxfire.Prelude;
 
 namespace Maxfire.Web.Mvc
 {
-	public class EnumerationModelBinder<TEnumeration> : SimpleModelBinder<TEnumeration> 
-		where TEnumeration : Enumeration
+	public class EnumerationModelBinder<TEnumeration> : SimpleModelBinder<TEnumeration>
+		where TEnumeration : Enumeration<TEnumeration>
 	{
 		protected override TEnumeration BindModelCore(ValueProviderResult valueProviderResult, ModelBindingContext bindingContext)
 		{

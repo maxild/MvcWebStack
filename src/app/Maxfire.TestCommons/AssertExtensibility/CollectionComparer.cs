@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Xunit.Sdk;
 
+
 namespace Maxfire.TestCommons.AssertExtensibility
 {
 	public class CollectionComparer<T> : IComparer<IEnumerable<T>>
@@ -79,7 +80,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 
 				if (comparable == null)
 				{
-					throw new AssertException("Cannot compare the two IEnumerable objects, because none of the elements are IComparable");
+					throw new XunitException("Cannot compare the two IEnumerable objects, because none of the elements are IComparable");
 				}
 
 				int result = comparable.CompareTo(other);

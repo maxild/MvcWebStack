@@ -192,6 +192,11 @@
     <Compile Include="ViewDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Maxfire.Prelude.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Maxfire.Prelude.Core.1.0.0-alpha-00020\lib\net451\Maxfire.Prelude.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -233,7 +238,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Maxfire.Core\Maxfire.Core.csproj">

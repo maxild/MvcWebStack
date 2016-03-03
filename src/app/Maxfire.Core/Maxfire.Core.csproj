@@ -44,14 +44,8 @@
     <Compile Include="Collections\RangeIterator.cs" />
     <Compile Include="Collections\RangeIteratorSet.cs" />
     <Compile Include="Collections\ReverseComparer.cs" />
-    <Compile Include="ComparisonOperator.cs" />
     <Compile Include="ComponentModel\DisplayNameAttribute.cs" />
-    <Compile Include="Criterion.cs" />
-    <Compile Include="CriterionSet.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="EntityEnumeration.cs" />
-    <Compile Include="Enumeration.cs" />
-    <Compile Include="EnumerationConverter.cs" />
     <Compile Include="Extensions\BasicExtensions.cs" />
     <Compile Include="Extensions\CastExtenions.cs" />
     <Compile Include="Extensions\DictionaryExtenions.cs" />
@@ -75,7 +69,6 @@
     <Compile Include="Reflection\ExpressionHelper.cs" />
     <Compile Include="Reflection\ExpressionNameVisitor.cs" />
     <Compile Include="Reflection\ReflectionHelper.cs" />
-    <Compile Include="SortOrder.cs" />
     <Compile Include="Specifications\AndSpecification.cs" />
     <Compile Include="Specifications\ISpecification.cs" />
     <Compile Include="Specifications\NotSpecification.cs" />

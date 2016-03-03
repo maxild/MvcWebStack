@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude;
 using Maxfire.Web.Mvc.Html.Extensions;
 using Maxfire.Web.Mvc.Html5;
 

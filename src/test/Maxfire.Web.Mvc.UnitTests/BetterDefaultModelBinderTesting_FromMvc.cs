@@ -9,7 +9,6 @@ using System.Web.Mvc;
 using Moq;
 using Moq.Protected;
 using Xunit;
-using Assert = Maxfire.TestCommons.AssertEx;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
@@ -739,7 +738,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			var binder = new ExtensibleDefaultModelBinder();
 
 			// Act & assert
-			Assert.ThrowsArgumentNull(() => binder.BindModel(new ControllerContext(), null), "bindingContext");
+			Assert.Throws<ArgumentNullException>(() => binder.BindModel(new ControllerContext(), null));
 		}
 
 		[Fact]
