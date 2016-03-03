@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mvc", "Mvc", "{D67CC533-7E7A-4B1D-AE36-296ADAEE7AB4}"
 EndProject
@@ -9,29 +8,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bdd", "Bdd", "{2A36AD1B-853
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{36CFDA1F-AD39-443E-AAA6-B3DA58300660}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc", "src\app\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj", "{1C61E0E9-B998-4894-9DA9-21561F341FE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc", "src\Maxfire.Web.Mvc\Maxfire.Web.Mvc.csproj", "{1C61E0E9-B998-4894-9DA9-21561F341FE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.UnitTests", "src\test\Maxfire.Web.Mvc.UnitTests\Maxfire.Web.Mvc.UnitTests.csproj", "{86D429DF-D70E-45CD-B157-59A0C47FAD96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.UnitTests", "test\Maxfire.Web.Mvc.UnitTests\Maxfire.Web.Mvc.UnitTests.csproj", "{86D429DF-D70E-45CD-B157-59A0C47FAD96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons", "src\app\Maxfire.TestCommons\Maxfire.TestCommons.csproj", "{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons", "src\Maxfire.TestCommons\Maxfire.TestCommons.csproj", "{EC28D48B-21B9-4F6D-838B-89DEE1F0136C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons.UnitTests", "src\test\Maxfire.TestCommons.UnitTests\Maxfire.TestCommons.UnitTests.csproj", "{5BB75E5A-E4E1-4FF4-8291-F93AB692B174}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.TestCommons.UnitTests", "test\Maxfire.TestCommons.UnitTests\Maxfire.TestCommons.UnitTests.csproj", "{5BB75E5A-E4E1-4FF4-8291-F93AB692B174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core", "src\app\Maxfire.Core\Maxfire.Core.csproj", "{AF0C4791-DE9C-4353-B344-084E9B0C1770}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core", "src\Maxfire.Core\Maxfire.Core.csproj", "{AF0C4791-DE9C-4353-B344-084E9B0C1770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core.UnitTests", "src\test\Maxfire.Core.UnitTests\Maxfire.Core.UnitTests.csproj", "{B3335CA1-0B7F-4161-948D-11826EF90381}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Core.UnitTests", "test\Maxfire.Core.UnitTests\Maxfire.Core.UnitTests.csproj", "{B3335CA1-0B7F-4161-948D-11826EF90381}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons", "src\app\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj", "{34CF0F0F-D7D4-4F77-B73C-02CF89B50FC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons", "src\Maxfire.Web.Mvc.TestCommons\Maxfire.Web.Mvc.TestCommons.csproj", "{34CF0F0F-D7D4-4F77-B73C-02CF89B50FC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons.UnitTests", "src\test\Maxfire.Web.Mvc.TestCommons.UnitTests\Maxfire.Web.Mvc.TestCommons.UnitTests.csproj", "{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Web.Mvc.TestCommons.UnitTests", "test\Maxfire.Web.Mvc.TestCommons.UnitTests\Maxfire.Web.Mvc.TestCommons.UnitTests.csproj", "{4CB85773-BAF1-48C2-A88C-58B9C1B280E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Spark.Web.Mvc.UnitTests", "src\test\Maxfire.Spark.Web.Mvc.UnitTests\Maxfire.Spark.Web.Mvc.UnitTests.csproj", "{AC51EA22-1BFD-425A-93F0-68E40A65EFFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Spark.Web.Mvc.UnitTests", "test\Maxfire.Spark.Web.Mvc.UnitTests\Maxfire.Spark.Web.Mvc.UnitTests.csproj", "{AC51EA22-1BFD-425A-93F0-68E40A65EFFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Spark.Web.Mvc", "src\app\Maxfire.Spark.Web.Mvc\Maxfire.Spark.Web.Mvc.csproj", "{B0B0A7D7-924F-4E58-90A5-69EF4776AAD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Spark.Web.Mvc", "src\Maxfire.Spark.Web.Mvc\Maxfire.Spark.Web.Mvc.csproj", "{B0B0A7D7-924F-4E58-90A5-69EF4776AAD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Castle.Web.Mvc", "src\app\Maxfire.Castle.Web.Mvc\Maxfire.Castle.Web.Mvc.csproj", "{3D2A9818-C4CA-446F-8CC8-BA631B706FB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Castle.Web.Mvc", "src\Maxfire.Castle.Web.Mvc\Maxfire.Castle.Web.Mvc.csproj", "{3D2A9818-C4CA-446F-8CC8-BA631B706FB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Castle.Web.Mvc.UnitTests", "src\test\Maxfire.Castle.Web.Mvc.UnitTests\Maxfire.Castle.Web.Mvc.UnitTests.csproj", "{C674A651-8B6C-4830-BB12-021F35FA1803}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maxfire.Castle.Web.Mvc.UnitTests", "test\Maxfire.Castle.Web.Mvc.UnitTests\Maxfire.Castle.Web.Mvc.UnitTests.csproj", "{C674A651-8B6C-4830-BB12-021F35FA1803}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7A72DE84-1DE2-4EB8-884C-45ECC15BAD4B}"
 	ProjectSection(SolutionItems) = preProject

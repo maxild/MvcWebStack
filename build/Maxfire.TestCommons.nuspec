@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Maxfire.TestCommons</id>
+    <version>${version}</version>
+    <title>Maxfire xUnit.net Extensions</title>
+    <authors>Morten Maxild</authors>
+    <owners>Morten Maxild</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Maxfire Webstack TestCommons Library contains a bunch of xUnit.net Extensions.</description>
+    <copyright>Copyright Morten Maxild 2009-2016. All rights reserved.</copyright>
+    <releaseNotes>This is a prerelease.</releaseNotes>
+    <tags>maxfire xunit</tags>
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="Maxfire.Core" version="${version}" />
+        <dependency id="xunit" version="${version}" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\artifacts\Maxfire.TestCommons.dll" target="lib\net452" />
+    <file src="..\artifacts\Maxfire.TestCommons.pdb" target="lib\net452" />
+  </files>
+</package>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Maxfire.Castle.Web.Mvc</id>
+    <version>${version}</version>
+    <title>Maxfire ASP.NET MVC Castle IoC Extensions</title>
+    <authors>Morten Maxild</authors>
+    <owners>Morten Maxild</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Maxfire Webstack MVC Library contains a bunch of ASP.NET MVC Castle IoC Extensions.</description>
+    <copyright>Copyright Morten Maxild 2009-2016. All rights reserved.</copyright>
+    <releaseNotes>This is a prerelease.</releaseNotes>
+    <tags>maxfire mvc</tags>
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="Maxfire.Core" version="${version}" />
+        <dependency id="Maxfire.Web.Mvc" version="${version}" />
+        <dependency id="Castle.Core" version="${version}" />
+        <dependency id="Castle.Windsor" version="${version}" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\artifacts\Maxfire.Castle.Web.Mvc.dll" target="lib\net452" />
+    <file src="..\artifacts\Maxfire.Castle.Web.Mvc.pdb" target="lib\net452" />
+  </files>
+</package>
