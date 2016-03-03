@@ -136,11 +136,12 @@ task pack -depends compile {
 
     # Find dependency versions
     $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
-    $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
     $mvcVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Microsoft.AspNet.Mvc'
     $sparkVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Spark.Web.Mvc") "packages.config") 'Spark.Web.Mvc4'
     $castleCoreVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Core'
     $castleWindsorVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Windsor'
+    $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
+    $rhinomocksVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc.TestCommons") "packages.config") 'RhinoMocks'
 
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.
@@ -157,9 +158,6 @@ task pack -depends compile {
             if ($_.Node.id -eq 'Maxfire.Prelude.Core') {
                 $_.Node.version = $preludeVersion
             }
-            if ($_.Node.id -eq 'xunit') {
-                $_.Node.version = $xunitVersion
-            }
             if ($_.Node.id -eq 'Microsoft.AspNet.Mvc') {
                 $_.Node.version = $mvcVersion
             }
@@ -171,6 +169,12 @@ task pack -depends compile {
             }
             if ($_.Node.id -eq 'Castle.Windsor') {
                 $_.Node.version = $castleWindsorVersion
+            }
+            if ($_.Node.id -eq 'xunit') {
+                $_.Node.version = $xunitVersion
+            }
+            if ($_.Node.id -eq 'RhinoMocks') {
+                $_.Node.version = $rhinomocksVersion
             }
         }
         $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)

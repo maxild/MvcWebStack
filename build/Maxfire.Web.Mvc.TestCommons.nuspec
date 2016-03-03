@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Maxfire.Web.Mvc.TestCommons</id>
+    <version>${version}</version>
+    <title>Maxfire ASP.NET MVC TestCommons (xUnit.net/RhinoMocks based) Extensions</title>
+    <authors>Morten Maxild</authors>
+    <owners>Morten Maxild</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Maxfire Webstack ASP.NET MVC TestCommons Library contains a bunch of xUnit.net/RhinoMocks based Extensions.</description>
+    <copyright>Copyright Morten Maxild 2009-2016. All rights reserved.</copyright>
+    <releaseNotes>This is a prerelease.</releaseNotes>
+    <tags>maxfire xunit rhinomocks</tags>
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="Maxfire.Core" version="${version}" />
+        <dependency id="Maxfire.TestCommons" version="${version}" />
+        <dependency id="Maxfire.Web.Mvc" version="${version}" />
+        <dependency id="xunit" version="${version}" />
+        <dependency id="RhinoMocks" version="${version}" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\artifacts\Maxfire.Web.Mvc.TestCommons.dll" target="lib\net452" />
+    <file src="..\artifacts\Maxfire.Web.Mvc.TestCommons.pdb" target="lib\net452" />
+  </files>
+</package>
