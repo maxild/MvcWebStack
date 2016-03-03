@@ -138,6 +138,9 @@ task pack -depends compile {
     $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
     $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
     $mvcVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Microsoft.AspNet.Mvc'
+    $sparkVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Spark.Web.Mvc") "packages.config") 'Spark.Web.Mvc4'
+    $castleCoreVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Core'
+    $castleWindsorVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Windsor'
 
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.
@@ -146,9 +149,11 @@ task pack -depends compile {
         $nuspec = [xml](Get-Content $_.FullName)
         $nuspec.package.metadata.version = $global:pkgVersion
         $nuspec | Select-Xml '//dependency' | %{
+            # Internal package versions
             if (($_.Node.id.StartsWith('Maxfire')) -and (-not $_.Node.id.StartsWith('Maxfire.Prelude'))) {
                 $_.Node.version = $global:pkgVersion
             }
+            # External package versions
             if ($_.Node.id -eq 'Maxfire.Prelude.Core') {
                 $_.Node.version = $preludeVersion
             }
@@ -157,6 +162,15 @@ task pack -depends compile {
             }
             if ($_.Node.id -eq 'Microsoft.AspNet.Mvc') {
                 $_.Node.version = $mvcVersion
+            }
+            if ($_.Node.id.StartsWith('Spark')) {
+                $_.Node.version = $sparkVersion
+            }
+            if ($_.Node.id -eq 'Castle.Core') {
+                $_.Node.version = $castleCoreVersion
+            }
+            if ($_.Node.id -eq 'Castle.Windsor') {
+                $_.Node.version = $castleWindsorVersion
             }
         }
         $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)
