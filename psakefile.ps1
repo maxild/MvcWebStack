@@ -134,17 +134,10 @@ task commonAssemblyInfo -depends resolveVersions {
 
 task pack -depends compile {
 
-    $packagesConfigPath = join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config"
-    $dependencies = [xml](Get-Content  $packagesConfigPath)
-    $dependencies | Select-Xml '//package' | %{
-        if ($_.Node.id -eq 'xunit') {
-            $xunitVersion = $_.Node.version
-        }
-    }
-
-    if (-not $xunitVersion) {
-        throw "Could not resolve the version of the xunit dependency."
-    }
+    # Find dependency versions
+    $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
+    $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
+    $mvcVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Microsoft.AspNet.Mvc'
 
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.
@@ -156,14 +149,36 @@ task pack -depends compile {
             if (($_.Node.id.StartsWith('Maxfire')) -and (-not $_.Node.id.StartsWith('Maxfire.Prelude'))) {
                 $_.Node.version = $global:pkgVersion
             }
+            if ($_.Node.id -eq 'Maxfire.Prelude.Core') {
+                $_.Node.version = $preludeVersion
+            }
             if ($_.Node.id -eq 'xunit') {
                 $_.Node.version = $xunitVersion
+            }
+            if ($_.Node.id -eq 'Microsoft.AspNet.Mvc') {
+                $_.Node.version = $mvcVersion
             }
         }
         $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)
         $nuspec.Save($nuspecFilename)
         exec { & $base_dir\.nuget\Nuget.exe pack -OutputDirectory $artifacts_dir $nuspecFilename }
     }
+}
+
+function find-dependencyVersion($packagesConfigPath, $packageId) {
+
+    $dependencies = [xml](Get-Content  $packagesConfigPath)
+    $dependencies | Select-Xml '//package' | %{
+        if ($_.Node.id -eq $packageId) {
+            $packageVersion = $_.Node.version
+        }
+    }
+
+    if (-not $packageVersion) {
+        throw "Could not resolve the version of the $packageId dependency."
+    }
+
+    return $packageVersion
 }
 
 function global:create-commonAssemblyInfo($commit, $filename)

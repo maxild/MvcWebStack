@@ -62,7 +62,7 @@ Install-PSake
 Create-BuildEnvironment
 
 # right now it is hardcoded to full task
-.\packages\psake\tools\psake.ps1 .\psakefile.ps1 full -properties @{configuration=$Configuration}
+.\packages\psake\tools\psake.ps1 .\psakefile.ps1 pack -properties @{configuration=$Configuration}
 
 # report success or failure
 if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }
