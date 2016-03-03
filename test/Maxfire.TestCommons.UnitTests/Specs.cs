@@ -31,7 +31,7 @@ namespace Maxfire.TestCommons.UnitTests
 
 		protected override StopWatch Establish_context()
 		{
-			_timer = CreateDependency<ITimer>();
+		    _timer = MockRepository.GenerateMock<ITimer>();
 
 			_timer.Stub(x => x.Start(null)).IgnoreArguments().Return(true);
 
