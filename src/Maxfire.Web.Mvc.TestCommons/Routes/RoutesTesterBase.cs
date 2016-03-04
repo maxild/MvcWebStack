@@ -306,7 +306,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 				var routeData = routes.GetRouteData(context);
 				var queryData = context.Request.QueryString;
 
-				Assert.True(routeData != null, String.Format("The url '{0}' was not recognized by any routes.", url));
+				Assert.True(routeData != null, string.Format("The url '{0}' was not recognized by any routes.", url));
 				
 				return new RecognizePathResult { RouteData = routeData, QueryData = queryData };
 			}

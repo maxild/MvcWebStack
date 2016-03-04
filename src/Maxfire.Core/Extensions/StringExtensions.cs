@@ -32,12 +32,12 @@ namespace Maxfire.Core.Extensions
 
 		public static bool IsEmpty(this string stringValue)
 		{
-			return String.IsNullOrEmpty(stringValue);
+			return string.IsNullOrEmpty(stringValue);
 		}
 
 		public static bool IsNotEmpty(this string stringValue)
 		{
-			return !String.IsNullOrEmpty(stringValue);
+			return !string.IsNullOrEmpty(stringValue);
 		}
 
 		public static string UpperCaseFirstWord(this string s)
@@ -55,7 +55,7 @@ namespace Maxfire.Core.Extensions
 		public static string UpperCaseWords(this string s)
 		{
 			if (s.IsEmpty()) return s;
-			return s.ToCharArray().Aggregate(String.Empty,
+			return s.ToCharArray().Aggregate(string.Empty,
 					(working, next) =>
 					working.Length == 0 && next != ' ' ? next.ToString().ToUpper() : (
 							working.EndsWith(" ") ? working + next.ToString().ToUpper() :
@@ -67,7 +67,7 @@ namespace Maxfire.Core.Extensions
 		public static string LowerCaseWords(this string s)
 		{
 			if (s.IsEmpty()) return s;
-			return s.ToCharArray().Aggregate(String.Empty,
+			return s.ToCharArray().Aggregate(string.Empty,
 					(working, next) =>
 					working.Length == 0 && next != ' ' ? next.ToString().ToLower() : (
 							working.EndsWith(" ") ? working + next.ToString().ToLower() :

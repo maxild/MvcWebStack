@@ -41,7 +41,7 @@ namespace Maxfire.Web.Mvc.Html
 		{
 			string labelText = htmlHelper.DisplayNameFor(expression);
 			
-			return String.IsNullOrEmpty(labelText) ? 
+			return string.IsNullOrEmpty(labelText) ? 
 				MvcHtmlString.Empty : 
 				MvcHtmlString.Create(LegendHelper(labelText, htmlAttributes));
 		}
@@ -187,7 +187,7 @@ namespace Maxfire.Web.Mvc.Html
 
 			if (optionLabel != null)
 			{
-				sb.AppendLine(OptionHelper(new TextValuePair(optionLabel, String.Empty), nameValueSerializer));
+				sb.AppendLine(OptionHelper(new TextValuePair(optionLabel, string.Empty), nameValueSerializer));
 			}
 
 			if (options != null)
@@ -262,7 +262,7 @@ namespace Maxfire.Web.Mvc.Html
 
 		private static IDictionary<string, object> GetIdExtendedHtmlAttributes(this IDictionary<string, object> htmlAttributes, string id)
 		{
-			if (!String.IsNullOrEmpty(id))
+			if (!string.IsNullOrEmpty(id))
 			{
 				// We do not want to mutate htmlAttributes (no side-effects)
 				htmlAttributes = htmlAttributes.Concat(new Dictionary<string, object> { { "id", id } })

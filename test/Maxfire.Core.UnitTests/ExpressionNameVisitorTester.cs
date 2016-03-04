@@ -236,7 +236,7 @@ namespace Maxfire.Core.UnitTests
 			Assert.Equal("StringProperty", ExpressionHelper.GetExpressionText(Lambda<object, string>(m => Model.StringProperty)));
 
 			FooModel mOdeL = null;
-			Assert.Equal(String.Empty, ExpressionHelper.GetExpressionText(Lambda<object, FooModel>(m => mOdeL)));
+			Assert.Equal(string.Empty, ExpressionHelper.GetExpressionText(Lambda<object, FooModel>(m => mOdeL)));
 			Assert.Equal("StringProperty", ExpressionHelper.GetExpressionText(Lambda<object, string>(m => mOdeL.StringProperty)));
 		}
 

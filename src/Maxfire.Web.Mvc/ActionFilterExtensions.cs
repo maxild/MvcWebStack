@@ -16,7 +16,7 @@ namespace Maxfire.Web.Mvc
 			ParameterDescriptor parameterDescriptor = filterContext.ActionDescriptor.GetParameters()
 				.FirstOrDefault(x => x.ParameterType == parameterType);
 
-			return parameterDescriptor != null ? parameterDescriptor.BindingInfo.Prefix : String.Empty;
+			return parameterDescriptor != null ? parameterDescriptor.BindingInfo.Prefix : string.Empty;
 		}
 
 		public static string GetBindingPrefixOfParameterWithType<TParameter>(this ActionExecutingContext filterContext)

@@ -1468,7 +1468,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			var helper = new TestableExtensibleDefaultModelBinder();
 
 			// Act
-			string newName = helper.PublicCreateSubPropertyName(String.Empty, "someProperty");
+			string newName = helper.PublicCreateSubPropertyName(string.Empty, "someProperty");
 
 			// Assert
 			Assert.Equal("someProperty", newName);
@@ -2215,7 +2215,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 		//	private static string AppendCultureName(string value, CultureInfo culture)
 		//	{
-		//		string cultureName = (!String.IsNullOrEmpty(culture.Name)) ? culture.Name : culture.ThreeLetterWindowsLanguageName;
+		//		string cultureName = (!string.IsNullOrEmpty(culture.Name)) ? culture.Name : culture.ThreeLetterWindowsLanguageName;
 		//		return value + " (" + cultureName + ")";
 		//	}
 		//}
@@ -2384,7 +2384,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["NoAttribute"];
 
 			// Act
-			object result = binder.GetPropertyValue("NoAttribute", String.Empty);
+			object result = binder.GetPropertyValue("NoAttribute", string.Empty);
 
 			// Assert
 			Assert.Null(result);
@@ -2398,10 +2398,10 @@ namespace Maxfire.Web.Mvc.UnitTests
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithoutConversion"];
 
 			// Act
-			object result = binder.GetPropertyValue("AttributeWithoutConversion", String.Empty);
+			object result = binder.GetPropertyValue("AttributeWithoutConversion", string.Empty);
 
 			// Assert
-			Assert.Equal(String.Empty, result);
+			Assert.Equal(string.Empty, result);
 		}
 
 		[Fact]
@@ -2412,7 +2412,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			binder.Context.ModelMetadata = binder.Context.PropertyMetadata["AttributeWithConversion"];
 
 			// Act
-			object result = binder.GetPropertyValue("AttributeWithConversion", String.Empty);
+			object result = binder.GetPropertyValue("AttributeWithConversion", string.Empty);
 
 			// Assert
 			Assert.Null(result);
@@ -2648,7 +2648,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			try
 			{
 				// Arrange
-				var modelBinder = new TestableExtensibleDefaultModelBinder<List<String>>();
+				var modelBinder = new TestableExtensibleDefaultModelBinder<List<string>>();
 				modelBinder.Context.ModelMetadata.Model = null;
 
 				// Act

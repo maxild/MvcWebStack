@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -9,10 +8,10 @@ namespace Maxfire.Web.Mvc
     {
         public DefaultModelBinderErrorMessageProvider(string resourceClassKey = null)
         {
-            ResourceClassKey = resourceClassKey ?? String.Empty;
+            ResourceClassKey = resourceClassKey ?? string.Empty;
         }
 
-        public string ResourceClassKey { get; private set; }
+        public string ResourceClassKey { get; }
 
         public string GetValueRequiredMessage(ControllerContext controllerContext)
         {
@@ -26,7 +25,7 @@ namespace Maxfire.Web.Mvc
 
         private string GetGlobalResourceString(ControllerContext controllerContext, string resourceName)
         {
-            if (ResourceClassKey.IsEmpty() || controllerContext == null || controllerContext.HttpContext == null)
+            if (ResourceClassKey.IsEmpty() || controllerContext?.HttpContext == null)
                 return null;
 
             return controllerContext.HttpContext.GetGlobalResourceObject(ResourceClassKey, resourceName,

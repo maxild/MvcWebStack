@@ -17,7 +17,7 @@ namespace Maxfire.Core.Extensions
 		/// </summary>
 		public static string ToNullSafeString(this object value)
 		{
-			return value == null ? String.Empty : value.ToString();
+			return value == null ? string.Empty : value.ToString();
 		}
 
 		/// <summary>

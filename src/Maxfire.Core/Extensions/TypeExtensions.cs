@@ -52,7 +52,7 @@ namespace Maxfire.Core.Extensions
 
 			bool isSimple = propertyType.IsPrimitive ||
 			                propertyType.IsEnum ||
-			                propertyType == typeof(String) ||
+			                propertyType == typeof(string) ||
 			                propertyType == typeof(Guid) ||
 			                propertyType == typeof(DateTime) ||
 			                propertyType == typeof(Decimal);
@@ -64,7 +64,7 @@ namespace Maxfire.Core.Extensions
 
 			TypeConverter typeConverter = TypeDescriptor.GetConverter(propertyType);
 
-			return typeConverter.CanConvertFrom(typeof(String));
+			return typeConverter.CanConvertFrom(typeof(string));
 		}
 
 		public static Type ExtractGenericInterface(this Type type, Type interfaceType)
@@ -92,7 +92,7 @@ namespace Maxfire.Core.Extensions
 				converter = TypeDescriptor.GetConverter(value.GetType());
 				if (!converter.CanConvertTo(destinationType))
 				{
-					string message = String.Format("No converter exists that can convert from type '{0}' to type '{1}'.",
+					string message = string.Format("No converter exists that can convert from type '{0}' to type '{1}'.",
 					                               value.GetType().FullName, destinationType.FullName);
 					throw new InvalidOperationException(message);
 				}
@@ -109,7 +109,7 @@ namespace Maxfire.Core.Extensions
 			}
 			catch (Exception ex)
 			{
-				string message = String.Format("The converter threw an exception when converting from type '{0}' to type '{1}'.",
+				string message = string.Format("The converter threw an exception when converting from type '{0}' to type '{1}'.",
 				                               value.GetType().FullName, destinationType.FullName);
 				throw new InvalidOperationException(message, ex);
 			}

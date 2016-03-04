@@ -58,7 +58,7 @@ namespace Maxfire.Web.Mvc
 			ValidateDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture, out decimalValue));
 			ParseDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture));
 			FormatDecimal = (value => value.ToString("G29", CultureInfo.CurrentCulture));
-			FormatDecimalAsPctSats = (value => String.Format("{0:G29} pct.", value * 100.0m));
+			FormatDecimalAsPctSats = (value => string.Format("{0:G29} pct.", value * 100.0m));
 
 			ValidateMoney = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture, out decimalValue));
 			ParseMoney = (s => decimal.Parse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture));
@@ -172,12 +172,12 @@ namespace Maxfire.Web.Mvc
 
 		public virtual string FormatMoneyDkk(decimal value)
 		{
-			return String.Format("{0:#,0.00} kr.", value);
+			return string.Format("{0:#,0.00} kr.", value);
 		}
 
 		public virtual string FormatMoneyDkk(double value)
 		{
-			return String.Format("{0:#,0.00} kr.", value);
+			return string.Format("{0:#,0.00} kr.", value);
 		}
 
 		public virtual bool ValidateEnumOfType<T>(string s)

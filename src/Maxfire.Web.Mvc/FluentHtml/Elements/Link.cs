@@ -8,18 +8,18 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	public class Link : Element<Link>
 	{
 		private readonly UrlBuilder _urlBuilder;
-		
+
 		public Link(UrlBuilder urlBuilder) : base("a", null)
 		{
 			if (urlBuilder == null)
-				throw new ArgumentNullException("urlBuilder");
+				throw new ArgumentNullException(nameof(urlBuilder));
 
 			_urlBuilder = urlBuilder;
 		}
 
 		public Link Text(string text)
 		{
-			SetInnerHtml(String.IsNullOrEmpty(text) ? String.Empty : HttpUtility.HtmlEncode(text));
+			SetInnerHtml(string.IsNullOrEmpty(text) ? string.Empty : HttpUtility.HtmlEncode(text));
 			return this;
 		}
 

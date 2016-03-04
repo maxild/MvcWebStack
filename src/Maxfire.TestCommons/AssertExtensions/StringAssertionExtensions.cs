@@ -6,19 +6,19 @@ using Xunit.Sdk;
 namespace Maxfire.TestCommons.AssertExtensions
 {
 	/// <summary>
-	/// Extensions which provide assertions to classes derived from <see cref="String"/>.
+	/// Extensions which provide assertions to classes derived from <see cref="string"/>.
 	/// </summary>
 	public static class StringAssertionExtensions
 	{
 		public static string ShouldBeEmpty(this string s)
 		{
-			Assert.True(String.IsNullOrEmpty(s));
+			Assert.True(string.IsNullOrEmpty(s));
 			return s;
 		}
 
 		public static string ShouldNotBeEmpty(this string s)
 		{
-			Assert.False(String.IsNullOrEmpty(s));
+			Assert.False(string.IsNullOrEmpty(s));
 			return s;
 		}
 

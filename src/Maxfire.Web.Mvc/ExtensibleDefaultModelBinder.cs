@@ -207,7 +207,7 @@ namespace Maxfire.Web.Mvc
 				SetProperty(controllerContext, bindingContext, propertyDescriptor, newPropertyValue);
 
 				// Convert FormatExceptions (type conversion failures) into InvalidValue messages
-				foreach (ModelError error in modelState.Errors.Where(err => String.IsNullOrEmpty(err.ErrorMessage) && err.Exception != null).ToList())
+				foreach (ModelError error in modelState.Errors.Where(err => string.IsNullOrEmpty(err.ErrorMessage) && err.Exception != null).ToList())
 				{
 					for (Exception exception = error.Exception; exception != null; exception = exception.InnerException)
 					{
@@ -215,7 +215,7 @@ namespace Maxfire.Web.Mvc
 						{
 							string displayName = propertyMetadata.GetDisplayName();
 							string errorMessageTemplate = ErrorMessageProvider.GetValueInvalidMessage(controllerContext);
-							string errorMessage = String.Format(CultureInfo.CurrentCulture, errorMessageTemplate, modelState.Value.AttemptedValue, displayName);
+							string errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessageTemplate, modelState.Value.AttemptedValue, displayName);
 							modelState.Errors.Remove(error);
 							modelState.Errors.Add(errorMessage);
 							break;
@@ -352,21 +352,21 @@ namespace Maxfire.Web.Mvc
 
 		protected static string CreateSubIndexName(string prefix, int index)
 		{
-			return String.Format(CultureInfo.InvariantCulture, "{0}[{1}]", prefix, index);
+			return string.Format(CultureInfo.InvariantCulture, "{0}[{1}]", prefix, index);
 		}
 
 		protected static string CreateSubIndexName(string prefix, string index)
 		{
-			return String.Format(CultureInfo.InvariantCulture, "{0}[{1}]", prefix, index);
+			return string.Format(CultureInfo.InvariantCulture, "{0}[{1}]", prefix, index);
 		}
 
 		protected static string CreateSubPropertyName(string prefix, string propertyName)
 		{
-			if (String.IsNullOrEmpty(prefix))
+			if (string.IsNullOrEmpty(prefix))
 			{
 				return propertyName;
 			}
-			if (String.IsNullOrEmpty(propertyName))
+			if (string.IsNullOrEmpty(propertyName))
 			{
 				return prefix;
 			}
@@ -403,7 +403,7 @@ namespace Maxfire.Web.Mvc
 		{
 			object value = propertyBinder.BindModel(controllerContext, bindingContext);
 
-			if (bindingContext.ModelMetadata.ConvertEmptyStringToNull && Equals(value, String.Empty))
+			if (bindingContext.ModelMetadata.ConvertEmptyStringToNull && Equals(value, string.Empty))
 			{
 				return null;
 			}
@@ -416,7 +416,7 @@ namespace Maxfire.Web.Mvc
 			return TypeDescriptor.GetProvider(bindingContext.ModelType).GetTypeDescriptor(bindingContext.ModelType);
 		}
 
-		
+
 		private static IEnumerable<string> GetZeroBasedIndexes()
 		{
 			int i = 0;
@@ -524,7 +524,7 @@ namespace Maxfire.Web.Mvc
 
 		private static bool ShouldPerformRequestValidation(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
-			if (controllerContext == null || controllerContext.Controller == null || bindingContext == null || bindingContext.ModelMetadata == null)
+			if (controllerContext?.Controller == null || bindingContext?.ModelMetadata == null)
 			{
 				return true;
 			}
@@ -762,8 +762,8 @@ namespace Maxfire.Web.Mvc
 				var valueProviderResult = unvalidatedValueProvider.GetValue(bindingContext.ModelName, !performRequestValidation);
 				if (valueProviderResult != null)
 				{
-					// a value in the request did exactly match the name of the model we're binding to, 
-					// and therefore we have a simple model (int, string, etc). This is a 'leaf node', 
+					// a value in the request did exactly match the name of the model we're binding to,
+					// and therefore we have a simple model (int, string, etc). This is a 'leaf node',
 					// and the call to BindSimpleModel is non-recursive.
 					return BindSimpleModel(controllerContext, bindingContext, valueProviderResult);
 				}

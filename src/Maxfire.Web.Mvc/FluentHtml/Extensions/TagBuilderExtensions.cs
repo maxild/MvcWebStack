@@ -8,7 +8,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Extensions
 	{
 		public static void AddAttribute(this TagBuilder tagBuilder, string name, string value)
 		{
-			if (!String.IsNullOrEmpty(value))
+			if (!string.IsNullOrEmpty(value))
 			{
 				tagBuilder.MergeAttribute(name, value, true);
 			}
@@ -16,7 +16,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Extensions
 
 		public static void AddCssClassOnlyOnce(this TagBuilder tagBuilder, string @class)
 		{
-			if (!tagBuilder.cssClasses().Contains(@class))
+			if (!tagBuilder.CssClasses().Contains(@class))
 			{
 				tagBuilder.AddCssClass(@class);
 			}
@@ -24,7 +24,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Extensions
 
 		public static bool HasCssClass(this TagBuilder tagBuilder, string @class)
 		{
-			return tagBuilder.cssClasses().Contains(@class);
+			return tagBuilder.CssClasses().Contains(@class);
 		}
 
 		public static bool HasAttribute(this TagBuilder tagBuilder, string name)
@@ -32,12 +32,12 @@ namespace Maxfire.Web.Mvc.FluentHtml.Extensions
 			return tagBuilder.Attributes.ContainsKey(name);
 		}
 
-		private static string[] cssClasses(this TagBuilder tagBuilder)
+		private static string[] CssClasses(this TagBuilder tagBuilder)
 		{
-			return tagBuilder.cssClass().Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
+			return tagBuilder.CssClass().Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
 		}
 
-		private static string cssClass(this TagBuilder tagBuilder)
+		private static string CssClass(this TagBuilder tagBuilder)
 		{
 			string currentValue;
 			return tagBuilder.Attributes.TryGetValue("class", out currentValue) ? currentValue : string.Empty;

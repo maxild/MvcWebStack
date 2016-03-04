@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace Maxfire.Web.Mvc.Html
 {
@@ -7,7 +6,7 @@ namespace Maxfire.Web.Mvc.Html
 	{
 		public static string CreateSanitizedId(string originalId, string invalidCharacterReplacement = "_")
 		{
-			if (String.IsNullOrEmpty(originalId))
+			if (string.IsNullOrEmpty(originalId))
 			{
 				return null;
 			}
