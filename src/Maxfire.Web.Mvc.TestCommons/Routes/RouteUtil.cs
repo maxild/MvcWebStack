@@ -15,9 +15,9 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		/// <returns>Fake request context</returns>
 		public static RequestContext GetRequestContext()
 		{
-			var httpContext = MockRepository.GenerateStub<HttpContextBase>();
-			var request = MockRepository.GenerateStub<HttpRequestBase>();
-			var response = MockRepository.GenerateStub<HttpResponseBase>();
+			var httpContext = MockRepository.GenerateMock<HttpContextBase>();
+			var request = MockRepository.GenerateMock<HttpRequestBase>();
+			var response = MockRepository.GenerateMock<HttpResponseBase>();
 
 			response.Stub(x => x.ApplyAppPathModifier(Arg<string>.Is.Anything)).Do(new Func<string, string>(x => x));
 			httpContext.Stub(x => x.Request).Return(request);
@@ -49,8 +49,8 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		{
 			url = PrepareUrl(url);
 
-			var context = MockRepository.GenerateStub<HttpContextBase>();
-			var request = MockRepository.GenerateStub<HttpRequestBase>();
+			var context = MockRepository.GenerateMock<HttpContextBase>();
+			var request = MockRepository.GenerateMock<HttpRequestBase>();
 
 			// GetHttpMethodOverride requires non-null/empty QueryString, Form and Headers, if HttpMethod is POST
 			var empty = new NameValueCollection();
@@ -58,7 +58,7 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 			context.Stub(x => x.Request).Return(request).Repeat.Any();
 			request.Stub(x => x.QueryString).Return(GetRequestParams(url)).Repeat.Any();
 			request.Stub(x => x.AppRelativeCurrentExecutionFilePath).Return(GetRequestPath(url)).Repeat.Any();
-			request.Stub(x => x.PathInfo).Return(String.Empty).Repeat.Any();
+			request.Stub(x => x.PathInfo).Return(string.Empty).Repeat.Any();
 			request.Stub(x => x.HttpMethod).Return(httpMethod.ToString().ToUpperInvariant()).Repeat.Any();
 			request.Stub(x => x.Headers).Return(empty).Repeat.Any();
 
