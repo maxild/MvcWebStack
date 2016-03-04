@@ -10,11 +10,13 @@ IF NOT EXIST %LocalAppData%\NuGet md %LocalAppData%\NuGet
 @powershell -NoProfile -ExecutionPolicy unrestricted -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://www.nuget.org/nuget.exe' -OutFile '%CACHED_NUGET%'"
 
 :copynuget
-IF EXIST .nuget\nuget.exe goto restore
+IF EXIST .nuget\nuget.exe goto updatenuget
 md .nuget
 copy %CACHED_NUGET% .nuget\nuget.exe > nul
 
-:restore
+:updatenuget
+.nuget\nuget.exe update -self
+
 IF EXIST packages\psake goto cli
 .nuget\NuGet.exe install psake -version 4.5.0 -ExcludeVersion -o packages -nocache
 
