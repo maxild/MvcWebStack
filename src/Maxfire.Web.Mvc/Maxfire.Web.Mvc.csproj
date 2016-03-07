@@ -192,7 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Maxfire.Prelude.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Maxfire.Prelude.Core.1.0.0-alpha-00020\lib\net451\Maxfire.Prelude.Core.dll</HintPath>
+      <HintPath>..\..\packages\Maxfire.Prelude.Core.1.0.0-alpha-00021\lib\net451\Maxfire.Prelude.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
