@@ -26,7 +26,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		/// <param name="selectedValues">Values matching the values of options to be selected.</param>
 		public virtual MultiSelect Selected(IEnumerable<string> selectedValues)
 		{
-			_selectedValues = selectedValues;
+			SelectedValues = selectedValues;
 			return this;
 		}
 	}

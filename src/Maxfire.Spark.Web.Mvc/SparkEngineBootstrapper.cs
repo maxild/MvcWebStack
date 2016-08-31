@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Web.Mvc;
 using Spark;
@@ -7,7 +7,8 @@ using Spark.Web.Mvc;
 
 namespace Maxfire.Spark.Web.Mvc
 {
-	public class SparkEngineBootstrapper
+    [CLSCompliant(false)]
+    public class SparkEngineBootstrapper
 	{
 		private readonly Action<SparkBatchDescriptor> _describeBatch;
 		private readonly Func<IPrecompileSparkSettings> _settingsProvider;
@@ -18,11 +19,11 @@ namespace Maxfire.Spark.Web.Mvc
 		{
 			if (settingsProvider == null)
 			{
-				throw new ArgumentNullException("settingsProvider");
+				throw new ArgumentNullException(nameof(settingsProvider));
 			}
 			if (describeBatchHandler == null)
 			{
-				throw new ArgumentNullException("describeBatchHandler");
+				throw new ArgumentNullException(nameof(describeBatchHandler));
 			}
 			_settingsProvider = settingsProvider;
 			_describeBatch = describeBatchHandler;

@@ -17,8 +17,17 @@ copy %CACHED_NUGET% .nuget\nuget.exe > nul
 :updatenuget
 .nuget\nuget.exe update -self
 
-IF EXIST packages\psake goto cli
-.nuget\NuGet.exe install psake -version 4.5.0 -ExcludeVersion -o packages -nocache
+:: The installation should be based on packages.config in .nuget folder, and detect changes to this file
+:: To update psake, sourcelink or gitVersion (or any other build tool) the versions below have to be updated,
+:: and the packages folder has to be cleared (nuget install does not update packages by itself).
+
+:install_psake
+IF EXIST packages\psake goto install_sourcelink
+CALL .nuget\NuGet.exe install psake -version 4.6.0 -ExcludeVersion -o packages -nocache
+
+:install_sourcelink
+IF EXIST packages\SourceLink goto cli
+CALL .nuget\nuget.exe install SourceLink -version 1.1.0 -ExcludeVersion -o packages -nocache
 
 :cli
 if '%1'=='--bootstrap' goto exit

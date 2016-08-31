@@ -1,8 +1,9 @@
 [CmdletBinding()]
 param (
+    [string]$Target = "Default",
     [ValidateSet("debug", "release")]
     [Alias('config')]
-    [string]$Configuration = 'debug',
+    [string]$Configuration = 'Release',
     [ValidateSet("Release", `
                  "alpha", `
                  "beta1", "beta2", "beta3", "beta4", "beta5", `
@@ -13,7 +14,6 @@ param (
     [ValidateRange(1,99999)]
     [Alias('build')]
     [int]$BuildNumber,
-    [string]$CommitId = "0000000000000000000000000000000000000000",
     [switch]$SkipRestore,
     [switch]$CleanCache,
     [switch]$SkipTests
@@ -37,7 +37,13 @@ function Install-NuGet {
 
 function Install-PSake {
     if (-not (Test-Path (Join-Path $RepoRoot 'packages\psake'))) {
-        & $NuGetExe install psake -version 4.5.0 -ExcludeVersion -o packages -nocache
+        & $NuGetExe install psake -version 4.6.0 -ExcludeVersion -o packages -nocache
+    }
+}
+
+function Install-SourceLink {
+    if (-not (Test-Path (Join-Path $RepoRoot 'packages\SourceLink'))) {
+        & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -o packages -nocache
     }
 }
 
@@ -58,11 +64,12 @@ function Create-BuildEnvironment {
 
 Install-NuGet
 Install-PSake
+Install-SourceLink
 
 Create-BuildEnvironment
 
 # right now it is hardcoded to full task
-.\packages\psake\tools\psake.ps1 .\psakefile.ps1 full -properties @{configuration=$Configuration}
+.\packages\psake\tools\psake.ps1 .\psakefile.ps1 $Target -properties @{configuration=$Configuration}
 
 # report success or failure
 if ($psake.build_success -eq $false) { exit 1 } else { exit 0 }

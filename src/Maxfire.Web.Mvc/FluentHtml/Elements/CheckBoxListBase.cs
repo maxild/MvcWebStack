@@ -27,7 +27,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		/// <param name="selectedValues">Values matching the values of options to be selected.</param>
 		public virtual T Selected(IEnumerable<string> selectedValues)
 		{
-			_selectedValues = selectedValues;
+			SelectedValues = selectedValues;
 			return (T)this;
 		}
 
@@ -64,22 +64,17 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 
 		private string renderBody()
 		{
-			if (_options == null)
-			{
-				return null;
-			}
-
 			string idPrefix = Html401IdUtil.CreateSanitizedId(GetName());
 
 			RemoveAttr(HtmlAttribute.Name);
 			var sb = new StringBuilder();
 			var i = 0;
-			foreach (var option in _options)
+			foreach (var option in Options)
 			{
 				var value = option.Value;
 				var checkbox = new CheckBox(GetName(), ForMember)
 					.ApplyBehaviors(AppliedBehaviors)
-					.Id(string.Format("{0}_{1}", idPrefix, i))
+					.Id($"{idPrefix}_{i}")
 					.Value(value)
 					.LabelAfter(option.Text, _itemClass)
 					.Checked(IsSelectedValue(value));

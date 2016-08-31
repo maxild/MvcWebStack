@@ -9,7 +9,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	public abstract class LiteralBase<T> : Element<T> where T : LiteralBase<T>
 	{
 		private string _format;
-		protected object _rawValue;
+		private object _rawValue;
 
 		protected LiteralBase(MemberExpression forMember) :
 			base(HtmlTag.Span, forMember)
@@ -20,6 +20,11 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			base(HtmlTag.Span)
 		{
 		}
+
+	    protected bool HasNoValue()
+	    {
+	        return _rawValue == null;
+	    }
 
 		/// <summary>
 		/// Set the inner text of the span element.

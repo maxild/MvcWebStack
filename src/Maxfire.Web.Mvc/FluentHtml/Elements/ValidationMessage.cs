@@ -12,7 +12,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 
 		public override string ToString()
 		{
-			if (_rawValue == null)
+			if (HasNoValue())
 			{
 				return null;
 			}

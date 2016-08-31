@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -7,7 +8,8 @@ using Spark.Web.Mvc;
 
 namespace Maxfire.Spark.Web.Mvc
 {
-	public abstract class OpinionatedSparkView : SparkView, IUrlResponseWriter
+    [CLSCompliant(false)]
+    public abstract class OpinionatedSparkView : SparkView, IUrlResponseWriter
 	{
 		private OpinionatedSparkHtmlHelper _htmlHelper;
 		public new OpinionatedSparkHtmlHelper Html
@@ -44,7 +46,8 @@ namespace Maxfire.Spark.Web.Mvc
 		}
 	}
 
-	public abstract class OpinionatedSparkView<TViewModel> : OpinionatedSparkView, IOpinionatedView<TViewModel>
+    [CLSCompliant(false)]
+    public abstract class OpinionatedSparkView<TViewModel> : OpinionatedSparkView, IOpinionatedView<TViewModel>
 		where TViewModel : class
 	{
 		private readonly List<IBehaviorMarker> _behaviors = new List<IBehaviorMarker>();

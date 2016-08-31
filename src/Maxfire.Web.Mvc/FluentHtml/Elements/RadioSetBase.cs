@@ -12,8 +12,8 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	/// </summary>
 	public abstract class RadioSetBase<T> : OptionsElementBase<T> where T : RadioSetBase<T>
 	{
-		protected string _format;
-		protected string _itemClass;
+		private string _format;
+		private string _itemClass;
 
 		protected RadioSetBase(string tag, string name, MemberExpression forMember)
 			: base(tag, name, forMember)
@@ -27,7 +27,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		/// <returns></returns>
 		public virtual T Selected(object selectedValue)
 		{
-			_selectedValues = new [] { selectedValue.ToNullSafeString() };
+			SelectedValues = new [] { selectedValue.ToNullSafeString() };
 			return (T)this;
 		}
 
@@ -64,14 +64,9 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 
 		private string renderBody()
 		{
-			if (_options == null)
-			{
-				return null;
-			}
-
 			RemoveAttr(HtmlAttribute.Name);
 			var sb = new StringBuilder();
-			foreach (var option in _options)
+			foreach (var option in Options)
 			{
 				var value = option.Value;
 				var radioButton = (new RadioButton(GetName(), ForMember)

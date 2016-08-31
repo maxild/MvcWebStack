@@ -5,7 +5,7 @@
 #    [ProgramFilesX86]\MSBuild\12.0\bin (x32 bitness of powershell)
 # See also http://blogs.msdn.com/b/visualstudio/archive/2013/07/24/msbuild-is-now-part-of-visual-studio.aspx
 # See also https://github.com/damianh/psake/commit/0778be759e83014f0bfdd1a0c84caac008c8112f
-Framework 4.5.1
+Framework 4.5.2
 
 properties {
     $base_dir = resolve-path .
@@ -15,15 +15,18 @@ properties {
     $test_dir = join-path $base_dir "test"
     $packages_dir = join-path $base_dir "packages"
     $sln_file = "Maxfire.sln"
-    $configuration = "debug"
+    $configuration = "Release"
+    $commonAssemblyInfoPath = join-path $base_dir "src" | join-path -ChildPath "CommonAssemblyInfo.cs"
     $global:version = "1.0.0-*"
     $framework_dir = Get-FrameworkDirectory
     $tools_version = "14.0" # MSBuild 14 == vs2015 == C#6
 }
 
 task default -depends dev
-task dev -depends compile, test -description "developer build (before commits)"
-task full -depends dev, pack -description "full build (producing nupkg's)"
+task verify -depends dev
+task dev -depends compile, test     -description "developer build (before commits)"
+task local -depends dev, pack       -description "local full build (producing local nupkg's)"
+task all -depends dev, srcidx, pack -description "full build (producing source linked nupkg's)"
 
 # For project.json as { "version": "1.0.0-*", ...}, together with label='alpha'
 # and build=12345, the end result is something equivalent to (DNX_BUILD_VERSION=alpha-12345, DNX_ASSEMBLY_FILE_VERSION=12345)
@@ -35,6 +38,8 @@ task full -depends dev, pack -description "full build (producing nupkg's)"
 #      $env:DNX_BUILD_VERSION="${PrereleaseTag}-${paddedBuildNumber}"
 #      $env:DNX_ASSEMBLY_FILE_VERSION=$buildNumber
 task resolveVersions {
+    $commitId = Get-Git-Commit-Full
+    
     if ($global:version.EndsWith('-*')) {
         $global:assemblyVersion = $global:version.Substring(0, $global:version.Length - 2)
         if ($env:DNX_BUILD_VERSION -ne $NULL) {
@@ -56,18 +61,52 @@ task resolveVersions {
         [int]$fileVersion = 0
     }
     $global:assemblyFileVersion = "${global:assemblyVersion}.$fileVersion"
+    $global:assemblyInformationalVersion = "$pkgVersion / $commitId /"
+    # To access version information at run time in .NET:
+    #    var executingAssembly = Assembly.GetExecutingAssembly();
+    #    var fv = System.Diagnostics.FileVersionInfo.GetVersionInfo(executingAssembly.Location);
+    #    Console.WriteLine(executingAssembly.GetName().Version); // AssemblyVersion
+    #    Console.WriteLine(fv.FileVersion);                      // AssemblyFileVersion
+    #    Console.WriteLine(fv.ProductVersion);                   // AssemblyInformationalVersion
 }
 
-task VerifyTools {
-    # Visual Studio 2015 will exclusively use 2015 MSBuild and C# compilers (assembly version 14.0)
-    # and the 2015 Toolset (ToolsVersion 14.0)
-    #$version = &"$framework_dir\MSBuild.exe" /nologo /version
-    $version = &{msbuild /nologo /version}
-    $expectedVersion = "14.0.23107.0"
-    Write-Host "Framework directory (GAC) is $framework_dir"
-    Write-Host "MSBuild version is $version"
-    Assert $version.StartsWith($tools_version) "MSBuild has version '$version'. It should be '$tools_version'."
-    Assert ($version -eq $expectedVersion) "MSBuild has version '$version'. It should be '$expectedVersion'."
+task versionInfo -depends resolveVersions {
+    Write-Host "Version: $pkgVersion"
+    Write-Host "AssemblyVersion: $assemblyVersion"
+    Write-Host "AssemblyFileVersion: $assemblyFileVersion"
+    Write-Host "AssemblyInformationalVersion: $assemblyInformationalVersion"
+}
+
+# Source index the pdb file (See also http://ctaggart.github.io/SourceLink/exe.html)
+# SourceLink enables GIT to be the source server by indexing the pdb file with http(s) download links.
+task srcidx -depends compile {
+    # This should only be performed on the build server (or in a clean checkout)
+    # The SourceLink.exe tool is used to insert (the version control) information
+    # into the "srcsrv" stream of the target .pdb file.
+    $commitId = Get-Git-Commit-Full
+    if ($commitId -ne "0000000000000000000000000000000000000000") {
+
+        Status should be 'clean'
+        $gitStatus = (@(git status --porcelain) | Out-String)
+        if ( -not ([string]::IsNullOrWhiteSpace($gitStatus)) ) {
+            throw ("Git working tree or Git index is not clean, because 'git status --porcelain' is showing some output!!")
+        }
+
+        # Traverse all project files (ie. packages)
+        $packages = Get-ChildItem $build_dir *.nuspec -recurse
+        $packages | %{
+            $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
+            Write-Host "Source indexing PDB's from project $projectName" -ForegroundColor Yellow
+            $projectfile   = "$source_dir\$projectName\$projectName.csproj"
+            
+            # URL for downloading the source files, use {0} for commit and %var2% for path
+            exec {
+                &"$packages_dir\SourceLink\tools\SourceLink.exe" index -pr $projectfile -pp Configuration $configuration -u 'https://raw.githubusercontent.com/maxild/MvcWebStack/{0}/%var2%' -c $commitId
+            }
+
+        }
+        
+    }
 }
 
 task Clean {
@@ -83,56 +122,45 @@ task restore {
 }
 
 task compile -depends clean, restore, commonAssemblyInfo {
-    $commit = Get-Git-Commit-Full
-
-    $outdir = $artifacts_dir
-    if (-not ($outdir.EndsWith("\"))) {
-      $outdir += '\' # MSBuild requires OutDir to end with a trailing slash
-    }
-
     Write-Host "Compiling '$sln_file' with '$configuration' configuration" -ForegroundColor Yellow
-
-    exec { msbuild /t:Clean /t:Build /p:OutDir=$outdir /p:Configuration=$configuration /p:TreatWarningsAsErrors=true /v:minimal /tv:${tools_version} /p:VisualStudioVersion=${tools_version} /maxcpucount "$sln_file" }
-
-    # TODO: Use SourceLink.exe
-    # if ($commit -ne "0000000000000000000000000000000000000000") {
-    #     exec { &"$tools_dir\GitLink.Custom.exe" "$base_dir" /u https://github.com/maxild/Lofus /c $configuration /b master /s "$commit" /f "$sln_file_name" }
-    # }
+    exec { msbuild /t:Clean /t:Build /p:Configuration=$configuration /p:TreatWarningsAsErrors=true /v:minimal /tv:${tools_version} /p:VisualStudioVersion=${tools_version} /maxcpucount "$sln_file" }
 }
 
 task test -depends compile {
-
-    $test_prjs = @( `
-        "$artifacts_dir\Maxfire.TestCommons.UnitTests.dll", `
-        "$artifacts_dir\Maxfire.Core.UnitTests.dll", `
-        "$artifacts_dir\Maxfire.Web.Mvc.TestCommons.UnitTests.dll", `
-        "$artifacts_dir\Maxfire.Web.Mvc.UnitTests.dll", `
-        "$artifacts_dir\Maxfire.Spark.Web.Mvc.UnitTests.dll", `
-        "$artifacts_dir\Maxfire.Castle.Web.Mvc.UnitTests.dll" `
-        )
 
     $xunitConsoleRunner = join-path $packages_dir 'xunit.runner.console.2.1.0' | `
                           join-path -ChildPath 'tools' | `
                           join-path -ChildPath 'xunit.console.exe'
 
     $failures = @()
-    $test_prjs | % {
-        Write-Host "Executing tests from '$_'" -ForegroundColor Yellow
-        & $xunitConsoleRunner $_
+        
+    # Traverse all project files (ie. packages)
+    $packages = Get-ChildItem $build_dir *.nuspec -recurse
+    $packages | %{
+        $testProjectName = ([io.path]::GetFileNameWithoutExtension($_.FullName) + ".UnitTests")
+        $testAssemblyPath = "$test_dir\$testProjectName\bin\$configuration\$testProjectName.dll"
+        
+        Write-Host "Executing tests from '$testProjectName' under configuration '$configuration'" -ForegroundColor Yellow
+
+        & $xunitConsoleRunner $testAssemblyPath
         if ($lastexitcode -ne 0) {
-            $failures += (Split-Path -Leaf $_)
+            $failures += (Split-Path -Leaf $testProjectName)
         }
     }
+
     if ($failures) {
         throw "Test failure!!! --- $failures"
     }
 }
 
 task commonAssemblyInfo -depends resolveVersions {
-    create-commonAssemblyInfo $(Get-Git-Commit-Full) "$source_dir\CommonAssemblyInfo.cs"
+    create-commonAssemblyInfo $(Get-Git-Commit-Full) $commonAssemblyInfoPath
 }
 
 task pack -depends compile {
+
+    # ensure we have an artifacts dir 
+    create_directory $artifacts_dir
 
     # Find dependency versions
     $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
@@ -177,9 +205,16 @@ task pack -depends compile {
                 $_.Node.version = $rhinomocksVersion
             }
         }
+
+        $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
+        
         $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)
         $nuspec.Save($nuspecFilename)
-        exec { & $base_dir\.nuget\Nuget.exe pack -OutputDirectory $artifacts_dir $nuspecFilename }
+        
+        # All files in nuspec are relative paths, grab dll and pdb files using this base path
+        $basePath = "$source_dir\$projectName\bin\$configuration"
+        
+        exec { & $base_dir\.nuget\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename }
     }
 }
 
@@ -223,7 +258,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion(""$assemblyVersion"")]
 [assembly: AssemblyFileVersion(""$assemblyFileVersion"")]
-[assembly: AssemblyInformationalVersion(""$pkgVersion / $commit / "")]
+[assembly: AssemblyInformationalVersion(""$assemblyInformationalVersion"")]
 [assembly: AssemblyProduct(""Maxfire Webstack Libraries"")]
 
 [assembly: CLSCompliant(true)]

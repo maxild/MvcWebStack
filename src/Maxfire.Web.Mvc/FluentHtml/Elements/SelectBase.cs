@@ -13,19 +13,30 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	/// <typeparam name="T">The derived type.</typeparam>
 	public abstract class SelectBase<T> : OptionsElementBase<T> where T : SelectBase<T>
 	{
-		protected string _firstOptionText;
+		private string _firstOptionText;
 
 		protected SelectBase(string name, MemberExpression forMember)
 			: base(HtmlTag.Select, name, forMember)
 		{
 		}
 
-		/// <summary>
-		/// Set the 'size' attribute.
+        /// <summary>
+		/// Add no value option with the given text.
 		/// </summary>
-		/// <param name="value">The value of the 'size' attribute.</param>
+		/// <param name="firstOptionText">The text of the initial option</param>
 		/// <returns></returns>
-		public virtual T Size(int value)
+		public T FirstOptionText(string firstOptionText)
+        {
+            _firstOptionText = firstOptionText;
+            return (T)this;
+        }
+
+        /// <summary>
+        /// Set the 'size' attribute.
+        /// </summary>
+        /// <param name="value">The value of the 'size' attribute.</param>
+        /// <returns></returns>
+        public virtual T Size(int value)
 		{
 			Attr(HtmlAttribute.Size, value);
 			return (T)this;
@@ -44,27 +55,22 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 
 		private string renderOptions()
 		{
-			if (_options == null)
-			{
-				return null;
-			}
-
 			var sb = new StringBuilder();
 
-			var hasSelectedValue = _options.Any(option => IsSelectedValue(option.Value));
+			var hasSelectedValue = Options.Any(option => IsSelectedValue(option.Value));
 			if (_firstOptionText != null && !hasSelectedValue)
 			{
 				sb.Append(GetFirstOption());
 			}
 
-			foreach (var option in _options)
+			foreach (var option in Options)
 			{
 				if (option != null)
 				{
 					sb.Append(GetOption(option));
 				}
 			}
-			
+
 			return sb.ToString();
 		}
 
