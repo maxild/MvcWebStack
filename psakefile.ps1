@@ -86,7 +86,7 @@ task srcidx -depends compile {
     $commitId = Get-Git-Commit-Full
     if ($commitId -ne "0000000000000000000000000000000000000000") {
 
-        Status should be 'clean'
+        # Status should be 'clean'
         $gitStatus = (@(git status --porcelain) | Out-String)
         if ( -not ([string]::IsNullOrWhiteSpace($gitStatus)) ) {
             throw ("Git working tree or Git index is not clean, because 'git status --porcelain' is showing some output!!")
