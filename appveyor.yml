@@ -2,8 +2,8 @@ init:
   - git config --global core.autocrlf input
 
 build_script:
-  - ps: .\build.ps1 -target Verify -config Release -label alpha -build $env:APPVEYOR_BUILD_NUMBER
-  - ps: .\build.ps1 -target All    -config Debug   -label alpha -build $env:APPVEYOR_BUILD_NUMBER
+  - ps: .\build.ps1 -target Verify -config Debug   -label alpha -build $env:APPVEYOR_BUILD_NUMBER
+  - ps: .\build.ps1 -target All    -config Release -label alpha -build $env:APPVEYOR_BUILD_NUMBER
 
 clone_depth: 1
 
