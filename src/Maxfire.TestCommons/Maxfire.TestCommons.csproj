@@ -38,6 +38,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AssertExtensibility\AssertComparer.cs" />
     <Compile Include="AssertExtensibility\AssertEqualityComparer.cs" />
     <Compile Include="AssertExtensibility\AssertEqualityComparerAdapter.cs" />

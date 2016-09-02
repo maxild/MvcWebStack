@@ -17,7 +17,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\artifacts\Maxfire.Core.dll" target="lib\net452" />
-    <file src="..\artifacts\Maxfire.Core.pdb" target="lib\net452" />
+    <file src="Maxfire.Core.dll" target="lib\net452" />
+    <file src="Maxfire.Core.pdb" target="lib\net452" />
   </files>
 </package>

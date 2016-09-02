@@ -1,36 +1,31 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Reflection;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+#if NETSTANDARD1_0
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.0")]
+#elif NETSTANDARD1_1
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.1")]
+#elif NETSTANDARD1_2
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.2")]
+#elif NETSTANDARD1_3
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.3")]
+#elif NETSTANDARD1_4
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.4")]
+#elif NETSTANDARD1_5
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.5")]
+#elif NETSTANDARD1_6
+[assembly: AssemblyTitle("Maxfire.Core .NET Standard 1.6")]
+#elif NET45
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.5")]
+#elif NET451
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.5.1")]
+#elif NET452
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.5.2")]
+#elif NET46
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.6")]
+#elif NET461
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.6.1")]
+#elif NET462
+[assembly: AssemblyTitle("Maxfire.Core .NET Framework 4.6.2")]
+#else
 [assembly: AssemblyTitle("Maxfire.Core")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BRFKredit")]
-[assembly: AssemblyProduct("Maxfire.Core")]
-[assembly: AssemblyCopyright("Copyright © BRFKredit 2009")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e2dbd108-7982-4ce4-938b-fdcf33ab872d")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+#endif

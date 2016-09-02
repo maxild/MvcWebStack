@@ -1,10 +1,16 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Custom for Visual Studio
-*.cs       text diff=csharp eol=crlf
+# The checksums of the files that the compiler uses are stored in the pdb.
+# Unfortunately, 'Git on Windows' (msysgit) behaves like core.autocrlf=true by default.
+# Make git always keep the LF line endings (i.e. not normalize *.cs files) both in 'repo'
+# and 'working folder' in order for checksums to pass.
+*.cs       text diff=csharp eol=lf
 *.sln      text merge=union eol=crlf
 *.csproj   text merge=union eol=crlf
+
+*.md       text eol=lf
+
 *.cmd      text eol=crlf
 *.ps1      text eol=crlf
 *.config   text eol=crlf

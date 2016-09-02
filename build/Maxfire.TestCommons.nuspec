@@ -19,7 +19,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\artifacts\Maxfire.TestCommons.dll" target="lib\net452" />
-    <file src="..\artifacts\Maxfire.TestCommons.pdb" target="lib\net452" />
+    <file src="Maxfire.TestCommons.dll" target="lib\net452" />
+    <file src="Maxfire.TestCommons.pdb" target="lib\net452" />
   </files>
 </package>

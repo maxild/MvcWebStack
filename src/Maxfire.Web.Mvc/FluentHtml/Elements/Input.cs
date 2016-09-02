@@ -12,7 +12,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	/// <typeparam name="T">Derived class type.</typeparam>
 	public abstract class Input<T> : FormElement<T>, ISupportsModelState where T : Input<T>, IElement
 	{
-		protected object _value;
+		private object _value;
 
 		protected Input(string type, string name, MemberExpression forMember)
 			: base(HtmlTag.Input, name, forMember)

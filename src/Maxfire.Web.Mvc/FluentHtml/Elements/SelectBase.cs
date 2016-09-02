@@ -7,85 +7,91 @@ using Maxfire.Web.Mvc.FluentHtml.Html;
 
 namespace Maxfire.Web.Mvc.FluentHtml.Elements
 {
-	/// <summary>
-	/// Base class for select elements.
-	/// </summary>
-	/// <typeparam name="T">The derived type.</typeparam>
-	public abstract class SelectBase<T> : OptionsElementBase<T> where T : SelectBase<T>
-	{
-		protected string _firstOptionText;
+    /// <summary>
+    /// Base class for select elements.
+    /// </summary>
+    /// <typeparam name="T">The derived type.</typeparam>
+    public abstract class SelectBase<T> : OptionsElementBase<T> where T : SelectBase<T>
+    {
+        private string _firstOptionText;
 
-		protected SelectBase(string name, MemberExpression forMember)
-			: base(HtmlTag.Select, name, forMember)
-		{
-		}
+        protected SelectBase(string name, MemberExpression forMember)
+            : base(HtmlTag.Select, name, forMember)
+        {
+        }
 
-		/// <summary>
-		/// Set the 'size' attribute.
-		/// </summary>
-		/// <param name="value">The value of the 'size' attribute.</param>
-		/// <returns></returns>
-		public virtual T Size(int value)
-		{
-			Attr(HtmlAttribute.Size, value);
-			return (T)this;
-		}
+        /// <summary>
+        /// Add no value option with the given text.
+        /// </summary>
+        /// <param name="firstOptionText">The text of the initial option</param>
+        /// <returns></returns>
+        public T FirstOptionText(string firstOptionText)
+        {
+            _firstOptionText = firstOptionText;
+            return (T)this;
+        }
 
-		protected override void PreRender()
-		{
-			SetInnerHtml(renderOptions());
-			base.PreRender();
-		}
+        /// <summary>
+        /// Set the 'size' attribute.
+        /// </summary>
+        /// <param name="value">The value of the 'size' attribute.</param>
+        /// <returns></returns>
+        public virtual T Size(int value)
+        {
+            Attr(HtmlAttribute.Size, value);
+            return (T)this;
+        }
 
-		protected override TagRenderMode TagRenderMode
-		{
-			get { return TagRenderMode.Normal; }
-		}
+        protected override void PreRender()
+        {
+            SetInnerHtml(RenderOptions());
+            base.PreRender();
+        }
 
-		private string renderOptions()
-		{
-			if (_options == null)
-			{
-				return null;
-			}
+        protected override TagRenderMode TagRenderMode
+        {
+            get { return TagRenderMode.Normal; }
+        }
 
-			var sb = new StringBuilder();
+        private string RenderOptions()
+        {
+            var sb = new StringBuilder();
 
-			var hasSelectedValue = _options.Any(option => IsSelectedValue(option.Value));
-			if (_firstOptionText != null && !hasSelectedValue)
-			{
-				sb.Append(GetFirstOption());
-			}
+            var hasSelectedValue = Options.Any(option => IsSelectedValue(option.Value));
+            if (_firstOptionText != null && !hasSelectedValue)
+            {
+                sb.Append(GetFirstOption());
+            }
 
-			foreach (var option in _options)
-			{
-				if (option != null)
-				{
-					sb.Append(GetOption(option));
-				}
-			}
-			
-			return sb.ToString();
-		}
+            foreach (var option in Options)
+            {
+                if (option != null)
+                {
+                    sb.Append(GetOption(option));
+                }
+            }
 
-		// Note: By the HTML spec, the text of the OPTION is used as the value, if the VALUE is empty.
-		// See also http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.1.3.1
+            return sb.ToString();
+        }
 
-		protected virtual Option GetFirstOption()
-		{
-			// Because no value is selected the 'no value' option must be selected
-			return new Option()
-				.Text(_firstOptionText)
-				.Value(string.Empty)
-				.Selected(true);
-		}
+        // Note: By the HTML spec, the text of the OPTION is used as the value, if the VALUE is empty.
+        // See also http://www.w3.org/MarkUp/html-spec/html-spec_8.html#SEC8.1.3.1
 
-		protected virtual Option GetOption(ITextValuePair option)
-		{
-			return new Option()
-				.Text(option.Text)
-				.Value(option.Value)
-				.Selected(IsSelectedValue(option.Value));
-		}
-	}
+        protected virtual Option GetFirstOption()
+        {
+            // Because no value is selected the 'no value' option must be selected
+            return new Option()
+                .Text(_firstOptionText)
+                .Value(string.Empty)
+                .Selected(true);
+        }
+
+        protected virtual Option GetOption(ITextValuePair option)
+        {
+            return new Option()
+                .Text(option.Text)
+                .Value(option.Value)
+                .Selected(IsSelectedValue(option.Value));
+        }
+    }
 }

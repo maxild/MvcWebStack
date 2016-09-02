@@ -21,7 +21,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\artifacts\Maxfire.Castle.Web.Mvc.dll" target="lib\net452" />
-    <file src="..\artifacts\Maxfire.Castle.Web.Mvc.pdb" target="lib\net452" />
+    <file src="Maxfire.Castle.Web.Mvc.dll" target="lib\net452" />
+    <file src="Maxfire.Castle.Web.Mvc.pdb" target="lib\net452" />
   </files>
 </package>

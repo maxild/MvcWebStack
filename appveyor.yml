@@ -1,8 +1,9 @@
 init:
-  - git config --global core.autocrlf true
+  - git config --global core.autocrlf input
 
 build_script:
-  - ps: .\build.ps1 -config Release -label alpha -build $env:APPVEYOR_BUILD_NUMBER -CommitId $env:APPVEYOR_REPO_COMMIT
+  - ps: .\build.ps1 -target Verify -config Debug   -label alpha -build $env:APPVEYOR_BUILD_NUMBER
+  - ps: .\build.ps1 -target All    -config Release -label alpha -build $env:APPVEYOR_BUILD_NUMBER
 
 clone_depth: 1
 
@@ -14,7 +15,7 @@ artifacts:
 
 deploy:
 - provider: NuGet
-  server: https://www.myget.org/F/maxfire-prelude/api/v2/package
+  server: https://www.myget.org/F/maxfire-ci/api/v2/package
   api_key:
     secure: EOVLFyiHRhh9Jij3/mITdSV5JH1SzT8JUbqqTIFtvOPndNeMme3mME01ws3+5nFB
   skip_symbols: true
