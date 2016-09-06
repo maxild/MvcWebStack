@@ -4,16 +4,6 @@ param (
     [ValidateSet("debug", "release")]
     [Alias('config')]
     [string]$Configuration = 'Release',
-    [ValidateSet("Release", `
-                 "alpha", `
-                 "beta1", "beta2", "beta3", "beta4", "beta5", `
-                 "rc1", "rc2", "rc3", "rc4", "rc5", `
-                 "local")]
-    [Alias('label')]
-    [string]$PrereleaseTag = 'local',
-    [ValidateRange(1,99999)]
-    [Alias('build')]
-    [int]$BuildNumber,
     [switch]$SkipRestore,
     [switch]$CleanCache,
     [switch]$SkipTests
@@ -41,32 +31,22 @@ function Install-PSake {
     }
 }
 
+function Install-GitVersion {
+    if (-not (Test-Path (Join-Path $RepoRoot 'packages\GitVersion.CommandLine'))) {
+        & $NuGetExe install GitVersion.CommandLine -version 4.0.0-beta0007 -ExcludeVersion -o packages -nocache
+    }
+}
+
 function Install-SourceLink {
     if (-not (Test-Path (Join-Path $RepoRoot 'packages\SourceLink'))) {
         & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -o packages -nocache
     }
 }
 
-function Format-BuildNumber([int]$BuildNumber) {
-    if ($BuildNumber -gt 99999) {
-        Throw "Build number cannot be greater than 99999, because of Legacy SemVer limitations in Nuget."
-    }
-    '{0:D5}' -f $BuildNumber # Can handle 00001,...,99999 (this should be enough)
-}
-
-function Create-BuildEnvironment {
-    if ($PrereleaseTag -ne 'Release') {
-        $paddedBuildNumber = Format-BuildNumber $BuildNumber
-        $env:DNX_BUILD_VERSION="${PrereleaseTag}-${paddedBuildNumber}"
-    }
-    $env:DNX_ASSEMBLY_FILE_VERSION=$BuildNumber
-}
-
 Install-NuGet
 Install-PSake
+Install-GitVersion
 Install-SourceLink
-
-Create-BuildEnvironment
 
 # right now it is hardcoded to full task
 .\packages\psake\tools\psake.ps1 .\psakefile.ps1 $Target -properties @{configuration=$Configuration}
