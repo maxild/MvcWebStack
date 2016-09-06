@@ -31,7 +31,13 @@ task resolveVersions {
     $global:pkgVersion = $versionInfo.LegacySemVerPadded
     $global:assemblyVersion = $versionInfo.MajorMinorPatch
     $global:assemblyFileVersion = ($assemblyVersion + ".0")
-    $global:assemblyInformationalVersion = $versionInfo.InformationalVersion                    
+    $global:assemblyInformationalVersion = $versionInfo.InformationalVersion    
+
+    # Update appveyor build details (-Version must be unique)
+    if ($env:APPVEYOR -ne $NULL) {
+        # TODO: Dette skal forbedres (appending to metadata)
+        Update-AppveyorBuild -Version "${$versionInfo.FullSemVer}.build.${$env:APPVEYOR_BUILD_NUMBER}" 
+    }                
 }
 
 task versionInfo -depends resolveVersions {
