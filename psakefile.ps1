@@ -36,7 +36,7 @@ task resolveVersions {
     # Update appveyor build details (-Version must be unique)
     if ($env:APPVEYOR -ne $NULL) {
         # TODO: Dette skal forbedres (appending to metadata)
-        Update-AppveyorBuild -Version "${$versionInfo.FullSemVer}.build.${$env:APPVEYOR_BUILD_NUMBER}" 
+        Update-AppveyorBuild -Version "$($versionInfo.FullSemVer).build.$env:APPVEYOR_BUILD_NUMBER" 
     }                
 }
 
