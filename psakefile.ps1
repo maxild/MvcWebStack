@@ -1,10 +1,3 @@
-# Note that using the value 4.5.1 also works for projects that target 4.5.2
-# (the value 4.5.2 is not recognised by psake)
-# This will make msbuild point to one of:
-#    [ProgramFilesX86]\MSBuild\12.0\bin\amd64 (x64 bitness of powershell)
-#    [ProgramFilesX86]\MSBuild\12.0\bin (x32 bitness of powershell)
-# See also http://blogs.msdn.com/b/visualstudio/archive/2013/07/24/msbuild-is-now-part-of-visual-studio.aspx
-# See also https://github.com/damianh/psake/commit/0778be759e83014f0bfdd1a0c84caac008c8112f
 Framework 4.5.2
 
 properties {
@@ -17,7 +10,6 @@ properties {
     $sln_file = "Maxfire.sln"
     $configuration = "Release"
     $commonAssemblyInfoPath = join-path $base_dir "src" | join-path -ChildPath "CommonAssemblyInfo.cs"
-    $global:version = "1.0.0-*"
     $framework_dir = Get-FrameworkDirectory
     $tools_version = "14.0" # MSBuild 14 == vs2015 == C#6
 }
@@ -28,46 +20,20 @@ task dev -depends compile, test     -description "developer build (before commit
 task local -depends dev, pack       -description "local full build (producing local nupkg's)"
 task all -depends dev, srcidx, pack -description "full build (producing source linked nupkg's)"
 
-# For project.json as { "version": "1.0.0-*", ...}, together with label='alpha'
-# and build=12345, the end result is something equivalent to (DNX_BUILD_VERSION=alpha-12345, DNX_ASSEMBLY_FILE_VERSION=12345)
-#  [assembly: AssemblyVersion("1.0.0.0")]
-#  [assembly: AssemblyFileVersion("1.0.0.12345")]
-#  [assembly: AssemblyInformationalVersion("1.0.0-alpha-12345")]
-#
-# Before building (in build.ps1) do something like
-#      $env:DNX_BUILD_VERSION="${PrereleaseTag}-${paddedBuildNumber}"
-#      $env:DNX_ASSEMBLY_FILE_VERSION=$buildNumber
 task resolveVersions {
-    $commitId = Get-Git-Commit-Full
-    
-    if ($global:version.EndsWith('-*')) {
-        $global:assemblyVersion = $global:version.Substring(0, $global:version.Length - 2)
-        if ($env:DNX_BUILD_VERSION -ne $NULL) {
-            $global:pkgVersion = $global:version.Substring(0, $global:version.Length - 1) + $env:DNX_BUILD_VERSION
-        }
-        else {
-            $global:pkgVersion = $global:assemblyVersion
-        }
+    $output = & "$packages_dir\GitVersion.Commandline\tools\GitVersion.exe" /output json
+    if ($LASTEXITCODE -ne 0) {
+        throw "GitVersion Exit Code: $LASTEXITCODE"
     }
-    else {
-        $global:assemblyVersion = $global:version
-        $global:pkgVersion = $global:version
-    }
+    $versionInfoJson = $output -join "`n"
+    $versionInfo = $versionInfoJson | ConvertFrom-Json
 
-    if ($env:DNX_ASSEMBLY_FILE_VERSION -ne $NULL) {
-        [int]$fileVersion = $env:DNX_ASSEMBLY_FILE_VERSION
-    }
-    else {
-        [int]$fileVersion = 0
-    }
-    $global:assemblyFileVersion = "${global:assemblyVersion}.$fileVersion"
-    $global:assemblyInformationalVersion = "$pkgVersion / $commitId /"
-    # To access version information at run time in .NET:
-    #    var executingAssembly = Assembly.GetExecutingAssembly();
-    #    var fv = System.Diagnostics.FileVersionInfo.GetVersionInfo(executingAssembly.Location);
-    #    Console.WriteLine(executingAssembly.GetName().Version); // AssemblyVersion
-    #    Console.WriteLine(fv.FileVersion);                      // AssemblyFileVersion
-    #    Console.WriteLine(fv.ProductVersion);                   // AssemblyInformationalVersion
+    $version = $versionInfo.MajorMinorPatch
+
+    $global:pkgVersion = $versionInfo.LegacySemVerPadded
+    $global:assemblyVersion = $versionInfo.AssemblySemVer
+    $global:assemblyFileVersion = ($version + ".0")
+    $global:assemblyInformationalVersion = $versionInfo.InformationalVersion                    
 }
 
 task versionInfo -depends resolveVersions {

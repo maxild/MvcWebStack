@@ -2,21 +2,32 @@ init:
   - git config --global core.autocrlf input
 
 build_script:
-  - ps: .\build.ps1 -target Verify -config Release   -label alpha -build $env:APPVEYOR_BUILD_NUMBER
-  - ps: .\build.ps1 -target All    -config Debug     -label alpha -build $env:APPVEYOR_BUILD_NUMBER
-
-clone_depth: 1
+  - ps: .\build.ps1 -target Verify -config Debug   
+  - ps: .\build.ps1 -target All    -config Release
 
 test: off
 
 artifacts:
 - path: artifacts\**\*.nupkg
-  name: MyGet
+  name: Packages
 
 deploy:
+# Deploy to Myget on every push to Github
 - provider: NuGet
   server: https://www.myget.org/F/maxfire-ci/api/v2/package
   api_key:
     secure: EOVLFyiHRhh9Jij3/mITdSV5JH1SzT8JUbqqTIFtvOPndNeMme3mME01ws3+5nFB
   skip_symbols: true
-  artifact: MyGet
+  artifact: Packages
+# Deploy to NuGet.org only on tagged master branch pushes to Github
+- provider: NuGet
+  api_key:
+    secure: DInFdMch2u8btkaNWMOPYOsnV6eknvY0rJvdxIkCi3Sijxc+b6i8a7142SbWtzBK
+  skip_symbols: true
+  artifact: Packages
+  on:
+    # When branch is not sent in webhook payload (base_ref == null, when not using Web UI)
+    # it's set to tag name. See http://help.appveyor.com/discussions/questions/1635-github-deploy-with-condition-branch-master
+    branch: /v\d+\.\d+\.\d+/   # only deploy non-prerelease versions
+    appveyor_repo_tag: true    # deploy on tag push only
+    
