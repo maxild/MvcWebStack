@@ -329,7 +329,7 @@ task pack -depends compile {
         # All files in nuspec are relative paths, grab dll and pdb files using this base path
         $basePath = "$source_dir\$projectName\bin\$configuration"
 
-        exec { & $base_dir\.nuget\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename }
+        exec { & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename }
     }
 }
 
