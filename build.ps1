@@ -8,15 +8,15 @@ param (
     [switch]$ShowHelp,
     [Alias('t')]
     [switch]$ShowTargets,
-    [switch]$SkipRestore,
-    [switch]$CleanCache,
-    [switch]$SkipTests,
     [switch]$UpdateNuget
 )
 
 $RepoRoot = $PSScriptRoot
 $ToolsDir = Join-Path $RepoRoot 'tools'
 $NuGetExe = Join-Path $ToolsDir 'nuget.exe'
+
+$PsakePath =       Join-Path $ToolsDir -Child "psake\tools\psake\psake.ps1"
+$PsakeModulePath = Join-Path $ToolsDir -Child "psake\tools\psake\psake.psm1";
 
 if (-not (Test-Path $ToolsDir)) {
     New-Item -ItemType directory -Path $ToolsDir -ErrorAction SilentlyContinue | out-null
@@ -65,12 +65,6 @@ Install-GitVersion
 Install-XunitCliRunner
 Install-SourceLink
 
-$PsakePath = "$ToolsDir\psake\tools\psake\psake.ps1"
-
-if (-not (Test-Path $PsakePath)) {
-    throw "PSAKE have not been installed."
-}
-
 if ($ShowHelp.IsPresent) {
     & $PsakePath -help
 }
@@ -78,7 +72,7 @@ elseif ($ShowTargets.IsPresent) {
     & $PsakePath .\psakefile.ps1 -docs
 }
 else {
-    & $PsakePath .\psakefile.ps1 $Target -properties @{configuration=$Configuration}
+    & $PsakePath .\psakefile.ps1 $Target -properties @{configuration=$Configuration; target=$Target}
 }
 
 # report success or failure
