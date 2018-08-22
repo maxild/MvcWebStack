@@ -54,8 +54,8 @@ function Install-XunitCliRunner {
 }
 
 function Install-SourceLink {
-    if (-not (Test-Path (Join-Path $RepoRoot 'packages\SourceLink'))) {
-        & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -o packages -nocache
+    if (-not (Test-Path (Join-Path $ToolsDir 'SourceLink'))) {
+        & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
@@ -63,6 +63,7 @@ Install-NuGet
 Install-PSake
 Install-GitVersion
 Install-XunitCliRunner
+Install-SourceLink
 
 $PsakePath = "$ToolsDir\psake\tools\psake\psake.ps1"
 
