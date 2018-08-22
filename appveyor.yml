@@ -10,6 +10,9 @@ environment:
 init:
   - git config --global core.autocrlf input
 
+install:
+  - ps: Install-Module VSSetup -Scope CurrentUser -Force
+
 build_script:
   - ps: .\build.ps1 -target Verify -config Debug
   - ps: .\build.ps1 -target All    -config Release
