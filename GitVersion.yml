@@ -8,19 +8,19 @@
 # of dev (ci builds) until release have been merged into master.
 # https://github.com/GitTools/GitVersion/issues/632
 # https://github.com/GitTools/GitVersion/issues/695
-# This shoyld have been fixed in v4
+# This should have been fixed in v4
 #
 # The sorting should be feature (alpha|a) < develop (ci|dev|beta) < release|hotfix (rc) < master
 #
-# About Git commit counters: getting a commit counter from git is easy and fast, even for 
-# very large repos: 
-#      git rev-list master --count 
+# About Git commit counters: getting a commit counter from git is easy and fast, even for
+# very large repos:
+#      git rev-list master --count
 # or for all commits on a particular branch
 #      git rev-list branch ^master --count
 # Also read https://github.com/GitTools/GitVersion/issues/889
 assembly-versioning-scheme: None
 mode: ContinuousDeployment
-#next-version: 1.0.0
+next-version: 0.2.0 # TODO: Bug i GitVersion mht. feature branches
 legacy-semver-padding: 4
 build-metadata-padding: 4
 commits-since-version-source-padding: 4
@@ -33,7 +33,7 @@ branches:
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
-    is-develop: false
+    tracks-release-branches: false
     is-release-branch: false
     is-mainline: false
   develop:
@@ -43,7 +43,7 @@ branches:
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
-    is-develop: true
+    tracks-release-branches: true
     is-release-branch: false
     is-mainline: false
   # pull requests are not important, because we use a shared/centralized upstream repo and
@@ -58,7 +58,7 @@ branches:
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    is-develop: false
+    tracks-release-branches: false
     is-release-branch: true
     is-mainline: false
   master:
@@ -68,7 +68,7 @@ branches:
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    is-develop: false
+    tracks-release-branches: false
     is-release-branch: false
     is-mainline: true
   hotfix:
@@ -78,6 +78,6 @@ branches:
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    is-develop: false
+    tracks-release-branches: false
     is-release-branch: false
     is-mainline: false
