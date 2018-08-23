@@ -170,7 +170,7 @@ task srcidx -depends compile {
     if ([string]::IsNullOrWhiteSpace($gitStatus)) {
         # Traverse all project files (ie. packages)
         $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-        $packages | %{
+        $packages | ForEach-Object {
             $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
             Write-Host "Source indexing PDB's from project $projectName" -ForegroundColor Yellow
             $projectfile   = "$source_dir\$projectName\$projectName.csproj"
@@ -234,7 +234,7 @@ task test -depends compile {
 
     # Traverse all project files (ie. packages)
     $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-    $packages | %{
+    $packages | ForEach-Object {
         $testProjectName = ([io.path]::GetFileNameWithoutExtension($_.FullName) + ".UnitTests")
         $testAssemblyPath = "$test_dir\$testProjectName\bin\$configuration\$testProjectName.dll"
 
@@ -304,10 +304,10 @@ task pack -depends clean, test {
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.
     $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-    $packages | %{
+    $packages | ForEach-Object {
         $nuspec = [xml](Get-Content $_.FullName)
         $nuspec.package.metadata.version = $global:pkgVersion
-        $nuspec | Select-Xml '//dependency' | %{
+        $nuspec | Select-Xml '//dependency' | ForEach-Object {
             # Internal package versions
             if (($_.Node.id.StartsWith('Maxfire')) -and (-not $_.Node.id.StartsWith('Maxfire.Prelude'))) {
                 $_.Node.version = $global:pkgVersion
@@ -344,14 +344,34 @@ task pack -depends clean, test {
         # All files in nuspec are relative paths, grab dll and pdb files using this base path
         $basePath = "$source_dir\$projectName\bin\$configuration"
 
-        exec { & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename }
+        exec {
+            & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename
+
+            # TODO
+            # NuGetPack(nuspec.FullPath, new NuGetPackSettings {
+            #     Version = parameters.VersionInfo.NuGetVersion,
+            #     //ReleaseNotes = nuspec.Segments.Last().StartsWith("Brf.Lofus.Core") ? lofusCoreRelease.Notes.ToArray() : lofusRegnekerneRelease.Notes.ToArray(),
+            #     BasePath = parameters.Paths.Directories.TempArtifacts,
+            #     OutputDirectory = parameters.Paths.Directories.Artifacts,
+            #     Symbols = false, // TODO: right now packages will include symbols...maybe make both Brf.Lofus.Core.symbols.nuspec and Brf.Lofus.Core.nuspec
+            #     NoPackageAnalysis = true,
+            #     Properties = new Dictionary<string, string>
+            #     {
+            #         // See https://github.com/NuGet/Home/issues/1795#issuecomment-161098620
+            #         { "Configuration", parameters.Configuration },
+            #         { "package_version", parameters.VersionInfo.NuGetVersion },
+            #         { "prelude_version", preludeVersion },
+            #         { "hisclient_version", hisclientVersion }
+            #     }
+            # });
+         }
     }
 }
 
 function find-dependencyVersion($packagesConfigPath, $packageId) {
 
     $dependencies = [xml](Get-Content  $packagesConfigPath)
-    $dependencies | Select-Xml '//package' | %{
+    $dependencies | Select-Xml '//package' | ForEach-Object {
         if ($_.Node.id -eq $packageId) {
             $packageVersion = $_.Node.version
         }
@@ -367,140 +387,75 @@ function find-dependencyVersion($packagesConfigPath, $packageId) {
 task publish -depends pack {
     if (deployToCIFeed) {
         Write-Host "Deploying to CI Feed..."
-        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | % {
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object {
             exec { & $tools_dir\Nuget.exe push $_ -NoSymbols -Source $cifeed_url -ApiKey $env:CI_DEPLOYMENT_API_KEY }
         }
     }
     if (deployToProdFeed) {
         Write-Host "Deploying to Prod Feed..."
-        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | % {
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object {
             exec { & $tools_dir\Nuget.exe push $_ -NoSymbols -Source $prodfeed_url -ApiKey $env:DEPLOYMENT_API_KEY }
         }
     }
 }
 
-task createGitHubReleaseNotes {
-    try {
-        Write-Output "Creating GitHub Release Notes..."
-        $rootDirectory = get-rootDirectory;
-        $chocolateyBinDir = Join-Path $script:chocolateyDir -ChildPath "bin";
-        $gitReleaseManagerExe = Join-Path $chocolateyBinDir -ChildPath "GitReleaseManager.exe";
-
-        exec {
-            & $gitReleaseManagerExe create -c master -u $env:GitHubUserName -p $env:GitHubPassword -o chocolatey -r chocolateygui -m $script:version -d $rootDirectory
-        }
-
-        Write-Output ("************ Create GitHub Release Notes Successful ************")
-    }
-    catch {
-        Write-Error $_
-        Write-Output ("************ Create GitHub Release Notes Failed ************")
-}
-}
-
-task exportGitHubReleaseNotes -Description "Using the Release Notes stored on GitHub, generate a new CHANGELOG.md file" -Action {
-    try {
-        Write-Output "Exporting GitHub Release Notes..."
-        $rootDirectory = get-rootDirectory;
-        $changeLogFilePath = Join-Path -Path $rootDirectory -ChildPath "CHANGELOG.md";
-        $chocolateyBinDir = Join-Path $script:chocolateyDir -ChildPath "bin";
-        $gitReleaseManagerExe = Join-Path $chocolateyBinDir -ChildPath "GitReleaseManager.exe";
-
-        exec {
-            & $gitReleaseManagerExe export -f $changeLogFilePath -u $env:GitHubUserName -p $env:GitHubPassword -o chocolatey -r chocolateygui -d $rootDirectory
-        }
-
-        Write-Output ("************ Export GitHub Release Notes Successful ************")
-    }
-    catch {
-        Write-Error $_
-        Write-Output ("************ Export GitHub Release Notes Failed ************")
-}
-}
-
-task addAssetsToGitHubRelease -Description "Now that we know all is well, upload packages to release." -Action {
-    try {
-        Write-Output "Adding assets to GitHub Release..."
-        $rootDirectory = get-rootDirectory;
-        $buildArtifactsDirectory = get-buildArtifactsDirectory;
-        $chocolateyBinDir = Join-Path $script:chocolateyDir -ChildPath "bin";
-        $gitReleaseManagerExe = Join-Path $chocolateyBinDir -ChildPath "GitReleaseManager.exe";
-
-        exec {
-            Get-ChildItem $buildArtifactsDirectory -Filter *.nupkg | Foreach-Object {
-                $nugetPath = ($_ | Resolve-Path).Path;
-                $convertedPath = Convert-Path $nugetPath;
-
-                & $gitReleaseManagerExe addasset -a $convertedPath -t $script:version -u $env:GitHubUserName -p $env:GitHubPassword -o chocolatey -r chocolateygui -d $rootDirectory
-            }
-
-            & $gitReleaseManagerExe addasset -a "$buildArtifactsDirectory\ChocolateyGUI.msi" -t $script:version -u $env:GitHubUserName -p $env:GitHubPassword -o chocolatey -r chocolateygui -d $rootDirectory
-        }
-
-        Write-Output ("************ Adding assets Successful ************")
-    }
-    catch {
-        Write-Error $_
-        Write-Output ("************ Adding assets Failed ************")
-    }
-}
-
-task closeMilestone {
-    try {
-	    Write-Output "Closing GitHub Milestone..."
-        $rootDirectory = get-rootDirectory;
-        $chocolateyBinDir = Join-Path $script:chocolateyDir -ChildPath "bin";
-        $gitReleaseManagerExe = Join-Path $chocolateyBinDir -ChildPath "GitReleaseManager.exe";
-
-        exec {
-            & $gitReleaseManagerExe close -m $script:version -u $env:GitHubUserName -p $env:GitHubPassword -o chocolatey -r chocolateygui d $rootDirectory
-        }
-
-        Write-Output ("************ Closing GitHub Milestone Successful ************")
-    }
-    catch {
-        Write-Error $_
-        Write-Output ("************ Closing GitHub Milestone Failed ************")
-    }
-}
-
 task Upload-AppVeyor-Artifacts {
     if (isAppVeyor) {
-        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | % { Push-AppveyorArtifact $_ }
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object { Push-AppveyorArtifact $_ }
     }
 }
 
-task Create-Release-Notes {
-    # TODO
+task Create-Release-Notes -depends resolveVersion {
+    if ($null -eq $env:github_password) {
+        Write-Warning "You must provide your github password as an environment variable: `$env:github_password = ...secret..."
+        Write-Warning "No draft release was created on GitHub."
+    }
+    else {
+        # This is both the title and tagName of the release (title can be edited on github.com)
+        $milestone = $majorMinorPatch
+        Write-Host "Creating draft release of version '$milestone' on GitHub"
+        try {
+            $gitReleaseManagerExe = Join-Path $tools_dir -ChildPath "GitReleaseManager\tools\GitReleaseManager.exe";
+            exec {
+                & $gitReleaseManagerExe create -c master -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -m $milestone -d $base_dir
+            }
+            Write-Output "The draft release was created successfully on GitHub."
+        }
+        catch {
+            Write-Error $_
+            Write-Warning "No draft release was created on GitHub."
+        }
+    }
 }
 
-task Publish-GitHub-Release {
-    # TODO
+# Todo: source indexing should be part of pack
+task Publish-GitHub-Release -depends pack {
+    if (deployToProdFeed) {
+        # This is both the title and tagName of the release (title can be edited on github.com)
+        $milestone = $majorMinorPatch
+        Write-Host "Closing the milestone '$milestone' on GitHub"
+        try {
+            $gitReleaseManagerExe = Join-Path $tools_dir -ChildPath "GitReleaseManager\tools\GitReleaseManager.exe";
+            exec {
+                # add packages to the published release
+                Get-ChildItem $artifacts_dir -Filter *.nupkg | ForEach-Object  {
+                    $nugetPath = ($_ | Resolve-Path).Path;
+                    $convertedPath = Convert-Path $nugetPath;
+                    & $gitReleaseManagerExe addasset -a $convertedPath -t $pkgVersion -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -m $milestone -d $base_dir
+                }
+                # Close the milestone
+                & $gitReleaseManagerExe close -m $milestone -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -d $base_dir
+            }
+        }
+        catch {
+            Write-Error $_
+            Write-Warning "Milestone was closed on GitHub."
+        }
+    }
+    else {
+        Write-Host "Skipping Publish-GitHub-Release, because ShouldDeployToProdFeed is false."
+    }
 }
-
-# TODO: Slet
-# task resolveGitFlow {
-#     if (isAppVeyor) {
-#         if ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null) {
-#             # DeployDevelopSolutionToCIFeed
-#         }
-#         elseif ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null) {
-#             # InspectCodeForProblems (dev)
-#         }
-#         elseif ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null -And $env:APPVEYOR_REPO_TAG -eq $false) {
-#             # DeployMasterSolutionToCIFeed
-#         }
-#         elseif ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null -And $env:APPVEYOR_REPO_TAG -eq $false) {
-#             # InspectCodeForProblems (dev)
-#         }
-#         elseif ($env:APPVEYOR_REPO_BRANCH -eq "master" -And $env:APPVEYOR_PULL_REQUEST_NUMBER -eq $null -And $env:APPVEYOR_REPO_TAG -eq $true) {
-#             # DeploySolutionToProdFeed (dev + deploy)
-#         }
-#     }
-#     else {
-#         invoke-psake "$here/default.ps1" -task $Action -properties @{ 'config'=$Config; }
-#     }
-# }
 
 # -------------------------------------------------------------------------------------------------------------
 # functions

@@ -1,0 +1,42 @@
+issue-labels-include:
+- bug
+- enhancement
+- feature
+- optimization
+- breaking
+- api-breaking
+- behavior-change
+- regnekerne
+issue-labels-exclude:
+- build
+- help wanted
+- question
+- invalid
+- wontfix
+- duplicate
+- discussion
+- docs
+- investigate
+- idea
+- refactoring
+- workflow
+- tests
+- 'product-specs'
+- 'Planning: MilestoneMaster'
+- 'Planning: Roadmap'
+issue-labels-alias:
+    - name:    breaking
+      header:  breaking change
+      plural:  breaking changes
+    - name:    api-breaking
+      header:  api breaking change
+      plural:  api breaking changes
+    - name:    behavior-change
+      header:  behavior breaking change
+      plural:  behavior breaking changes
+    - name:    build
+      header:  tooling
+      plural:  tooling
+    - name:    regnekerne
+      header:  regnekerne
+      plural:  regnekerne

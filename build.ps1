@@ -47,6 +47,13 @@ function Install-GitVersion {
     }
 }
 
+function Install-GitReleaseManager {
+    if (-not (Test-Path (Join-Path $ToolsDir 'GitReleaseManager'))) {
+        & $NuGetExe install GitReleaseManager -version 0.7.1 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+    }
+}
+
+
 function Install-XunitCliRunner {
     if (-not (Test-Path (Join-Path $ToolsDir 'xunit.runner.console'))) {
         & $NuGetExe install xunit.runner.console -version 2.4.0 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
@@ -62,6 +69,7 @@ function Install-SourceLink {
 Install-NuGet
 Install-PSake
 Install-GitVersion
+Install-GitReleaseManager
 Install-XunitCliRunner
 Install-SourceLink
 
