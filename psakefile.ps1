@@ -1,24 +1,34 @@
 Framework "4.7.1" # MSBuild 15
 
+$psake.use_exit_on_error = $true
 properties {
+    # bootstrapper props
+    $target = "default"
+    $configuration = "Release"
+    # msbuild
+    $tools_version = "15.0" # MSBuild 15 == vs2017 == C#7
+    # paths
     $base_dir = resolve-path .
     $source_dir = join-path $base_dir "src"
     $test_dir = join-path $base_dir "test"
     $tools_dir = join-path $base_dir "tools"
     $nuspec_dir = join-path $base_dir "nuspec"
     $artifacts_dir = join-path $base_dir "artifacts"
+    # files
     $sln_file = "Maxfire.sln"
-    $configuration = "Release"
     $commonAssemblyInfoPath = join-path $base_dir "src" | join-path -ChildPath "CommonAssemblyInfo.cs"
-    $framework_dir = Get-FrameworkDirectory
-    $tools_version = "15.0" # MSBuild 15 == vs2017 == C#7
+    # deployment
+    $repositoryName = "MvcWebStack"
+    $repositoryOwner = "maxild"
+    $cifeed_url = "https://www.myget.org/F/maxfire-ci/api/v2/package"
+    $prodfeed_url = "https://www.nuget.org/api/v2/package"
 }
 
-task default -depends dev
-task verify -depends dev
-task dev -depends compile, test     -description "developer build (before commits)"
-task local -depends dev, pack       -description "local full build (producing local nupkg's)"
-task all -depends dev, srcidx, pack -description "full build (producing source linked nupkg's)"
+task Default -depends pack
+
+task ReleaseNotes -depends Create-Release-Notes
+
+task AppVeyor -depends info, test, srcidx, pack, Upload-AppVeyor-Artifacts, publish, Publish-GitHub-Release
 
 # TODO: kan slettes for public repo
 task repairGitRemoteOnAppVeyor {
@@ -71,7 +81,7 @@ task resolveVersion -depends repairGitRemoteOnAppVeyor {
 
     if ($env:APPVEYOR -ne $NULL) {
 
-        # Running on AppVeyor, we have to patch/setup local tracking branches (TODO: env vars)
+        # Running on AppVeyor, we have to patch/setup local tracking branches
         $output = & "$tools_dir\GitVersion.Commandline\tools\GitVersion.exe" /output buildserver
         if ($LASTEXITCODE -ne 0) {
             if ($output -is [array]) {
@@ -111,11 +121,13 @@ task resolveVersion -depends repairGitRemoteOnAppVeyor {
     $global:infoVersion = $versionInfo.InformationalVersion
 
     #$global:commitId   = $versionInfo.Sha
-    $global:commitId   = &git rev-parse --verify HEAD           # full 40 char Sha
-    #$global:commitId   = &git rev-parse --verify --short HEAD   # 7 char commit id
+    $global:commitSha   = &git rev-parse --verify HEAD           # full 40 char Sha
+    $global:commitId   = &git rev-parse --verify --short HEAD    # 7 char commit id
 
     #$global:branchName = $versionInfo.BranchName
     $global:branchName = & git rev-parse --verify --abbrev-ref HEAD
+
+    $global:commitTag = & git tag -l --points-at HEAD
 
     #$global:commitDate = $versionInfo.CommitDate
 
@@ -140,9 +152,11 @@ task verifyGit {
     Write-Host "$gitVersion is installed and found in PATH environment variable."
 }
 
-task verifyVersion -depends resolveVersion {
-    Show-Configuration
+task info -depends resolveVersion {
+    Show-Info
+    echoAppVeyorEnvironmentVariables
 }
+
 
 # Source index the pdb file (See also http://ctaggart.github.io/SourceLink/exe.html)
 # SourceLink enables GIT to be the source server by indexing the pdb file with http(s) download links.
@@ -150,29 +164,26 @@ task srcidx -depends compile {
     # This should only be performed on the build server (or in a clean checkout)
     # The SourceLink.exe tool is used to insert (the version control) information
     # into the "srcsrv" stream of the target .pdb file.
-    $commitId = Get-Git-Commit-Full
-    if ($commitId -ne "0000000000000000000000000000000000000000") {
 
-        # Status should be 'clean'
-        $gitStatus = (@(git status --porcelain) | Out-String)
-        if ( -not ([string]::IsNullOrWhiteSpace($gitStatus)) ) {
-            throw ("Git working tree or Git index is not clean, because 'git status --porcelain' is showing some output!!")
-        }
-
+    # Status should be 'clean'
+    $gitStatus = (@(git status --porcelain) | Out-String)
+    if ([string]::IsNullOrWhiteSpace($gitStatus)) {
         # Traverse all project files (ie. packages)
         $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-        $packages | %{
+        $packages | ForEach-Object {
             $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
             Write-Host "Source indexing PDB's from project $projectName" -ForegroundColor Yellow
             $projectfile   = "$source_dir\$projectName\$projectName.csproj"
 
             # URL for downloading the source files, use {0} for commit and %var2% for path
             exec {
-                &"$tools_dir\SourceLink\tools\SourceLink.exe" index -pr $projectfile -pp Configuration $configuration -u 'https://raw.githubusercontent.com/maxild/MvcWebStack/{0}/%var2%' -c $commitId
+                &"$tools_dir\SourceLink\tools\SourceLink.exe" index -pr $projectfile -pp Configuration $configuration -u 'https://raw.githubusercontent.com/maxild/MvcWebStack/{0}/%var2%' -c $commitSha
             }
 
         }
-
+    }
+    else {
+        Write-Warning "Skipping Source Indexing: Git working tree or Git index is not clean, because 'git status --porcelain' is showing some output!!"
     }
 }
 
@@ -187,7 +198,11 @@ task restore {
 }
 
 task compile -depends restore, resolveVersion, commonAssemblyInfo {
-    Show-Configuration
+    Write-Host -NoNewline "Compiling version '" -ForegroundColor Yellow
+    Write-Host -NoNewline "$semVersion" -ForegroundColor DarkGreen
+    Write-Host -NoNewline "' with '" -ForegroundColor Yellow
+    Write-Host -NoNewline "$configuration" -ForegroundColor DarkGreen
+    Write-Host "' configuration has resulted in versions defined by" -ForegroundColor Yellow
     exec {
         # $output = &msbuild /version /nologo | Out-String
         # Write-Host $output
@@ -219,7 +234,7 @@ task test -depends compile {
 
     # Traverse all project files (ie. packages)
     $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-    $packages | %{
+    $packages | ForEach-Object {
         $testProjectName = ([io.path]::GetFileNameWithoutExtension($_.FullName) + ".UnitTests")
         $testAssemblyPath = "$test_dir\$testProjectName\bin\$configuration\$testProjectName.dll"
 
@@ -272,7 +287,7 @@ using System.Runtime.InteropServices;
 " | out-file $commonAssemblyInfoPath -encoding "utf8"
 }
 
-task pack -depends compile {
+task pack -depends clean, test {
 
     # ensure we have an artifacts dir
     create_directory $artifacts_dir
@@ -289,10 +304,10 @@ task pack -depends compile {
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.
     $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-    $packages | %{
+    $packages | ForEach-Object {
         $nuspec = [xml](Get-Content $_.FullName)
         $nuspec.package.metadata.version = $global:pkgVersion
-        $nuspec | Select-Xml '//dependency' | %{
+        $nuspec | Select-Xml '//dependency' | ForEach-Object {
             # Internal package versions
             if (($_.Node.id.StartsWith('Maxfire')) -and (-not $_.Node.id.StartsWith('Maxfire.Prelude'))) {
                 $_.Node.version = $global:pkgVersion
@@ -324,19 +339,39 @@ task pack -depends compile {
         $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
 
         $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)
-        $nuspec.Save($nuspecFilename)
+        $nuspec.Save($nuspecFilename) # TODO: Dette skal aendres til at benytte string substitution
 
         # All files in nuspec are relative paths, grab dll and pdb files using this base path
         $basePath = "$source_dir\$projectName\bin\$configuration"
 
-        exec { & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename }
+        exec {
+            & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename
+
+            # TODO
+            # NuGetPack(nuspec.FullPath, new NuGetPackSettings {
+            #     Version = parameters.VersionInfo.NuGetVersion,
+            #     //ReleaseNotes = nuspec.Segments.Last().StartsWith("Brf.Lofus.Core") ? lofusCoreRelease.Notes.ToArray() : lofusRegnekerneRelease.Notes.ToArray(),
+            #     BasePath = parameters.Paths.Directories.TempArtifacts,
+            #     OutputDirectory = parameters.Paths.Directories.Artifacts,
+            #     Symbols = false, // TODO: right now packages will include symbols...maybe make both Brf.Lofus.Core.symbols.nuspec and Brf.Lofus.Core.nuspec
+            #     NoPackageAnalysis = true,
+            #     Properties = new Dictionary<string, string>
+            #     {
+            #         // See https://github.com/NuGet/Home/issues/1795#issuecomment-161098620
+            #         { "Configuration", parameters.Configuration },
+            #         { "package_version", parameters.VersionInfo.NuGetVersion },
+            #         { "prelude_version", preludeVersion },
+            #         { "hisclient_version", hisclientVersion }
+            #     }
+            # });
+         }
     }
 }
 
 function find-dependencyVersion($packagesConfigPath, $packageId) {
 
     $dependencies = [xml](Get-Content  $packagesConfigPath)
-    $dependencies | Select-Xml '//package' | %{
+    $dependencies | Select-Xml '//package' | ForEach-Object {
         if ($_.Node.id -eq $packageId) {
             $packageVersion = $_.Node.version
         }
@@ -349,49 +384,255 @@ function find-dependencyVersion($packagesConfigPath, $packageId) {
     return $packageVersion
 }
 
+task publish -depends pack {
+    if (deployToCIFeed) {
+        Write-Host "Deploying to CI Feed..."
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object {
+            exec { & $tools_dir\Nuget.exe push $_ -NoSymbols -Source $cifeed_url -ApiKey $env:CI_DEPLOYMENT_API_KEY }
+        }
+    }
+    if (deployToProdFeed) {
+        Write-Host "Deploying to Prod Feed..."
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object {
+            exec { & $tools_dir\Nuget.exe push $_ -NoSymbols -Source $prodfeed_url -ApiKey $env:DEPLOYMENT_API_KEY }
+        }
+    }
+}
+
+task Upload-AppVeyor-Artifacts {
+    if (isAppVeyor) {
+        Get-ChildItem (Join-Path $artifacts_dir "*.nupkg") | ForEach-Object { Push-AppveyorArtifact $_ }
+    }
+}
+
+task Create-Release-Notes -depends resolveVersion {
+    if ($null -eq $env:github_password) {
+        Write-Warning "You must provide your github password as an environment variable: `$env:github_password = ...secret..."
+        Write-Warning "No draft release was created on GitHub."
+    }
+    else {
+        # This is both the title and tagName of the release (title can be edited on github.com)
+        $milestone = $majorMinorPatch
+        Write-Host "Creating draft release of version '$milestone' on GitHub"
+        try {
+            $gitReleaseManagerExe = Join-Path $tools_dir -ChildPath "GitReleaseManager\tools\GitReleaseManager.exe";
+            exec {
+                & $gitReleaseManagerExe create -c master -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -m $milestone -d $base_dir
+            }
+            Write-Output "The draft release was created successfully on GitHub."
+        }
+        catch {
+            Write-Error $_
+            Write-Warning "No draft release was created on GitHub."
+        }
+    }
+}
+
+# Todo: source indexing should be part of pack
+task Publish-GitHub-Release -depends pack {
+    if (deployToProdFeed) {
+        # This is both the title and tagName of the release (title can be edited on github.com)
+        $milestone = $majorMinorPatch
+        Write-Host "Closing the milestone '$milestone' on GitHub"
+        try {
+            $gitReleaseManagerExe = Join-Path $tools_dir -ChildPath "GitReleaseManager\tools\GitReleaseManager.exe";
+            exec {
+                # add packages to the published release
+                Get-ChildItem $artifacts_dir -Filter *.nupkg | ForEach-Object  {
+                    $nugetPath = ($_ | Resolve-Path).Path;
+                    $convertedPath = Convert-Path $nugetPath;
+                    & $gitReleaseManagerExe addasset -a $convertedPath -t $pkgVersion -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -m $milestone -d $base_dir
+                }
+                # Close the milestone
+                & $gitReleaseManagerExe close -m $milestone -u $repositoryOwner -p $env:github_password -o $repositoryOwner -r $repositoryName -d $base_dir
+            }
+        }
+        catch {
+            Write-Error $_
+            Write-Warning "Milestone was closed on GitHub."
+        }
+    }
+    else {
+        Write-Host "Skipping Publish-GitHub-Release, because ShouldDeployToProdFeed is false."
+    }
+}
+
 # -------------------------------------------------------------------------------------------------------------
 # functions
 # --------------------------------------------------------------------------------------------------------------
 
-function Show-Configuration {
-    Write-Host -NoNewline "Compiling version '" -ForegroundColor Yellow
-    Write-Host -NoNewline "$semVersion" -ForegroundColor DarkGreen
-    Write-Host -NoNewline "' with '" -ForegroundColor Yellow
-    Write-Host -NoNewline "$configuration" -ForegroundColor DarkGreen
-    Write-Host "' configuration has resulted in versions defined by" -ForegroundColor Yellow
+function IsPullRequest() {
+    return $null -ne $env:APPVEYOR_PULL_REQUEST_NUMBER
+}
 
-    Write-Host -NoNewline "  Version: " -ForegroundColor Yellow
-    Write-Host "$semVersion" -ForegroundColor DarkGreen
+function isTagPush() {
+    if ($null -ne $env:APPVEYOR_REPO_TAG) {
+        return 'true' -eq $env:APPVEYOR_REPO_TAG
+    }
+    else {
+        return $false
+    }
+}
 
-    Write-Host -NoNewline "  NuGetVersion: " -ForegroundColor Yellow
-    Write-Host "$pkgVersion" -ForegroundColor DarkGreen
+function isFeatureBranch() {
+    return $branchName -match "^features?/"
+}
 
-    Write-Host -NoNewline "  BuildVersion: " -ForegroundColor Yellow
-    Write-Host "$buildVersion" -ForegroundColor DarkGreen
+function isHotfixBranch() {
+    return $branchName -match "^hotfix(es)?/"
+}
 
-    Write-Host -NoNewline "  CommitId: " -ForegroundColor Yellow
-    Write-Host "$commitId" -ForegroundColor DarkGreen
+function isReleaseCandidateBranch() {
+    return $branchName -match "^releases?/(0|[1-9]\d*)[.](0|[1-9]\d*)([.](0|[1-9]\d*))?"
+}
 
-    Write-Host -NoNewline "  CommitDate: " -ForegroundColor Yellow
-    Write-Host "$commitDate" -ForegroundColor DarkGreen
+function isDevelopBranch() {
+    return $branchName -match "^dev(elop)?$"
+}
 
-    Write-Host -NoNewline "  BranchName: " -ForegroundColor Yellow
-    Write-Host "$branchName" -ForegroundColor DarkGreen
+function isMasterBranch() {
+    return $branchName -eq "master"
+}
 
-    Write-Host -NoNewline "  AssemblyVersion: " -ForegroundColor Yellow
-    Write-Host "$assemblyVersion" -ForegroundColor DarkGreen
+function isSupportBranch() {
+    return $branchName -match "^support/(0|[1-9]\d*)[.](x|0|[1-9]\d*)"
+}
 
-    Write-Host -NoNewline "  AssemblyFileVersion: " -ForegroundColor Yellow
-    Write-Host "$assemblyFileVersion" -ForegroundColor DarkGreen
+function isPullRequestBranch() {
+    return $branchName -match "^(pull|pull\-requests|pr)[/-]"
+}
 
-    Write-Host -NoNewline "  AssemblyInformationalVersion: " -ForegroundColor Yellow
-    Write-Host "$assemblyInformationalVersion" -ForegroundColor DarkGreen
+function isReleaseLineBranch() {
+    return (isMasterBranch) -or (isSupportBranch)
+}
+
+function configurationIs($s) {
+    return $s -eq $configuration # -eq is not case-senitive
+}
+
+function deployToAnyFeed() {
+    # appveyor build, PR's are not deployed
+    return (isAppVeyor) -and (-not (isPullRequest))
+}
+
+function deployToCIFeed() {
+    # Only Debug builds are published to CI feed
+    # Any branch except master and 'support/x.y' have been pushed to GitHub
+    return (deployToAnyFeed) -and (configurationIs("Debug")) -and ((-not (isTagPush)) -or (-not (isReleaseLineBranch)))
+}
+
+function deployToProdFeed() {
+    # Only Release builds are published to production feed
+    # A tag (i.e. a published github release) on either master or 'support/x.y' have been created on GitHub
+    return (deployToAnyFeed) -and (configurationIs("Release")) -and (isTagPush) -and (isReleaseLineBranch)
+}
+
+function Show-InfoLine {
+
+    param (
+        [string]$Text,
+        [string]$Value,
+        [int]$Width = 32, # The width of the longext text
+        [int]$Left = 2    # The number of spaces added to the left of the text
+    )
+
+    # create line with 2 spaces before 'text', and padded right into total length of 32
+    Write-Host -NoNewline ((" " * $Left) + "${Text}:").PadRight($Width + $Left + 2) -ForegroundColor Yellow
+    Write-Host "$Value" -ForegroundColor DarkGreen
+}
+
+function Show-InfoHeader($header) {
+    Write-Host "${header}:"
+}
+
+function Show-Info {
+    $w = "ShouldDeployToProdFeed".Length
+    Show-InfoLine "Target" $target $w
+    Show-InfoLine "Configuration" $configuration $w
+    Show-InfoLine "ConfigurationIsDebug" $(configurationIs("Debug")) $w
+    Show-InfoLine "ConfigurationIsRelease" $(configurationIs("Release")) $w
+    Show-InfoLine "IsLocalBuild" (-not $(isAppVeyor)) $w
+    Show-InfoLine "IsRunningOnAppVeyor" $(isAppVeyor) $w
+    Show-InfoLine "IsPullRequest" $(isPullRequest) $w
+    Show-InfoLine "IsTagPush" $(isTagPush) $w
+    Show-InfoLine "ShouldDeployToAnyFeed" $(deployToAnyFeed) $w
+    Show-InfoLine "CIFeed" $cifeed_url $w
+    Show-InfoLine "ShouldDeployToCIFeed" $(deployToCIFeed) $w
+    Show-InfoLine "ProdFeed" $prodfeed_url $w
+    Show-InfoLine "ShouldDeployToProdFeed" $(deployToProdFeed) $w
+
+    $w = "IsReleaseCandidateBranch".Length
+    Show-InfoHeader "GIT Repository Information"
+    Show-InfoLine "CommitId" $commitId $w
+    Show-InfoLine "CommitDate" $commitDate $w
+    Show-InfoLine "Sha" $commitSha $w
+    Show-InfoLine "Branch" $branchName $w
+    Show-InfoLine "IsFeatureBranch" $(isFeatureBranch) $w
+    Show-InfoLine "IsHotfixBranch" $(isHotfixBranch) $w
+    Show-InfoLine "IsReleaseCandidateBranch" $(isReleaseCandidateBranch) $w
+    Show-InfoLine "IsDevelopBranch" $(isDevelopBranch) $w
+    Show-InfoLine "IsMasterBranch" $(isMasterBranch) $w
+    Show-InfoLine "IsSupportBranch" $(isSupportBranch) $w
+    Show-InfoLine "IsReleaseLineBranch" $(isReleaseLineBranch) $w
+    Show-InfoLine "IsPullRequestBranch" $(isPullRequestBranch) $w
+    Show-InfoLine "Tag" $commitTag $w
+
+    $w = "AssemblyInformationalVersion".Length
+    Show-InfoHeader "Version Information"
+    Show-InfoLine "MajorMinorPatch" $majorMinorPatch $w
+    Show-InfoLine "Version" $semVersion $w
+    Show-InfoLine "NuGetVersion" $pkgVersion $w
+    Show-InfoLine "BuildVersion" $buildVersion $w
+    Show-InfoLine "AssemblyVersion" $assemblyVersion $w
+    Show-InfoLine "AssemblyFileVersion" $assemblyFileVersion $w
+    Show-InfoLine "AssemblyInformationalVersion" $assemblyInformationalVersion $w
+}
+
+function isAppVeyor() {
+    Test-Path -Path env:\APPVEYOR
+}
+
+function testEnvironmentVariable($envVariableName, $envVariableValue) {
+    if ($null -ne $envVariableValue) {
+        Write-Output "${envVariableName}: $envVariableValue";
+    } else {
+        Write-Output "${envVariableName}: Not Defined";
+    }
+}
+
+function echoAppVeyorEnvironmentVariables() {
+    if (isAppVeyor) {
+        testEnvironmentVariable "CI" $env:CI;
+        testEnvironmentVariable "APPVEYOR_API_URL" $env:APPVEYOR_API_URL;
+        testEnvironmentVariable "APPVEYOR_PROJECT_ID" $env:APPVEYOR_PROJECT_ID;
+        testEnvironmentVariable "APPVEYOR_PROJECT_NAME" $env:APPVEYOR_PROJECT_NAME;
+        testEnvironmentVariable "APPVEYOR_PROJECT_SLUG" $env:APPVEYOR_PROJECT_SLUG;
+        testEnvironmentVariable "APPVEYOR_BUILD_FOLDER" $env:APPVEYOR_BUILD_FOLDER;
+        testEnvironmentVariable "APPVEYOR_BUILD_ID" $env:APPVEYOR_BUILD_ID;
+        testEnvironmentVariable "APPVEYOR_BUILD_NUMBER" $env:APPVEYOR_BUILD_NUMBER;
+        testEnvironmentVariable "APPVEYOR_BUILD_VERSION" $env:APPVEYOR_BUILD_VERSION;
+        testEnvironmentVariable "APPVEYOR_PULL_REQUEST_NUMBER" $env:APPVEYOR_PULL_REQUEST_NUMBER;
+        testEnvironmentVariable "APPVEYOR_PULL_REQUEST_TITLE" $env:APPVEYOR_PULL_REQUEST_TITLE;
+        testEnvironmentVariable "APPVEYOR_JOB_ID" $env:APPVEYOR_JOB_ID;
+        testEnvironmentVariable "APPVEYOR_REPO_PROVIDER" $env:APPVEYOR_REPO_PROVIDER;
+        testEnvironmentVariable "APPVEYOR_REPO_SCM" $env:APPVEYOR_REPO_SCM;
+        testEnvironmentVariable "APPVEYOR_REPO_NAME" $env:APPVEYOR_REPO_NAME;
+        testEnvironmentVariable "APPVEYOR_REPO_BRANCH" $env:APPVEYOR_REPO_BRANCH;
+        testEnvironmentVariable "APPVEYOR_REPO_TAG" $env:APPVEYOR_REPO_TAG;
+        testEnvironmentVariable "APPVEYOR_REPO_TAG_NAME" $env:APPVEYOR_REPO_TAG_NAME;
+        testEnvironmentVariable "APPVEYOR_REPO_COMMIT" $env:APPVEYOR_REPO_COMMIT;
+        testEnvironmentVariable "APPVEYOR_REPO_COMMIT_AUTHOR" $env:APPVEYOR_REPO_COMMIT_AUTHOR;
+        testEnvironmentVariable "APPVEYOR_REPO_COMMIT_TIMESTAMP" $env:APPVEYOR_REPO_COMMIT_TIMESTAMP;
+        testEnvironmentVariable "APPVEYOR_SCHEDULED_BUILD" $env:APPVEYOR_SCHEDULED_BUILD;
+        testEnvironmentVariable "PLATFORM" $env:PLATFORM;
+        testEnvironmentVariable "CONFIGURATION" $env:CONFIGURATION;
+    }
 }
 
 function Get-File-Exists-On-Path([string]$file)
 {
     $results = ($env:Path).Split(";") | Get-ChildItem -filter $file -erroraction silentlycontinue
-    $found = ($results -ne $null)
+    $found = ($null -ne $results)
     return $found
 }
 
@@ -423,8 +664,8 @@ function Get-Git-Commit-Full
 function Get-FrameworkDirectory()
 {
     $frameworkPath = "$env:windir\Microsoft.NET\Framework\v4.0*"
-    $frameworkPathDir = ls "$frameworkPath"
-    if ( $frameworkPathDir -eq $null ) {
+    $frameworkPathDir = Get-ChildItem "$frameworkPath"
+    if ($null -eq $frameworkPathDir) {
         throw "Building Brf.Lofus.Core requires .NET 4.0, which doesn't appear to be installed on this machine"
     }
     $net4Version = $frameworkPathDir.Name
@@ -433,13 +674,13 @@ function Get-FrameworkDirectory()
 
 function global:delete_directory($directory_name)
 {
-  rd $directory_name -recurse -force  -ErrorAction SilentlyContinue | out-null
+  Remove-Item $directory_name -recurse -force  -ErrorAction SilentlyContinue | out-null
 }
 
 function global:delete_file($file)
 {
-    if($file) {
-        remove-item $file  -force  -ErrorAction SilentlyContinue | out-null
+    if ($file) {
+        Remove-Item $file -force -ErrorAction SilentlyContinue | out-null
     }
 }
 
