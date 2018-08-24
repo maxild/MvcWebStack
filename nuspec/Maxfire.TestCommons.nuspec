@@ -2,24 +2,25 @@
 <package>
   <metadata>
     <id>Maxfire.TestCommons</id>
-    <version>${version}</version>
-    <title>Maxfire xUnit.net Extensions</title>
+    <version>$package_version$</version>
     <authors>Morten Maxild</authors>
-    <owners>Morten Maxild</owners>
+    <description>The Maxfire Webstack TestCommons Library (Configuration = $configuration$).</description>
+    <summary>The Maxfire Webstack is a personal set of libraries for working with MVC4.</summary>
+    <licenseUrl>https://github.com/maxild/MvcWebStack/blob/dev/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/maxild/MvcWebStack</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The Maxfire Webstack TestCommons Library contains a bunch of xUnit.net Extensions.</description>
     <copyright>Copyright Morten Maxild 2009-2016. All rights reserved.</copyright>
-    <releaseNotes>This is a prerelease.</releaseNotes>
-    <tags>maxfire xunit</tags>
+    <tags>maxfire</tags>
     <dependencies>
       <group targetFramework="net452">
-        <dependency id="Maxfire.Core" version="${version}" />
-        <dependency id="xunit" version="${version}" />
+        <dependency id="Maxfire.Core" version="$package_version$" />
+        <dependency id="xunit" version="$xunit_version$" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="Maxfire.TestCommons.dll" target="lib\net452" />
     <file src="Maxfire.TestCommons.pdb" target="lib\net452" />
+    <file src="Maxfire.TestCommons.xml" target="lib\net452" />
   </files>
 </package>
