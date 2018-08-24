@@ -16,7 +16,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 			: base(collection, unvalidatedCollection, culture)
 		{
 			if (collection == null)
-				throw new ArgumentNullException("collection");
+				throw new ArgumentNullException(nameof(collection));
 
 			_keys = (unvalidatedCollection ?? collection).AllKeys.ToArray();
 			_prefixContainer = new Lazy<BetterPrefixContainer>(() => new BetterPrefixContainer(_keys), isThreadSafe: true);

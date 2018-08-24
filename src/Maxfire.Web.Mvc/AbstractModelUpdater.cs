@@ -2,7 +2,7 @@ using Maxfire.Core.Extensions;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class AbstractModelUpdater<TInputModel, TModel> : IModelUpdater<TInputModel, TModel> 
+	public abstract class AbstractModelUpdater<TInputModel, TModel> : IModelUpdater<TInputModel, TModel>
 		where TInputModel : class
 		where TModel : class
 	{
@@ -21,15 +21,15 @@ namespace Maxfire.Web.Mvc
 		{
 			input.ThrowIfNull("input");
 
-			return mapToModel(input, null);
+			return MapToModel(input, null);
 		}
 
 		public virtual void MapToPersistent(TInputModel input, TModel model)
 		{
 			input.ThrowIfNull("input");
 			model.ThrowIfNull("model");
-			
-			mapToModel(input, model);
+
+			MapToModel(input, model);
 		}
 
 		public virtual ValidationResult Validate(TInputModel input)
@@ -43,17 +43,17 @@ namespace Maxfire.Web.Mvc
 			return validationResult;
 		}
 
-		private TModel mapToModel(TInputModel input, TModel model)
+		private TModel MapToModel(TInputModel input, TModel model)
 		{
 			var validationResult = new ValidationResult();
-			
+
 			model = MapToModelCore(validationResult, input, model);
-			
+
 			if (!validationResult.IsValid)
 			{
 				throw new ValidationException(validationResult);
 			}
-			
+
 			return model;
 		}
 

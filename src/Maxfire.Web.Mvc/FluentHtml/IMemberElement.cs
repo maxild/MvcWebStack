@@ -8,7 +8,7 @@ namespace Maxfire.Web.Mvc.FluentHtml
 	public interface IMemberElement : IElement
 	{
 		/// <summary>
-		/// Expression indicating the view model member associated with the element.</param>
+		/// Expression indicating the view model member associated with the element.
 		/// </summary>
 		MemberExpression ForMember { get; }
 	}

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
@@ -120,6 +121,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			set { LabelClass = value; }
 		}
 
+		[SuppressMessage("ReSharper", "RedundantBaseQualifier")]
 		public override string ToString()
 		{
 			// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
@@ -137,12 +139,12 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			{
 				return null;
 			}
-			var labelBuilder = getLabelBuilder();
+			var labelBuilder = GetLabelBuilder();
 			labelBuilder.SetInnerText(labelText);
 			return labelBuilder.ToString();
 		}
 
-		private TagBuilder getLabelBuilder()
+		private TagBuilder GetLabelBuilder()
 		{
 			var labelBuilder = new TagBuilder(HtmlTag.Label);
 			if (HasId())

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Maxfire.TestCommons.AssertExtensibility
 {
@@ -8,8 +9,8 @@ namespace Maxfire.TestCommons.AssertExtensibility
 	{
 		public bool Equals(IEnumerable<T> left, IEnumerable<T> right)
 		{
-			var leftList = new List<T>(left);
-			var rightList = new List<T>(right);
+			var leftList = new List<T>(left ?? Enumerable.Empty<T>());
+			var rightList = new List<T>(right ?? Enumerable.Empty<T>());
 
 			leftList.Sort();
 			rightList.Sort();

@@ -13,7 +13,7 @@ namespace Maxfire.Web.Mvc
 		public ModelStateValueProvider(ModelStateDictionary dictionary)
 		{
 			if (dictionary == null)
-				throw new ArgumentNullException("dictionary");
+				throw new ArgumentNullException(nameof(dictionary));
 
 			_prefixContainer = new Lazy<BetterPrefixContainer>(() => new BetterPrefixContainer(dictionary.Keys), isThreadSafe: true);
 			_dictionary = dictionary;

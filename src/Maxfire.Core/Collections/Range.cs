@@ -104,7 +104,7 @@ namespace Maxfire.Core.Collections
 		{
 			if (comparer.Compare(start, end) > 0)
 			{
-				throw new ArgumentOutOfRangeException("end", "start must be lower than end according to comparer");
+				throw new ArgumentOutOfRangeException(nameof(end), "start must be lower than end according to comparer");
 			}
 
 			_start = start;

@@ -35,7 +35,7 @@ task repairGitRemoteOnAppVeyor {
     if ($env:APPVEYOR -ne $NULL) {
 
         # private repo need github credentials
-        $env:GITVERSION_REMOTE_USERNAME = "maxild"
+        $env:GITVERSION_REMOTE_USERNAME = $repositoryOwner
         $env:GITVERSION_REMOTE_PASSWORD = $env:github_password
 
         # Running on AppVeyor, we have to patch private repos
@@ -293,95 +293,66 @@ task pack -depends clean, test {
     create_directory $artifacts_dir
 
     # Find dependency versions
-    $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
-    $mvcVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Microsoft.AspNet.Mvc'
-    $sparkVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Spark.Web.Mvc") "packages.config") 'Spark.Web.Mvc4'
-    $castleCoreVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Core'
-    $castleWindsorVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Windsor'
-    $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
-    $rhinomocksVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc.TestCommons") "packages.config") 'RhinoMocks'
+    $preludeVersion         = find-dependencyVersion 'Maxfire.Core' 'Maxfire.Prelude.Core'
+    $mvcVersion             = find-dependencyVersion 'Maxfire.Web.Mvc' 'Microsoft.AspNet.Mvc'
+    $sparkVersion           = find-dependencyVersion 'Maxfire.Spark.Web.Mvc' 'Spark.Web.Mvc4'
+    $castleWindsorVersion   = find-dependencyVersion 'Maxfire.Castle.Web.Mvc' 'Castle.Windsor'
+    $xunitVersion           = find-dependencyVersion 'Maxfire.TestCommons' 'xunit'
+    $rhinoMocksVersion      = find-dependencyVersion 'Maxfire.Web.Mvc.TestCommons' 'RhinoMocks'
 
-    # Could use the -Version option of the nuget.exe pack command to provide the actual version.
-    # _but_ the package dependency version cannot be overriden at the commandline.
-    $packages = Get-ChildItem $nuspec_dir *.nuspec -recurse
-    $packages | ForEach-Object {
-        $nuspec = [xml](Get-Content $_.FullName)
-        $nuspec.package.metadata.version = $global:pkgVersion
-        $nuspec | Select-Xml '//dependency' | ForEach-Object {
-            # Internal package versions
-            if (($_.Node.id.StartsWith('Maxfire')) -and (-not $_.Node.id.StartsWith('Maxfire.Prelude'))) {
-                $_.Node.version = $global:pkgVersion
-            }
-            # External package versions
-            if ($_.Node.id -eq 'Maxfire.Prelude.Core') {
-                $_.Node.version = $preludeVersion
-            }
-            if ($_.Node.id -eq 'Microsoft.AspNet.Mvc') {
-                $_.Node.version = $mvcVersion
-            }
-            if ($_.Node.id.StartsWith('Spark')) {
-                $_.Node.version = $sparkVersion
-            }
-            if ($_.Node.id -eq 'Castle.Core') {
-                $_.Node.version = $castleCoreVersion
-            }
-            if ($_.Node.id -eq 'Castle.Windsor') {
-                $_.Node.version = $castleWindsorVersion
-            }
-            if ($_.Node.id -eq 'xunit') {
-                $_.Node.version = $xunitVersion
-            }
-            if ($_.Node.id -eq 'RhinoMocks') {
-                $_.Node.version = $rhinomocksVersion
-            }
-        }
+    Show-DependencyLine 'Maxfire.Prelude.Core' $preludeVersion
+    Show-DependencyLine 'Microsoft.AspNet.Mvc' $mvcVersion
+    Show-DependencyLine 'Spark.Web.Mvc4' $sparkVersion
+    Show-DependencyLine 'Castle.Windsor' $castleWindsorVersion
+    Show-DependencyLine 'xunit' $xunitVersion
+    Show-DependencyLine 'RhinoMocks' $rhinoMocksVersion
+
+    Get-ChildItem $nuspec_dir -Filter *.nuspec | ForEach-Object {
+
+        $nuspecPath = ($_ | Resolve-Path).Path
+        $convertedPath = Convert-Path $nuspecPath
 
         $projectName = [io.path]::GetFileNameWithoutExtension($_.FullName)
 
-        $nuspecFilename = join-path $artifacts_dir (Split-Path -Path $_.FullName -Leaf)
-        $nuspec.Save($nuspecFilename) # TODO: Dette skal aendres til at benytte string substitution
-
-        # All files in nuspec are relative paths, grab dll and pdb files using this base path
-        $basePath = "$source_dir\$projectName\bin\$configuration"
+        # All files in nuspec are relative paths, grab dll|pdb|xml files using this base path
+        $basePath = "$source_dir\$projectName\bin\$configuration" # TODO: Copyfiles to temp
 
         exec {
-            & $tools_dir\Nuget.exe pack -BasePath $basePath -OutputDirectory $artifacts_dir $nuspecFilename
-
-            # TODO
-            # NuGetPack(nuspec.FullPath, new NuGetPackSettings {
-            #     Version = parameters.VersionInfo.NuGetVersion,
-            #     //ReleaseNotes = nuspec.Segments.Last().StartsWith("Brf.Lofus.Core") ? lofusCoreRelease.Notes.ToArray() : lofusRegnekerneRelease.Notes.ToArray(),
-            #     BasePath = parameters.Paths.Directories.TempArtifacts,
-            #     OutputDirectory = parameters.Paths.Directories.Artifacts,
-            #     Symbols = false, // TODO: right now packages will include symbols...maybe make both Brf.Lofus.Core.symbols.nuspec and Brf.Lofus.Core.nuspec
-            #     NoPackageAnalysis = true,
-            #     Properties = new Dictionary<string, string>
-            #     {
-            #         // See https://github.com/NuGet/Home/issues/1795#issuecomment-161098620
-            #         { "Configuration", parameters.Configuration },
-            #         { "package_version", parameters.VersionInfo.NuGetVersion },
-            #         { "prelude_version", preludeVersion },
-            #         { "hisclient_version", hisclientVersion }
-            #     }
-            # });
+            & $tools_dir\Nuget.exe pack $convertedPath -NoPackageAnalysis -BasePath $basePath -OutputDirectory $artifacts_dir -Version $pkgVersion `
+                    -Properties "configuration=$configuration;package_version=$pkgVersion;prelude_version=$preludeVersion;mvc_version=$mvcVersion;spark_version=$sparkVersion;castlewindsor_version=$castleWindsorVersion;xunit_version=$xunitVersion;rhinomocks_version=$rhinomocksVersion"
          }
     }
 }
 
-function find-dependencyVersion($packagesConfigPath, $packageId) {
+function Show-DependencyLine($packageId, $version) {
+    Write-Host -NoNewline 'Version ' -ForegroundColor Yellow
+    Write-Host -NoNewline $version -ForegroundColor DarkGreen
+    Write-Host -NoNewline ' of ' -ForegroundColor Yellow
+    Write-Host -NoNewline $packageId -ForegroundColor DarkGreen
+    Write-Host ' is installed/restored.' -ForegroundColor Yellow
+}
 
-    $dependencies = [xml](Get-Content  $packagesConfigPath)
-    $dependencies | Select-Xml '//package' | ForEach-Object {
-        if ($_.Node.id -eq $packageId) {
-            $packageVersion = $_.Node.version
-        }
+function find-dependencyVersion($csprojName, $packageId) {
+
+    $csprojPath = join-path $source_dir -ChildPath $csprojName | Join-Path -ChildPath "$csprojName.csproj"
+
+    $csproj = [xml](Get-Content $csprojPath)
+
+    # csproj has default namespace
+    $packageReferenceVersionNode = ($csproj | Select-Xml -XPath "//a:PackageReference[@Include='$packageId']/a:Version" `
+                                                         -Namespace @{a='http://schemas.microsoft.com/developer/msbuild/2003'}).Node
+
+    if (-not $packageReferenceVersionNode) {
+        throw "Could not resolve the the $packageId dependency."
     }
 
-    if (-not $packageVersion) {
+    $version = $packageReferenceVersionNode.InnerText
+
+    if (-not $version) {
         throw "Could not resolve the version of the $packageId dependency."
     }
 
-    return $packageVersion
+    return $version
 }
 
 task publish -depends pack {

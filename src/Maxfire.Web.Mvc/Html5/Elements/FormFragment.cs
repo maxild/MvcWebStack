@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
@@ -20,10 +20,11 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			if (string.IsNullOrEmpty(name))
 			{
-				throw new ArgumentException("The argument cannot be empty.", "name");
+				throw new ArgumentException("The argument cannot be empty.", nameof(name));
 			}
 			_accessor = accessor;
-			Attr(HtmlAttribute.Name, name);
+		    // ReSharper disable once MustUseReturnValue
+		    Attr(HtmlAttribute.Name, name);
 			// We do not want to auto generate id attribute. Front-end dev can write the id explicitly in markup.
 			//Attr(HtmlAttribute.Id, name.FormatAsHtmlId());
 		}
@@ -45,7 +46,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				{
 					if (modelState.IsInvalid())
 					{
-						AddClass(DEFAULT_VALIDATION_CSS_CLASS);
+					    // ReSharper disable once MustUseReturnValue
+					    AddClass(DEFAULT_VALIDATION_CSS_CLASS);
 					}
 					if (modelState.Value != null)
 					{

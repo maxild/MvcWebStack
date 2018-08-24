@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
+    [SuppressMessage("ReSharper", "MustUseReturnValue")]
     public class RadioButtonList : OptionsInputElementList<RadioButtonList>
     {
         public RadioButtonList(string name, IModelMetadataAccessor accessor)

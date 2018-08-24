@@ -1,12 +1,14 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
 using Maxfire.Core.Reflection;
+using Maxfire.Prelude.Linq;
 using OptionsAdapterUtility = Maxfire.Web.Mvc.OptionsAdapter;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
@@ -15,7 +17,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	{
 		private IEnumerable<SelectListItem> _options;
 		private IEnumerable _selectedValues;
-		
+
 		protected OptionsFormFragment(string elementName, string name, IModelMetadataAccessor accessor)
 			: base(elementName, name, accessor)
 		{
@@ -150,13 +152,14 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				return ToOptions(OptionsAdapterUtility.Months(), item => item.Text, item => item.Value);
 			}
- 
+
 			private TOptionsFormFragment ToOptions<TItem>(IEnumerable<TItem> items, Func<TItem, string> textSelector, Func<TItem, string> valueSelector)
 			{
 				return _optionsFormFragment.SetOptions(new SelectListItemsAdapter<TItem>(items, textSelector, valueSelector,
 																	   () => _optionsFormFragment.Selected()));
 			}
 
+			[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 			private TOptionsFormFragment ToOptions(IEnumerable<SelectListItem> items)
 			{
 				if (items != null)
@@ -184,7 +187,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			{
 				if (textSelector == null)
 				{
-					throw new ArgumentNullException("textSelector");
+					throw new ArgumentNullException(nameof(textSelector));
 				}
 				_items = items;
 				_textSelector = textSelector;
@@ -194,24 +197,24 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 			public IEnumerator<SelectListItem> GetEnumerator()
 			{
-				return getListItems().GetEnumerator();
+				return GetListItems().GetEnumerator();
 			}
 
-			private IEnumerable<SelectListItem> getListItems()
+			private IEnumerable<SelectListItem> GetListItems()
 			{
 				if (_items == null)
 				{
 					return Enumerable.Empty<SelectListItem>();
 				}
-				
-				ISet<string> selectedValues = getSelectedValues();
 
-				return _valueSelector != null ? 
-					getListItemsWithValueField(selectedValues) :
-					getListItemsWithoutValueField(selectedValues);
+				ISet<string> selectedValues = GetSelectedValues();
+
+				return _valueSelector != null ?
+					GetListItemsWithValueField(selectedValues) :
+					GetListItemsWithoutValueField(selectedValues);
 			}
 
-			ISet<string> getSelectedValues()
+			ISet<string> GetSelectedValues()
 			{
 				var selectedValueSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 				if (_selectedValuesThunk != null)
@@ -220,7 +223,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 					if (selectedValues != null)
 					{
 						selectedValueSet.UnionWith(
-							from object value in selectedValues 
+							from object value in selectedValues
 							select TypeExtensions.ConvertSimpleType(CultureInfo.InvariantCulture, value, typeof(string)).ToNullSafeString()
 						);
 					}
@@ -228,7 +231,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				return selectedValueSet;
 			}
 
-			private IEnumerable<SelectListItem> getListItemsWithoutValueField(ISet<string> selectedValueSet)
+			private IEnumerable<SelectListItem> GetListItemsWithoutValueField(ISet<string> selectedValueSet)
 			{
 				var listItems = from item in _items
 				                let text = _textSelector(item)
@@ -240,7 +243,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 				return listItems.ToList();
 			}
 
-			private IEnumerable<SelectListItem> getListItemsWithValueField(ISet<string> selectedValues)
+			private IEnumerable<SelectListItem> GetListItemsWithValueField(ISet<string> selectedValues)
 			{
 				var listItems = from item in _items
 				                let value = _valueSelector(item)

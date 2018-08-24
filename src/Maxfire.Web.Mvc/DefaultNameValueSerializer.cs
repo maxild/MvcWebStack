@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Web.Mvc
 {

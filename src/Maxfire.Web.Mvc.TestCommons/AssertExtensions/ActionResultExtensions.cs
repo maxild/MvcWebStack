@@ -8,7 +8,7 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 		public static T AssertResultIs<T>(this ActionResult result) where T : ActionResult
 		{
 			if (result == null)
-				throw new ArgumentNullException("result");
+				throw new ArgumentNullException(nameof(result));
 
 			var converted = result as T;
 
@@ -30,15 +30,15 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 
 		public static TModel WithModel<TModel>(this JsonResult jsonResult)
 		{
-			return withModel<JsonResult, TModel>(jsonResult, result => result.Data);
+			return WithModelHelper<JsonResult, TModel>(jsonResult, result => result.Data);
 		}
 
 		public static TModel WithModel<TModel>(this ViewResult viewResult)
 		{
-			return withModel<ViewResult, TModel>(viewResult, result => result.ViewData.Model);
+			return WithModelHelper<ViewResult, TModel>(viewResult, result => result.ViewData.Model);
 		}
 
-		private static TModel withModel<TActionResult, TModel>(TActionResult result, Func<TActionResult, object> modelAccessor)
+		private static TModel WithModelHelper<TActionResult, TModel>(TActionResult result, Func<TActionResult, object> modelAccessor)
 		{
 			object actualModel = modelAccessor(result);
 			var expectedType = typeof(TModel);
@@ -46,8 +46,7 @@ namespace Maxfire.Web.Mvc.TestCommons.AssertExtensions
 			if (actualModel == null && expectedType.IsValueType)
 			{
 				throw new ActionResultAssertionException(
-					string.Format("Expected model is a value type of type '{0}', but actual model is NULL.",
-								  expectedType.Name));
+				    $"Expected model is a value type of type '{expectedType.Name}', but actual model is NULL.");
 			}
 
 			if (actualModel == null)

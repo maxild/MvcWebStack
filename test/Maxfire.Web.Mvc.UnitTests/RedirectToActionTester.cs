@@ -1,11 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
 	[UsedImplicitly]
+	[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local")]
 	public class RedirectToActionTester
 	{
 		[Fact]
@@ -15,6 +17,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var result = controller.RedirectToAction(x => x.Index()) as RedirectToRouteResult;
 
+            Assert.NotNull(result);
 			result.RouteValues.GetRequiredString("Controller").ShouldEqual("First");
 			result.RouteValues.GetRequiredString("Action").ShouldEqual("Index");
 		}
@@ -26,6 +29,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var result = controller.RedirectToAction<FirstController>(x => x.Index()) as RedirectToRouteResult;
 
+		    Assert.NotNull(result);
 			result.RouteValues.GetRequiredString("Controller").ShouldEqual("First");
 			result.RouteValues.GetRequiredString("Action").ShouldEqual("Index");
 		}
@@ -37,6 +41,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var result = controller.Show() as RedirectToRouteResult;
 
+		    Assert.NotNull(result);
 			result.RouteValues.GetRequiredString("Controller").ShouldEqual("First");
 			result.RouteValues.GetRequiredString("Action").ShouldEqual("Show");
 		}
@@ -49,6 +54,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var result = controller.ShowWithFailureRedirectToAction() as RedirectToRouteResult;
 
+		    Assert.NotNull(result);
 			result.RouteValues.GetRequiredString("Controller").ShouldEqual("SuperLayer"); // <-- ERROR (Expected: Another) -->
 			result.RouteValues.GetRequiredString("Action").ShouldEqual("ShowWithFailureRedirectToAction");
 		}
@@ -60,20 +66,21 @@ namespace Maxfire.Web.Mvc.UnitTests
 
 			var result = controller.Create() as RedirectToRouteResult;
 
+		    Assert.NotNull(result);
 			result.RouteValues.GetRequiredString("Controller").ShouldEqual("First");
 			result.RouteValues.GetRequiredString("Action").ShouldEqual("Show");
 		}
 
 		// It is important to have a TController generic argument in order to be able
 		// to use RedirectToAction from within the super layer controller type, because
-		// otherwise the controller name will 
+		// otherwise the controller name will
 		class SuperLayerController<TController> : OpinionatedController
 			where TController : SuperLayerController<TController>
 		{
 			public ActionResult Show()
 			{
 				return this.RedirectToAction<TController>(x => x.Show());
-			} 
+			}
 		}
 		class SuperLayerController : OpinionatedController
 		{

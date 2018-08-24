@@ -9,7 +9,7 @@ namespace Maxfire.Core.Collections
 	/// </summary>
 	public sealed class ComparisonComparer<T> : IComparer<T>
 	{
-		readonly Comparison<T> comparison;
+		readonly Comparison<T> _comparison;
 
 		/// <summary>
 		/// Creates a new instance which will proxy to the given Comparison
@@ -18,11 +18,7 @@ namespace Maxfire.Core.Collections
 		/// <param name="comparison">Comparison delegate to proxy to. Must not be null.</param>
 		public ComparisonComparer(Comparison<T> comparison)
 		{
-			if (comparison == null)
-			{
-				throw new ArgumentNullException("comparison");
-			}
-			this.comparison = comparison;
+		    _comparison = comparison ?? throw new ArgumentNullException(nameof(comparison));
 		}
 
 		/// <summary>
@@ -31,7 +27,7 @@ namespace Maxfire.Core.Collections
 		/// </summary>
 		public int Compare(T x, T y)
 		{
-			return comparison(x, y);
+			return _comparison(x, y);
 		}
 
 		/// <summary>
@@ -43,7 +39,7 @@ namespace Maxfire.Core.Collections
 		{
 			if (comparer == null)
 			{
-				throw new ArgumentNullException("comparer");
+				throw new ArgumentNullException(nameof(comparer));
 			}
 			return (x, y) => comparer.Compare(x, y);
 		}

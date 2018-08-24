@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using Maxfire.Core;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 using Maxfire.Web.Mvc.Html.Extensions;
 using Maxfire.Web.Mvc.Html5;
 
@@ -320,13 +321,13 @@ namespace Maxfire.Web.Mvc.Html
 
             public bool ContainsPrefix(string prefix)
             {
-                if (prefix == null) throw new ArgumentNullException("prefix");
+                if (prefix == null) throw new ArgumentNullException(nameof(prefix));
                 return prefix.Length == 0;
             }
 
             public ValueProviderResult GetValue(string key)
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
                 return key.Length == 0 ? _valueProviderResult : null;
             }
         }

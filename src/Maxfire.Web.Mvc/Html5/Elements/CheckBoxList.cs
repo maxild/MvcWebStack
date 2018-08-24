@@ -1,10 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
+    [SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public class CheckBoxList : OptionsInputElementList<CheckBoxList>
 	{
 		public CheckBoxList(string name, IModelMetadataAccessor accessor) 
@@ -41,7 +43,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 			SetSelectedValues(value as IEnumerable);
 		}
 
-		private void SetSelectedValues(IEnumerable selectedValues)
+	    private void SetSelectedValues(IEnumerable selectedValues)
 		{
 			Selected(selectedValues);
 		}

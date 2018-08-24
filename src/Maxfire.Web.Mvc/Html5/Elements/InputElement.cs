@@ -1,8 +1,10 @@
-﻿using Maxfire.Core.Extensions;
+using System.Diagnostics.CodeAnalysis;
+using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public abstract class InputElement<T> : FormFragment<T> where T : InputElement<T>
 	{
 		protected InputElement(string type, string name, IModelMetadataAccessor accessor)

@@ -1,11 +1,13 @@
+using System.Diagnostics.CodeAnalysis;
 using Maxfire.TestCommons.AssertExtensions;
 using Rhino.Mocks;
-using Context = System.Diagnostics.CodeAnalysis.UsedImplicitlyAttribute;
+using Context = JetBrains.Annotations.UsedImplicitlyAttribute;
 using Specification = Xunit.FactAttribute;
 
 namespace Maxfire.TestCommons.UnitTests
 {
 	[Context]
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class When_initializing_the_spec : XunitSpec<StopWatch>
 	{
 		protected override StopWatch Establish_context()
@@ -25,6 +27,7 @@ namespace Maxfire.TestCommons.UnitTests
 	}
 
 	[Context]
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class When_initializing_the_spec_with_mocks : XunitSpec<StopWatch>
 	{
 		private ITimer _timer;

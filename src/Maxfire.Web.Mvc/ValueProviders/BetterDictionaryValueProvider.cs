@@ -14,7 +14,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		{
 			if (dictionary == null)
 			{
-				throw new ArgumentNullException("dictionary");
+				throw new ArgumentNullException(nameof(dictionary));
 			}
 
 			foreach (KeyValuePair<string, TValue> entry in dictionary)
@@ -36,11 +36,10 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		{
 			if (key == null)
 			{
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 			}
 
-			ValueProviderResult valueProviderResult;
-			_values.TryGetValue(key, out valueProviderResult);
+		    _values.TryGetValue(key, out var valueProviderResult);
 			return valueProviderResult;
 		}
 

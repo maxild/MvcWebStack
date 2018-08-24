@@ -2,22 +2,24 @@
 <package>
   <metadata>
     <id>Maxfire.Core</id>
-    <version>${version}</version>
-    <title>Maxfire Core Lib</title>
+    <version>$package_version$</version>
     <authors>Morten Maxild</authors>
-    <owners>Morten Maxild</owners>
+    <description>The Maxfire Webstack Core Library (Configuration = $configuration$).</description>
+    <summary>The Maxfire Webstack is a personal set of libraries for working with MVC4.</summary>
+    <licenseUrl>https://github.com/maxild/MvcWebStack/blob/dev/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/maxild/MvcWebStack</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The Maxfire Webstack Core Library.</description>
     <copyright>Copyright Morten Maxild 2009-2016. All rights reserved.</copyright>
-    <releaseNotes>This is a prerelease.</releaseNotes>
     <tags>maxfire</tags>
     <dependencies>
       <group targetFramework="net452">
+        <dependency id="Maxfire.Prelude.Core" version="$prelude_version$" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="Maxfire.Core.dll" target="lib\net452" />
     <file src="Maxfire.Core.pdb" target="lib\net452" />
+    <file src="Maxfire.Core.xml" target="lib\net452" />
   </files>
 </package>

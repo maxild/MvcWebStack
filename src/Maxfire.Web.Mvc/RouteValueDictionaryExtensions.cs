@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc
 		{
 			if (routeValues == null)
 			{
-				throw new ArgumentNullException("routeValues");
+				throw new ArgumentNullException(nameof(routeValues));
 			}
 			object value;
 			if (routeValues.TryGetValue(name, out value))

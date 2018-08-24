@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace Maxfire.Web.Mvc
@@ -10,7 +10,7 @@ namespace Maxfire.Web.Mvc
 			ValidationResult = validationResult;
 		}
 
-		public ValidationResult ValidationResult { get; private set; }
+		public ValidationResult ValidationResult { get; }
 
 		public override string Message
 		{

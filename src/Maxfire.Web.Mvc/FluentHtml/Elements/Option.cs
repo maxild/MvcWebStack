@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 	public class Option
 	{
 		private const string NBSP = "&nbsp;";
-		private readonly TagBuilder builder = new TagBuilder(HtmlTag.Option);
+		private readonly TagBuilder _builder = new TagBuilder(HtmlTag.Option);
 
 		/// <summary>
 		/// Set the value of the 'value' attribute.
@@ -21,11 +21,11 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		{
 			if (value.IsNotEmpty())
 			{
-				builder.AddAttribute(HtmlAttribute.Value, value);
+				_builder.AddAttribute(HtmlAttribute.Value, value);
 			}
 			else
 			{
-				builder.AddAttribute(HtmlAttribute.Value, string.Empty);
+				_builder.AddAttribute(HtmlAttribute.Value, string.Empty);
 			}
 			return this;
 		}
@@ -38,11 +38,11 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		{
 			if (value.IsNotEmpty())
 			{
-				builder.SetInnerText(value);
+				_builder.SetInnerText(value);
 			}
 			else
 			{
-				builder.InnerHtml = NBSP;
+				_builder.InnerHtml = NBSP;
 			}
 			return this;
 		}
@@ -55,11 +55,11 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		{
 			if (value)
 			{
-				builder.MergeAttribute(HtmlAttribute.Selected, HtmlAttribute.Selected, true);
+				_builder.MergeAttribute(HtmlAttribute.Selected, HtmlAttribute.Selected, true);
 			}
 			else
 			{
-				builder.Attributes.Remove(HtmlAttribute.Selected);
+				_builder.Attributes.Remove(HtmlAttribute.Selected);
 			}
 			return this;
 		}
@@ -72,18 +72,18 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		{
 			if (value)
 			{
-				builder.MergeAttribute(HtmlAttribute.Disabled, HtmlAttribute.Disabled, true);
+				_builder.MergeAttribute(HtmlAttribute.Disabled, HtmlAttribute.Disabled, true);
 			}
 			else
 			{
-				builder.Attributes.Remove(HtmlAttribute.Disabled);
+				_builder.Attributes.Remove(HtmlAttribute.Disabled);
 			}
 			return this;
 		}
 
 		public override string ToString()
 		{
-			return builder.ToString();
+			return _builder.ToString();
 		}
 	}
 }

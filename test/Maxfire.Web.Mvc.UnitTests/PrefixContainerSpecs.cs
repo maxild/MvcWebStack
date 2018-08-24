@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Web.Mvc;
 using Maxfire.TestCommons.AssertExtensions;
@@ -56,7 +55,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 					{ "foo[abc].baz", "4"}
 				}, CultureInfo.InvariantCulture);
 
-			var keys = sut.GetKeysFromPrefix("foo");
+		    //var keys = sut.GetKeysFromPrefix("foo");
+			sut.GetKeysFromPrefix("foo");
 
 			//foreach (var key in keys)
 			//{
@@ -69,11 +69,11 @@ namespace Maxfire.Web.Mvc.UnitTests
 		{
 			var container = new BetterPrefixContainer(new[]
 				{
-					"foo[bar]", 
-					"something[other]", 
-					"foo.baz", 
-					"foot[hello]", 
-					"fo[nothing]", 
+					"foo[bar]",
+					"something[other]",
+					"foo.baz",
+					"foot[hello]",
+					"fo[nothing]",
 					"foo",
 					"foo.bar[0]",
 					"foo.bar[1]",
@@ -83,7 +83,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 					"foo.user[1].age",
 				});
 
-			IDictionary<string, string> result = container.GetKeysFromPrefix("foo.user");
+			//IDictionary<string, string> result = container.GetKeysFromPrefix("foo.user");
+		    container.GetKeysFromPrefix("foo.user");
 
 			//foreach (var kvp in result)
 			//{

@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Web.Mvc.ValueProviders
 {
@@ -19,7 +19,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		{
 			if (values == null)
 			{
-				throw new ArgumentNullException("values");
+				throw new ArgumentNullException(nameof(values));
 			}
 
 			_originalValues = values;
@@ -33,7 +33,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		{
 			if (prefix == null)
 			{
-				throw new ArgumentNullException("prefix");
+				throw new ArgumentNullException(nameof(prefix));
 			}
 
 			if (prefix.Length == 0)
@@ -168,12 +168,12 @@ namespace Maxfire.Web.Mvc.ValueProviders
 			public int Compare(string x, string y)
 			{
 				string testString = ReferenceEquals(x, _prefix) ? y : x;
-				if (IsPrefixMatch(_prefix, testString.Replace(" ", ""))) // return key to normal form
+				if (IsPrefixMatch(_prefix, testString?.Replace(" ", ""))) // return key to normal form
 				{
 					return 0;
 				}
 
-				return StringComparer.OrdinalIgnoreCase.Compare(x, y.Replace("[", " ["));
+				return StringComparer.OrdinalIgnoreCase.Compare(x, y?.Replace("[", " ["));
 			}
 
 			static bool IsPrefixMatch(string prefix, string testString)

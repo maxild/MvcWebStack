@@ -11,7 +11,7 @@ namespace Maxfire.Web.Mvc
 		private const string UNBOUND_VALIDATION_ERROR_KEY = "no-member";
 
 		public bool IsValid { get; private set; }
-		
+
 		private readonly IDictionary<string, string[]> _errors = new Dictionary<string, string[]>();
 
 		public ValidationResult()

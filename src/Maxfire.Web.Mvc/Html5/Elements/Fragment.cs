@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -12,6 +13,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	/// <summary>
 	/// A Fragment is either an element og a list of elements with identical tag names.
 	/// </summary>
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public abstract class Fragment<T> : IHtmlString where T : Fragment<T>
 	{
 		// TODO: Behaviours
@@ -130,7 +132,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		}
 
 		/// <summary>
-		/// Add or remove an attribute from this/each element, depending on either the attribute's presence 
+		/// Add or remove an attribute from this/each element, depending on either the attribute's presence
 		/// or the value of the switch argument.
 		/// </summary>
 		/// <param name="attributeName">The name (and the value) of the attribute (e.g. selected, checked) to be added or removed.</param>
@@ -179,7 +181,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 
 
 		/// <summary>
-		/// Add inner HTML content to this/each element 
+		/// Add inner HTML content to this/each element
 		/// </summary>
 		/// <param name="innerHtml">The HTML text fragment to add inside the opening and closing tags of this/each element.</param>
 		public T InnerHtml(string innerHtml)
@@ -236,7 +238,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		}
 
 		/// <summary>
-		/// Add or remove one or more classes from this/each element, depending on either the class's presence 
+		/// Add or remove one or more classes from this/each element, depending on either the class's presence
 		/// or the value of the switch argument.
 		/// </summary>
 		/// <param name="className">One or more class names (separated by spaces) to be toggled on this element.</param>
@@ -330,8 +332,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		}
 
 		// TODO: Data, RemoveData (a la jQuery setData, HTML5 data-prefix attributes)
-		
-		public override sealed string ToString()
+
+		public sealed override string ToString()
 		{
 			return ToHtmlString();
 		}

@@ -8,8 +8,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Behaviors
 	public class LabelMemberBehavior : IMemberBehavior
 	{
 		// Not all elements should have a label (e.g. Hidden, SubmitButton)
-		private static readonly Type[] _whiteList = new []
-		                                            	{
+		private static readonly Type[] WHITE_LIST = {
 		                                            		// Add more input input elements if neeeded
 		                                            		typeof(TextBox),
 		                                            		typeof(Select)
@@ -17,10 +16,9 @@ namespace Maxfire.Web.Mvc.FluentHtml.Behaviors
 
 		public void Execute(IMemberElement element)
 		{
-			if (shouldRenderLabel(element))
+			if (ShouldRenderLabel(element))
 			{
-				ILabeledElement e = element as ILabeledElement;
-				if (e != null)
+			    if (element is ILabeledElement e)
 				{
 					e.LabelBeforeText = element.ForMember.Member.GetDisplayName() + ": ";
 					e.LabelClass = CssClass;
@@ -33,9 +31,9 @@ namespace Maxfire.Web.Mvc.FluentHtml.Behaviors
 		/// </summary>
 		public string CssClass { get; set; }
 
-		private static bool shouldRenderLabel(IElement element)
+		private static bool ShouldRenderLabel(IElement element)
 		{
-			bool renderLabel = _whiteList.Any(type => type == element.GetType());
+			bool renderLabel = WHITE_LIST.Any(type => type == element.GetType());
 			return renderLabel;
 		}
 	}

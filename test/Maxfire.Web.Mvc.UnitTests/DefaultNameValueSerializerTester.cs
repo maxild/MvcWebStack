@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 	public class DefaultNameValueSerializerTester
 	{
 		private readonly TestableDefaultNameValueSerializer _serializer;

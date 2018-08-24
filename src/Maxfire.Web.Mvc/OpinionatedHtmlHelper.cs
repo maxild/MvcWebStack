@@ -194,7 +194,7 @@ namespace Maxfire.Web.Mvc
         {
             if (modelName == null)
             {
-                throw new ArgumentNullException("modelName");
+                throw new ArgumentNullException(nameof(modelName));
             }
             if (!_cachedModelMetadataHash.ContainsKey(modelName))
             {

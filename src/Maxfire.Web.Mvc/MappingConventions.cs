@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
 using Maxfire.Core.Extensions;
 using Maxfire.Prelude;
 
@@ -23,8 +24,7 @@ namespace Maxfire.Web.Mvc
 
 			const DateTimeStyles DATE_STYLES = DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite;
 
-			decimal decimalValue;
-			DateTime dateValue;
+		    DateTime dateValue;
 			short shortValue;
 			int intValue;
 			long longValue;
@@ -43,24 +43,24 @@ namespace Maxfire.Web.Mvc
 			// Decimal: 29
 			//
 
-			ValidateMachineDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.InvariantCulture, out decimalValue));
+			ValidateMachineDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.InvariantCulture, out _));
 			ParseMachineDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.InvariantCulture));
 
 			// .....The exception to the preceding rule is if the number is a Decimal and
 			// the precision specifier is omitted. In that case, fixed-point notation is
 			// always used and trailing zeroes are preserved.
-			// The “G” format with a number means to format that many significant digits.
+			// The â€œGâ€ format with a number means to format that many significant digits.
 			// Because 29 is the most significant digits that a Decimal can have, this will
 			// effectively truncate the trailing zeros without rounding.
 			FormatMachineDecimal = (value => value.ToString("G29", CultureInfo.InvariantCulture));
 
 			// Human readable
-			ValidateDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture, out decimalValue));
+			ValidateDecimal = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture, out _));
 			ParseDecimal = (s => decimal.Parse(s.ToTrimmedNullSafeString(), DECIMAL_STYLES, CultureInfo.CurrentCulture));
 			FormatDecimal = (value => value.ToString("G29", CultureInfo.CurrentCulture));
 			FormatDecimalAsPctSats = (value => string.Format("{0:G29} pct.", value * 100.0m));
 
-			ValidateMoney = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture, out decimalValue));
+			ValidateMoney = (s => decimal.TryParse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture, out _));
 			ParseMoney = (s => decimal.Parse(s.ToTrimmedNullSafeString(), MONEY_STYLES, CultureInfo.CurrentCulture));
 
 			ValidateDate = (s =>
@@ -187,7 +187,7 @@ namespace Maxfire.Web.Mvc
 
 		public virtual bool ValidateEnumOfType(Type enumType, string s)
 		{
-			checkEnumTypeArgument(enumType);
+			CheckEnumTypeArgument(enumType);
 			s = s.ToTrimmedNullSafeString();
 			bool enumHasSuchName = Enum.GetNames(enumType).Any(name => name == s.ToTrimmedNullSafeString());
 			if (!enumHasSuchName)
@@ -211,28 +211,29 @@ namespace Maxfire.Web.Mvc
 
 		public virtual T ParseEnumOfType<T>(string s)
 		{
-			checkEnumTypeArgument<T>();
+			CheckEnumTypeArgument<T>();
 			return (T)Enum.Parse(typeof(T), s.ToTrimmedNullSafeString(), true);
 		}
 
 		public virtual string FormatEnum<T>(T e)
 		{
-			checkEnumTypeArgument<T>();
+			CheckEnumTypeArgument<T>();
 			return e.ToString();
 		}
 
 		public virtual string FormatEnumAsValue<T>(T e)
 		{
-			checkEnumTypeArgument<T>();
+			CheckEnumTypeArgument<T>();
 			return Convert.ToInt32(e).ToString();
 		}
 
-		private static void checkEnumTypeArgument<T>()
+		private static void CheckEnumTypeArgument<T>()
 		{
-			checkEnumTypeArgument(typeof(T));
+			CheckEnumTypeArgument(typeof(T));
 		}
 
-		private static void checkEnumTypeArgument(Type enumType)
+        [AssertionMethod]
+		private static void CheckEnumTypeArgument(Type enumType)
 		{
 			if (!enumType.IsEnum)
 			{
@@ -275,7 +276,8 @@ namespace Maxfire.Web.Mvc
 	{
 		public static bool IsDate(this DateTime date)
 		{
-			return (date.TimeOfDay.TotalMilliseconds == 0);
+		    // ReSharper disable once CompareOfFloatsByEqualityOperator
+		    return (date.TimeOfDay.TotalMilliseconds == 0);
 		}
 	}
 }

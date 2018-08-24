@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5;
 using Maxfire.Web.Mvc.Html5.Elements;

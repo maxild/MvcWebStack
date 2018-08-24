@@ -1,13 +1,15 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 using Maxfire.Web.Mvc.Html;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
+    [SuppressMessage("ReSharper", "MustUseReturnValue")]
     public abstract class OptionsInputElementList<T> : OptionsFormFragment<T> where T : OptionsInputElementList<T>
     {
         protected OptionsInputElementList(string type, string name, IModelMetadataAccessor accessor)

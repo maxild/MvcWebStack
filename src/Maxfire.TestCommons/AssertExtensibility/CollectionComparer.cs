@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit.Sdk;
 
 
@@ -22,26 +23,28 @@ namespace Maxfire.TestCommons.AssertExtensibility
 		/// <returns>0 if equal, -1 if left has less items or some item is smaller, 1 if left has more items or some item is greater.</returns>
 		public static int Compare(IEnumerable<T> left, IEnumerable<T> right)
 		{
-			IEnumerator<T> enumLeft = left.GetEnumerator();
-			IEnumerator<T> enumRight = right.GetEnumerator();
+		    using (IEnumerator<T> enumLeft = left.GetEnumerator())
+            using (IEnumerator<T> enumRight = right.GetEnumerator())
+		    {
+		        while (true)
+		        {
+		            if (!enumLeft.MoveNext())
+		            {
+		                if (!enumRight.MoveNext())
+		                    return 0;
+		                return -1;
+		            }
 
-			while (true)
-			{
-				if (!enumLeft.MoveNext())
-				{
-					if (!enumRight.MoveNext())
-						return 0;
-					return -1;
-				}
+		            if (!enumRight.MoveNext())
+		                return 1;
 
-				if (!enumRight.MoveNext())
-					return 1;
+		            // ReSharper disable once PossibleNullReferenceException
+		            int result = enumLeft.Current.CompareTo(enumRight.Current);
 
-				int result = enumLeft.Current.CompareTo(enumRight.Current);
-
-				if (result != 0)
-					return result;
-			}
+		            if (result != 0)
+		                return result;
+		        }
+		    }
 		}
 	}
 
@@ -52,6 +55,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 			return Compare(x, y);
 		}
 
+		[SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
 		public static int Compare(IEnumerable left, IEnumerable right)
 		{
 			IEnumerator enumLeft = left.GetEnumerator();

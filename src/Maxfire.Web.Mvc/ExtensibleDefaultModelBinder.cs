@@ -8,7 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Web.Mvc
 {
@@ -26,7 +28,7 @@ namespace Maxfire.Web.Mvc
             ErrorMessageProvider = errorMessageProvider ?? new DefaultModelBinderErrorMessageProvider();
         }
 
-        public IModelBinderErrorMessageProvider ErrorMessageProvider { get; private set; }
+        public IModelBinderErrorMessageProvider ErrorMessageProvider { get; }
 
 		private void AddValueRequiredMessageToModelState(ControllerContext controllerContext, ModelStateDictionary modelState, string modelStateKey, Type elementType, object value)
 		{
@@ -76,7 +78,8 @@ namespace Maxfire.Web.Mvc
 					return null;
 				}
 
-				Array array = Array.CreateInstance(elementType, list.Count);
+			    // ReSharper disable once AssignNullToNotNullAttribute
+			    Array array = Array.CreateInstance(elementType, list.Count);
 				list.CopyTo(array, 0);
 				return array;
 			}
@@ -136,7 +139,7 @@ namespace Maxfire.Web.Mvc
 		{
 			if (bindingContext == null)
 			{
-				throw new ArgumentNullException("bindingContext");
+				throw new ArgumentNullException(nameof(bindingContext));
 			}
 
 			bool notFound = bindingContext.ModelName.IsNotEmpty() && !bindingContext.ValueProvider.ContainsPrefix(bindingContext.ModelName);
@@ -417,6 +420,7 @@ namespace Maxfire.Web.Mvc
 		}
 
 
+		[SuppressMessage("ReSharper", "IteratorNeverReturns")]
 		private static IEnumerable<string> GetZeroBasedIndexes()
 		{
 			int i = 0;
@@ -425,9 +429,7 @@ namespace Maxfire.Web.Mvc
 				yield return i.ToString(CultureInfo.InvariantCulture);
 				i++;
 			}
-// ReSharper disable FunctionNeverReturns
 		}
-// ReSharper restore FunctionNeverReturns
 
 		protected virtual void OnModelUpdated(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
@@ -690,13 +692,13 @@ namespace Maxfire.Web.Mvc
 
 		private static class CollectionHelpers
 		{
-			private static readonly MethodInfo _replaceCollectionMethod = typeof(CollectionHelpers).GetMethod("ReplaceCollectionImpl", BindingFlags.Static | BindingFlags.NonPublic);
-			private static readonly MethodInfo _replaceDictionaryMethod = typeof(CollectionHelpers).GetMethod("ReplaceDictionaryImpl", BindingFlags.Static | BindingFlags.NonPublic);
+			private static readonly MethodInfo REPLACE_COLLECTION_METHOD = typeof(CollectionHelpers).GetMethod("ReplaceCollectionImpl", BindingFlags.Static | BindingFlags.NonPublic);
+			private static readonly MethodInfo REPLACE_DICTIONARY_METHOD = typeof(CollectionHelpers).GetMethod("ReplaceDictionaryImpl", BindingFlags.Static | BindingFlags.NonPublic);
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
 			public static void ReplaceCollection(Type collectionType, object collection, object newContents)
 			{
-				MethodInfo targetMethod = _replaceCollectionMethod.MakeGenericMethod(collectionType);
+				MethodInfo targetMethod = REPLACE_COLLECTION_METHOD.MakeGenericMethod(collectionType);
 				targetMethod.Invoke(null, new [] { collection, newContents });
 			}
 
@@ -719,7 +721,7 @@ namespace Maxfire.Web.Mvc
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
 			public static void ReplaceDictionary(Type keyType, Type valueType, object dictionary, object newContents)
 			{
-				MethodInfo targetMethod = _replaceDictionaryMethod.MakeGenericMethod(keyType, valueType);
+				MethodInfo targetMethod = REPLACE_DICTIONARY_METHOD.MakeGenericMethod(keyType, valueType);
 				targetMethod.Invoke(null, new [] { dictionary, newContents });
 			}
 

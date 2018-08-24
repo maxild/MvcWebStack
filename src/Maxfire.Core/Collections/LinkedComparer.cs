@@ -10,7 +10,7 @@ namespace Maxfire.Core.Collections
 	/// <typeparam name="T"></typeparam>
 	internal class LinkedComparer<T> : IComparer<T>
 	{
-		readonly IComparer<T> primary, secondary;
+		readonly IComparer<T> _primary, _secondary;
 		/// <summary>
 		/// Create a new LinkedComparer
 		/// </summary>
@@ -23,14 +23,14 @@ namespace Maxfire.Core.Collections
 			primary.ThrowIfNull("primary");
 			secondary.ThrowIfNull("secondary");
 
-			this.primary = primary;
-			this.secondary = secondary;
+			_primary = primary;
+			_secondary = secondary;
 		}
 
 		int IComparer<T>.Compare(T x, T y)
 		{
-			int result = primary.Compare(x, y);
-			return result == 0 ? secondary.Compare(x, y) : result;
+			int result = _primary.Compare(x, y);
+			return result == 0 ? _secondary.Compare(x, y) : result;
 		}
 	}
 }
