@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using Maxfire.Web.Mvc.FluentHtml.Behaviors;
@@ -16,7 +17,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		private readonly TagBuilder _builder;
 		private IEnumerable<IBehaviorMarker> _behaviorsApplied;
 		private readonly MemberExpression _forMember;
-		
+
 		protected Element(string tag, MemberExpression forMember) : this(tag)
 		{
 			_forMember = forMember;
@@ -90,6 +91,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			return html;
 		}
 
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		void ISupportsBehaviors.ApplyBehaviors(IEnumerable<IBehaviorMarker> behaviors)
 		{
 			if (behaviors == null)
@@ -99,13 +101,13 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			_behaviorsApplied = behaviors;
 			foreach (var behavior in behaviors)
 			{
-				if (behavior is IBehavior)
+				if (behavior is IBehavior behavior1)
 				{
-					((IBehavior)behavior).Execute(this);
+					behavior1.Execute(this);
 				}
-				if (behavior is IMemberBehavior && ForMember != null)
+				if (behavior is IMemberBehavior memberBehavior && ForMember != null)
 				{
-					((IMemberBehavior)behavior).Execute(this);
+					memberBehavior.Execute(this);
 				}
 			}
 		}

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
@@ -8,7 +9,8 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 	/// <summary>
 	/// Boolean single-valued checkbox (with hidden control of false)
 	/// </summary>
-	public class CheckBox : InputElement<CheckBox>
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
+    public class CheckBox : InputElement<CheckBox>
 	{
 		public CheckBox(string name, IModelMetadataAccessor accessor)
 			: base(HtmlInputType.Checkbox, name, accessor)
@@ -86,7 +88,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		}
 
 		/// <summary>
-		/// Set the disabled attribute, and configure the submitted (succesful, hidden) 
+		/// Set the disabled attribute, and configure the submitted (succesful, hidden)
 		/// value to be defioned by the Checked property.
 		/// </summary>
 		/// <param name="value">Whether the checkbox should be disabled (but succesful, as in readonly).</param>
@@ -112,7 +114,7 @@ namespace Maxfire.Web.Mvc.Html5.Elements
 		{
 			string checkbox = base.Value("true").ToTagString();
 			// If not disabled, the hidden contral is "false", if disabled the checked status defines the value
-			// This way Disabled is more like 
+			// This way Disabled is more like
 			string hidden = new Hidden(Attr(HtmlAttribute.Name), ModelMetadataAccessor, GetValue(ReadOnly() && Checked())).ToHtmlString();
 			return string.Concat(checkbox, hidden);
 		}

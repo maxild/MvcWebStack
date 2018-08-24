@@ -1,5 +1,8 @@
-﻿namespace Maxfire.Web.Mvc.Html5.Elements
+using System.Diagnostics.CodeAnalysis;
+
+namespace Maxfire.Web.Mvc.Html5.Elements
 {
+    [SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public abstract class OptionsFormElement<T> : OptionsFormFragment<T> where T : OptionsFormElement<T>
 	{
 		protected OptionsFormElement(string elementName, string name, IModelMetadataAccessor accessor)

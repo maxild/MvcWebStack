@@ -14,18 +14,18 @@ namespace Maxfire.Web.Mvc
 
 		public UrlBuilder(IUrlHelper urlHelper, RouteValueDictionary staticReflectionValues)
 		{
-			if (urlHelper == null) 
-				throw new ArgumentNullException("urlHelper");
+			if (urlHelper == null)
+				throw new ArgumentNullException(nameof(urlHelper));
 			if (staticReflectionValues == null)
-				throw new ArgumentNullException("staticReflectionValues");
+				throw new ArgumentNullException(nameof(staticReflectionValues));
 			if (!staticReflectionValues.ContainsKey("Controller"))
-				throw new ArgumentException("The required values have to contain the special 'controller' key.", "staticReflectionValues");
+				throw new ArgumentException("The required values have to contain the special 'controller' key.", nameof(staticReflectionValues));
 			if (!staticReflectionValues.ContainsKey("Action"))
-				throw new ArgumentException("The required values have to contain the special 'action' key.", "staticReflectionValues");
+				throw new ArgumentException("The required values have to contain the special 'action' key.", nameof(staticReflectionValues));
 
 			_controllerName = staticReflectionValues.GetRequiredString("Controller");
 			_actionName = staticReflectionValues.GetRequiredString("Action");
-			
+
 			_urlHelper = urlHelper;
 			_staticReflectionValues = staticReflectionValues;
 			_routeValues = new RouteValueDictionary();

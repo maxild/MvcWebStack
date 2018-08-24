@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Web.Mvc
 {
@@ -10,7 +10,7 @@ namespace Maxfire.Web.Mvc
 	{
 		private readonly IValueProviderFactory _valueProviderFactory;
 
-		public BetterControllerActionInvoker() 
+		public BetterControllerActionInvoker()
 			: this(null)
 		{
 		}
@@ -33,10 +33,11 @@ namespace Maxfire.Web.Mvc
 			IEnumerable<string> requiredParameterNames = GetRequiredParameterNames(parameterDescriptors);
 
 			var parameterValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-			
+
 			foreach (ParameterDescriptor parameterDescriptor in parameterDescriptors)
 			{
-				parameterValues[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, requiredParameterNames);
+			    // ReSharper disable once PossibleMultipleEnumeration
+			    parameterValues[parameterDescriptor.ParameterName] = GetParameterValue(controllerContext, parameterDescriptor, requiredParameterNames);
 			}
 
 			return parameterValues;

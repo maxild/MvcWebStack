@@ -44,7 +44,7 @@ namespace Maxfire.Core.Reflection
 
 			if (enforceCheck && memberExpression == null)
 			{
-				throw new ArgumentException("Not a member access", "expression");
+				throw new ArgumentException("Not a member access", nameof(expression));
 			}
 
 			return memberExpression;

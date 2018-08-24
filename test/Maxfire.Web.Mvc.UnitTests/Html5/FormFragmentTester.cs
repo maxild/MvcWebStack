@@ -1,4 +1,3 @@
-using Maxfire.Web.Mvc.Html5.Elements;
 using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
@@ -6,17 +5,17 @@ namespace Maxfire.Web.Mvc.UnitTests.Html5
 	public class FormFragmentTester
 	{
 		//[DebuggerDisplay("{ToTagString()}")]
-		class TestableFormFragment : FormFragment<TestableFormFragment>
-		{
-			public TestableFormFragment(string name) 
-				: base("input", name, null /*accessor*/)
-			{
-			}
+		//class TestableFormFragment : FormFragment<TestableFormFragment>
+		//{
+		//	public TestableFormFragment(string name)
+		//		: base("input", name, null /*accessor*/)
+		//	{
+		//	}
 
-			protected override void BindValue(object value)
-			{
-			}
-		}
+		//	protected override void BindValue(object value)
+		//	{
+		//	}
+		//}
 
 		[Fact]
 		public void LabelBefore()

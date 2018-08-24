@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -22,9 +23,9 @@ namespace Maxfire.Core.Reflection
 			LambdaParameterHasBeenSeen = false;
 			try
 			{
-				visit(expression);
+				Visit(expression);
 				string expressionName = Builder.ToString();
-				// Remove Model at the front of the expression name unless lambda parameter 
+				// Remove Model at the front of the expression name unless lambda parameter
 				// has been used (we do not want to remove Model property of Model)
 				if (!LambdaParameterHasBeenSeen && expressionName.StartsWith(".model", StringComparison.OrdinalIgnoreCase))
 				{
@@ -38,58 +39,59 @@ namespace Maxfire.Core.Reflection
 			}
 		}
 
-		private void visit(Expression expression)
+		private void Visit(Expression expression)
 		{
 			if (expression is UnaryExpression)
 			{
-				visit(((UnaryExpression)expression).Operand);
+				Visit(((UnaryExpression)expression).Operand);
 			}
 			else if (expression is BinaryExpression && expression.NodeType == ExpressionType.ArrayIndex)
 			{
-				visitArrayIndex((BinaryExpression)expression);
+				VisitArrayIndex((BinaryExpression)expression);
 			}
 			else if (expression is ConstantExpression)
 			{
-				visitConstant((ConstantExpression)expression);
+				VisitConstant((ConstantExpression)expression);
 			}
 			else if (expression is MemberExpression) {
-				visitMemberAccess((MemberExpression)expression);
-			}	
+				VisitMemberAccess((MemberExpression)expression);
+			}
 			else if (expression is MethodCallExpression)
 			{
-				visitMethodCall((MethodCallExpression)expression);
+				VisitMethodCall((MethodCallExpression)expression);
 			}
 			else if (expression is LambdaExpression)
 			{
-				visitLambda((LambdaExpression)expression);
+				VisitLambda((LambdaExpression)expression);
 			}
 			else if (expression is ParameterExpression)
 			{
-				visitParameter((ParameterExpression)expression);
+				VisitParameter((ParameterExpression)expression);
 			}
 		}
 
-		private void visitParameter(ParameterExpression expression)
+		[SuppressMessage("ReSharper", "UnusedParameter.Local")]
+		private void VisitParameter(ParameterExpression expression)
 		{
-			// When the expression is parameter based (m => m.Something...), we remember 
+			// When the expression is parameter based (m => m.Something...), we remember
 			// it to make sure that we do not accidentally cut off too much of m => m.Model....
 			LambdaParameterHasBeenSeen = true;
 		}
 
-		private void visitLambda(LambdaExpression expression)
+		private void VisitLambda(LambdaExpression expression)
 		{
-			visit(expression.Body);
+			Visit(expression.Body);
 		}
 
-		private void visitArrayIndex(BinaryExpression expression)
+		private void VisitArrayIndex(BinaryExpression expression)
 		{
-			visit(expression.Left);
+			Visit(expression.Left);
 			Builder.Append("[");
-			visitMethodCallArgument(expression.Right);
+			VisitMethodCallArgument(expression.Right);
 			Builder.Append("]");
 		}
 
-		private void visitConstant(ConstantExpression expression)
+		private void VisitConstant(ConstantExpression expression)
 		{
 			// Captured references declared as compiler generated types of closures are excluded
 			if (expression.Type.HasCustomAttribute<CompilerGeneratedAttribute>())
@@ -100,15 +102,15 @@ namespace Maxfire.Core.Reflection
 			Builder.Append(index.ToNullSafeString());
 		}
 
-		private void visitMemberAccess(MemberExpression expression)
+		private void VisitMemberAccess(MemberExpression expression)
 		{
 			if (expression.Expression != null)
 			{
-				visit(expression.Expression);
+				Visit(expression.Expression);
 			}
 			else
 			{
-				Builder.Append(expression.Member.DeclaringType.Name);
+				Builder.Append(expression.Member.DeclaringType?.Name);
 			}
 			// In case of m => m.BirthDay.Value.Day, where BirthDay is declared as Nullable<DateTime>,
 			// we want BirthDay.Day (as if BirthDay is not Nullable<DateTime>).
@@ -120,14 +122,14 @@ namespace Maxfire.Core.Reflection
 			}
 		}
 
-		private void visitMethodCall(MethodCallExpression expression)
+		private void VisitMethodCall(MethodCallExpression expression)
 		{
-			visit(expression.Object);
+			Visit(expression.Object);
 
 			if (expression.IsIndexerProperty() || expression.IsArrayGetMethod())
 			{
 				Builder.Append("[");
-				visitMethodCallArguments(expression);
+				VisitMethodCallArguments(expression);
 				Builder.Append("]");
 			}
 			else
@@ -135,16 +137,16 @@ namespace Maxfire.Core.Reflection
 				Builder.Append(".");
 				Builder.Append(expression.Method.Name);
 				Builder.Append("(");
-				visitMethodCallArguments(expression);
+				VisitMethodCallArguments(expression);
 				Builder.Append(")");
 			}
 		}
 
-		private void visitMethodCallArguments(MethodCallExpression expression)
+		private void VisitMethodCallArguments(MethodCallExpression expression)
 		{
 			for (int i = 0; i < expression.Arguments.Count; i++)
 			{
-				visitMethodCallArgument(expression.Arguments[i]);
+				VisitMethodCallArgument(expression.Arguments[i]);
 				if (i < expression.Arguments.Count - 1)
 				{
 					Builder.Append(", ");
@@ -152,7 +154,7 @@ namespace Maxfire.Core.Reflection
 			}
 		}
 
-		private void visitMethodCallArgument(Expression expression)
+		private void VisitMethodCallArgument(Expression expression)
 		{
 			// Because arguments to indexers and/or methods are often captured (as in closures) each argument needs special handling...
 			object argumentValue = Expression.Lambda(expression).Compile().DynamicInvoke();

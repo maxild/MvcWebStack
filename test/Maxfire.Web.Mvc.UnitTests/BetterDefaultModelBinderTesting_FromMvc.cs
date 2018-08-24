@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,9 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests
 {
+	[SuppressMessage("ReSharper", "UnusedMember.Local")]
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+	[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
 	public class ExtensibleDefaultModelBinderTests
 	{
 		[Fact]
@@ -173,11 +177,11 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Assert.Equal("Canada", modelAsDictionary["CA"].Name);
 			Assert.Equal("United States", modelAsDictionary["US"].Name);
 			Assert.Equal(2, modelAsDictionary["CA"].States.Count());
-			Assert.True(modelAsDictionary["CA"].States.Contains("Québec"));
-			Assert.True(modelAsDictionary["CA"].States.Contains("British Columbia"));
+			Assert.Contains("Québec", modelAsDictionary["CA"].States);
+			Assert.Contains("British Columbia", modelAsDictionary["CA"].States);
 			Assert.Equal(2, modelAsDictionary["US"].States.Count());
-			Assert.True(modelAsDictionary["US"].States.Contains("Washington"));
-			Assert.True(modelAsDictionary["US"].States.Contains("Oregon"));
+			Assert.Contains("Washington", modelAsDictionary["US"].States);
+			Assert.Contains("Oregon", modelAsDictionary["US"].States);
 		}
 
 		[Fact]
@@ -213,11 +217,11 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Assert.Equal("Canada", modelAsDictionary["CA"].Name);
 			Assert.Equal("United States", modelAsDictionary["US"].Name);
 			Assert.Equal(2, modelAsDictionary["CA"].States.Count());
-			Assert.True(modelAsDictionary["CA"].States.Contains("Québec"));
-			Assert.True(modelAsDictionary["CA"].States.Contains("British Columbia"));
+			Assert.Contains("Québec", modelAsDictionary["CA"].States);
+			Assert.Contains("British Columbia", modelAsDictionary["CA"].States);
 			Assert.Equal(2, modelAsDictionary["US"].States.Count());
-			Assert.True(modelAsDictionary["US"].States.Contains("Washington"));
-			Assert.True(modelAsDictionary["US"].States.Contains("Oregon"));
+			Assert.Contains("Washington", modelAsDictionary["US"].States);
+			Assert.Contains("Oregon", modelAsDictionary["US"].States);
 		}
 
 		[Fact]
@@ -252,14 +256,14 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Assert.Equal(2, modelAsDictionary.Count);
 			Assert.Equal("Canada", modelAsDictionary["CA"].Name);
 			Assert.Equal("United States", modelAsDictionary["US"].Name);
-			Assert.Equal(1, modelAsDictionary["CA"].States.Count());
-			Assert.True(modelAsDictionary["CA"].States.Contains("Québec"));
+			Assert.Single(modelAsDictionary["CA"].States);
+			Assert.Contains("Québec", modelAsDictionary["CA"].States);
 
 			// We do not accept double notation for a same entry, so we can't find that state.
-			Assert.False(modelAsDictionary["CA"].States.Contains("British Columbia"));
+			Assert.DoesNotContain("British Columbia", modelAsDictionary["CA"].States);
 			Assert.Equal(2, modelAsDictionary["US"].States.Count());
-			Assert.True(modelAsDictionary["US"].States.Contains("Washington"));
-			Assert.True(modelAsDictionary["US"].States.Contains("Oregon"));
+			Assert.Contains("Washington", modelAsDictionary["US"].States);
+			Assert.Contains("Oregon", modelAsDictionary["US"].States);
 		}
 
 		[Fact]
@@ -1112,9 +1116,9 @@ namespace Maxfire.Web.Mvc.UnitTests
 			helper.PublicBindProperty(new ControllerContext(), bindingContext, propertyDescriptor);
 
 			// Assert
-			Assert.Equal(false, bindingContext.ModelState.IsValidField("IntReadWriteNonNegative"));
+			Assert.False(bindingContext.ModelState.IsValidField("IntReadWriteNonNegative"));
 			var error = Assert.Single(bindingContext.ModelState["IntReadWriteNonNegative"].Errors);
-			Assert.Equal("Some error text.", error.ErrorMessage);
+			Assert.Equal("Some error text.", error?.ErrorMessage);
 			Assert.Equal(4, model.IntReadWriteNonNegative);
 		}
 
@@ -1328,8 +1332,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void CreateComplexElementalModelBindingContext_DoesNotReadBindAttributeFromBuddyClass()
 		{
-			// Note: I dislike the 'buddy class' concept, and therefore BetterDefaultModelBinder do not use 
-			// the AssociatedMetadataTypeTypeDescriptionProvider from System.ComponentModel.DataAnnotations. 
+			// Note: I dislike the 'buddy class' concept, and therefore BetterDefaultModelBinder do not use
+			// the AssociatedMetadataTypeTypeDescriptionProvider from System.ComponentModel.DataAnnotations.
 			// Instead it uses the more conventional plain vanilla TypeDescriptor from System.ComponentModel.
 
 			// Arrange
@@ -1624,7 +1628,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// Assert
 			var modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
 			var error = Assert.Single(modelState.Errors);
-			Assert.Equal("Some pre-existing error", error.ErrorMessage);
+			Assert.Equal("Some pre-existing error", error?.ErrorMessage);
 		}
 
 		[Fact]
@@ -1673,7 +1677,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// Assert
 			ModelState modelState = bindingContext.ModelState["theModel.ReadWriteProperty"];
 			var error = Assert.Single(modelState.Errors);
-			Assert.Equal("Existing Error Message", error.ErrorMessage);
+			Assert.Equal("Existing Error Message", error?.ErrorMessage);
 		}
 
 		[Fact]
@@ -2117,7 +2121,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				{
 					if (value < 0)
 					{
-						throw new ArgumentOutOfRangeException("value", "Value must be non-negative.");
+						throw new ArgumentOutOfRangeException(nameof(value), "Value must be non-negative.");
 					}
 					_intReadWriteNonNegative = value;
 				}
@@ -2177,7 +2181,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 		//		Value = value;
 		//	}
 
-		//	public string Value { get; private set; }
+		//	public string Value { get; }
 		//}
 
 		//private class CultureAwareConverter : TypeConverter
@@ -2281,13 +2285,13 @@ namespace Maxfire.Web.Mvc.UnitTests
 		class PropertyTestingModel
 		{
 			public string StringReadWrite { get; set; }
-			public string StringReadOnly { get; private set; }
+			public string StringReadOnly { get; }
 			public int IntReadWrite { get; set; }
-			public int IntReadOnly { get; private set; }
+			public int IntReadOnly { get; }
 			public object[] ArrayReadWrite { get; set; }
-			public object[] ArrayReadOnly { get; private set; }
+			public object[] ArrayReadOnly { get; }
 			public Address AddressReadWrite { get; set; }
-			public Address AddressReadOnly { get; private set; }
+			public Address AddressReadOnly { get; }
 			public string Whitelisted { get; set; }
 			public string Blacklisted { get; set; }
 		}
@@ -2331,7 +2335,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "LocalAttributes");
 
 			// Assert
-			Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
+			Assert.Contains(property.Attributes.Cast<Attribute>(), a => a is RequiredAttribute);
 		}
 
 		[Fact]
@@ -2345,7 +2349,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "MetadataAttributes");
 
 			// Assert
-			Assert.False(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
+			Assert.DoesNotContain(property.Attributes.Cast<Attribute>(), a => a is RangeAttribute);
 		}
 
 		[Fact]
@@ -2359,8 +2363,8 @@ namespace Maxfire.Web.Mvc.UnitTests
 			                                         .Cast<PropertyDescriptor>().Single(pd => pd.Name == "MixedAttributes");
 
 			// Assert
-			Assert.True(property.Attributes.Cast<Attribute>().Any(a => a is RequiredAttribute));
-			Assert.False(property.Attributes.Cast<Attribute>().Any(a => a is RangeAttribute));
+			Assert.Contains(property.Attributes.Cast<Attribute>(), a => a is RequiredAttribute);
+			Assert.DoesNotContain(property.Attributes.Cast<Attribute>(), a => a is RangeAttribute);
 		}
 
 		//// GetPropertyValue tests
@@ -2712,7 +2716,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			// Assert
 			ModelState modelState = binder.Context.ModelState[BASE_MODEL_NAME + ".NonNullableStringWithAttribute"];
 			var error = Assert.Single(modelState.Errors);
-			Assert.Equal("My custom required message", error.ErrorMessage);
+			Assert.Equal("My custom required message", error?.ErrorMessage);
 		}
 
 		[Fact]
@@ -2761,7 +2765,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				{
 					if (value == null)
 					{
-						throw new ArgumentNullException("value");
+						throw new ArgumentNullException(nameof(value));
 					}
 				}
 			}
@@ -2774,7 +2778,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 				{
 					if (value == null)
 					{
-						throw new ArgumentNullException("value");
+						throw new ArgumentNullException(nameof(value));
 					}
 				}
 			}
@@ -2802,7 +2806,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 					};
 			}
 
-			public ModelBindingContext Context { get; private set; }
+			public ModelBindingContext Context { get; }
 
 			public ModelStateDictionary ModelState { get; set; }
 

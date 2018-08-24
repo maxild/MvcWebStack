@@ -26,7 +26,7 @@ namespace Maxfire.TestCommons
 		{
 			MethodBase caller = new StackTrace().GetFrame(1).GetMethod();
 
-			Spec_not_implemented(caller.DeclaringType.Name + "." + caller.Name);
+			Spec_not_implemented(caller.DeclaringType?.Name + "." + caller.Name);
 		}
 
 		protected void Spec_not_implemented(string specName)

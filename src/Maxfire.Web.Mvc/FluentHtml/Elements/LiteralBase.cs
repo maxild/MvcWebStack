@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Maxfire.Web.Mvc.FluentHtml.Html;
 
@@ -53,13 +54,12 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 			return base.ToString();
 		}
 
+		[SuppressMessage("ReSharper", "FormatStringProblem")]
 		protected virtual string FormatValue(object value)
 		{
 			return string.IsNullOrEmpty(_format)
-			       	? value == null
-			       	  	? null
-			       	  	: value.ToString()
-			       	: (_format.StartsWith("{0") && _format.EndsWith("}"))
+			       	? value?.ToString()
+			       	: _format.StartsWith("{0") && _format.EndsWith("}")
 			       	  	? string.Format(_format, value)
 			       	  	: string.Format("{0:" + _format + "}", value);
 		}

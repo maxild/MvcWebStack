@@ -18,19 +18,19 @@ namespace Maxfire.Core
 
 		public override int GetHashCode()
 		{
-			IEnumerable<FieldInfo> fields = getFields();
+			IEnumerable<FieldInfo> fields = GetFields();
 
-			const int startValue = 17;
-			const int multiplier = 59;
+			const int START_VALUE = 17;
+			const int MULTIPLIER = 59;
 
-			int hashCode = startValue;
+			int hashCode = START_VALUE;
 
 			foreach (FieldInfo field in fields)
 			{
 				object value = field.GetValue(this);
 
 				if (value != null)
-					hashCode = hashCode * multiplier + value.GetHashCode();
+					hashCode = hashCode * MULTIPLIER + value.GetHashCode();
 			}
 
 			return hashCode;
@@ -55,8 +55,8 @@ namespace Maxfire.Core
 					if (thisValue != null)
 						return false;
 				}
-				else if ((typeof(DateTime).IsAssignableFrom(field.FieldType)) ||
-				         ((typeof(DateTime?).IsAssignableFrom(field.FieldType))))
+				else if (typeof(DateTime).IsAssignableFrom(field.FieldType) ||
+				         typeof(DateTime?).IsAssignableFrom(field.FieldType))
 				{
 					string otherDateString = ((DateTime)otherValue).ToLongDateString();
 					string thisDateString = ((DateTime)thisValue).ToLongDateString();
@@ -64,7 +64,6 @@ namespace Maxfire.Core
 					{
 						return false;
 					}
-					continue;
 				}
 				else if (!otherValue.Equals(thisValue))
 					return false;
@@ -73,13 +72,13 @@ namespace Maxfire.Core
 			return true;
 		}
 
-		private IEnumerable<FieldInfo> getFields()
+		private IEnumerable<FieldInfo> GetFields()
 		{
 			Type t = GetType();
 
 			var fields = new List<FieldInfo>();
 
-			while (t != typeof(object))
+			while (t != null && t != typeof(object))
 			{
 				fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
 

@@ -35,7 +35,7 @@ task repairGitRemoteOnAppVeyor {
     if ($env:APPVEYOR -ne $NULL) {
 
         # private repo need github credentials
-        $env:GITVERSION_REMOTE_USERNAME = "maxild"
+        $env:GITVERSION_REMOTE_USERNAME = $repositoryOwner
         $env:GITVERSION_REMOTE_PASSWORD = $env:github_password
 
         # Running on AppVeyor, we have to patch private repos
@@ -293,13 +293,13 @@ task pack -depends clean, test {
     create_directory $artifacts_dir
 
     # Find dependency versions
-    $preludeVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Maxfire.Prelude.Core'
-    $mvcVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc") "packages.config") 'Microsoft.AspNet.Mvc'
-    $sparkVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Spark.Web.Mvc") "packages.config") 'Spark.Web.Mvc4'
-    $castleCoreVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Core'
-    $castleWindsorVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Castle.Web.Mvc") "packages.config") 'Castle.Windsor'
-    $xunitVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.TestCommons") "packages.config") 'xunit'
-    $rhinomocksVersion = find-dependencyVersion (join-path (join-path $source_dir "Maxfire.Web.Mvc.TestCommons") "packages.config") 'RhinoMocks'
+    $preludeVersion         = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Web.Mvc"             | Join-Path -ChildPath "packages.config") 'Maxfire.Prelude.Core'
+    $mvcVersion             = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Web.Mvc"             | Join-Path -ChildPath "packages.config") 'Microsoft.AspNet.Mvc'
+    $sparkVersion           = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Spark.Web.Mvc"       | Join-Path -ChildPath "packages.config") 'Spark.Web.Mvc4'
+    $castleCoreVersion      = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Castle.Web.Mvc"      | Join-Path -ChildPath "packages.config") 'Castle.Core'
+    $castleWindsorVersion   = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Castle.Web.Mvc"      | Join-Path -ChildPath "packages.config") 'Castle.Windsor'
+    $xunitVersion           = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.TestCommons"         | Join-Path -ChildPath "packages.config") 'xunit'
+    $rhinomocksVersion      = find-dependencyVersion (join-path $source_dir -ChildPath "Maxfire.Web.Mvc.TestCommons" | Join-Path -ChildPath "packages.config") 'RhinoMocks'
 
     # Could use the -Version option of the nuget.exe pack command to provide the actual version.
     # _but_ the package dependency version cannot be overriden at the commandline.

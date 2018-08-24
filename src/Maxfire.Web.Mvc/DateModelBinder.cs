@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Web.Mvc
 {
@@ -13,7 +14,7 @@ namespace Maxfire.Web.Mvc
 		{
 			if (bindingContext == null)
 			{
-				throw new ArgumentNullException("bindingContext");
+				throw new ArgumentNullException(nameof(bindingContext));
 			}
 
 			if (bindingContext.ValueProvider.ContainsPrefix(bindingContext.ModelName) == false)
@@ -30,9 +31,9 @@ namespace Maxfire.Web.Mvc
 			// Missing values (parts) will show up as entries in the dictionary where kvp.Value == null
 			IDictionary<string, ValueProviderResult> parts = GetParts(bindingContext, Year, Month, Day);
 
-			// We do not differentiate between being missing (not being posted) and 
+			// We do not differentiate between being missing (not being posted) and
 			// being empty (posted as an empty value). This way a set of partial request
-			// params (e.g. 'birthday.day' and 'birthday.month') will bind to a nullable 
+			// params (e.g. 'birthday.day' and 'birthday.month') will bind to a nullable
 			// DateTime without any errors, if the values of the partial params are empty.
 			if (parts.Values.Any(IsMissingOrEmpty))
 			{
@@ -40,8 +41,8 @@ namespace Maxfire.Web.Mvc
 			}
 
 			// All validation errors are reported back in ModelState under ModelName (i.e. 'udbdato', not 'udbdato.Day' etc)
-			// This way the view can use the ValidationMessage html helper after a DateSelects element. Only disadvantage is 
-			// that all selects are colored red, because we do not differentiate between which of the date components (day/month/year) 
+			// This way the view can use the ValidationMessage html helper after a DateSelects element. Only disadvantage is
+			// that all selects are colored red, because we do not differentiate between which of the date components (day/month/year)
 			// that was invalid.
 
 			bool nullResult = false;
@@ -50,19 +51,19 @@ namespace Maxfire.Web.Mvc
 
 			if (values[0] != null && values[0] <= 0)
 			{
-				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke et validt år.".FormatWith(values[0]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "VÃ¦rdien '{0}' er ikke et validt Ã¥r.".FormatWith(values[0]));
 				nullResult = true;
 			}
 
 			if (values[1] != null && (values[1] < 1 || values[1] > 12))
 			{
-				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke en valid måned.".FormatWith(values[1]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "VÃ¦rdien '{0}' er ikke en valid mÃ¥ned.".FormatWith(values[1]));
 				nullResult = true;
 			}
 
 			if (values[2] != null && (values[2] < 1 || values[2] > DateTime.DaysInMonth(values[0] ?? 2012, values[1] ?? 1)))
 			{
-				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Værdien '{0}' er ikke en valid dag for den valgte måned.".FormatWith(values[2]));
+				bindingContext.ModelState.AddModelError(bindingContext.ModelName, "VÃ¦rdien '{0}' er ikke en valid dag for den valgte mÃ¥ned.".FormatWith(values[2]));
 				nullResult = true;
 			}
 
@@ -91,7 +92,7 @@ namespace Maxfire.Web.Mvc
 			bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueResult);
 			try
 			{
-				return DateTime.ParseExact(valueAsString, 
+				return DateTime.ParseExact(valueAsString,
 				                           new[] { @"d\/M-yyyy", @"dd\/MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd-MM-yyyy"},
 										   CultureInfo.InvariantCulture,
 				                           DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite);

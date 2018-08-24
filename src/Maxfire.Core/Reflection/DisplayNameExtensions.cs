@@ -74,7 +74,7 @@ namespace Maxfire.Core.Reflection
 			{
 				throw new ArgumentException("The generic type argument must be an enum.");
 			}
-			return getDisplayNameOfEnum(value);
+			return GetDisplayNameOfEnumHelper(value);
 		}
 
 		public static string GetDisplayNameOfEnum<TEnum>(this TEnum value)
@@ -88,10 +88,10 @@ namespace Maxfire.Core.Reflection
 			{
 				throw new ArgumentException("The generic type argument must be an enum.");
 			}
-			return getDisplayNameOfEnum(value);
+			return GetDisplayNameOfEnumHelper(value);
 		}
 
-		private static string getDisplayNameOfEnum(object value)
+		private static string GetDisplayNameOfEnumHelper(object value)
 		{
 			if (value == null)
 			{

@@ -28,7 +28,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		{
 			if (key == null)
 			{
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 			}
 
 			ValueProviderResult explicitValues = base.GetValue(ChildActionValuesKey);

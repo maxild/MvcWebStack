@@ -196,12 +196,11 @@ namespace Maxfire.Web.Mvc.TestCommons.Routes
 		private static string GetActionName<TController>(Expression<Action<TController>> action)
 		{
 			Type controllerType = typeof(TController);
-			var call = action.Body as MethodCallExpression;
-			string methodName = call != null ? call.Method.Name : "";
+		    string methodName = action.Body is MethodCallExpression call ? call.Method.Name : string.Empty;
 			MethodInfo actionMethodInfo = controllerType.GetMethod(methodName);
-			var alias = (ActionNameAttribute[])actionMethodInfo.GetCustomAttributes(typeof(ActionNameAttribute), true);
+			var alias = (ActionNameAttribute[])actionMethodInfo?.GetCustomAttributes(typeof(ActionNameAttribute), true);
 
-			return alias.Length == 1 ? alias[0].Name : methodName;
+			return alias != null && alias.Length == 1 ? alias[0].Name : methodName;
 		}
 
 		public class UriPathRecognizeOptions

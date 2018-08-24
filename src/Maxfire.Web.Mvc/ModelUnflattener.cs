@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc
@@ -22,16 +22,16 @@ namespace Maxfire.Web.Mvc
 		public virtual IDictionary<string, string[]> ValidateInput(TInputModel input)
 		{
 			ValidationResult validationResult;
-			
+
 			if (!input.IsTransient && _repository.GetById(input.Id) == null)
 			{
 				// This can happen if the resource have been destroyed by a different request/session.
 				validationResult = new ValidationResult();
 				validationResult.AddErrorFor<TInputModel>(x => x.Id,
-				                                               string.Format("Entitet med id '{0}' findes ikke.", input.Id));
+				    $"Entitet med id '{input.Id}' findes ikke.");
 				return validationResult.GetAllErrors();
 			}
-			
+
 			validationResult = _modelUpdater.Validate(input);
 			var validationErrors = validationResult.GetAllErrors();
 			return validationErrors;
@@ -39,24 +39,24 @@ namespace Maxfire.Web.Mvc
 
 		public virtual TModel MapInputToModel(TInputModel input)
 		{
-			var model = input.IsTransient ? createAndUpdate(input) : getAndUpdate(input);
+			var model = input.IsTransient ? CreateAndUpdate(input) : GetAndUpdate(input);
 			return model;
 		}
 
-		private TModel getAndUpdate(TInputModel input)
+		private TModel GetAndUpdate(TInputModel input)
 		{
 			var model = _repository.GetById(input.Id);
 			if (model == null)
 			{
 				throw new InvalidOperationException(
-					string.Format("Entitet med id '{0}' findes ikke.", input.Id));
+				    $"Entitet med id '{input.Id}' findes ikke.");
 			}
 
 			_modelUpdater.MapToPersistent(input, model);
 			return model;
 		}
 
-		private TModel createAndUpdate(TInputModel input)
+		private TModel CreateAndUpdate(TInputModel input)
 		{
 			return _modelUpdater.MapToTransient(input);
 		}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Maxfire.TestCommons.AssertExtensibility;
 using Xunit;
 using Xunit.Sdk;
@@ -10,6 +11,7 @@ namespace Maxfire.TestCommons.AssertExtensions
 	/// <summary>
 	/// Extensions which provide assertions to classes derived from <see cref="IEnumerable"/> and <see cref="IEnumerable&lt;T&gt;"/>.
 	/// </summary>
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 	public static class CollectionAssertExtensions
 	{
 		public static IEnumerable ShouldHaveCount(this IEnumerable collection, int expectedCount)

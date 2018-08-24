@@ -31,12 +31,12 @@ namespace Maxfire.Spark.Web.Mvc
 
 		public ISparkSettings SparkSettings
 		{
-			get { return getPrecompileSettings().SparkSettings; }
+			get { return GetPrecompileSettings().SparkSettings; }
 		}
 
 		public string ViewsAssemblyFile
 		{
-			get { return getPrecompileSettings().ViewsAssemblyFile; }
+			get { return GetPrecompileSettings().ViewsAssemblyFile; }
 		}
 
 		public bool Debug
@@ -49,7 +49,7 @@ namespace Maxfire.Spark.Web.Mvc
 			engines.Add(SparkEngineStarter.CreateViewEngine(SparkSettings));
 		}
 
-		private IPrecompileSparkSettings getPrecompileSettings()
+		private IPrecompileSparkSettings GetPrecompileSettings()
 		{
 			return _precompileSettings ?? (_precompileSettings = _settingsProvider());
 		}

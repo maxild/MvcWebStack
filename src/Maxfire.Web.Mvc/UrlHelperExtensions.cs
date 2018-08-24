@@ -45,7 +45,7 @@ namespace Maxfire.Web.Mvc
 
 		public static string IncludeJS(this IUrlHelper urlHelper, string jsFile)
 		{
-			return string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", urlHelper.PathOfJS(jsFile));
+			return $"<script type=\"text/javascript\" src=\"{urlHelper.PathOfJS(jsFile)}\"></script>";
 		}
 
 		public static string PathOfJS(this IUrlHelper urlHelper, string jsFile)

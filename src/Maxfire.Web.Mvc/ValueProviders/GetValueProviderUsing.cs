@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web.Mvc;
 
 namespace Maxfire.Web.Mvc.ValueProviders
@@ -10,7 +10,7 @@ namespace Maxfire.Web.Mvc.ValueProviders
 		public GetValueProviderUsing(Func<ControllerContext, IValueProvider> thunk)
 		{
 			if (thunk == null)
-				throw new ArgumentNullException("thunk");
+				throw new ArgumentNullException(nameof(thunk));
 			_thunk = thunk;
 		}
 

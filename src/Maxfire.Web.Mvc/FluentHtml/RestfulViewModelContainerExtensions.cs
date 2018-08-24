@@ -1,7 +1,7 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 using Maxfire.Core.Extensions;
 using Maxfire.Web.Mvc.FluentHtml.Html;
 
@@ -36,7 +36,7 @@ namespace Maxfire.Web.Mvc.FluentHtml
 		private readonly string _action;
 		private readonly string _method;
 		private string _id;
-		
+
 		public HtmlFormDescriptor(IUrlResponseWriter view, string action, string method)
 		{
 			_view = view;
@@ -65,7 +65,7 @@ namespace Maxfire.Web.Mvc.FluentHtml
 			return this;
 		}
 
-		public IDisposable Instance 
+		public IDisposable Instance
 		{
 			get
 			{

@@ -1,6 +1,6 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 
 namespace Maxfire.Web.Mvc
 {
@@ -22,8 +22,7 @@ namespace Maxfire.Web.Mvc
 			if (FormValidator == null)
 			{
 				throw new InvalidOperationException(
-					string.Format("The FormValidator property was not injected. Please register an implementation for the {0} service in your IoC container.", 
-					              typeof(IFormValidator).Name));
+				    $"The FormValidator property was not injected. Please register an implementation for the {typeof(IFormValidator).Name} service in your IoC container.");
 			}
 
 			object inputModel = filterContext.GetValueOfParameterWithType(_inputModelType);

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Maxfire.Core.Reflection;
 
@@ -237,6 +238,7 @@ namespace Maxfire.Core
 	/// </summary>
 	/// <seealso cref="Operator&lt;T&gt;"/>
 	/// <seealso cref="Operator"/>
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public static class Operator<TValue, TResult>
 	{
 		private static readonly Func<TValue, TResult> _convert;
@@ -287,6 +289,7 @@ namespace Maxfire.Core
 	/// </summary>
 	/// <seealso cref="Operator"/>
 	/// <seealso cref="Operator&lt;TValue,TResult&gt;"/>
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public static class Operator<T>
 	{
 		static readonly INullOp<T> _nullOp;

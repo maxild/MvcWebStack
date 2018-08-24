@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Maxfire.TestCommons.AssertExtensions;
 using Maxfire.Web.Mvc.Html5.Elements;
 using Maxfire.Web.Mvc.UnitTests.Html5.AssertionExtensions;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace Maxfire.Web.Mvc.UnitTests.Html5
 {
+	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public class FragmentTester
 	{
 		public class TestableFragment : Fragment<TestableFragment>

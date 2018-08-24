@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Core.Extensions
 {
@@ -22,14 +21,14 @@ namespace Maxfire.Core.Extensions
 		{
 			if (iterator == null)
 			{
-				throw new ArgumentNullException("iterator");
+				throw new ArgumentNullException(nameof(iterator));
 			}
 			if (expectedCount < 0)
 			{
 				return false;
 			}
-			IList<T> list = iterator as IList<T>;
-			if (list != null)
+
+		    if (iterator is IList<T> list)
 			{
 				return list.Count == expectedCount;
 			}
@@ -58,14 +57,14 @@ namespace Maxfire.Core.Extensions
 		{
 			if (iterator == null)
 			{
-				throw new ArgumentNullException("iterator");
+				throw new ArgumentNullException(nameof(iterator));
 			}
 			if (expectedCount < 0)
 			{
 				return true;
 			}
-			IList<T> list = iterator as IList<T>;
-			if (list != null)
+
+		    if (iterator is IList<T> list)
 			{
 				return list.Count > expectedCount;
 			}
@@ -90,90 +89,12 @@ namespace Maxfire.Core.Extensions
 			return array;
 		}
 
-		[DebuggerStepThrough]
-		public static IEnumerable Each(this IEnumerable values, Action<object> eachAction)
-		{
-// ReSharper disable PossibleMultipleEnumeration
-			foreach (var item in values)
-			{
-				eachAction(item);
-			}
-
-			return values;
-// ReSharper restore PossibleMultipleEnumeration
-		}
-
-		[DebuggerStepThrough]
-		public static IEnumerable Each(this IEnumerable values, Action<object, int> eachAction)
-		{
-			int i = 0;
-// ReSharper disable PossibleMultipleEnumeration
-			foreach (var item in values)
-			{
-				eachAction(item, i);
-				i++;
-			}
-
-			return values;
-// ReSharper restore PossibleMultipleEnumeration
-		}
-
-		[DebuggerStepThrough]
-		public static IEnumerable<T> Each<T>(this IEnumerable<T> values, Action<T> eachAction)
-		{
-// ReSharper disable PossibleMultipleEnumeration
-			foreach (var item in values)
-			{
-				eachAction(item);
-			}
-
-			return values;
-// ReSharper restore PossibleMultipleEnumeration
-		}
-
-		[DebuggerStepThrough]
-		public static IEnumerable<T> Each<T>(this IEnumerable<T> values, Action<T, int> eachAction)
-		{
-			int i = 0;
-// ReSharper disable PossibleMultipleEnumeration
-			foreach (var item in values)
-			{
-				eachAction(item, i);
-				i++;
-			}
-
-			return values;
-// ReSharper restore PossibleMultipleEnumeration
-		}
-
-		[DebuggerStepThrough]
-		public static IEnumerable<TResult> Map<T, TResult>(this IEnumerable<T> values, Func<T, TResult> projection)
-		{
-// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (T item in values)
-// ReSharper restore LoopCanBeConvertedToQuery
-			{
-				yield return projection(item);
-			}
-		}
-
-		[DebuggerStepThrough]
-		public static IEnumerable<TResult> Map<T, TResult>(this IEnumerable<T> values, Func<T, int, TResult> projectionWithIndex)
-		{
-			int index = 0;
-			foreach (T item in values)
-			{
-				yield return projectionWithIndex(item, index);
-				index++;
-			}
-		}
-
 		public static int IndexOf<TItem>(this IEnumerable<TItem> collection, Func<TItem, bool> predicate)
 		{
 			var y = collection
 				.Map((item, index) => new { Index = index, Item = item })
 				.FirstOrDefault(x => predicate(x.Item));
-			return y != null ? y.Index : -1;
+			return y?.Index ?? -1;
 		}
 	}
 }

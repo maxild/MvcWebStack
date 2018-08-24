@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 
 namespace Maxfire.Core.Collections
 {
-	public class RangeIteratorSet<T> : IEnumerable<T> 
+	public class RangeIteratorSet<T> : IEnumerable<T>
 		where T : IComparable<T>
 	{
 		private readonly SortedList<T, RangeIterator<T>> _rangeIterators = new SortedList<T, RangeIterator<T>>();
-		
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -25,22 +25,22 @@ namespace Maxfire.Core.Collections
 					{
 						sb.Append(", ");
 					}
-					sb.Append(lastvalue.ToString());
+					sb.Append(lastvalue);
 					count++;
 				}
 				lastvalue = iterator;
 			}
 			if (lastvalue == null)
 			{
-				sb.Append("{ Ø }");
+				sb.Append("{ Ã˜ }");
 			}
-			else 
+			else
 			{
 				if (count > 0)
 				{
 					sb.Append(" eller ");
 				}
-				sb.Append(lastvalue.ToString());
+				sb.Append(lastvalue);
 			}
 			return sb.ToString();
 		}

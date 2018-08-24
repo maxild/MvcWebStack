@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Web.Mvc;
@@ -45,7 +45,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			indexes[1].ShouldEqual("4");
 			indexes[2].ShouldEqual("6");
 
-			collection.ShouldNotBeNull();
+			Assert.NotNull(collection);
 			collection[0].ShouldEqual(10);
 			collection[1].ShouldEqual(20);
 			collection[2].ShouldEqual(30);

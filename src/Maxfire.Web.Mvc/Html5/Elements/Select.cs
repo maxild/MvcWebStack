@@ -1,10 +1,12 @@
-﻿using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
-using Maxfire.Core.Extensions;
+using Maxfire.Prelude.Linq;
 using Maxfire.Web.Mvc.Html5.HtmlTokens;
 
 namespace Maxfire.Web.Mvc.Html5.Elements
 {
+    [SuppressMessage("ReSharper", "MustUseReturnValue")]
 	public class Select : OptionsFormElement<Select>
 	{
 		public Select(string name, IModelMetadataAccessor accessor) 

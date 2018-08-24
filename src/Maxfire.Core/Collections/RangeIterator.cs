@@ -15,8 +15,8 @@ namespace Maxfire.Core.Collections
 
 		public override string ToString()
 		{
-			const char sepToken = ';';
-			const char space = ' ';
+			const char SEP_TOKEN = ';';
+			const char SPACE = ' ';
 			StringBuilder sb = new StringBuilder();
 			sb.Append('[');
 			T lastValue = default(T);
@@ -30,14 +30,14 @@ namespace Maxfire.Core.Collections
 				}
 				if (count == 2)
 				{
-					sb.Append(sepToken);
-					sb.Append(space);
+					sb.Append(SEP_TOKEN);
+					sb.Append(SPACE);
 					sb.Append(value.ToString());
 				}
 				else if (count == 4)
 				{
-					sb.Append(sepToken);
-					sb.Append(space);
+					sb.Append(SEP_TOKEN);
+					sb.Append(SPACE);
 					sb.Append("...");
 					lastValue = value;
 				}
@@ -48,9 +48,9 @@ namespace Maxfire.Core.Collections
 			}
 			if (count > 2)
 			{
-				sb.Append(sepToken);
-				sb.Append(space);
-				sb.Append(lastValue.ToString());
+				sb.Append(SEP_TOKEN);
+				sb.Append(SPACE);
+				sb.Append(lastValue);
 			}
 			sb.Append(']');
 			return sb.ToString();

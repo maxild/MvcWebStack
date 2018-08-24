@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Maxfire.TestCommons.AssertExtensibility
 {
@@ -9,7 +10,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 			Type type = typeof(T);
 
 			// Null?
-			if (!type.IsValueType || (type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>))))
+			if (!type.IsValueType || type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Nullable<>)))
 			{
 				if (Object.Equals(x, default(T)))
 					return Object.Equals(y, default(T));
@@ -23,14 +24,12 @@ namespace Maxfire.TestCommons.AssertExtensibility
 				return false;
 			}
 
-			var equatableX = x as IEquatable<T>;
-			if (equatableX != null)
+		    if (x is IEquatable<T> equatableX)
 			{
 				return equatableX.Equals(y);
 			}
 
-			var equatableY = y as IEquatable<T>;
-			if (equatableY != null)
+		    if (y is IEquatable<T> equatableY)
 			{
 				return equatableY.Equals(x);
 			}
@@ -38,6 +37,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 			return Object.Equals(x, y);
 		}
 
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 		public static bool Equals(object x, object y, bool skipTypeCheck = false)
 		{
 			// Null?
@@ -64,14 +64,12 @@ namespace Maxfire.TestCommons.AssertExtensibility
 				return (bool)typeEquatableX.GetMethod("Equals").Invoke(y, new[] { x });
 			}
 
-			var equatableX = x as IEquatable<object>;
-			if (equatableX != null)
+		    if (x is IEquatable<object> equatableX)
 			{
 				return equatableX.Equals(y);
 			}
 
-			var equatableY = y as IEquatable<object>;
-			if (equatableY != null)
+		    if (y is IEquatable<object> equatableY)
 			{
 				return equatableY.Equals(x);
 			}

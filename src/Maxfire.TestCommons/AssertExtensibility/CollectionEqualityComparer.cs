@@ -16,20 +16,21 @@ namespace Maxfire.TestCommons.AssertExtensibility
 		/// </summary>
 		public static bool Equals(IEnumerable<T> left, IEnumerable<T> right)
 		{
-			IEnumerator<T> enumLeft = left.GetEnumerator();
-			IEnumerator<T> enumRight = right.GetEnumerator();
+			using(IEnumerator<T> enumLeft = left.GetEnumerator())
+		    using (IEnumerator<T> enumRight = right.GetEnumerator())
+		    {
+		        while (true)
+		        {
+		            bool hasNextX = enumLeft.MoveNext();
+		            bool hasNextY = enumRight.MoveNext();
 
-			while (true)
-			{
-				bool hasNextX = enumLeft.MoveNext();
-				bool hasNextY = enumRight.MoveNext();
+		            if (!hasNextX || !hasNextY)
+		                return hasNextX == hasNextY;
 
-				if (!hasNextX || !hasNextY)
-					return (hasNextX == hasNextY);
-
-				if (!EqualityUtils.Equals(enumLeft.Current, enumRight.Current))
-					return false;
-			}
+		            if (!EqualityUtils.Equals(enumLeft.Current, enumRight.Current))
+		                return false;
+		        }
+		    }
 		}
 
 		int IEqualityComparer<IEnumerable<T>>.GetHashCode(IEnumerable<T> obj)
@@ -62,7 +63,7 @@ namespace Maxfire.TestCommons.AssertExtensibility
 				bool hasNextY = enumRight.MoveNext();
 
 				if (!hasNextX || !hasNextY)
-					return (hasNextX == hasNextY);
+					return hasNextX == hasNextY;
 
 				if (!EqualityUtils.Equals(enumLeft.Current, enumRight.Current))
 					return false;

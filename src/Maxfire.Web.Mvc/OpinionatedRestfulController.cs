@@ -15,7 +15,7 @@ namespace Maxfire.Web.Mvc
 
 		public string BindingPrefix { get; private set; }
 
-		protected IModelUnflattener<TInputModel, TModel> ModelUnflattener { get; private set; }
+		protected IModelUnflattener<TInputModel, TModel> ModelUnflattener { get; }
 
 		public abstract ActionResult Create(TInputModel input);
 

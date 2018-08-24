@@ -12,7 +12,7 @@ namespace Maxfire.Web.Mvc.UnitTests
 			Sut = new DateModelBinder();
 		}
 
-		public DateModelBinder Sut { get; private set; }
+		public DateModelBinder Sut { get; }
 
 		[Fact]
 		public void NoFieldReturnsNullWithNoBindingErrors()

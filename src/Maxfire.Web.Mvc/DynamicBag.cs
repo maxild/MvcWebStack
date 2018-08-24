@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 
 namespace Maxfire.Web.Mvc
 {
 	public class DynamicBag<TDictionary> : DynamicObject
-		where TDictionary : IDictionary<string, object>
+		where TDictionary : class, IDictionary<string, object>
 	{
 		private readonly Func<TDictionary> _thunk;
 

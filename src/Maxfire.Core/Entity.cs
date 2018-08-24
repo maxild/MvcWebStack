@@ -44,7 +44,7 @@ namespace Maxfire.Core
 			{
 				return false;
 			}
-			
+
 			if (other.IsTransient && IsTransient)
 			{
 				return ReferenceEquals(other, this);
@@ -55,7 +55,8 @@ namespace Maxfire.Core
 
 		public override int GetHashCode()
 		{
-			return _oldHashCode ?? getHashCode();
+		    // ReSharper disable once NonReadonlyMemberInGetHashCode
+		    return _oldHashCode ?? GetHashCodeHelper();
 		}
 
 		protected virtual Type GetTypeUnproxied()
@@ -63,7 +64,7 @@ namespace Maxfire.Core
 			return GetType();
 		}
 
-		private int getHashCode()
+		private int GetHashCodeHelper()
 		{
 			if (IsTransient)
 			{

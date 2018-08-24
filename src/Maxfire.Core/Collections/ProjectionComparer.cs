@@ -40,7 +40,7 @@ namespace Maxfire.Core.Collections
 	}
 
 	/// <summary>
-	/// Class generic in the source only to produce instances of the 
+	/// Class generic in the source only to produce instances of the
 	/// doubly generic class, optionally using type inference.
 	/// </summary>
 	public static class ProjectionComparer<TSource>
@@ -50,7 +50,7 @@ namespace Maxfire.Core.Collections
 		/// </summary>
 		/// <typeparam name="TKey">Type parameter for the keys to be compared, after being projected from the elements</typeparam>
 		/// <param name="projection">Projection to use when determining the key of an element</param>
-		/// <returns>A comparer which will compare elements by projecting each element to its key, and comparing keys</returns>        
+		/// <returns>A comparer which will compare elements by projecting each element to its key, and comparing keys</returns>
 		public static ProjectionComparer<TSource, TKey> Create<TKey>(Func<TSource, TKey> projection)
 		{
 			return new ProjectionComparer<TSource, TKey>(projection);
@@ -65,34 +65,24 @@ namespace Maxfire.Core.Collections
 	/// <typeparam name="TKey">Type of the key projected from the element</typeparam>
 	public class ProjectionComparer<TSource, TKey> : IComparer<TSource>
 	{
-		readonly Func<TSource, TKey> projection;
-		readonly IComparer<TKey> comparer;
+		readonly Func<TSource, TKey> _projection;
+		readonly IComparer<TKey> _comparer;
 
-		/// <summary>
-		/// Creates a new instance using the specified projection, which must not be null.
-		/// The default comparer for the projected type is used.
-		/// </summary>
-		/// <param name="projection">Projection to use during comparisons</param>
-		public ProjectionComparer(Func<TSource, TKey> projection)
-			: this(projection, null)
-		{
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Creates a new instance using the specified projection, which must not be null.
 		/// </summary>
 		/// <param name="projection">Projection to use during comparisons</param>
 		/// <param name="comparer">The comparer to use on the keys. May be null, in
 		/// which case the default comparer will be used.</param>
-		public ProjectionComparer(Func<TSource, TKey> projection, IComparer<TKey> comparer)
+		public ProjectionComparer(Func<TSource, TKey> projection, IComparer<TKey> comparer = null)
 		{
 			projection.ThrowIfNull("projection");
-			this.comparer = comparer ?? Comparer<TKey>.Default;
-			this.projection = projection;
+			_comparer = comparer ?? Comparer<TKey>.Default;
+			_projection = projection;
 		}
 
 		/// <summary>
-		/// Compares x and y by projecting them to keys and then comparing the keys. 
+		/// Compares x and y by projecting them to keys and then comparing the keys.
 		/// Null values are not projected; they obey the
 		/// standard comparer contract such that two null values are equal; any null value is
 		/// less than any non-null value.
@@ -114,7 +104,7 @@ namespace Maxfire.Core.Collections
 				return 1;
 			}
 // ReSharper restore CompareNonConstrainedGenericWithNull
-			return comparer.Compare(projection(x), projection(y));
+			return _comparer.Compare(_projection(x), _projection(y));
 		}
 	}
 }

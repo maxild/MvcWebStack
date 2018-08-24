@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Maxfire.TestCommons.AssertExtensibility;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace Maxfire.TestCommons.UnitTests
 				Value = value;
 			}
 
-			public int Value { get; private set; }
+			public int Value { get; }
 
 			public bool Equals(MyInt other)
 			{
@@ -46,7 +46,7 @@ namespace Maxfire.TestCommons.UnitTests
 				Value = value;
 			}
 
-			public int Value { get; private set; }
+			public int Value { get; }
 
 			public bool Equals(MyOtherInt other)
 			{

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 using Maxfire.Core.Reflection;
 using Maxfire.TestCommons.AssertExtensions;
 using Xunit;
@@ -11,6 +12,8 @@ using ExpressionHelper = Maxfire.Core.Reflection.ExpressionHelper;
 namespace Maxfire.Core.UnitTests
 {
 	// TODO: Better naming of tests
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	public class ExpressionNameVisitorTester
 	{
 		class PersonModel
@@ -101,7 +104,8 @@ namespace Maxfire.Core.UnitTests
 
 			public decimal? Price { get; [UsedImplicitly] set; }
 
-			public IList<int> Numbers { get; [UsedImplicitly] set; }
+		    // ReSharper disable once CollectionNeverUpdated.Local
+		    public IList<int> Numbers { get; [UsedImplicitly] set; }
 
 			public IList<FakeChildModel> Customers
 			{
@@ -231,7 +235,8 @@ namespace Maxfire.Core.UnitTests
 		public void Test1()
 		{
 			// "Model" at the front of the expression is excluded (case insensitively)
-			FooModel Model = null;
+		    // ReSharper disable once InconsistentNaming
+		    FooModel Model = null;
 			Assert.Equal(string.Empty, ExpressionHelper.GetExpressionText(Lambda<object, FooModel>(m => Model)));
 			Assert.Equal("StringProperty", ExpressionHelper.GetExpressionText(Lambda<object, string>(m => Model.StringProperty)));
 
@@ -321,7 +326,7 @@ namespace Maxfire.Core.UnitTests
 		{
 			DummyModelContainer container = null;
 			int x = 2;
-			
+
 			// Back to back indexer is included
 			Assert.Equal("container.Model[1024][2]", ExpressionHelper.GetExpressionText(Lambda<object, char>(m => container.Model[x * 512][x])));
 		}
@@ -330,7 +335,7 @@ namespace Maxfire.Core.UnitTests
 		public void Test7()
 		{
 			DummyModelContainer container = null;
-			
+
 			// Multi-parameter indexer is supported
 			Assert.Equal(@"container.Model[42, Hello World].Length", ExpressionHelper.GetExpressionText(Lambda<object, int>(m => container.Model[42, "Hello World"].Length)));
 		}
@@ -340,7 +345,7 @@ namespace Maxfire.Core.UnitTests
 		{
 			DummyModelContainer container = null;
 			int x = 2;
-			
+
 			// Single array indexer is included
 			Assert.Equal("container.Model.Array[1024]", ExpressionHelper.GetExpressionText(Lambda<object, int>(m => container.Model.Array[x * 512])));
 		}

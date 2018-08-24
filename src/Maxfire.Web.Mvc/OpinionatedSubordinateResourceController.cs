@@ -1,20 +1,22 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
 using Maxfire.Core;
 
 namespace Maxfire.Web.Mvc
 {
-	public abstract class OpinionatedSubordinateResourceController<TInputModel, TViewModel, TShowModel, TEditModel, TParentModel, TModel, TId> 
+	[SuppressMessage("ReSharper", "UnusedTypeParameter")]
+	public abstract class OpinionatedSubordinateResourceController<TInputModel, TViewModel, TShowModel, TEditModel, TParentModel, TModel, TId>
 		: OpinionatedRestfulController<TInputModel, TEditModel, TModel, TId>
 		where TInputModel : class, IEntityViewModel<TId>, new()
 		where TModel : class, IEntity<TId>
 	{
-		protected OpinionatedSubordinateResourceController(IRepository<TParentModel, TId> repository, IModelUnflattener<TInputModel, TModel> modelUnflattener) 
+		protected OpinionatedSubordinateResourceController(IRepository<TParentModel, TId> repository, IModelUnflattener<TInputModel, TModel> modelUnflattener)
 			: base(modelUnflattener)
 		{
 			Repository = repository;
 		}
 
-		protected IRepository<TParentModel, TId> Repository { get; private set; }
+		protected IRepository<TParentModel, TId> Repository { get; }
 
 		// GET /parents/{parentId}/models
 		public abstract ActionResult Index(TId parentId);

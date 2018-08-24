@@ -13,7 +13,7 @@ namespace Maxfire.Web.Mvc
         {
             if (resourceManager == null)
             {
-                throw new ArgumentNullException("resourceManager");
+                throw new ArgumentNullException(nameof(resourceManager));
             }
             _resourceManager = resourceManager;
         }

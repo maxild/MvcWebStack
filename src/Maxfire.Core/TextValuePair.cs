@@ -10,10 +10,10 @@ namespace Maxfire.Core
 			Value = value;
 		}
 
-		public string Text { get; private set; }
+		public string Text { get; }
 
-		public TValue Value { get; private set; }
-		
+		public TValue Value { get; }
+
 		public bool Equals(TextValuePair<TValue> other)
 		{
 			if (other == null)

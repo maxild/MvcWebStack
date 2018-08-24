@@ -14,7 +14,7 @@ namespace Maxfire.Web.Mvc.FluentHtml.Elements
 		{
 			if (HasNoValue())
 			{
-				return null;
+				return string.Empty;
 			}
 			AddCssClass("field-validation-error");
 			return base.ToString();
