@@ -15,9 +15,6 @@ $RepoRoot = $PSScriptRoot
 $ToolsDir = Join-Path $RepoRoot 'tools'
 $NuGetExe = Join-Path $ToolsDir 'nuget.exe'
 
-$PsakePath =       Join-Path $ToolsDir -Child "psake\tools\psake\psake.ps1"
-$PsakeModulePath = Join-Path $ToolsDir -Child "psake\tools\psake\psake.psm1";
-
 if (-not (Test-Path $ToolsDir)) {
     New-Item -ItemType directory -Path $ToolsDir -ErrorAction SilentlyContinue | out-null
 }
@@ -37,32 +34,32 @@ function Install-NuGet {
 
 function Install-PSake {
     if (-not (Test-Path (Join-Path $ToolsDir 'psake'))) {
-        & $NuGetExe install psake -version 4.7.0 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+        & $NuGetExe install psake -version 4.9.0 -ExcludeVersion -OutputDirectory $ToolsDir -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
 function Install-GitVersion {
     if (-not (Test-Path (Join-Path $ToolsDir 'GitVersion.CommandLine'))) {
-        & $NuGetExe install GitVersion.CommandLine -version 4.0.0-beta0012 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+        & $NuGetExe install GitVersion.CommandLine -version 5.10.3 -ExcludeVersion -OutputDirectory $ToolsDir -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
 function Install-GitReleaseManager {
     if (-not (Test-Path (Join-Path $ToolsDir 'GitReleaseManager'))) {
-        & $NuGetExe install GitReleaseManager -version 0.7.1 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+        & $NuGetExe install GitReleaseManager -version 0.7.1 -ExcludeVersion -OutputDirectory $ToolsDir -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
 
 function Install-XunitCliRunner {
     if (-not (Test-Path (Join-Path $ToolsDir 'xunit.runner.console'))) {
-        & $NuGetExe install xunit.runner.console -version 2.4.0 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+        & $NuGetExe install xunit.runner.console -version 2.4.0 -ExcludeVersion -OutputDirectory $ToolsDir -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
 function Install-SourceLink {
     if (-not (Test-Path (Join-Path $ToolsDir 'SourceLink'))) {
-        & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -OutputDirectory `"$ToolsDir`" -nocache -Source https://api.nuget.org/v3/index.json
+        & $NuGetExe install SourceLink -version 1.1.0 -ExcludeVersion -OutputDirectory $ToolsDir -nocache -Source https://api.nuget.org/v3/index.json
     }
 }
 
@@ -73,6 +70,12 @@ Install-GitReleaseManager
 Install-XunitCliRunner
 Install-SourceLink
 
+$PsakePath = "$ToolsDir\psake\tools\psake\psake.ps1"
+
+if (-not (Test-Path $PsakePath)) {
+    throw "PSAKE have not been installed."
+}
+
 if ($ShowHelp.IsPresent) {
     & $PsakePath -help
 }
@@ -80,7 +83,7 @@ elseif ($ShowTargets.IsPresent) {
     & $PsakePath .\psakefile.ps1 -docs
 }
 else {
-    & $PsakePath .\psakefile.ps1 $Target -properties @{configuration=$Configuration; target=$Target}
+    & $PsakePath .\psakefile.ps1 $Target -properties @{configuration=$Configuration}
 }
 
 # report success or failure

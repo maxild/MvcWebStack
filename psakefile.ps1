@@ -208,12 +208,12 @@ task compile -depends restore, resolveVersion, commonAssemblyInfo {
         # Write-Host $output
 
         #/p:TargetFrameworkVersion='v4.5.2' `
+        #/tv:"$tools_version" `
+        #/p:VisualStudioVersion="$tools_version" `
         msbuild /t:Clean /t:Build `
             /p:Configuration=$configuration `
             /v:minimal `
             /p:nowarn="1591" `
-            /tv:"$tools_version" `
-            /p:VisualStudioVersion="$tools_version" `
             /p:TreatWarningsAsErrors='true' `
             /p:MvcBuildViews='false' `
             /p:MvcPublishWebsite='false' `

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using Maxfire.TestCommons;
 using Moq;
 using Moq.Protected;
 using Xunit;
@@ -2557,18 +2558,22 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void OnModelUpdatedWithValidationAttributeNoValidationMessage()
 		{
-			// Arrange
-			var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
+            using (new CurrentCultureScope("en-US"))
+            {
+                // Arrange
+                var modelBinder = new TestableExtensibleDefaultModelBinder<OnModelUpdatedModelNoValidationResult>();
 
-			// Act
-			modelBinder.OnModelUpdated();
+                // Act
+                modelBinder.OnModelUpdated();
 
-			// Assert
-			Assert.Single(modelBinder.ModelState);
-			ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
-			Assert.NotNull(stateModel);
-			Assert.Equal("The field OnModelUpdatedModelNoValidationResult is invalid.", stateModel.Errors.Single().ErrorMessage);
-		}
+                // Assert
+                Assert.Single(modelBinder.ModelState);
+                ModelState stateModel = modelBinder.ModelState[BASE_MODEL_NAME];
+                Assert.NotNull(stateModel);
+                Assert.Equal("The field OnModelUpdatedModelNoValidationResult is invalid.",
+                    stateModel.Errors.Single().ErrorMessage);
+            }
+        }
 
 		[Fact]
 		public void OnModelUpdatedDoesNotPlaceErrorMessagesInModelStateWhenSubPropertiesHaveErrors()
@@ -2672,22 +2677,27 @@ namespace Maxfire.Web.Mvc.UnitTests
 		[Fact]
 		public void SetPropertyCreatesValueRequiredErrorIfNecessary()
 		{
-			// Arrange
-			ModelBindingContext bindingContext = new ModelBindingContext()
-			{
-				ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => new MyModel(), typeof(MyModel)),
-				ModelName = "theModel",
-			};
+            using (new CurrentCultureScope("en-US"))
+            {
+                // Arrange
+                ModelBindingContext bindingContext = new ModelBindingContext()
+                {
+                    ModelMetadata =
+                        ModelMetadataProviders.Current.GetMetadataForType(() => new MyModel(), typeof(MyModel)),
+                    ModelName = "theModel",
+                };
 
-			PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
-			var helper = new TestableExtensibleDefaultModelBinder();
+                PropertyDescriptor property = TypeDescriptor.GetProperties(typeof(MyModel))["ReadWriteProperty"];
+                var helper = new TestableExtensibleDefaultModelBinder();
 
-			// Act
-			helper.PublicSetProperty(new ControllerContext(), bindingContext, property, null);
+                // Act
+                helper.PublicSetProperty(new ControllerContext(), bindingContext, property, null);
 
-			// Assert
-			Assert.Equal("The ReadWriteProperty field is required.", bindingContext.ModelState["theModel.ReadWriteProperty"].Errors[0].ErrorMessage);
-		}
+                // Assert
+                Assert.Equal("The ReadWriteProperty field is required.",
+                    bindingContext.ModelState["theModel.ReadWriteProperty"].Errors[0].ErrorMessage);
+            }
+        }
 
 		[Fact]
 		public void SetPropertyWithThrowingSetter()
